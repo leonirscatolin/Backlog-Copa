@@ -2,9 +2,9 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import numpy as np
-import base64 # Nova biblioteca para processar o GIF
+import base64
 
-# Configuração da página (mantemos o favicon .webp estático)
+# Configuração da página
 st.set_page_config(
     layout="wide", 
     page_title="Backlog Copa Energia + Belago",
@@ -12,13 +12,12 @@ st.set_page_config(
 )
 
 # --- FUNÇÃO PARA CARREGAR O GIF ---
-# Esta função lê o arquivo GIF e o prepara para ser exibido
 def get_base64_of_bin_file(bin_file):
     with open(bin_file, 'rb') as f:
         data = f.read()
     return base64.b64encode(data).decode()
 
-# --- FUNÇÕES DE PROCESSAMENTO (sem alterações) ---
+# --- FUNÇÕES DE PROCESSAMENTO ---
 def processar_dados_comparativos(df_atual, df_15dias):
     contagem_atual = df_atual.groupby('Atribuir a um grupo').size().reset_index(name='Atual')
     contagem_15dias = df_15dias.groupby('Atribuir a um grupo').size().reset_index(name='15 Dias Atrás')
@@ -48,14 +47,11 @@ def analisar_aging(df_atual):
 st.title("Backlog Copa Energia + Belago")
 st.markdown("Faça o upload dos arquivos CSV para visualizar a comparação e a análise de antiguidade dos chamados.")
 
-# --- MUDANÇA AQUI: Exibindo o GIF de forma animada ---
-# Nome do seu arquivo GIF
+# --- MUDANÇA AQUI: Adicionando 'border-radius' ao estilo do GIF ---
 gif_path = "copaenergiamkp-conceito_1691612041.gif"
-# Codificamos o GIF para ser usado em HTML
 gif_base64 = get_base64_of_bin_file(gif_path)
-# Usamos st.markdown com HTML para exibir o GIF animado
 st.sidebar.markdown(
-    f'<img src="data:image/gif;base64,{gif_base64}" alt="Logo animado" style="width: 100%;">',
+    f'<img src="data:image/gif;base64,{gif_base64}" alt="Logo animado" style="width: 100%; border-radius: 15px;">',
     unsafe_allow_html=True,
 )
 # --- FIM DA MUDANÇA ---
@@ -91,6 +87,7 @@ if uploaded_file_atual and uploaded_file_15dias:
         df_aging = analisar_aging(df_atual) 
 
         if not df_aging.empty:
+            # (O resto do código para os gráficos e filtros continua o mesmo)
             aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
             aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
             
