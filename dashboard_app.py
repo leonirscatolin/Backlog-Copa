@@ -13,13 +13,12 @@ st.set_page_config(
 )
 
 # --- FUNÇÃO PARA CARREGAR IMAGENS ---
-# Agora serve tanto para o GIF quanto para o PNG
 def get_base64_of_bin_file(bin_file):
     with open(bin_file, 'rb') as f:
         data = f.read()
     return base64.b64encode(data).decode()
 
-# --- FUNÇÕES DE PROCESSAMENTO (sem alterações) ---
+# --- FUNÇÕES DE PROCESSAMENTO ---
 def processar_dados_comparativos(df_atual, df_15dias):
     contagem_atual = df_atual.groupby('Atribuir a um grupo').size().reset_index(name='Atual')
     contagem_15dias = df_15dias.groupby('Atribuir a um grupo').size().reset_index(name='15 Dias Atrás')
@@ -49,16 +48,13 @@ def analisar_aging(df_atual):
 st.title("Backlog Copa Energia + Belago")
 st.markdown("Faça o upload dos arquivos CSV para visualizar a comparação e a análise de antiguidade dos chamados.")
 
-# --- MUDANÇA AQUI: Exibindo os dois logos na barra lateral ---
-# Nome dos seus arquivos de imagem
+# Exibindo os dois logos na barra lateral
 gif_path = "copaenergiamkp-conceito_1691612041.gif"
-belago_logo_path = "logo_belago.png" # Use o nome que você deu ao arquivo
+belago_logo_path = "logo_belago.png"
 
-# Codificamos as imagens para serem usadas em HTML
 gif_base64 = get_base64_of_bin_file(gif_path)
 belago_logo_base64 = get_base64_of_bin_file(belago_logo_path)
 
-# Usamos st.markdown com HTML para exibir as duas imagens
 st.sidebar.markdown(
     f"""
     <div style="text-align: center;">
@@ -68,7 +64,6 @@ st.sidebar.markdown(
     """,
     unsafe_allow_html=True,
 )
-# --- FIM DA MUDANÇA ---
 
 
 st.sidebar.header("Carregar Arquivos")
@@ -102,8 +97,74 @@ if uploaded_file_atual and uploaded_file_15dias:
         df_aging = analisar_aging(df_atual) 
 
         if not df_aging.empty:
-            # (O resto do código para os gráficos e filtros continua o mesmo)
-            # ...
+            aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
+            aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
+            
+            ordem_faixas = ["0 a 2 dias", "3 a 5 dias", "6 a 10 dias", "11 a 20 dias", "21 a 29 dias", "30+ dias"]
+            todas_as_faixas = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas})
+            aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left')
+            aging_counts['Quantidade'] = aging_counts['Quantidade'].fillna(0).astype(int)
+
+            aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
+            aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
+
+            aging_counts['Quantidade_texto'] = aging_counts['Quantidade'].astype(str)
+            
+            fig = px.bar(
+                aging_counts, x='Faixa de Antiguidade', y='Quantidade', text='Quantidade_texto',
+                title='Distribuição de Chamados por Antiguidade',
+                labels={'Faixa de Antiguidade': 'Idade do Chamado', 'Quantidade': 'Nº de Chamados'}
+            )
+            
+            fig.update_traces(
+                textposition='outside', 
+                marker_color='#375623',
+                hovertemplate='<b>%{x}</b><br>Quantidade: %{y}<extra></extra>'
+            )
+            fig.update_yaxes(dtick=1)
+            
+            st.plotly_chart(fig, use_container_width=True)
+
+            st.markdown("---") 
+            st.subheader("Detalhar Faixa de Antiguidade")
+            
+            opcoes_filtro = aging_counts['Faixa de Antiguidade'].tolist()
+            selected_bucket = st.selectbox(
+                "Selecione uma faixa de idade para ver os detalhes:",
+                options=opcoes_filtro
+            )
+
+            if selected_bucket:
+                filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == selected_bucket].copy()
+                
+                if not filtered_df.empty:
+                    filtered_df['Data de criação'] = filtered_df['Data de criação'].dt.strftime('%d/%m/%Y')
+                    colunas_para_exibir = ['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
+                    st.dataframe(filtered_df[colunas_para_exibir], use_container_width=True)
+                else:
+                    st.write("Não há chamados nesta categoria.")
+        else:
+            st.warning("Nenhum dado válido para a análise de antiguidade foi encontrado após o processamento das datas.")
+
+        st.markdown("---")
+        st.subheader("Buscar Chamados por Grupo")
+
+        lista_grupos = sorted(df_aging['Atribuir a um grupo'].dropna().unique())
+        lista_grupos.insert(0, "Selecione um grupo...")
+        
+        grupo_selecionado = st.selectbox(
+            "Busca de chamados por grupo:",
+            options=lista_grupos
+        )
+
+        if grupo_selecionado != "Selecione um grupo...":
+            resultados_busca = df_aging[df_aging['Atribuir a um grupo'] == grupo_selecionado].copy()
+
+            resultados_busca['Data de criação'] = resultados_busca['Data de criação'].dt.strftime('%d/%m/%Y')
+            
+            st.write(f"Encontrados {len(resultados_busca)} chamados para o grupo '{grupo_selecionado}':")
+            colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
+            st.dataframe(resultados_busca[colunas_para_exibir_busca], use_container_width=True)
 
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
