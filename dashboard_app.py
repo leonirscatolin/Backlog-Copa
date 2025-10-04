@@ -12,7 +12,7 @@ st.set_page_config(
     page_icon="copaenergialogo_1691612041.webp"
 )
 
-# --- FUNÇÕES DE PROCESSAMENTO (sem alterações) ---
+# --- FUNÇÕES DE PROCESSAMENTO ---
 def get_base64_of_bin_file(bin_file):
     with open(bin_file, 'rb') as f:
         data = f.read()
@@ -43,11 +43,10 @@ def analisar_aging(df_atual):
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
     return df
 
-# --- INICIALIZAÇÃO DO ESTADO DE LOGIN ---
+# --- TELA DE LOGIN ---
 if 'logged_in' not in st.session_state:
     st.session_state['logged_in'] = False
 
-# --- TELA DE LOGIN ---
 def show_login_page():
     with st.form("login_form"):
         st.subheader("Controle de Acesso")
@@ -55,16 +54,14 @@ def show_login_page():
         submitted = st.form_submit_button("Acessar")
         
         if submitted:
-            # Lógica de validação simples: verifica se o campo não está vazio e contém '@'
             if email and "@" in email:
                 st.session_state['logged_in'] = True
-                st.rerun() # Re-executa o script para mostrar o dashboard
+                st.rerun()
             else:
                 st.error("Por favor, insira um e-mail válido.")
 
 # --- TELA PRINCIPAL DO DASHBOARD ---
 def show_main_dashboard():
-    # Botão de Sair na barra lateral
     if st.sidebar.button("Sair"):
         st.session_state['logged_in'] = False
         st.rerun()
@@ -72,9 +69,11 @@ def show_main_dashboard():
     st.title("Backlog Copa Energia + Belago")
     st.markdown("Faça o upload dos arquivos CSV para visualizar a comparação e a análise de antiguidade dos chamados.")
     
-    # Exibindo os logos na barra lateral
-    gif_path = "copaenergiamkp-conceito_1691612041.gif"
+    # --- CORREÇÃO DO NOME DO GIF ---
+    gif_path = "237f1d13493514962376f142bb68_1691760314.gif"
     belago_logo_path = "logo_belago.png"
+    # --- FIM DA CORREÇÃO ---
+
     gif_base64 = get_base64_of_bin_file(gif_path)
     belago_logo_base64 = get_base64_of_bin_file(belago_logo_path)
 
@@ -94,7 +93,6 @@ def show_main_dashboard():
 
     if uploaded_file_atual and uploaded_file_15dias:
         try:
-            # (O resto do seu código do dashboard entra aqui, sem alterações)
             df_atual = pd.read_csv(uploaded_file_atual, delimiter=';', encoding='latin1') 
             df_15dias = pd.read_csv(uploaded_file_15dias, delimiter=';', encoding='latin1')
             st.success("Arquivos carregados com sucesso!")
