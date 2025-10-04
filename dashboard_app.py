@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 import numpy as np
 import base64
+from datetime import datetime
 
 # Configuração da página
 st.set_page_config(
@@ -39,22 +40,32 @@ def analisar_aging(df_atual):
     df = df_atual.copy()
     df['Data de criação'] = pd.to_datetime(df['Data de criação'], errors='coerce', dayfirst=True)
     df.dropna(subset=['Data de criação'], inplace=True)
-    df['Dias em Aberto'] = (pd.to_datetime('today') - df['Data de criação']).dt.days
+    df['Dias em Aberto'] = (datetime.now() - df['Data de criação']).dt.days
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
     return df
 
 # --- INTERFACE DO APLICATIVO ---
+
+# --- NOVO BLOCO: ADICIONANDO O LOGO NO TOPO ---
+# Criamos 3 colunas para centralizar o logo. A do meio é 2x maior que as laterais.
+col1, col2, col3 = st.columns([1, 2, 1])
+
+# Colocamos o logo estático na coluna do meio
+with col2:
+    st.image("copaenergialogo_1691612041.webp", width=250)
+# --- FIM DO NOVO BLOCO ---
+
+
 st.title("Backlog Copa Energia + Belago")
 st.markdown("Faça o upload dos arquivos CSV para visualizar a comparação e a análise de antiguidade dos chamados.")
 
-# --- MUDANÇA AQUI: Adicionando 'border-radius' ao estilo do GIF ---
+# Exibindo o GIF animado na barra lateral
 gif_path = "copaenergiamkp-conceito_1691612041.gif"
 gif_base64 = get_base64_of_bin_file(gif_path)
 st.sidebar.markdown(
     f'<img src="data:image/gif;base64,{gif_base64}" alt="Logo animado" style="width: 100%; border-radius: 15px;">',
     unsafe_allow_html=True,
 )
-# --- FIM DA MUDANÇA ---
 
 st.sidebar.header("Carregar Arquivos")
 uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL (.csv)", type=['csv'])
