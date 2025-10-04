@@ -48,8 +48,8 @@ def analisar_aging(df_atual):
 st.title("Backlog Copa Energia + Belago")
 st.markdown("Faça o upload dos arquivos CSV para visualizar a comparação e a análise de antiguidade dos chamados.")
 
-# Exibindo os dois logos na barra lateral
-gif_path = "copaenergiamkp-conceito_1691612041.gif"
+# --- MUDANÇA AQUI: Apontando para o outro arquivo GIF ---
+gif_path = "237f1d13493514962376f142bb68_1691760314.gif"
 belago_logo_path = "logo_belago.png"
 
 gif_base64 = get_base64_of_bin_file(gif_path)
@@ -64,6 +64,7 @@ st.sidebar.markdown(
     """,
     unsafe_allow_html=True,
 )
+# --- FIM DA MUDANÇA ---
 
 
 st.sidebar.header("Carregar Arquivos")
