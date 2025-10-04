@@ -3,8 +3,12 @@ import pandas as pd
 import plotly.express as px
 import numpy as np
 
-# Configuração da página do Streamlit
-st.set_page_config(layout="wide", page_title="Backlog Copa Energia + Belago")
+# Configuração da página (mantemos o favicon .webp estático)
+st.set_page_config(
+    layout="wide", 
+    page_title="Backlog Copa Energia + Belago",
+    page_icon="copaenergialogo_1691612041.webp"
+)
 
 # --- FUNÇÕES DE PROCESSAMENTO ---
 def processar_dados_comparativos(df_atual, df_15dias):
@@ -39,7 +43,9 @@ def analisar_aging(df_atual):
 st.title("Backlog Copa Energia + Belago")
 st.markdown("Faça o upload dos arquivos CSV para visualizar a comparação e a análise de antiguidade dos chamados.")
 
-st.sidebar.image('copaenergialogo_1691612041.webp', use_container_width=True)
+# --- MUDANÇA AQUI: Alterando o nome do arquivo para o GIF ---
+st.sidebar.image('copaenergiamkp-conceito_1691612041.gif', use_container_width=True)
+
 st.sidebar.header("Carregar Arquivos")
 uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL (.csv)", type=['csv'])
 uploaded_file_15dias = st.sidebar.file_uploader("2. Backlog de 15 DIAS ATRÁS (.csv)", type=['csv'])
