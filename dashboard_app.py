@@ -14,9 +14,13 @@ st.set_page_config(
 
 # --- FUNÇÃO PARA CARREGAR IMAGENS ---
 def get_base64_of_bin_file(bin_file):
-    with open(bin_file, 'rb') as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
+    try:
+        with open(bin_file, 'rb') as f:
+            data = f.read()
+        return base64.b64encode(data).decode()
+    except FileNotFoundError:
+        st.error(f"Arquivo de mídia não encontrado: {bin_file}. Por favor, envie o arquivo para o repositório no GitHub.")
+        return None
 
 # --- FUNÇÕES DE PROCESSAMENTO ---
 def processar_dados_comparativos(df_atual, df_15dias):
@@ -41,11 +45,9 @@ def analisar_aging(df_atual):
     df['Data de criação'] = pd.to_datetime(df['Data de criação'], errors='coerce', dayfirst=True)
     df.dropna(subset=['Data de criação'], inplace=True)
     
-    # --- CORREÇÃO DA LÓGICA DE CÁLCULO DE DIAS ---
     hoje = pd.to_datetime('today').normalize()
     data_criacao_normalizada = df['Data de criação'].dt.normalize()
     df['Dias em Aberto'] = (hoje - data_criacao_normalizada).dt.days
-    # --- FIM DA CORREÇÃO ---
 
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
     return df
@@ -54,19 +56,23 @@ def analisar_aging(df_atual):
 st.title("Backlog Copa Energia + Belago")
 st.markdown("Faça o upload dos arquivos CSV para visualizar a comparação e a análise de antiguidade dos chamados.")
 
-gif_path = "copaenergiamkp-conceito_1691612041.gif"
+# --- NOME DO GIF CORRIGIDO ---
+gif_path = "237f1d13493514962376f142bb68_1691760314.gif"
 belago_logo_path = "logo_belago.png"
+
 gif_base64 = get_base64_of_bin_file(gif_path)
 belago_logo_base64 = get_base64_of_bin_file(belago_logo_path)
-st.sidebar.markdown(
-    f"""
-    <div style="text-align: center;">
-        <img src="data:image/gif;base64,{gif_base64}" alt="Logo Copa Energia" style="width: 100%; border-radius: 15px; margin-bottom: 20px;">
-        <img src="data:image/png;base64,{belago_logo_base64}" alt="Logo Belago" style="width: 80%; border-radius: 15px;">
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+
+if gif_base64 and belago_logo_base64:
+    st.sidebar.markdown(
+        f"""
+        <div style="text-align: center;">
+            <img src="data:image/gif;base64,{gif_base64}" alt="Logo Copa Energia" style="width: 100%; border-radius: 15px; margin-bottom: 20px;">
+            <img src="data:image/png;base64,{belago_logo_base64}" alt="Logo Belago" style="width: 80%; border-radius: 15px;">
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 st.sidebar.header("Carregar Arquivos")
 uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL (.csv)", type=['csv'])
