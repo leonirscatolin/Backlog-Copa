@@ -48,6 +48,16 @@ def analisar_aging(df_atual):
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
     return df
 
+# --- FUNÇÃO PARA A COLUNA STATUS (RE-ADICIONADA) ---
+def get_status(row):
+    diferenca = row['Diferença']
+    if diferenca > 0:
+        return "Alta demanda"
+    elif diferenca == 0:
+        return "Demora na resolução"
+    else: # diferenca < 0
+        return "Alta demanda / Demora na resolução"
+
 # --- INTERFACE DO APLICATIVO ---
 st.title("Backlog Copa Energia + Belago")
 
@@ -81,6 +91,19 @@ if uploaded_file_atual and uploaded_file_15dias:
         
         df_aging = analisar_aging(df_atual_filtrado)
 
+        # CSS dos "quadradinhos", definido uma vez para ser usado em ambas as abas
+        st.markdown("""
+        <style>
+        .metric-box {
+            border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px;
+            text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+        .metric-box .value {font-size: 2.5em; font-weight: bold; color: #375623;}
+        .metric-box .label {font-size: 1em; color: #666666;}
+        </style>
+        """, unsafe_allow_html=True)
+
         tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
 
         with tab1:
@@ -94,6 +117,20 @@ if uploaded_file_atual and uploaded_file_15dias:
             st.subheader("Análise de Antiguidade do Backlog Atual")
             
             if not df_aging.empty:
+                # --- ADICIONADO QUADRADINHO DE TOTAL ---
+                total_chamados = len(df_aging)
+                _, col_total, _ = st.columns([2, 1.5, 2])
+                with col_total:
+                    st.markdown(
+                        f"""
+                        <div class="metric-box">
+                            <div class="value">{total_chamados}</div>
+                            <div class="label">Total de Chamados</div>
+                        </div>
+                        """, unsafe_allow_html=True
+                    )
+                st.markdown("---")
+                
                 aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
                 aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
                 ordem_faixas = ["1-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
@@ -102,18 +139,6 @@ if uploaded_file_atual and uploaded_file_15dias:
                 aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
                 aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
 
-                st.markdown("""
-                <style>
-                .metric-box {
-                    border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px;
-                    text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
-                    margin-bottom: 10px;
-                }
-                .metric-box .value {font-size: 2.5em; font-weight: bold; color: #375623;}
-                .metric-box .label {font-size: 1em; color: #666666;}
-                </style>
-                """, unsafe_allow_html=True)
-                
                 cols = st.columns(len(ordem_faixas))
                 for i, row in aging_counts.iterrows():
                     with cols[i]:
@@ -130,6 +155,10 @@ if uploaded_file_atual and uploaded_file_15dias:
 
             st.subheader("Comparativo de Backlog: Atual vs. 15 Dias Atrás")
             df_comparativo = processar_dados_comparativos(df_atual_filtrado.copy(), df_15dias_filtrado.copy())
+            
+            # --- ADICIONADA COLUNA DE STATUS ---
+            df_comparativo['Status'] = df_comparativo.apply(get_status, axis=1)
+
             df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True)
             st.dataframe(df_comparativo.set_index('Grupo').style.applymap(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
 
@@ -161,6 +190,20 @@ if uploaded_file_atual and uploaded_file_15dias:
         with tab2:
             st.subheader("Resumo do Backlog Atual")
             if not df_aging.empty:
+                # --- ADICIONADO QUADRADINHO DE TOTAL ---
+                total_chamados_tab2 = len(df_aging)
+                _, col_total_tab2, _ = st.columns([2, 1.5, 2])
+                with col_total_tab2:
+                    st.markdown(
+                        f"""
+                        <div class="metric-box">
+                            <div class="value">{total_chamados_tab2}</div>
+                            <div class="label">Total de Chamados</div>
+                        </div>
+                        """, unsafe_allow_html=True
+                    )
+                st.markdown("---")
+
                 aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
                 aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
                 ordem_faixas = ["1-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
@@ -168,18 +211,6 @@ if uploaded_file_atual and uploaded_file_15dias:
                 aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
                 aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
                 aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
-                
-                st.markdown("""
-                <style>
-                .metric-box {
-                    border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px;
-                    text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
-                    margin-bottom: 10px;
-                }
-                .metric-box .value {font-size: 2.5em; font-weight: bold; color: #375623;}
-                .metric-box .label {font-size: 1em; color: #666666;}
-                </style>
-                """, unsafe_allow_html=True)
                 
                 cols = st.columns(len(ordem_faixas))
                 for i, row in aging_counts.iterrows():
