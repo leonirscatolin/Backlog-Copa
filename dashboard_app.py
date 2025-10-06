@@ -4,7 +4,6 @@ import plotly.express as px
 import numpy as np
 import base64
 from datetime import datetime
-from fpdf import FPDF
 
 # Configuração da página
 st.set_page_config(
@@ -49,43 +48,6 @@ def analisar_aging(df_atual):
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
     return df
 
-def get_status(row):
-    diferenca = row['Diferença']
-    if diferenca > 0:
-        return "Alta demanda"
-    elif diferenca == 0:
-        return "Estável / Atenção"
-    else: # diferenca < 0
-        return "Redução de Backlog"
-
-def criar_relatorio_pdf(df_comparativo_pdf, fig_antiguidade_pdf):
-    fig_antiguidade_pdf.write_image("temp_chart.png", scale=2)
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", "B", 16)
-    data_hoje = datetime.now().strftime("%d/%m/%Y")
-    pdf.cell(0, 10, f"Relatório de Backlog - {data_hoje}", 0, 1, "C")
-    pdf.ln(10)
-    pdf.set_font("Arial", "B", 12)
-    pdf.cell(0, 10, "Análise de Antiguidade do Backlog Atual", 0, 1, "L")
-    pdf.image("temp_chart.png", x=10, y=None, w=190)
-    pdf.ln(10)
-    pdf.set_font("Arial", "B", 12)
-    pdf.cell(0, 10, "Comparativo de Backlog: Atual vs. 15 Dias Atrás", 0, 1, "L")
-    pdf.ln(5)
-    pdf.set_font("Arial", "B", 8)
-    # Larguras das colunas
-    col_widths = {'Grupo': 85, '15 Dias Atrás': 25, 'Atual': 15, 'Diferença': 20, 'Status': 45}
-    for col in df_comparativo_pdf.columns:
-        pdf.cell(col_widths[col], 8, col, 1, 0, "C")
-    pdf.ln()
-    pdf.set_font("Arial", "", 8)
-    for index, row in df_comparativo_pdf.iterrows():
-        for col in df_comparativo_pdf.columns:
-            pdf.cell(col_widths[col], 8, str(row[col]), 1, 0, "L" if col == "Grupo" else "C")
-        pdf.ln()
-    return pdf.output(dest='S').encode('latin-1')
-
 # --- INTERFACE DO APLICATIVO ---
 st.title("Backlog Copa Energia + Belago")
 
@@ -93,8 +55,17 @@ gif_path = "237f1d13493514962376f142bb68_1691760314.gif"
 belago_logo_path = "logo_belago.png"
 gif_base64 = get_base_64_of_bin_file(gif_path)
 belago_logo_base64 = get_base_64_of_bin_file(belago_logo_path)
+
 if gif_base64 and belago_logo_base64:
-    st.sidebar.markdown(f"""...""", unsafe_allow_html=True) # Omitido
+    st.sidebar.markdown(
+        f"""
+        <div style="text-align: center;">
+            <img src="data:image/gif;base64,{gif_base64}" alt="Logo Copa Energia" style="width: 100%; border-radius: 15px; margin-bottom: 20px;">
+            <img src="data:image/png;base64,{belago_logo_base64}" alt="Logo Belago" style="width: 80%; border-radius: 15px;">
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 st.sidebar.header("Carregar Arquivos")
 uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL (.csv)", type=['csv'])
@@ -104,17 +75,144 @@ if uploaded_file_atual and uploaded_file_15dias:
     try:
         df_atual = pd.read_csv(uploaded_file_atual, delimiter=';', encoding='latin1') 
         df_15dias = pd.read_csv(uploaded_file_15dias, delimiter=';', encoding='latin1')
+        
         df_atual_filtrado = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
-        df_aging = analisar_aging(df_atual_filtrado)
         
+        df_aging = analisar_aging(df_atual_filtrado)
+
         tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
+
         with tab1:
-            # (Código da Tab 1, incluindo o botão de gerar PDF)
-            pass
+            st.info(
+                """
+                **Filtros e Regras Aplicadas:**
+                - Grupos contendo 'RH' foram desconsiderados da análise.
+                - A contagem de 'Dias em Aberto' considera o dia da criação como Dia 1.
+                """
+            )
+            st.subheader("Análise de Antiguidade do Backlog Atual")
+            
+            if not df_aging.empty:
+                aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
+                aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
+                ordem_faixas = ["1-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
+                todas_as_faixas = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas})
+                aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
+                aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
+                aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
+
+                st.markdown("""
+                <style>
+                .metric-box {
+                    border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px;
+                    text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+                    margin-bottom: 10px;
+                }
+                .metric-box .value {font-size: 2.5em; font-weight: bold; color: #375623;}
+                .metric-box .label {font-size: 1em; color: #666666;}
+                </style>
+                """, unsafe_allow_html=True)
+                
+                cols = st.columns(len(ordem_faixas))
+                for i, row in aging_counts.iterrows():
+                    with cols[i]:
+                        st.markdown(
+                            f"""
+                            <div class="metric-box">
+                                <div class="value">{row['Quantidade']}</div>
+                                <div class="label">{row['Faixa de Antiguidade']}</div>
+                            </div>
+                            """, unsafe_allow_html=True
+                        )
+            else:
+                st.warning("Nenhum dado válido para a análise de antiguidade.")
+
+            st.subheader("Comparativo de Backlog: Atual vs. 15 Dias Atrás")
+            df_comparativo = processar_dados_comparativos(df_atual_filtrado.copy(), df_15dias_filtrado.copy())
+            df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True)
+            st.dataframe(df_comparativo.set_index('Grupo').style.applymap(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
+
+            if not df_aging.empty:
+                st.markdown("---") 
+                st.subheader("Detalhar e Buscar Chamados")
+                opcoes_filtro = aging_counts['Faixa de Antiguidade'].tolist()
+                selected_bucket = st.selectbox("Selecione uma faixa de idade para ver os detalhes:", options=opcoes_filtro)
+                if selected_bucket and not df_aging[df_aging['Faixa de Antiguidade'] == selected_bucket].empty:
+                    filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == selected_bucket].copy()
+                    filtered_df['Data de criação'] = filtered_df['Data de criação'].dt.strftime('%d/%m/%Y')
+                    colunas_para_exibir = ['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
+                    st.dataframe(filtered_df[colunas_para_exibir], use_container_width=True)
+                else:
+                    st.write("Não há chamados nesta categoria.")
+
+                st.markdown("---")
+                st.subheader("Buscar Chamados por Grupo")
+                lista_grupos = sorted(df_aging['Atribuir a um grupo'].dropna().unique())
+                lista_grupos.insert(0, "Selecione um grupo...")
+                grupo_selecionado = st.selectbox("Busca de chamados por grupo:", options=lista_grupos)
+                if grupo_selecionado != "Selecione um grupo...":
+                    resultados_busca = df_aging[df_aging['Atribuir a um grupo'] == grupo_selecionado].copy()
+                    resultados_busca['Data de criação'] = resultados_busca['Data de criação'].dt.strftime('%d/%m/%Y')
+                    st.write(f"Encontrados {len(resultados_busca)} chamados para o grupo '{grupo_selecionado}':")
+                    colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
+                    st.dataframe(resultados_busca[colunas_para_exibir_busca], use_container_width=True)
+        
         with tab2:
-            # (Código da Tab 2)
-            pass
+            st.subheader("Resumo do Backlog Atual")
+            if not df_aging.empty:
+                # CORREÇÃO 1: CÓDIGO DOS QUADRADOS RE-ADICIONADO
+                aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
+                aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
+                ordem_faixas = ["1-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
+                todas_as_faixas = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas})
+                aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
+                aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
+                aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
+                
+                st.markdown("""
+                <style>
+                .metric-box {
+                    border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px;
+                    text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+                    margin-bottom: 10px;
+                }
+                .metric-box .value {font-size: 2.5em; font-weight: bold; color: #375623;}
+                .metric-box .label {font-size: 1em; color: #666666;}
+                </style>
+                """, unsafe_allow_html=True)
+                
+                cols = st.columns(len(ordem_faixas))
+                for i, row in aging_counts.iterrows():
+                    with cols[i]:
+                        st.markdown(
+                            f"""
+                            <div class="metric-box">
+                                <div class="value">{row['Quantidade']}</div>
+                                <div class="label">{row['Faixa de Antiguidade']}</div>
+                            </div>
+                            """, unsafe_allow_html=True
+                        )
+                
+                st.markdown("---")
+                
+                st.subheader("Ofensores (Todos os Grupos)")
+                # CORREÇÃO 2: REMOVIDO O .nlargest(10) PARA MOSTRAR TODOS OS GRUPOS
+                top_ofensores = df_aging['Atribuir a um grupo'].value_counts().sort_values(ascending=True)
+                
+                fig_top_ofensores = px.bar(
+                    top_ofensores, x=top_ofensores.values, y=top_ofensores.index, 
+                    orientation='h', text=top_ofensores.values, 
+                    labels={'x': 'Qtd. Chamados', 'y': 'Grupo'}
+                )
+                fig_top_ofensores.update_traces(textposition='outside', marker_color='#375623')
+                # Aumenta a altura do gráfico para caberem mais grupos
+                fig_top_ofensores.update_layout(height=max(400, len(top_ofensores) * 25)) 
+                st.plotly_chart(fig_top_ofensores, use_container_width=True)
+
+            else:
+                st.warning("Nenhum dado para gerar o report visual.")
+
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
 else:
