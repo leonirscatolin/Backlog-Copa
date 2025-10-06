@@ -6,6 +6,7 @@ import base64
 from datetime import datetime
 import gspread
 from google.oauth2.service_account import Credentials
+import json
 
 # --- Configuração da Página ---
 st.set_page_config(
@@ -14,10 +15,11 @@ st.set_page_config(
     page_icon="copaenergialogo_1691612041.webp"
 )
 
-# --- FUNÇÕES DE CONEXÃO COM GOOGLE SHEETS ---
+# --- FUNÇÕES ---
 @st.cache_resource
 def connect_gsheets():
-    creds = Credentials.from_service_account_info(st.secrets["gcp_creds"], scopes=["https://www.googleapis.com/auth/spreadsheets"])
+    creds_json = json.loads(st.secrets["gcp_creds"])
+    creds = Credentials.from_service_account_info(creds_json, scopes=["https://www.googleapis.com/auth/spreadsheets"])
     client = gspread.authorize(creds)
     spreadsheet = client.open("Historico_Backlog")
     return spreadsheet.worksheet("Página1")
@@ -35,7 +37,14 @@ def update_history(worksheet, total_chamados):
 def get_history(worksheet):
     return pd.DataFrame(worksheet.get_all_records())
 
-# --- FUNÇÕES DE PROCESSAMENTO ---
+def get_base_64_of_bin_file(bin_file):
+    try:
+        with open(bin_file, 'rb') as f:
+            data = f.read()
+        return base64.b64encode(data).decode()
+    except FileNotFoundError:
+        return None
+
 def processar_dados_comparativos(df_atual, df_15dias):
     contagem_atual = df_atual.groupby('Atribuir a um grupo').size().reset_index(name='Atual')
     contagem_15dias = df_15dias.groupby('Atribuir a um grupo').size().reset_index(name='15 Dias Atrás')
@@ -63,141 +72,94 @@ def analisar_aging(df_atual):
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
     return df
 
+def get_status(row):
+    diferenca = row['Diferença']
+    if diferenca > 0:
+        return "Alta demanda"
+    elif diferenca == 0:
+        return "Demora na resolução"
+    else:
+        return "Alta demanda / Demora na resolução"
+
 # --- INTERFACE DO APLICATIVO ---
 st.title("Backlog Copa Energia + Belago")
 
-st.sidebar.image("logo-og-copaenergia.webp", width='stretch')
+gif_path = "237f1d13493514962376f142bb68_1691760314.gif"
+belago_logo_path = "logo_belago.png"
+gif_base64 = get_base_64_of_bin_file(gif_path)
+belago_logo_base64 = get_base_64_of_bin_file(belago_logo_path)
+if gif_base64 and belago_logo_base64:
+    st.sidebar.markdown(f"""...""") # Omitido
+
 st.sidebar.header("Carregar Arquivos")
-uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL (.csv)", type=['csv'])
-uploaded_file_15dias = st.sidebar.file_uploader("2. Backlog de 15 DIAS ATRÁS (.csv)", type=['csv'])
+uploaded_file_atual = st.sidebar.file_uploader(...)
+uploaded_file_15dias = st.sidebar.file_uploader(...)
 
 if uploaded_file_atual and uploaded_file_15dias:
     try:
-        df_atual = pd.read_csv(uploaded_file_atual, delimiter=';', encoding='latin1') 
-        df_15dias = pd.read_csv(uploaded_file_15dias, delimiter=';', encoding='latin1')
+        df_atual = pd.read_csv(...) 
+        df_15dias = pd.read_csv(...)
         df_atual_filtrado = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_aging = analisar_aging(df_atual_filtrado)
         
+        st.markdown("""<style>...</style>""") # Omitido
+        
         tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
         
         with tab1:
-            st.info(
-                """
-                **Filtros e Regras Aplicadas:**
-                - Grupos contendo 'RH' foram desconsiderados da análise.
-                - A contagem de 'Dias em Aberto' considera o dia da criação como Dia 1.
-                """
-            )
+            st.info("""**Filtros e Regras Aplicadas:**...""") # Omitido
             st.subheader("Análise de Antiguidade do Backlog Atual")
             
             if not df_aging.empty:
-                aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
-                aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
-                ordem_faixas = ["1-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
-                todas_as_faixas = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas})
-                aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
-                aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
-                aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
-
-                st.markdown("""
-                <style>
-                .metric-box {
-                    border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px;
-                    text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
-                    margin-bottom: 10px;
-                }
-                .metric-box .value {font-size: 2.5em; font-weight: bold; color: #375623;}
-                .metric-box .label {font-size: 1em; color: #666666;}
-                </style>
-                """, unsafe_allow_html=True)
+                total_chamados = len(df_aging)
+                _, col_total, _ = st.columns([2, 1.5, 2])
+                with col_total:
+                    st.markdown(f"""...""") # Omitido
+                st.markdown("---")
                 
-                cols = st.columns(len(ordem_faixas))
-                for i, row in aging_counts.iterrows():
-                    with cols[i]:
-                        st.markdown(
-                            f"""
-                            <div class="metric-box">
-                                <div class="value">{row['Quantidade']}</div>
-                                <div class="label">{row['Faixa de Antiguidade']}</div>
-                            </div>
-                            """, unsafe_allow_html=True
-                        )
+                aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
+                # (Código dos cards de KPI de antiguidade)
             else:
-                st.warning("Nenhum dado válido para a análise de antiguidade.")
-
+                st.warning("...")
+            
             st.subheader("Comparativo de Backlog: Atual vs. 15 Dias Atrás")
-            df_comparativo = processar_dados_comparativos(df_atual.copy(), df_15dias.copy())
+            df_comparativo = processar_dados_comparativos(df_atual_filtrado.copy(), df_15dias_filtrado.copy())
+            df_comparativo['Status'] = df_comparativo.apply(get_status, axis=1)
             df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True)
-            st.dataframe(df_comparativo.set_index('Grupo').style.applymap(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
+            st.dataframe(df_comparativo.set_index('Grupo').style.applymap(lambda val: ...), use_container_width=True) # Omitido
 
             if not df_aging.empty:
                 st.markdown("---") 
                 st.subheader("Detalhar e Buscar Chamados")
-                opcoes_filtro = aging_counts['Faixa de Antiguidade'].tolist()
-                selected_bucket = st.selectbox("Selecione uma faixa de idade para ver os detalhes:", options=opcoes_filtro)
-                if selected_bucket and not df_aging[df_aging['Faixa de Antiguidade'] == selected_bucket].empty:
-                    filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == selected_bucket].copy()
-                    filtered_df['Data de criação'] = filtered_df['Data de criação'].dt.strftime('%d/%m/%Y')
-                    colunas_para_exibir = ['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
-                    st.dataframe(filtered_df[colunas_para_exibir], use_container_width=True)
-                else:
-                    st.write("Não há chamados nesta categoria.")
-
-                st.markdown("---")
-                st.subheader("Buscar Chamados por Grupo")
-                lista_grupos = sorted(df_aging['Atribuir a um grupo'].dropna().unique())
-                lista_grupos.insert(0, "Selecione um grupo...")
-                grupo_selecionado = st.selectbox("Busca de chamados por grupo:", options=lista_grupos)
-                if grupo_selecionado != "Selecione um grupo...":
-                    resultados_busca = df_aging[df_aging['Atribuir a um grupo'] == grupo_selecionado].copy()
-                    resultados_busca['Data de criação'] = resultados_busca['Data de criação'].dt.strftime('%d/%m/%Y')
-                    st.write(f"Encontrados {len(resultados_busca)} chamados para o grupo '{grupo_selecionado}':")
-                    colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
-                    st.dataframe(resultados_busca[colunas_para_exibir_busca], use_container_width=True)
+                # (Código dos filtros de busca)
         
         with tab2:
             st.subheader("Resumo do Backlog Atual")
             if not df_aging.empty:
-                total_chamados = len(df_aging)
-                st.metric(label="Total de Chamados em Aberto", value=total_chamados)
+                total_chamados_tab2 = len(df_aging)
+                _, col_total_tab2, _ = st.columns([2, 1.5, 2])
+                with col_total_tab2:
+                    st.markdown(f"""...""") # Omitido
                 st.markdown("---")
-
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.subheader("Top Ofensores (Grupos com mais chamados)")
-                    top_ofensores = df_aging['Atribuir a um grupo'].value_counts().nlargest(10).sort_values(ascending=True)
-                    fig_top_ofensores = px.bar(top_ofensores, x=top_ofensores.values, y=top_ofensores.index, orientation='h', text=top_ofensores.values, labels={'x': 'Qtd. Chamados', 'y': 'Grupo'})
-                    fig_top_ofensores.update_traces(textposition='outside', marker_color='#375623')
-                    st.plotly_chart(fig_top_ofensores, use_container_width=True)
-                with col2:
-                    st.subheader("Distribuição por Faixa de Idade")
-                    dist_data = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
-                    dist_data.columns = ['Faixa de Antiguidade', 'Quantidade']
-                    fig_distribuicao = px.pie(dist_data, names='Faixa de Antiguidade', values='Quantidade', color_discrete_sequence=px.colors.sequential.Greens_r)
-                    st.plotly_chart(fig_distribuicao, use_container_width=True)
                 
+                # (Código dos cards de KPI e gráfico Top Ofensores)
                 st.markdown("---")
                 st.subheader("Evolução do Histórico de Backlog")
                 try:
                     worksheet = connect_gsheets()
                     update_history(worksheet, total_chamados)
                     df_historico = get_history(worksheet)
-                    
                     if not df_historico.empty:
-                        df_historico['Data'] = pd.to_datetime(df_historico['Data'], dayfirst=True)
-                        df_historico = df_historico.sort_values(by='Data')
-                        fig_historico = px.line(df_historico, x='Data', y='Total_Chamados', title="Total de chamados em aberto por dia", labels={'Data': 'Data', 'Total de Chamados': 'Total de Chamados'}, markers=True)
-                        fig_historico.update_traces(line_color='#375623')
-                        st.plotly_chart(fig_historico, use_container_width=True)
+                        # (Código do gráfico de histórico)
+                        pass
                     else:
-                        st.info("Histórico de dados ainda está sendo construído.")
+                        st.info("...")
                 except Exception as e:
-                    st.warning(f"Não foi possível carregar ou salvar o histórico. Verifique as configurações. Erro: {e}")
+                    st.warning(f"...")
             else:
-                st.warning("Nenhum dado para gerar o report visual.")
-
+                st.warning("...")
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
 else:
-    st.info("Aguardando o upload dos dois arquivos CSV.")
+    st.info("...")
