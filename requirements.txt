@@ -3,5 +3,5 @@ pandas
 plotly
 numpy
 openpyxl
-gspread
-gspread-dataframe
+gspread==5.12.4
+google-auth-oauthlib==1.2.0
