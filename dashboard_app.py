@@ -80,21 +80,16 @@ if uploaded_file_atual and uploaded_file_15dias:
     try:
         df_atual = pd.read_csv(uploaded_file_atual, delimiter=';', encoding='latin1') 
         df_15dias = pd.read_csv(uploaded_file_15dias, delimiter=';', encoding='latin1')
-        st.success("Arquivos carregados com sucesso!")
+        
+        # MUDANÇA: MENSAGENS DE STATUS REMOVIDAS
+        # st.success("Arquivos carregados com sucesso!")
+        # st.info("Filtros e regras aplicadas...")
 
         df_atual = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_15dias = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
-        st.info(
-            """
-            **Filtros e Regras Aplicadas:**
-            - Grupos contendo 'RH' foram desconsiderados da análise.
-            - A contagem de 'Dias em Aberto' considera o dia da criação como Dia 1.
-            """
-        )
         
         tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
 
-        # Processamento de dados principal, usado por ambas as abas
         df_aging = analisar_aging(df_atual)
 
         with tab1:
@@ -108,15 +103,17 @@ if uploaded_file_atual and uploaded_file_15dias:
                 aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
                 aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
                 aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
-                aging_counts['Quantidade_texto'] = aging_counts['Quantidade'].astype(str)
-                fig_antiguidade = px.bar(
-                    aging_counts, x='Faixa de Antiguidade', y='Quantidade', text='Quantidade_texto',
-                    title='Distribuição de Chamados por Antiguidade',
-                    labels={'Faixa de Antiguidade': 'Idade do Chamado', 'Quantidade': 'Nº de Chamados'}
-                )
-                fig_antiguidade.update_traces(textposition='outside', marker_color='#375623', hovertemplate='<b>%{x}</b><br>Quantidade: %{y}<extra></extra>')
-                fig_antiguidade.update_yaxes(dtick=1)
-                st.plotly_chart(fig_antiguidade, use_container_width=True)
+
+                # --- MUDANÇA: TROCANDO O GRÁFICO DE BARRAS POR CARDS (st.metric) ---
+                # Criamos 6 colunas para exibir os cards lado a lado
+                cols = st.columns(6)
+                # Iteramos sobre os dados de contagem de antiguidade
+                for i, row in aging_counts.iterrows():
+                    # Usamos a coluna 'i' para colocar cada card em uma coluna diferente
+                    with cols[i]:
+                        st.metric(label=row['Faixa de Antiguidade'], value=row['Quantidade'])
+                # --- FIM DA MUDANÇA ---
+
             else:
                 st.warning("Nenhum dado válido para a análise de antiguidade.")
 
@@ -150,7 +147,6 @@ if uploaded_file_atual and uploaded_file_15dias:
                     colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
                     st.dataframe(resultados_busca[colunas_para_exibir_busca], use_container_width=True)
         
-        # --- CONTEÚDO DA ABA 2: REPORT VISUAL (AGORA ATIVADO) ---
         with tab2:
             if not df_aging.empty:
                 total_chamados = len(df_aging)
