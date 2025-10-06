@@ -40,7 +40,13 @@ def analisar_aging(df_atual):
     df = df_atual.copy()
     df['Data de criação'] = pd.to_datetime(df['Data de criação'], errors='coerce', dayfirst=True)
     df.dropna(subset=['Data de criação'], inplace=True)
-    df['Dias em Aberto'] = (datetime.now() - df['Data de criação']).dt.days
+    
+    # --- CORREÇÃO DA LÓGICA DE CÁLCULO DE DIAS ---
+    hoje = pd.to_datetime('today').normalize()
+    data_criacao_normalizada = df['Data de criação'].dt.normalize()
+    df['Dias em Aberto'] = (hoje - data_criacao_normalizada).dt.days
+    # --- FIM DA CORREÇÃO ---
+
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
     return df
 
@@ -48,13 +54,10 @@ def analisar_aging(df_atual):
 st.title("Backlog Copa Energia + Belago")
 st.markdown("Faça o upload dos arquivos CSV para visualizar a comparação e a análise de antiguidade dos chamados.")
 
-# --- MUDANÇA AQUI: Apontando para o outro arquivo GIF ---
-gif_path = "237f1d13493514962376f142bb68_1691760314.gif"
+gif_path = "copaenergiamkp-conceito_1691612041.gif"
 belago_logo_path = "logo_belago.png"
-
 gif_base64 = get_base64_of_bin_file(gif_path)
 belago_logo_base64 = get_base64_of_bin_file(belago_logo_path)
-
 st.sidebar.markdown(
     f"""
     <div style="text-align: center;">
@@ -64,8 +67,6 @@ st.sidebar.markdown(
     """,
     unsafe_allow_html=True,
 )
-# --- FIM DA MUDANÇA ---
-
 
 st.sidebar.header("Carregar Arquivos")
 uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL (.csv)", type=['csv'])
@@ -83,15 +84,9 @@ if uploaded_file_atual and uploaded_file_15dias:
 
         st.subheader("Comparativo de Backlog: Atual vs. 15 Dias Atrás")
         df_comparativo = processar_dados_comparativos(df_atual.copy(), df_15dias.copy())
-
-        def aplicar_cores(val):
-            if val > 0: color = '#ffcccc'
-            elif val < 0: color = '#ccffcc'
-            else: color = 'white'
-            return f'background-color: {color}'
-
+        
         df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True)
-        styled_df = df_comparativo.set_index('Grupo').style.applymap(aplicar_cores, subset=['Diferença'])
+        styled_df = df_comparativo.set_index('Grupo').style.applymap(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença'])
         st.dataframe(styled_df, use_container_width=True)
 
         st.subheader("Análise de Antiguidade do Backlog Atual")
@@ -160,7 +155,7 @@ if uploaded_file_atual and uploaded_file_15dias:
 
         if grupo_selecionado != "Selecione um grupo...":
             resultados_busca = df_aging[df_aging['Atribuir a um grupo'] == grupo_selecionado].copy()
-
+            
             resultados_busca['Data de criação'] = resultados_busca['Data de criação'].dt.strftime('%d/%m/%Y')
             
             st.write(f"Encontrados {len(resultados_busca)} chamados para o grupo '{grupo_selecionado}':")
