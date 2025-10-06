@@ -16,10 +16,17 @@ st.set_page_config(
 )
 
 # --- FUNÇÕES ---
+
+# --- FUNÇÃO DE CONEXÃO COM GOOGLE SHEETS (CORRIGIDA) ---
 @st.cache_resource
 def connect_gsheets():
+    # Define as permissões (scopes) necessárias. Adicionamos a permissão do Drive.
+    scopes = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive.file"
+    ]
     creds_json = json.loads(st.secrets["gcp_creds"])
-    creds = Credentials.from_service_account_info(creds_json, scopes=["https://www.googleapis.com/auth/spreadsheets"])
+    creds = Credentials.from_service_account_info(creds_json, scopes=scopes)
     client = gspread.authorize(creds)
     spreadsheet = client.open("Historico_Backlog")
     return spreadsheet.worksheet("Página1")
