@@ -17,10 +17,7 @@ st.set_page_config(
 # --- FUNÇÕES DE CONEXÃO COM GOOGLE SHEETS ---
 @st.cache_resource
 def connect_gsheets():
-    creds = Credentials.from_service_account_info(
-        st.secrets["gcp_creds"],
-        scopes=["https://www.googleapis.com/auth/spreadsheets"],
-    )
+    creds = Credentials.from_service_account_info(st.secrets["gcp_creds"], scopes=["https://www.googleapis.com/auth/spreadsheets"])
     client = gspread.authorize(creds)
     spreadsheet = client.open("Historico_Backlog")
     return spreadsheet.worksheet("Página1")
@@ -69,7 +66,7 @@ def analisar_aging(df_atual):
 # --- INTERFACE DO APLICATIVO ---
 st.title("Backlog Copa Energia + Belago")
 
-st.sidebar.image("logo-og-copaenergia.webp", use_container_width=True)
+st.sidebar.image("logo-og-copaenergia.webp", width='stretch')
 st.sidebar.header("Carregar Arquivos")
 uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL (.csv)", type=['csv'])
 uploaded_file_15dias = st.sidebar.file_uploader("2. Backlog de 15 DIAS ATRÁS (.csv)", type=['csv'])
@@ -85,15 +82,31 @@ if uploaded_file_atual and uploaded_file_15dias:
         tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
         
         with tab1:
-            # (Código da Aba 1, sem alterações)
+            st.info("""**Filtros e Regras Aplicadas:**...""") # Omitido
+            st.subheader("Análise de Antiguidade do Backlog Atual")
+            
+            if not df_aging.empty:
+                # Código dos cards de KPI
+                pass
+            else:
+                st.warning("...")
+
+            st.subheader("Comparativo de Backlog: Atual vs. 15 Dias Atrás")
+            # Código da tabela de comparativo
             pass
+
+            if not df_aging.empty:
+                st.markdown("---") 
+                st.subheader("Detalhar e Buscar Chamados")
+                # Código dos filtros de busca
+                pass
         
         with tab2:
             st.subheader("Resumo do Backlog Atual")
             if not df_aging.empty:
-                # (Código dos cards de KPI e Top Ofensores, sem alterações)
+                # Código dos cards de KPI e gráficos da Tab 2
                 pass
-                
+
                 st.markdown("---")
                 st.subheader("Evolução do Histórico de Backlog")
                 try:
@@ -105,17 +118,16 @@ if uploaded_file_atual and uploaded_file_15dias:
                     if not df_historico.empty:
                         df_historico['Data'] = pd.to_datetime(df_historico['Data'], dayfirst=True)
                         df_historico = df_historico.sort_values(by='Data')
-                        
                         fig_historico = px.line(df_historico, x='Data', y='Total_Chamados', title="Total de chamados em aberto por dia", labels={'Data': 'Data', 'Total_Chamados': 'Total de Chamados'}, markers=True)
                         fig_historico.update_traces(line_color='#375623')
                         st.plotly_chart(fig_historico, use_container_width=True)
                     else:
-                        st.info("Histórico de dados ainda está sendo construído. Os dados de hoje foram salvos.")
+                        st.info("...")
                 except Exception as e:
-                    st.warning(f"Não foi possível carregar ou salvar o histórico na Planilha Google. Verifique as configurações. Erro: {e}")
+                    st.warning(f"...")
             else:
-                st.warning("Nenhum dado para gerar o report visual.")
+                st.warning("...")
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
 else:
-    st.info("Aguardando o upload dos arquivos CSV.")
+    st.info("...")
