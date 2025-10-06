@@ -38,7 +38,6 @@ def categorizar_idade_vetorizado(dias_series):
         (dias_series >= 3) & (dias_series <= 5),
         (dias_series >= 1) & (dias_series <= 2)
     ]
-    # MUDANÇA DE TEXTO AQUI
     opcoes = ["30+ dias", "21 a 29 dias", "11 a 20 dias", "6 a 10 dias", "3 a 5 dias", "2 dias"]
     return np.select(condicoes, opcoes, default="Erro de Categoria")
 
@@ -89,21 +88,21 @@ if uploaded_file_atual and uploaded_file_15dias:
             """
             **Filtros e Regras Aplicadas:**
             - Grupos contendo 'RH' foram desconsiderados da análise.
-            - A contagem de 'Dias em Aberto' considera o dia da criação como Dia 1 (Cálculo: Hoje - Data de Criação + 1).
+            - A contagem de 'Dias em Aberto' considera o dia da criação como Dia 1.
             """
         )
         
-        tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual (Em Desenvolvimento)"])
+        tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
+
+        # Processamento de dados principal, usado por ambas as abas
+        df_aging = analisar_aging(df_atual)
 
         with tab1:
-            df_aging = analisar_aging(df_atual)
             st.subheader("Análise de Antiguidade do Backlog Atual")
             
             if not df_aging.empty:
                 aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
                 aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
-                
-                # MUDANÇA DE TEXTO AQUI
                 ordem_faixas = ["2 dias", "3 a 5 dias", "6 a 10 dias", "11 a 20 dias", "21 a 29 dias", "30+ dias"]
                 todas_as_faixas = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas})
                 aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
@@ -151,9 +150,37 @@ if uploaded_file_atual and uploaded_file_15dias:
                     colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
                     st.dataframe(resultados_busca[colunas_para_exibir_busca], use_container_width=True)
         
+        # --- CONTEÚDO DA ABA 2: REPORT VISUAL (AGORA ATIVADO) ---
         with tab2:
-            st.warning("A aba 'Report Visual' com a funcionalidade de PDF foi desativada temporariamente para garantir a estabilidade do aplicativo.")
-            st.info("Podemos reativar e corrigir a exportação para PDF no futuro.")
+            if not df_aging.empty:
+                total_chamados = len(df_aging)
+                st.metric(label="Total de Chamados em Aberto", value=total_chamados)
+                st.markdown("---")
+
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.subheader("Top Ofensores (Grupos com mais chamados)")
+                    top_ofensores = df_aging['Atribuir a um grupo'].value_counts().nlargest(10).sort_values(ascending=True)
+                    fig_top_ofensores = px.bar(
+                        top_ofensores, x=top_ofensores.values, y=top_ofensores.index, 
+                        orientation='h', text=top_ofensores.values, 
+                        labels={'x': 'Qtd. Chamados', 'y': 'Grupo'}
+                    )
+                    fig_top_ofensores.update_traces(textposition='outside', marker_color='#375623')
+                    st.plotly_chart(fig_top_ofensores, use_container_width=True)
+                with col2:
+                    st.subheader("Distribuição por Faixa de Idade")
+                    dist_data = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
+                    dist_data.columns = ['Faixa de Antiguidade', 'Quantidade']
+                    fig_distribuicao = px.pie(
+                        dist_data, names='Faixa de Antiguidade', values='Quantidade',
+                        color_discrete_sequence=px.colors.sequential.Greens_r
+                    )
+                    st.plotly_chart(fig_distribuicao, use_container_width=True)
+                
+                st.info("A funcionalidade de gerar PDF será adicionada em uma próxima versão.")
+            else:
+                st.warning("Nenhum dado para gerar o report visual.")
 
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
