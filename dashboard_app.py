@@ -107,6 +107,7 @@ if uploaded_file_atual and uploaded_file_15dias:
                 .metric-box {
                     border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px;
                     text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+                    margin-bottom: 10px;
                 }
                 .metric-box .value {font-size: 2.5em; font-weight: bold; color: #375623;}
                 .metric-box .label {font-size: 1em; color: #666666;}
@@ -160,7 +161,7 @@ if uploaded_file_atual and uploaded_file_15dias:
         with tab2:
             st.subheader("Resumo do Backlog Atual")
             if not df_aging.empty:
-                # Reutilizando a contagem da Tab 1 para os cards
+                # CORREÇÃO 1: CÓDIGO DOS QUADRADOS RE-ADICIONADO
                 aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
                 aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
                 ordem_faixas = ["1-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
@@ -169,19 +170,44 @@ if uploaded_file_atual and uploaded_file_15dias:
                 aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
                 aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
                 
-                # Exibindo os cards de KPI
-                st.markdown("""<style>...</style>""", unsafe_allow_html=True) # Omitido
+                st.markdown("""
+                <style>
+                .metric-box {
+                    border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px;
+                    text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+                    margin-bottom: 10px;
+                }
+                .metric-box .value {font-size: 2.5em; font-weight: bold; color: #375623;}
+                .metric-box .label {font-size: 1em; color: #666666;}
+                </style>
+                """, unsafe_allow_html=True)
+                
                 cols = st.columns(len(ordem_faixas))
                 for i, row in aging_counts.iterrows():
                     with cols[i]:
-                        st.markdown(f"""...""", unsafe_allow_html=True) # Omitido
+                        st.markdown(
+                            f"""
+                            <div class="metric-box">
+                                <div class="value">{row['Quantidade']}</div>
+                                <div class="label">{row['Faixa de Antiguidade']}</div>
+                            </div>
+                            """, unsafe_allow_html=True
+                        )
                 
                 st.markdown("---")
                 
-                st.subheader("Top Ofensores (Grupos com mais chamados)")
-                top_ofensores = df_aging['Atribuir a um grupo'].value_counts().nlargest(10).sort_values(ascending=True)
-                fig_top_ofensores = px.bar(top_ofensores, x=top_ofensores.values, y=top_ofensores.index, orientation='h', text=top_ofensores.values, labels={'x': 'Qtd. Chamados', 'y': 'Grupo'})
+                st.subheader("Ofensores (Todos os Grupos)")
+                # CORREÇÃO 2: REMOVIDO O .nlargest(10) PARA MOSTRAR TODOS OS GRUPOS
+                top_ofensores = df_aging['Atribuir a um grupo'].value_counts().sort_values(ascending=True)
+                
+                fig_top_ofensores = px.bar(
+                    top_ofensores, x=top_ofensores.values, y=top_ofensores.index, 
+                    orientation='h', text=top_ofensores.values, 
+                    labels={'x': 'Qtd. Chamados', 'y': 'Grupo'}
+                )
                 fig_top_ofensores.update_traces(textposition='outside', marker_color='#375623')
+                # Aumenta a altura do gráfico para caberem mais grupos
+                fig_top_ofensores.update_layout(height=max(400, len(top_ofensores) * 25)) 
                 st.plotly_chart(fig_top_ofensores, use_container_width=True)
 
             else:
