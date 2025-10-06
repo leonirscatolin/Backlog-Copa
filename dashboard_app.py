@@ -12,8 +12,8 @@ st.set_page_config(
     page_icon="copaenergialogo_1691612041.webp"
 )
 
-# --- FUNÇÃO PARA CARREGAR IMAGENS ---
-def get_base64_of_bin_file(bin_file):
+# --- FUNÇÃO PARA CARREGAR IMAGENS (RE-ADICIONADA) ---
+def get_base_64_of_bin_file(bin_file):
     try:
         with open(bin_file, 'rb') as f:
             data = f.read()
