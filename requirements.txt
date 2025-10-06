@@ -4,5 +4,5 @@ plotly
 numpy
 openpyxl
 gspread
-google-auth-oauthlib
 gspread-dataframe
+google-auth-oauthlib
