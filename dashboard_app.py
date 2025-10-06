@@ -4,7 +4,7 @@ import plotly.express as px
 import numpy as np
 import base64
 from datetime import datetime
-import json
+import json # Importa a biblioteca JSON
 import gspread
 
 # --- Configuração da Página ---
@@ -15,10 +15,12 @@ st.set_page_config(
 )
 
 # --- FUNÇÕES ---
+
 @st.cache_resource
 def connect_gsheets():
-    # Usa o método padrão e mais estável do gspread para autenticar com os secrets
-    sa = gspread.service_account_from_dict(st.secrets["gcp_creds"])
+    # CORREÇÃO: Converte o segredo (que é uma string) para um dicionário antes de usar
+    creds_dict = json.loads(st.secrets["gcp_creds"])
+    sa = gspread.service_account_from_dict(creds_dict)
     spreadsheet = sa.open("Historico_Backlog")
     return spreadsheet.worksheet("Página1")
 
@@ -105,10 +107,12 @@ if uploaded_file_atual and uploaded_file_15dias:
     try:
         df_atual = pd.read_csv(uploaded_file_atual, delimiter=';', encoding='latin1') 
         df_15dias = pd.read_csv(uploaded_file_15dias, delimiter=';', encoding='latin1')
+        
         df_atual_filtrado = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
-        df_aging = analisar_aging(df_atual_filtrado)
         
+        df_aging = analisar_aging(df_atual_filtrado)
+
         st.markdown("""
         <style>
         .metric-box {
