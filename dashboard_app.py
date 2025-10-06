@@ -30,17 +30,16 @@ def processar_dados_comparativos(df_atual, df_15dias):
     return df_comparativo
 
 def categorizar_idade_vetorizado(dias_series):
-    # Condições ajustadas para a contagem que começa em 1
     condicoes = [
         dias_series >= 30,
         (dias_series >= 21) & (dias_series <= 29),
         (dias_series >= 11) & (dias_series <= 20),
         (dias_series >= 6) & (dias_series <= 10),
         (dias_series >= 3) & (dias_series <= 5),
-        (dias_series >= 1) & (dias_series <= 2) # O mínimo agora é 1
+        (dias_series >= 1) & (dias_series <= 2)
     ]
-    # Opções ajustadas
-    opcoes = ["30+ dias", "21 a 29 dias", "11 a 20 dias", "6 a 10 dias", "3 a 5 dias", "1 a 2 dias"]
+    # MUDANÇA DE TEXTO AQUI
+    opcoes = ["30+ dias", "21 a 29 dias", "11 a 20 dias", "6 a 10 dias", "3 a 5 dias", "2 dias"]
     return np.select(condicoes, opcoes, default="Erro de Categoria")
 
 def analisar_aging(df_atual):
@@ -50,8 +49,6 @@ def analisar_aging(df_atual):
     
     hoje = pd.to_datetime('today').normalize()
     data_criacao_normalizada = df['Data de criação'].dt.normalize()
-
-    # --- LÓGICA CORRETA E DEFINITIVA: (HOJE - DATA) + 1 ---
     df['Dias em Aberto'] = (hoje - data_criacao_normalizada).dt.days + 1
 
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
@@ -105,7 +102,9 @@ if uploaded_file_atual and uploaded_file_15dias:
             if not df_aging.empty:
                 aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
                 aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
-                ordem_faixas = ["1 a 2 dias", "3 a 5 dias", "6 a 10 dias", "11 a 20 dias", "21 a 29 dias", "30+ dias"]
+                
+                # MUDANÇA DE TEXTO AQUI
+                ordem_faixas = ["2 dias", "3 a 5 dias", "6 a 10 dias", "11 a 20 dias", "21 a 29 dias", "30+ dias"]
                 todas_as_faixas = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas})
                 aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
                 aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
@@ -159,4 +158,4 @@ if uploaded_file_atual and uploaded_file_15dias:
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
 else:
-    st.info("Aguardando o upload dos dois arquivos CSV.")
+    st.info("Aguardando o upload dos dois arquivos CSV na barra lateral.")
