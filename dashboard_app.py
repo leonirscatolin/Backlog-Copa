@@ -4,8 +4,9 @@ import plotly.express as px
 import numpy as np
 import base64
 from datetime import datetime
-import json # Importa a biblioteca JSON
+import json
 import gspread
+from google.oauth2.service_account import Credentials
 
 # --- Configuração da Página ---
 st.set_page_config(
@@ -15,13 +16,12 @@ st.set_page_config(
 )
 
 # --- FUNÇÕES ---
-
 @st.cache_resource
 def connect_gsheets():
-    # CORREÇÃO: Converte o segredo (que é uma string) para um dicionário antes de usar
-    creds_dict = json.loads(st.secrets["gcp_creds"])
-    sa = gspread.service_account_from_dict(creds_dict)
-    spreadsheet = sa.open("Historico_Backlog")
+    creds_json = json.loads(st.secrets["gcp_creds"])
+    creds = Credentials.from_service_account_info(creds_json, scopes=["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive.file"])
+    client = gspread.authorize(creds)
+    spreadsheet = client.open("Historico_Backlog")
     return spreadsheet.worksheet("Página1")
 
 def update_history(worksheet, total_chamados):
@@ -257,8 +257,17 @@ if uploaded_file_atual and uploaded_file_15dias:
                     if not df_historico.empty:
                         df_historico['Data'] = pd.to_datetime(df_historico['Data'], dayfirst=True)
                         df_historico = df_historico.sort_values(by='Data')
-                        fig_historico = px.line(df_historico, x='Data', y='Total_Chamados', title="Total de chamados em aberto por dia", labels={'Data': 'Data', 'Total de Chamados': 'Total'}, markers=True)
-                        fig_historico.update_traces(line_color='#375623')
+                        
+                        # --- MUDANÇA: TROCANDO px.line por px.bar ---
+                        fig_historico = px.bar(
+                            df_historico, x='Data', y='Total_Chamados', 
+                            title="Total de chamados em aberto por dia", 
+                            labels={'Data': 'Data', 'Total_Chamados': 'Total de Chamados'},
+                            text='Total_Chamados' # Adiciona o valor em cima da coluna
+                        )
+                        fig_historico.update_traces(marker_color='#375623', textposition='outside')
+                        # --- FIM DA MUDANÇA ---
+
                         st.plotly_chart(fig_historico, use_container_width=True)
                     else:
                         st.info("Histórico de dados ainda está sendo construído. Os dados de hoje foram salvos.")
