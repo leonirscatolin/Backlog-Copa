@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 import numpy as np
 import base64
-from datetime import datetime # LINHA QUE FALTAVA
+from datetime import datetime
 from fpdf import FPDF
 
 # Configuração da página
@@ -13,7 +13,7 @@ st.set_page_config(
     page_icon="copaenergialogo_1691612041.webp"
 )
 
-# --- FUNÇÕES DE PROCESSAMENTO E PDF ---
+# --- FUNÇÕES DE PROCESSAMENTO ---
 def get_base_64_of_bin_file(bin_file):
     try:
         with open(bin_file, 'rb') as f:
@@ -58,12 +58,64 @@ def get_status(row):
     else: # diferenca < 0
         return "Redução de Backlog"
 
-def criar_relatorio_pdf(total_chamados, fig_top_ofensores, fig_distribuicao):
-    # (O código desta função não muda)
-    pass
+def criar_relatorio_pdf(df_comparativo_pdf, fig_antiguidade_pdf):
+    fig_antiguidade_pdf.write_image("temp_chart.png", scale=2)
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", "B", 16)
+    data_hoje = datetime.now().strftime("%d/%m/%Y")
+    pdf.cell(0, 10, f"Relatório de Backlog - {data_hoje}", 0, 1, "C")
+    pdf.ln(10)
+    pdf.set_font("Arial", "B", 12)
+    pdf.cell(0, 10, "Análise de Antiguidade do Backlog Atual", 0, 1, "L")
+    pdf.image("temp_chart.png", x=10, y=None, w=190)
+    pdf.ln(10)
+    pdf.set_font("Arial", "B", 12)
+    pdf.cell(0, 10, "Comparativo de Backlog: Atual vs. 15 Dias Atrás", 0, 1, "L")
+    pdf.ln(5)
+    pdf.set_font("Arial", "B", 8)
+    # Larguras das colunas
+    col_widths = {'Grupo': 85, '15 Dias Atrás': 25, 'Atual': 15, 'Diferença': 20, 'Status': 45}
+    for col in df_comparativo_pdf.columns:
+        pdf.cell(col_widths[col], 8, col, 1, 0, "C")
+    pdf.ln()
+    pdf.set_font("Arial", "", 8)
+    for index, row in df_comparativo_pdf.iterrows():
+        for col in df_comparativo_pdf.columns:
+            pdf.cell(col_widths[col], 8, str(row[col]), 1, 0, "L" if col == "Grupo" else "C")
+        pdf.ln()
+    return pdf.output(dest='S').encode('latin-1')
 
 # --- INTERFACE DO APLICATIVO ---
 st.title("Backlog Copa Energia + Belago")
 
-# (O resto do código não muda)
-# ...
+gif_path = "237f1d13493514962376f142bb68_1691760314.gif"
+belago_logo_path = "logo_belago.png"
+gif_base64 = get_base_64_of_bin_file(gif_path)
+belago_logo_base64 = get_base_64_of_bin_file(belago_logo_path)
+if gif_base64 and belago_logo_base64:
+    st.sidebar.markdown(f"""...""", unsafe_allow_html=True) # Omitido
+
+st.sidebar.header("Carregar Arquivos")
+uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL (.csv)", type=['csv'])
+uploaded_file_15dias = st.sidebar.file_uploader("2. Backlog de 15 DIAS ATRÁS (.csv)", type=['csv'])
+
+if uploaded_file_atual and uploaded_file_15dias:
+    try:
+        df_atual = pd.read_csv(uploaded_file_atual, delimiter=';', encoding='latin1') 
+        df_15dias = pd.read_csv(uploaded_file_15dias, delimiter=';', encoding='latin1')
+        df_atual_filtrado = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
+        df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
+        df_aging = analisar_aging(df_atual_filtrado)
+        
+        tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
+        with tab1:
+            # (Código da Tab 1, incluindo o botão de gerar PDF)
+            pass
+        with tab2:
+            # (Código da Tab 2)
+            pass
+    except Exception as e:
+        st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
+else:
+    st.info("Aguardando o upload dos arquivos CSV.")
