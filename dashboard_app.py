@@ -7,6 +7,7 @@ from datetime import datetime
 import json
 import gspread
 from google.oauth2.service_account import Credentials
+from gspread_dataframe import get_as_dataframe, set_with_dataframe
 
 # --- Configuração da Página ---
 st.set_page_config(
@@ -25,24 +26,18 @@ def connect_gsheets():
     return spreadsheet.worksheet("Página1")
 
 def update_history(worksheet, total_chamados):
-    hoje_str = datetime.now().strftime("%Y-%m-%d")
-    df_historico = pd.DataFrame(worksheet.get_all_records())
-    if not df_historico.empty:
-        df_historico['Data_formatada'] = pd.to_datetime(df_historico['Data'], dayfirst=True).dt.strftime('%Y-%m-%d')
-        if hoje_str in df_historico['Data_formatada'].values:
-            return
-    new_row = [datetime.now().strftime("%d/%m/%Y"), total_chamados]
+    hoje_str = datetime.now().strftime("%d/%m/%Y")
+    df_historico = get_history(worksheet) # Usa a nova função de leitura
+    if not df_historico.empty and hoje_str in df_historico['Data'].dt.strftime('%d/%m/%Y').values:
+        return
+    new_row = [hoje_str, total_chamados]
     worksheet.append_row(new_row)
 
 def get_history(worksheet):
-    all_values = worksheet.get_all_values()
-    if len(all_values) < 2:
-        return pd.DataFrame(columns=['Data', 'Total_Chamados'])
-    headers = all_values[0]
-    data = all_values[1:]
-    df = pd.DataFrame(data, columns=headers)
-    df['Total_Chamados'] = pd.to_numeric(df['Total_Chamados'])
-    df['Data'] = pd.to_datetime(df['Data'], dayfirst=True)
+    # MÉTODO DE LEITURA MAIS ROBUSTO
+    df = get_as_dataframe(worksheet, parse_dates=True)
+    # Remove linhas onde a coluna 'Data' é vazia, que podem causar erros
+    df.dropna(subset=['Data'], inplace=True)
     return df
 
 def get_base_64_of_bin_file(bin_file):
@@ -263,7 +258,6 @@ if uploaded_file_atual and uploaded_file_15dias:
                     update_history(worksheet, total_chamados)
                     df_historico = get_history(worksheet)
                     if not df_historico.empty:
-                        df_historico['Data'] = pd.to_datetime(df_historico['Data'], dayfirst=True)
                         df_historico = df_historico.sort_values(by='Data')
                         fig_historico = px.line(df_historico, x='Data', y='Total_Chamados', title="Total de chamados em aberto por dia", labels={'Data': 'Data', 'Total de Chamados': 'Total'}, markers=True)
                         fig_historico.update_traces(line_color='#375623')
