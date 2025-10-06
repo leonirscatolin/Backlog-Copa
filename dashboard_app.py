@@ -19,8 +19,6 @@ def get_base_64_of_bin_file(bin_file):
             data = f.read()
         return base64.b64encode(data).decode()
     except FileNotFoundError:
-        # Não mostra erro se o arquivo não for encontrado localmente, 
-        # pois no deploy ele estará no GitHub
         return None
 
 def processar_dados_comparativos(df_atual, df_15dias):
@@ -32,17 +30,17 @@ def processar_dados_comparativos(df_atual, df_15dias):
     return df_comparativo
 
 def categorizar_idade_vetorizado(dias_series):
-    # CONDIÇÕES CORRIGIDAS PARA O PADRÃO ORIGINAL
+    # Condições ajustadas para a contagem que começa em 1
     condicoes = [
         dias_series >= 30,
         (dias_series >= 21) & (dias_series <= 29),
         (dias_series >= 11) & (dias_series <= 20),
         (dias_series >= 6) & (dias_series <= 10),
         (dias_series >= 3) & (dias_series <= 5),
-        (dias_series >= 0) & (dias_series <= 2) 
+        (dias_series >= 1) & (dias_series <= 2) # O mínimo agora é 1
     ]
-    # OPÇÕES CORRIGIDAS PARA O PADRÃO ORIGINAL
-    opcoes = ["30+ dias", "21 a 29 dias", "11 a 20 dias", "6 a 10 dias", "3 a 5 dias", "0 a 2 dias"]
+    # Opções ajustadas
+    opcoes = ["30+ dias", "21 a 29 dias", "11 a 20 dias", "6 a 10 dias", "3 a 5 dias", "1 a 2 dias"]
     return np.select(condicoes, opcoes, default="Erro de Categoria")
 
 def analisar_aging(df_atual):
@@ -52,9 +50,9 @@ def analisar_aging(df_atual):
     
     hoje = pd.to_datetime('today').normalize()
     data_criacao_normalizada = df['Data de criação'].dt.normalize()
-    
-    # CÁLCULO DE DIAS CORRIGIDO PARA O PADRÃO (sem o +1)
-    df['Dias em Aberto'] = (hoje - data_criacao_normalizada).dt.days
+
+    # --- LÓGICA CORRETA E DEFINITIVA: (HOJE - DATA) + 1 ---
+    df['Dias em Aberto'] = (hoje - data_criacao_normalizada).dt.days + 1
 
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
     return df
@@ -90,7 +88,13 @@ if uploaded_file_atual and uploaded_file_15dias:
 
         df_atual = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_15dias = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
-        st.info("Filtro aplicado: Grupos contendo 'RH' foram desconsiderados da análise.")
+        st.info(
+            """
+            **Filtros e Regras Aplicadas:**
+            - Grupos contendo 'RH' foram desconsiderados da análise.
+            - A contagem de 'Dias em Aberto' considera o dia da criação como Dia 1 (Cálculo: Hoje - Data de Criação + 1).
+            """
+        )
         
         tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual (Em Desenvolvimento)"])
 
@@ -101,7 +105,7 @@ if uploaded_file_atual and uploaded_file_15dias:
             if not df_aging.empty:
                 aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
                 aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
-                ordem_faixas = ["0 a 2 dias", "3 a 5 dias", "6 a 10 dias", "11 a 20 dias", "21 a 29 dias", "30+ dias"]
+                ordem_faixas = ["1 a 2 dias", "3 a 5 dias", "6 a 10 dias", "11 a 20 dias", "21 a 29 dias", "30+ dias"]
                 todas_as_faixas = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas})
                 aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
                 aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
@@ -126,7 +130,27 @@ if uploaded_file_atual and uploaded_file_15dias:
             if not df_aging.empty:
                 st.markdown("---") 
                 st.subheader("Detalhar e Buscar Chamados")
-                # (As seções de filtro e busca continuam aqui...)
+                opcoes_filtro = aging_counts['Faixa de Antiguidade'].tolist()
+                selected_bucket = st.selectbox("Selecione uma faixa de idade para ver os detalhes:", options=opcoes_filtro)
+                if selected_bucket and not df_aging[df_aging['Faixa de Antiguidade'] == selected_bucket].empty:
+                    filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == selected_bucket].copy()
+                    filtered_df['Data de criação'] = filtered_df['Data de criação'].dt.strftime('%d/%m/%Y')
+                    colunas_para_exibir = ['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
+                    st.dataframe(filtered_df[colunas_para_exibir], use_container_width=True)
+                else:
+                    st.write("Não há chamados nesta categoria.")
+
+                st.markdown("---")
+                st.subheader("Buscar Chamados por Grupo")
+                lista_grupos = sorted(df_aging['Atribuir a um grupo'].dropna().unique())
+                lista_grupos.insert(0, "Selecione um grupo...")
+                grupo_selecionado = st.selectbox("Busca de chamados por grupo:", options=lista_grupos)
+                if grupo_selecionado != "Selecione um grupo...":
+                    resultados_busca = df_aging[df_aging['Atribuir a um grupo'] == grupo_selecionado].copy()
+                    resultados_busca['Data de criação'] = resultados_busca['Data de criação'].dt.strftime('%d/%m/%Y')
+                    st.write(f"Encontrados {len(resultados_busca)} chamados para o grupo '{grupo_selecionado}':")
+                    colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
+                    st.dataframe(resultados_busca[colunas_para_exibir_busca], use_container_width=True)
         
         with tab2:
             st.warning("A aba 'Report Visual' com a funcionalidade de PDF foi desativada temporariamente para garantir a estabilidade do aplicativo.")
@@ -135,4 +159,4 @@ if uploaded_file_atual and uploaded_file_15dias:
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
 else:
-    st.info("Aguardando o upload dos dois arquivos CSV na barra lateral.")
+    st.info("Aguardando o upload dos dois arquivos CSV.")
