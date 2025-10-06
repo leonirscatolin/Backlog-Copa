@@ -17,44 +17,47 @@ st.set_page_config(
 # --- FUNÇÕES ---
 @st.cache_resource
 def get_github_repo():
-    auth = Auth.Token(st.secrets["GITHUB_TOKEN"])
-    # !!! IMPORTANTE: Substitua "SEU-USUARIO-GITHUB" pelo seu nome de usuário no GitHub !!!
-    return g.get_repo("SEU-USUARIO-GITHUB/dashboard-backlog")
+    try:
+        auth = Auth.Token(st.secrets["GITHUB_TOKEN"])
+        g = Github(auth=auth)
+        # NOME DE USUÁRIO INSERIDO AQUI
+        return g.get_repo("leonirscatolin/dashboard-backlog")
+    except Exception as e:
+        st.error(f"Erro ao conectar ao repositório do GitHub: {e}")
+        return None
 
 @st.cache_data(ttl=600)
 def get_history_from_github(_repo):
     try:
-        content_file = _repo.get_contents("historico_backlog.csv")
+        content_file = _repo.get_contents("historico_dados_completos.csv")
         content = content_file.decoded_content.decode("utf-8")
         df = pd.read_csv(StringIO(content))
         if not df.empty:
-            df['Data'] = pd.to_datetime(df['Data'], dayfirst=True)
+            df['snapshot_date'] = pd.to_datetime(df['snapshot_date'])
         return df, content_file.sha
     except Exception:
-        return pd.DataFrame(columns=["Data", "Grupo", "Quantidade"]), None
+        return pd.DataFrame(columns=["snapshot_date", "ID do ticket", "Atribuir a um grupo", "Data de criação"]), None
 
-def update_history_on_github(_repo, df_atual_para_salvar, sha):
-    hoje_str = datetime.now().strftime("%d/%m/%Y")
+def update_history_on_github(_repo, df_novo_snapshot, sha):
+    hoje_date = datetime.now().date()
     df_historico, _ = get_history_from_github(_repo)
 
-    if not df_historico.empty and hoje_str in df_historico['Data'].dt.strftime('%d/%m/%Y').values:
-        df_historico = df_historico[df_historico['Data'].dt.strftime('%d/%m/%Y') != hoje_str]
-    
-    contagem_hoje = df_atual_para_salvar.groupby('Atribuir a um grupo').size().reset_index(name='Quantidade')
-    contagem_hoje.columns = ['Grupo', 'Quantidade']
-    contagem_hoje['Data'] = hoje_str
+    if not df_historico.empty:
+        df_historico = df_historico[df_historico['snapshot_date'].dt.date != hoje_date]
 
-    df_atualizado = pd.concat([df_historico, contagem_hoje], ignore_index=True)
+    df_novo_snapshot['snapshot_date'] = hoje_date
+    df_atualizado = pd.concat([df_historico, df_novo_snapshot], ignore_index=True)
     csv_string = df_atualizado.to_csv(index=False)
-
+    
+    commit_message = f"Atualizando histórico {hoje_date.strftime('%Y-%m-%d')}"
     if sha:
-        _repo.update_file("historico_backlog.csv", f"Atualizando histórico {hoje_str}", csv_string, sha)
+        _repo.update_file("historico_dados_completos.csv", commit_message, csv_string, sha)
     else:
-        _repo.create_file("historico_backlog.csv", f"Criando histórico {hoje_str}", csv_string)
+        _repo.create_file("historico_dados_completos.csv", commit_message, csv_string)
     
-    st.sidebar.success("Histórico salvo com sucesso!")
+    st.sidebar.success("Snapshot de hoje salvo!")
     st.cache_data.clear()
-    
+
 def get_base_64_of_bin_file(bin_file):
     try:
         with open(bin_file, 'rb') as f: data = f.read()
@@ -72,16 +75,13 @@ def categorizar_idade_vetorizado(dias_series):
 
 def analisar_aging(df_para_analise):
     df = df_para_analise.copy()
-    # Renomeia colunas do histórico para as que as funções esperam
-    df_renomeado = df.rename(columns={'ID do ticket': 'ID do ticket', 'Grupo': 'Atribuir a um grupo', 'Data': 'Data de criação'})
-    
-    df_renomeado['Data de criação'] = pd.to_datetime(df_renomeado['Data de criação'], errors='coerce', dayfirst=True)
-    df_renomeado.dropna(subset=['Data de criação'], inplace=True)
+    df['Data de criação'] = pd.to_datetime(df['Data de criação'], errors='coerce', dayfirst=True)
+    df.dropna(subset=['Data de criação'], inplace=True)
     hoje = pd.to_datetime('today').normalize()
-    data_criacao_normalizada = df_renomeado['Data de criação'].dt.normalize()
-    df_renomeado['Dias em Aberto'] = (hoje - data_criacao_normalizada).dt.days + 1
-    df_renomeado['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df_renomeado['Dias em Aberto'])
-    return df_renomeado
+    data_criacao_normalizada = df['Data de criação'].dt.normalize()
+    df['Dias em Aberto'] = (hoje - data_criacao_normalizada).dt.days + 1
+    df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
+    return df
 
 def get_status(row):
     diferenca = row['Diferença']
@@ -94,4 +94,4 @@ def get_status(row):
 
 # --- INTERFACE DO APLICATIVO ---
 st.title("Backlog Copa Energia + Belago")
-# (Resto da interface omitida por brevidade)
+# (Resto da interface omitida)
