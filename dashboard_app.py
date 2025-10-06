@@ -1,67 +1,35 @@
+# dashboard_app.py (Arquivo Principal)
 import streamlit as st
 import pandas as pd
-import plotly.express as px
-import numpy as np
-import base64
 from datetime import datetime
+import base64
 
-# Configuração da página
+# --- Configuração da Página ---
 st.set_page_config(
     layout="wide", 
-    page_title="Backlog Copa Energia + Belago",
+    page_title="Dashboard de Backlog",
     page_icon="copaenergialogo_1691612041.webp"
 )
 
-# --- FUNÇÃO PARA CARREGAR IMAGENS (RE-ADICIONADA) ---
-def get_base_64_of_bin_file(bin_file):
+# --- FUNÇÕES (copiadas para cá para manter o app autocontido) ---
+def get_base64_of_bin_file(bin_file):
     try:
         with open(bin_file, 'rb') as f:
             data = f.read()
         return base64.b64encode(data).decode()
     except FileNotFoundError:
-        st.error(f"Arquivo de mídia não encontrado: {bin_file}. Por favor, envie o arquivo para o repositório no GitHub.")
+        st.error(f"Arquivo de mídia não encontrado: {bin_file}. Envie o arquivo para o repositório no GitHub.")
         return None
 
-# --- FUNÇÕES DE PROCESSAMENTO ---
-def processar_dados_comparativos(df_atual, df_15dias):
-    contagem_atual = df_atual.groupby('Atribuir a um grupo').size().reset_index(name='Atual')
-    contagem_15dias = df_15dias.groupby('Atribuir a um grupo').size().reset_index(name='15 Dias Atrás')
-    df_comparativo = pd.merge(contagem_atual, contagem_15dias, on='Atribuir a um grupo', how='outer').fillna(0)
-    df_comparativo['Diferença'] = df_comparativo['Atual'] - df_comparativo['15 Dias Atrás']
-    df_comparativo[['Atual', '15 Dias Atrás', 'Diferença']] = df_comparativo[['Atual', '15 Dias Atrás', 'Diferença']].astype(int)
-    return df_comparativo
+# --- Interface ---
+st.title("Dashboard Detalhado de Backlog")
+st.markdown("Faça o upload dos arquivos na barra lateral para começar a análise.")
 
-def categorizar_idade_vetorizado(dias_series):
-    condicoes = [
-        dias_series >= 30, (dias_series >= 21) & (dias_series <= 29),
-        (dias_series >= 11) & (dias_series <= 20), (dias_series >= 6) & (dias_series <= 10),
-        (dias_series >= 3) & (dias_series <= 5), (dias_series >= 0) & (dias_series <= 2)
-    ]
-    opcoes = ["30+ dias", "21 a 29 dias", "11 a 20 dias", "6 a 10 dias", "3 a 5 dias", "0 a 2 dias"]
-    return np.select(condicoes, opcoes, default="Erro de Categoria")
-
-def analisar_aging(df_atual):
-    df = df_atual.copy()
-    df['Data de criação'] = pd.to_datetime(df['Data de criação'], errors='coerce', dayfirst=True)
-    df.dropna(subset=['Data de criação'], inplace=True)
-    
-    hoje = pd.to_datetime('today').normalize()
-    data_criacao_normalizada = df['Data de criação'].dt.normalize()
-    df['Dias em Aberto'] = (hoje - data_criacao_normalizada).dt.days + 1
-
-    df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
-    return df
-
-# --- INTERFACE DO APLICATIVO ---
-st.title("Backlog Copa Energia + Belago")
-st.markdown("Faça o upload dos arquivos CSV para visualizar a comparação e a análise de antiguidade dos chamados.")
-
+# Logos na Barra Lateral
 gif_path = "237f1d13493514962376f142bb68_1691760314.gif"
 belago_logo_path = "logo_belago.png"
-
 gif_base64 = get_base_64_of_bin_file(gif_path)
 belago_logo_base64 = get_base_64_of_bin_file(belago_logo_path)
-
 if gif_base64 and belago_logo_base64:
     st.sidebar.markdown(
         f"""
@@ -77,112 +45,21 @@ st.sidebar.header("Carregar Arquivos")
 uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL (.csv)", type=['csv'])
 uploaded_file_15dias = st.sidebar.file_uploader("2. Backlog de 15 DIAS ATRÁS (.csv)", type=['csv'])
 
+# --- LÓGICA DE PROCESSAMENTO E ARMAZENAMENTO NA SESSÃO ---
 if uploaded_file_atual and uploaded_file_15dias:
     try:
         df_atual = pd.read_csv(uploaded_file_atual, delimiter=';', encoding='latin1') 
         df_15dias = pd.read_csv(uploaded_file_15dias, delimiter=';', encoding='latin1')
-        st.success("Arquivos carregados com sucesso!")
-
-        df_atual = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
-        df_15dias = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         
-        st.info(
-            """
-            **Filtros e Regras Aplicadas:**
-            - Grupos contendo 'RH' foram desconsiderados da análise.
-            - A contagem de 'Dias em Aberto' considera o dia da criação como Dia 1 (Cálculo: Hoje - Data de Criação + 1).
-            """
-        )
+        # Guardando os dataframes brutos na sessão para a outra página usar
+        st.session_state['df_atual'] = df_atual
+        st.session_state['df_15dias'] = df_15dias
         
-        # --- ORDEM TROCADA ---
-        
-        # 1. ANÁLISE DE ANTIGUIDADE (AGORA VEM PRIMEIRO)
-        st.subheader("Análise de Antiguidade do Backlog Atual")
-        df_aging = analisar_aging(df_atual) 
-
-        if not df_aging.empty:
-            aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
-            aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
-            
-            ordem_faixas = ["0 a 2 dias", "3 a 5 dias", "6 a 10 dias", "11 a 20 dias", "21 a 29 dias", "30+ dias"]
-            todas_as_faixas = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas})
-            aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left')
-            aging_counts['Quantidade'] = aging_counts['Quantidade'].fillna(0).astype(int)
-
-            aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
-            aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
-
-            aging_counts['Quantidade_texto'] = aging_counts['Quantidade'].astype(str)
-            
-            fig = px.bar(
-                aging_counts, x='Faixa de Antiguidade', y='Quantidade', text='Quantidade_texto',
-                title='Distribuição de Chamados por Antiguidade',
-                labels={'Faixa de Antiguidade': 'Idade do Chamado', 'Quantidade': 'Nº de Chamados'}
-            )
-            
-            fig.update_traces(
-                textposition='outside', 
-                marker_color='#375623',
-                hovertemplate='<b>%{x}</b><br>Quantidade: %{y}<extra></extra>'
-            )
-            fig.update_yaxes(dtick=1)
-            
-            st.plotly_chart(fig, use_container_width=True)
-        else:
-            st.warning("Nenhum dado válido para a análise de antiguidade foi encontrado após o processamento das datas.")
-
-        # 2. COMPARATIVO DE BACKLOG (AGORA VEM DEPOIS)
-        st.subheader("Comparativo de Backlog: Atual vs. 15 Dias Atrás")
-        df_comparativo = processar_dados_comparativos(df_atual.copy(), df_15dias.copy())
-        
-        df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True)
-        styled_df = df_comparativo.set_index('Grupo').style.applymap(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença'])
-        st.dataframe(styled_df, use_container_width=True)
-
-        # 3. FILTROS E BUSCAS (CONTINUAM NO FINAL)
-        if not df_aging.empty:
-            st.markdown("---") 
-            st.subheader("Detalhar Faixa de Antiguidade")
-            
-            opcoes_filtro = aging_counts['Faixa de Antiguidade'].tolist()
-            selected_bucket = st.selectbox(
-                "Selecione uma faixa de idade para ver os detalhes:",
-                options=opcoes_filtro
-            )
-
-            if selected_bucket:
-                filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == selected_bucket].copy()
-                
-                if not filtered_df.empty:
-                    filtered_df['Data de criação'] = filtered_df['Data de criação'].dt.strftime('%d/%m/%Y')
-                    colunas_para_exibir = ['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
-                    st.dataframe(filtered_df[colunas_para_exibir], use_container_width=True)
-                else:
-                    st.write("Não há chamados nesta categoria.")
-
-        st.markdown("---")
-        st.subheader("Buscar Chamados por Grupo")
-
-        if not df_aging.empty:
-            lista_grupos = sorted(df_aging['Atribuir a um grupo'].dropna().unique())
-            lista_grupos.insert(0, "Selecione um grupo...")
-            
-            grupo_selecionado = st.selectbox(
-                "Busca de chamados por grupo:",
-                options=lista_grupos
-            )
-
-            if grupo_selecionado != "Selecione um grupo...":
-                resultados_busca = df_aging[df_aging['Atribuir a um grupo'] == grupo_selecionado].copy()
-                
-                resultados_busca['Data de criação'] = resultados_busca['Data de criação'].dt.strftime('%d/%m/%Y')
-                
-                st.write(f"Encontrados {len(resultados_busca)} chamados para o grupo '{grupo_selecionado}':")
-                colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
-                st.dataframe(resultados_busca[colunas_para_exibir_busca], use_container_width=True)
+        st.success("Arquivos carregados com sucesso! Navegue para a página 'Report Visual' na barra lateral.")
+        st.info("Os dados detalhados que ficavam aqui agora estão na página 'Dashboard Completo' (esta página).")
 
     except Exception as e:
-        st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
-        st.warning("Verifique se os nomes das colunas ('Atribuir a um grupo', 'Data de criação') estão corretos e se as datas são válidas.")
+        st.error(f"Ocorreu um erro ao carregar os arquivos: {e}")
+        st.warning("Verifique se os arquivos CSV estão corretos.")
 else:
-    st.info("Aguardando o upload dos dois arquivos CSV.")
+    st.info("Aguardando o upload dos arquivos CSV na barra lateral para habilitar as páginas de análise.")
