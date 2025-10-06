@@ -47,7 +47,11 @@ def analisar_aging(df_atual):
     
     hoje = pd.to_datetime('today').normalize()
     data_criacao_normalizada = df['Data de criação'].dt.normalize()
-    df['Dias em Aberto'] = (hoje - data_criacao_normalizada).dt.days
+    
+    # --- MUDANÇA NA CONTAGEM DE DIAS ---
+    # Adicionamos "+ 1" para seguir a regra de negócio (contagem inclusiva)
+    df['Dias em Aberto'] = (hoje - data_criacao_normalizada).dt.days + 1
+    # --- FIM DA MUDANÇA ---
 
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
     return df
@@ -56,7 +60,6 @@ def analisar_aging(df_atual):
 st.title("Backlog Copa Energia + Belago")
 st.markdown("Faça o upload dos arquivos CSV para visualizar a comparação e a análise de antiguidade dos chamados.")
 
-# --- NOME DO GIF CORRIGIDO ---
 gif_path = "237f1d13493514962376f142bb68_1691760314.gif"
 belago_logo_path = "logo_belago.png"
 
