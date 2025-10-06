@@ -12,14 +12,14 @@ st.set_page_config(
     page_icon="copaenergialogo_1691612041.webp"
 )
 
-# --- FUNÇÃO PARA CARREGAR IMAGENS (RE-ADICIONADA) ---
+# --- FUNÇÃO PARA CARREGAR IMAGENS ---
 def get_base_64_of_bin_file(bin_file):
     try:
         with open(bin_file, 'rb') as f:
             data = f.read()
         return base64.b64encode(data).decode()
     except FileNotFoundError:
-        st.error(f"Arquivo de mídia não encontrado: {bin_file}. Verifique se ele está na pasta do projeto e no GitHub.")
+        st.error(f"Arquivo de mídia não encontrado: {bin_file}. Verifique se ele está no repositório do GitHub.")
         return None
 
 # --- FUNÇÕES DE PROCESSAMENTO ---
@@ -32,13 +32,18 @@ def processar_dados_comparativos(df_atual, df_15dias):
     return df_comparativo
 
 def categorizar_idade_vetorizado(dias_series):
+    # Condições ajustadas para a contagem que começa em 1
     condicoes = [
-        dias_series >= 30, (dias_series >= 21) & (dias_series <= 29),
-        (dias_series >= 11) & (dias_series <= 20), (dias_series >= 6) & (dias_series <= 10),
-        (dias_series >= 3) & (dias_series <= 5), (dias_series >= 1) & (dias_series <= 2) # Corrigido para 1 e 2 dias
+        dias_series >= 30,
+        (dias_series >= 21) & (dias_series <= 29),
+        (dias_series >= 11) & (dias_series <= 20),
+        (dias_series >= 6) & (dias_series <= 10),
+        (dias_series >= 3) & (dias_series <= 5),
+        (dias_series >= 1) & (dias_series <= 2) # O mínimo agora é 1
     ]
-    opcoes = ["30+ dias", "21 a 29 dias", "11 a 20 dias", "6 a 10 dias", "3 a 5 dias", "1 a 2 dias"] # Corrigido para 1 a 2 dias
-    return np.select(condicoes, opcoes, default="Hoje") # Chamados com 0 dias são "Hoje"
+    # Opções ajustadas
+    opcoes = ["30+ dias", "21 a 29 dias", "11 a 20 dias", "6 a 10 dias", "3 a 5 dias", "1 a 2 dias"]
+    return np.select(condicoes, opcoes, default="Erro de Categoria")
 
 def analisar_aging(df_atual):
     df = df_atual.copy()
@@ -47,8 +52,9 @@ def analisar_aging(df_atual):
     
     hoje = pd.to_datetime('today').normalize()
     data_criacao_normalizada = df['Data de criação'].dt.normalize()
-    # A contagem agora é (Hoje - Data) simples, sem o +1
-    df['Dias em Aberto'] = (hoje - data_criacao_normalizada).dt.days
+
+    # --- REGRA DE NEGÓCIO DO '+ 1' RE-ADICIONADA ---
+    df['Dias em Aberto'] = (hoje - data_criacao_normalizada).dt.days + 1
 
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
     return df
@@ -95,7 +101,6 @@ if uploaded_file_atual and uploaded_file_15dias:
             """
         )
         
-        # 1. ANÁLISE DE ANTIGUIDADE (AGORA VEM PRIMEIRO)
         st.subheader("Análise de Antiguidade do Backlog Atual")
         df_aging = analisar_aging(df_atual) 
 
@@ -103,7 +108,8 @@ if uploaded_file_atual and uploaded_file_15dias:
             aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
             aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
             
-            ordem_faixas = ["Hoje", "1 a 2 dias", "3 a 5 dias", "6 a 10 dias", "11 a 20 dias", "21 a 29 dias", "30+ dias"]
+            # Lista de ordem ajustada
+            ordem_faixas = ["1 a 2 dias", "3 a 5 dias", "6 a 10 dias", "11 a 20 dias", "21 a 29 dias", "30+ dias"]
             todas_as_faixas = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas})
             aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left')
             aging_counts['Quantidade'] = aging_counts['Quantidade'].fillna(0).astype(int)
@@ -130,7 +136,6 @@ if uploaded_file_atual and uploaded_file_15dias:
         else:
             st.warning("Nenhum dado válido para a análise de antiguidade foi encontrado após o processamento das datas.")
 
-        # 2. COMPARATIVO DE BACKLOG (AGORA VEM DEPOIS)
         st.subheader("Comparativo de Backlog: Atual vs. 15 Dias Atrás")
         df_comparativo = processar_dados_comparativos(df_atual.copy(), df_15dias.copy())
         
@@ -138,7 +143,6 @@ if uploaded_file_atual and uploaded_file_15dias:
         styled_df = df_comparativo.set_index('Grupo').style.applymap(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença'])
         st.dataframe(styled_df, use_container_width=True)
 
-        # 3. FILTROS E BUSCAS (CONTINUAM NO FINAL)
         if not df_aging.empty:
             st.markdown("---") 
             st.subheader("Detalhar Faixa de Antiguidade")
