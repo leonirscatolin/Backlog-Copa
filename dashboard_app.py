@@ -161,7 +161,6 @@ if uploaded_file_atual and uploaded_file_15dias:
         with tab2:
             st.subheader("Resumo do Backlog Atual")
             if not df_aging.empty:
-                # CORREÇÃO 1: CÓDIGO DOS QUADRADOS RE-ADICIONADO
                 aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
                 aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
                 ordem_faixas = ["1-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
@@ -197,7 +196,6 @@ if uploaded_file_atual and uploaded_file_15dias:
                 st.markdown("---")
                 
                 st.subheader("Ofensores (Todos os Grupos)")
-                # CORREÇÃO 2: REMOVIDO O .nlargest(10) PARA MOSTRAR TODOS OS GRUPOS
                 top_ofensores = df_aging['Atribuir a um grupo'].value_counts().sort_values(ascending=True)
                 
                 fig_top_ofensores = px.bar(
@@ -206,7 +204,6 @@ if uploaded_file_atual and uploaded_file_15dias:
                     labels={'x': 'Qtd. Chamados', 'y': 'Grupo'}
                 )
                 fig_top_ofensores.update_traces(textposition='outside', marker_color='#375623')
-                # Aumenta a altura do gráfico para caberem mais grupos
                 fig_top_ofensores.update_layout(height=max(400, len(top_ofensores) * 25)) 
                 st.plotly_chart(fig_top_ofensores, use_container_width=True)
 
@@ -216,4 +213,4 @@ if uploaded_file_atual and uploaded_file_15dias:
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
 else:
-    st.info("Aguardando o upload dos arquivos CSV.")
+    st.info("Aguardando o upload dos dois arquivos CSV.")
