@@ -6,7 +6,6 @@ import base64
 from datetime import datetime
 import json
 import gspread
-from google.oauth2.service_account import Credentials
 
 # --- Configuração da Página ---
 st.set_page_config(
@@ -18,10 +17,9 @@ st.set_page_config(
 # --- FUNÇÕES ---
 @st.cache_resource
 def connect_gsheets():
-    creds_json = json.loads(st.secrets["gcp_creds"])
-    creds = Credentials.from_service_account_info(creds_json, scopes=["https.www.googleapis.com/auth/spreadsheets", "https.www.googleapis.com/auth/drive.file"])
-    client = gspread.authorize(creds)
-    spreadsheet = client.open("Historico_Backlog")
+    # Usa o método padrão e mais estável do gspread para autenticar com os secrets
+    sa = gspread.service_account_from_dict(st.secrets["gcp_creds"])
+    spreadsheet = sa.open("Historico_Backlog")
     return spreadsheet.worksheet("Página1")
 
 def update_history(worksheet, total_chamados):
@@ -107,12 +105,10 @@ if uploaded_file_atual and uploaded_file_15dias:
     try:
         df_atual = pd.read_csv(uploaded_file_atual, delimiter=';', encoding='latin1') 
         df_15dias = pd.read_csv(uploaded_file_15dias, delimiter=';', encoding='latin1')
-        
         df_atual_filtrado = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
-        
         df_aging = analisar_aging(df_atual_filtrado)
-
+        
         st.markdown("""
         <style>
         .metric-box {
