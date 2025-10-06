@@ -31,27 +31,32 @@ def processar_dados_comparativos(df_atual, df_15dias):
 
 def categorizar_idade_vetorizado(dias_series):
     condicoes = [
-        dias_series >= 30,
-        (dias_series >= 21) & (dias_series <= 29),
-        (dias_series >= 11) & (dias_series <= 20),
-        (dias_series >= 6) & (dias_series <= 10),
-        (dias_series >= 3) & (dias_series <= 5),
-        (dias_series >= 1) & (dias_series <= 2)
+        dias_series >= 30, (dias_series >= 21) & (dias_series <= 29),
+        (dias_series >= 11) & (dias_series <= 20), (dias_series >= 6) & (dias_series <= 10),
+        (dias_series >= 3) & (dias_series <= 5), (dias_series >= 1) & (dias_series <= 2)
     ]
-    opcoes = ["30+ dias", "21 a 29 dias", "11 a 20 dias", "6 a 10 dias", "3 a 5 dias", "2 dias"]
+    opcoes = ["30+ dias", "21-29 dias", "11-20 dias", "6-10 dias", "3-5 dias", "1-2 dias"]
     return np.select(condicoes, opcoes, default="Erro de Categoria")
 
 def analisar_aging(df_atual):
     df = df_atual.copy()
     df['Data de criação'] = pd.to_datetime(df['Data de criação'], errors='coerce', dayfirst=True)
     df.dropna(subset=['Data de criação'], inplace=True)
-    
     hoje = pd.to_datetime('today').normalize()
     data_criacao_normalizada = df['Data de criação'].dt.normalize()
     df['Dias em Aberto'] = (hoje - data_criacao_normalizada).dt.days + 1
-
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
     return df
+
+# --- NOVA FUNÇÃO PARA A COLUNA STATUS ---
+def get_status(row):
+    diferenca = row['Diferença']
+    if diferenca > 0:
+        return "Alta Demanda"
+    elif diferenca == 0:
+        return "Estável / Atenção"
+    else: # diferenca < 0
+        return "Redução de Backlog"
 
 # --- INTERFACE DO APLICATIVO ---
 st.title("Backlog Copa Energia + Belago")
@@ -80,45 +85,81 @@ if uploaded_file_atual and uploaded_file_15dias:
     try:
         df_atual = pd.read_csv(uploaded_file_atual, delimiter=';', encoding='latin1') 
         df_15dias = pd.read_csv(uploaded_file_15dias, delimiter=';', encoding='latin1')
-        
-        # MUDANÇA: MENSAGENS DE STATUS REMOVIDAS
-        # st.success("Arquivos carregados com sucesso!")
-        # st.info("Filtros e regras aplicadas...")
+        st.success("Arquivos carregados com sucesso!")
 
-        df_atual = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
-        df_15dias = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
+        df_atual_filtrado = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
+        df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         
+        # --- CRIAÇÃO DAS ABAS ---
         tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
 
-        df_aging = analisar_aging(df_atual)
+        # Processamento de dados principal, usado por ambas as abas
+        df_aging = analisar_aging(df_atual_filtrado)
 
         with tab1:
+            # MUDANÇA: Aviso movido para dentro da Aba 1
+            st.info(
+                """
+                **Filtros e Regras Aplicadas:**
+                - Grupos contendo 'RH' foram desconsiderados.
+                - A contagem de 'Dias em Aberto' considera o dia da criação como Dia 1.
+                """
+            )
+
             st.subheader("Análise de Antiguidade do Backlog Atual")
             
             if not df_aging.empty:
                 aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
                 aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
-                ordem_faixas = ["2 dias", "3 a 5 dias", "6 a 10 dias", "11 a 20 dias", "21 a 29 dias", "30+ dias"]
+                ordem_faixas = ["1-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
                 todas_as_faixas = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas})
                 aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
                 aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
                 aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
 
-                # --- MUDANÇA: TROCANDO O GRÁFICO DE BARRAS POR CARDS (st.metric) ---
-                # Criamos 6 colunas para exibir os cards lado a lado
+                # MUDANÇA: Novo visual para os cards de KPI
+                st.markdown("""
+                <style>
+                .metric-box {
+                    border: 1px solid #CCCCCC;
+                    padding: 10px;
+                    border-radius: 5px;
+                    text-align: center;
+                    box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+                }
+                .metric-box .value {
+                    font-size: 2.5em;
+                    font-weight: bold;
+                    color: #375623;
+                }
+                .metric-box .label {
+                    font-size: 1em;
+                    color: #666666;
+                }
+                </style>
+                """, unsafe_allow_html=True)
+                
                 cols = st.columns(6)
-                # Iteramos sobre os dados de contagem de antiguidade
                 for i, row in aging_counts.iterrows():
-                    # Usamos a coluna 'i' para colocar cada card em uma coluna diferente
                     with cols[i]:
-                        st.metric(label=row['Faixa de Antiguidade'], value=row['Quantidade'])
-                # --- FIM DA MUDANÇA ---
+                        st.markdown(
+                            f"""
+                            <div class="metric-box">
+                                <div class="value">{row['Quantidade']}</div>
+                                <div class="label">{row['Faixa de Antiguidade']}</div>
+                            </div>
+                            """, unsafe_allow_html=True
+                        )
 
             else:
                 st.warning("Nenhum dado válido para a análise de antiguidade.")
 
             st.subheader("Comparativo de Backlog: Atual vs. 15 Dias Atrás")
-            df_comparativo = processar_dados_comparativos(df_atual.copy(), df_15dias.copy())
+            df_comparativo = processar_dados_comparativos(df_atual_filtrado.copy(), df_15dias_filtrado.copy())
+            
+            # MUDANÇA: Adicionando a coluna 'Status'
+            df_comparativo['Status'] = df_comparativo.apply(get_status, axis=1)
+
             df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True)
             st.dataframe(df_comparativo.set_index('Grupo').style.applymap(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
 
@@ -152,28 +193,19 @@ if uploaded_file_atual and uploaded_file_15dias:
                 total_chamados = len(df_aging)
                 st.metric(label="Total de Chamados em Aberto", value=total_chamados)
                 st.markdown("---")
-
                 col1, col2 = st.columns(2)
                 with col1:
                     st.subheader("Top Ofensores (Grupos com mais chamados)")
                     top_ofensores = df_aging['Atribuir a um grupo'].value_counts().nlargest(10).sort_values(ascending=True)
-                    fig_top_ofensores = px.bar(
-                        top_ofensores, x=top_ofensores.values, y=top_ofensores.index, 
-                        orientation='h', text=top_ofensores.values, 
-                        labels={'x': 'Qtd. Chamados', 'y': 'Grupo'}
-                    )
+                    fig_top_ofensores = px.bar(top_ofensores, x=top_ofensores.values, y=top_ofensores.index, orientation='h', text=top_ofensores.values, labels={'x': 'Qtd. Chamados', 'y': 'Grupo'})
                     fig_top_ofensores.update_traces(textposition='outside', marker_color='#375623')
                     st.plotly_chart(fig_top_ofensores, use_container_width=True)
                 with col2:
                     st.subheader("Distribuição por Faixa de Idade")
                     dist_data = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
                     dist_data.columns = ['Faixa de Antiguidade', 'Quantidade']
-                    fig_distribuicao = px.pie(
-                        dist_data, names='Faixa de Antiguidade', values='Quantidade',
-                        color_discrete_sequence=px.colors.sequential.Greens_r
-                    )
+                    fig_distribuicao = px.pie(dist_data, names='Faixa de Antiguidade', values='Quantidade', color_discrete_sequence=px.colors.sequential.Greens_r)
                     st.plotly_chart(fig_distribuicao, use_container_width=True)
-                
                 st.info("A funcionalidade de gerar PDF será adicionada em uma próxima versão.")
             else:
                 st.warning("Nenhum dado para gerar o report visual.")
@@ -181,4 +213,4 @@ if uploaded_file_atual and uploaded_file_15dias:
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
 else:
-    st.info("Aguardando o upload dos dois arquivos CSV na barra lateral.")
+    st.info("Aguardando o upload dos arquivos CSV na barra lateral.")
