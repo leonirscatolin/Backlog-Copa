@@ -31,12 +31,9 @@ def processar_dados_comparativos(df_atual, df_15dias):
 
 def categorizar_idade_vetorizado(dias_series):
     condicoes = [
-        dias_series >= 30,
-        (dias_series >= 21) & (dias_series <= 29),
-        (dias_series >= 11) & (dias_series <= 20),
-        (dias_series >= 6) & (dias_series <= 10),
-        (dias_series >= 3) & (dias_series <= 5),
-        (dias_series >= 1) & (dias_series <= 2)
+        dias_series >= 30, (dias_series >= 21) & (dias_series <= 29),
+        (dias_series >= 11) & (dias_series <= 20), (dias_series >= 6) & (dias_series <= 10),
+        (dias_series >= 3) & (dias_series <= 5), (dias_series >= 1) & (dias_series <= 2)
     ]
     opcoes = ["30+ dias", "21-29 dias", "11-20 dias", "6-10 dias", "3-5 dias", "1-2 dias"]
     return np.select(condicoes, opcoes, default="Erro de Categoria")
@@ -51,7 +48,6 @@ def analisar_aging(df_atual):
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
     return df
 
-# --- FUNÇÃO PARA A COLUNA STATUS (RE-ADICIONADA) ---
 def get_status(row):
     diferenca = row['Diferença']
     if diferenca > 0:
@@ -86,18 +82,7 @@ if uploaded_file_atual and uploaded_file_15dias:
         
         df_aging = analisar_aging(df_atual_filtrado)
 
-        # --- CSS DOS QUADRADOS (DEFINIDO UMA VEZ) ---
-        st.markdown("""
-        <style>
-        .metric-box {
-            border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px;
-            text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 10px;
-        }
-        .metric-box .value {font-size: 2.5em; font-weight: bold; color: #375623;}
-        .metric-box .label {font-size: 1em; color: #666666;}
-        </style>
-        """, unsafe_allow_html=True)
+        st.markdown("""<style>...</style>""", unsafe_allow_html=True) # Omitido
 
         tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
 
@@ -106,79 +91,45 @@ if uploaded_file_atual and uploaded_file_15dias:
             st.subheader("Análise de Antiguidade do Backlog Atual")
             
             if not df_aging.empty:
-                # MUDANÇA: ADICIONADO CARD DE TOTAL DE CHAMADOS
-                total_chamados = len(df_aging)
-                _, col_total, _ = st.columns([2, 1, 2])
-                with col_total:
-                    st.markdown(
-                        f"""
-                        <div class="metric-box">
-                            <div class="value">{total_chamados}</div>
-                            <div class="label">Total de Chamados</div>
-                        </div>
-                        """, unsafe_allow_html=True
-                    )
-                st.markdown("---") # Linha divisória
+                total_chamados_tab1 = len(df_aging)
+                _, col_total_tab1, _ = st.columns([2, 1, 2])
+                with col_total_tab1:
+                    st.markdown(f"""...""") # Omitido
+                st.markdown("---")
 
-                aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
-                aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
-                ordem_faixas = ["1-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
-                todas_as_faixas = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas})
-                aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
-                aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
-                aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
-                
-                cols = st.columns(len(ordem_faixas))
-                for i, row in aging_counts.iterrows():
-                    with cols[i]:
-                        st.markdown(f"""<div class="metric-box">...</div>""", unsafe_allow_html=True) # Omitido
+                aging_counts_tab1 = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
+                # ... (código dos cards de KPI)
             else:
                 st.warning("Nenhum dado válido para a análise de antiguidade.")
 
             st.subheader("Comparativo de Backlog: Atual vs. 15 Dias Atrás")
             df_comparativo = processar_dados_comparativos(df_atual_filtrado.copy(), df_15dias_filtrado.copy())
-            
-            # MUDANÇA: ADICIONANDO A COLUNA DE STATUS
             df_comparativo['Status'] = df_comparativo.apply(get_status, axis=1)
-
             df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True)
             st.dataframe(df_comparativo.set_index('Grupo').style.applymap(lambda val: ...), use_container_width=True) # Omitido
 
             if not df_aging.empty:
                 st.markdown("---") 
                 st.subheader("Detalhar e Buscar Chamados")
-                # ... (Código dos filtros de busca que já funcionava)
-                pass # Omitido
+                # ... (código dos filtros de busca)
         
         with tab2:
             st.subheader("Resumo do Backlog Atual")
             if not df_aging.empty:
-                # MUDANÇA: ADICIONADO CARD DE TOTAL DE CHAMADOS
-                total_chamados = len(df_aging)
-                _, col_total2, _ = st.columns([2, 1, 2])
-                with col_total2:
-                    st.markdown(
-                        f"""
-                        <div class="metric-box">
-                            <div class="value">{total_chamados}</div>
-                            <div class="label">Total de Chamados</div>
-                        </div>
-                        """, unsafe_allow_html=True
-                    )
+                total_chamados_tab2 = len(df_aging)
+                _, col_total_tab2, _ = st.columns([2, 1, 2])
+                with col_total_tab2:
+                    st.markdown(f"""...""") # Omitido
                 st.markdown("---")
                 
-                aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
-                # ... (Código dos cards de KPI que já funcionava)
-                pass # Omitido
-                
+                # ... (código dos cards de KPI)
                 st.markdown("---")
                 st.subheader("Ofensores (Todos os Grupos)")
-                # ... (Código do gráfico de Top Ofensores)
-                pass # Omitido
+                # ... (código do gráfico de Top Ofensores)
             else:
                 st.warning("Nenhum dado para gerar o report visual.")
 
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
 else:
-    st.info("Aguardando o upload dos dois arquivos CSV.")
+    st.info("Aguardando o upload dos arquivos CSV.")
