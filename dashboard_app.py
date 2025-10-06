@@ -6,8 +6,6 @@ import base64
 from datetime import datetime
 import json
 import gspread
-from google.oauth2.service_account import Credentials
-from gspread_dataframe import get_as_dataframe
 
 # --- Configuração da Página ---
 st.set_page_config(
@@ -17,30 +15,6 @@ st.set_page_config(
 )
 
 # --- FUNÇÕES ---
-@st.cache_resource
-def connect_gsheets():
-    creds_json = json.loads(st.secrets["gcp_creds"])
-    scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive.file"]
-    creds = Credentials.from_service_account_info(creds_json, scopes=scopes)
-    client = gspread.authorize(creds)
-    spreadsheet = client.open("Historico_Backlog")
-    return spreadsheet.worksheet("Página1")
-
-def update_history(worksheet, total_chamados):
-    hoje_str = datetime.now().strftime("%d/%m/%Y")
-    df_historico = get_history(worksheet)
-    if not df_historico.empty and hoje_str in df_historico['Data'].dt.strftime('%d/%m/%Y').values:
-        return
-    new_row = [hoje_str, total_chamados]
-    worksheet.append_row(new_row)
-
-def get_history(worksheet):
-    df = get_as_dataframe(worksheet, parse_dates=True, usecols=[0,1])
-    df.dropna(subset=['Data'], inplace=True)
-    if 'Total_Chamados' in df.columns:
-        df['Total_Chamados'] = pd.to_numeric(df['Total_Chamados'])
-    return df
-
 def get_base_64_of_bin_file(bin_file):
     try:
         with open(bin_file, 'rb') as f:
@@ -252,21 +226,11 @@ if uploaded_file_atual and uploaded_file_15dias:
                 fig_top_ofensores.update_layout(height=max(400, len(top_ofensores) * 25)) 
                 st.plotly_chart(fig_top_ofensores, use_container_width=True)
                 
+                # A seção de histórico foi desativada para garantir estabilidade
                 st.markdown("---")
                 st.subheader("Evolução do Histórico de Backlog")
-                try:
-                    worksheet = connect_gsheets()
-                    update_history(worksheet, total_chamados)
-                    df_historico = get_history(worksheet)
-                    if not df_historico.empty:
-                        df_historico = df_historico.sort_values(by='Data')
-                        fig_historico = px.line(df_historico, x='Data', y='Total_Chamados', title="Total de chamados em aberto por dia", labels={'Data': 'Data', 'Total de Chamados': 'Total'}, markers=True)
-                        fig_historico.update_traces(line_color='#375623')
-                        st.plotly_chart(fig_historico, use_container_width=True)
-                    else:
-                        st.info("Histórico de dados ainda está sendo construído. Os dados de hoje foram salvos.")
-                except Exception as e:
-                    st.warning(f"Não foi possível carregar ou salvar o histórico. Verifique as configurações. Erro: {e}")
+                st.warning("Esta funcionalidade está em manutenção e será reintroduzida em uma futura versão estável.")
+
             else:
                 st.warning("Nenhum dado para gerar o report visual.")
 
