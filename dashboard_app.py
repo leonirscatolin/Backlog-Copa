@@ -47,11 +47,7 @@ def analisar_aging(df_atual):
     
     hoje = pd.to_datetime('today').normalize()
     data_criacao_normalizada = df['Data de criação'].dt.normalize()
-    
-    # --- MUDANÇA NA CONTAGEM DE DIAS ---
-    # Adicionamos "+ 1" para seguir a regra de negócio (contagem inclusiva)
     df['Dias em Aberto'] = (hoje - data_criacao_normalizada).dt.days + 1
-    # --- FIM DA MUDANÇA ---
 
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
     return df
@@ -63,8 +59,8 @@ st.markdown("Faça o upload dos arquivos CSV para visualizar a comparação e a 
 gif_path = "237f1d13493514962376f142bb68_1691760314.gif"
 belago_logo_path = "logo_belago.png"
 
-gif_base64 = get_base64_of_bin_file(gif_path)
-belago_logo_base64 = get_base64_of_bin_file(belago_logo_path)
+gif_base64 = get_base_64_of_bin_file(gif_path)
+belago_logo_base64 = get_base_64_of_bin_file(belago_logo_path)
 
 if gif_base64 and belago_logo_base64:
     st.sidebar.markdown(
@@ -89,15 +85,18 @@ if uploaded_file_atual and uploaded_file_15dias:
 
         df_atual = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_15dias = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
-        st.info("Filtro aplicado: Grupos contendo 'RH' foram desconsiderados da análise.")
-
-        st.subheader("Comparativo de Backlog: Atual vs. 15 Dias Atrás")
-        df_comparativo = processar_dados_comparativos(df_atual.copy(), df_15dias.copy())
         
-        df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True)
-        styled_df = df_comparativo.set_index('Grupo').style.applymap(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença'])
-        st.dataframe(styled_df, use_container_width=True)
-
+        st.info(
+            """
+            **Filtros e Regras Aplicadas:**
+            - Grupos contendo 'RH' foram desconsiderados da análise.
+            - A contagem de 'Dias em Aberto' considera o dia da criação como Dia 1 (Cálculo: Hoje - Data de Criação + 1).
+            """
+        )
+        
+        # --- ORDEM TROCADA ---
+        
+        # 1. ANÁLISE DE ANTIGUIDADE (AGORA VEM PRIMEIRO)
         st.subheader("Análise de Antiguidade do Backlog Atual")
         df_aging = analisar_aging(df_atual) 
 
@@ -129,7 +128,19 @@ if uploaded_file_atual and uploaded_file_15dias:
             fig.update_yaxes(dtick=1)
             
             st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.warning("Nenhum dado válido para a análise de antiguidade foi encontrado após o processamento das datas.")
 
+        # 2. COMPARATIVO DE BACKLOG (AGORA VEM DEPOIS)
+        st.subheader("Comparativo de Backlog: Atual vs. 15 Dias Atrás")
+        df_comparativo = processar_dados_comparativos(df_atual.copy(), df_15dias.copy())
+        
+        df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True)
+        styled_df = df_comparativo.set_index('Grupo').style.applymap(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença'])
+        st.dataframe(styled_df, use_container_width=True)
+
+        # 3. FILTROS E BUSCAS (CONTINUAM NO FINAL)
+        if not df_aging.empty:
             st.markdown("---") 
             st.subheader("Detalhar Faixa de Antiguidade")
             
@@ -148,28 +159,27 @@ if uploaded_file_atual and uploaded_file_15dias:
                     st.dataframe(filtered_df[colunas_para_exibir], use_container_width=True)
                 else:
                     st.write("Não há chamados nesta categoria.")
-        else:
-            st.warning("Nenhum dado válido para a análise de antiguidade foi encontrado após o processamento das datas.")
 
         st.markdown("---")
         st.subheader("Buscar Chamados por Grupo")
 
-        lista_grupos = sorted(df_aging['Atribuir a um grupo'].dropna().unique())
-        lista_grupos.insert(0, "Selecione um grupo...")
-        
-        grupo_selecionado = st.selectbox(
-            "Busca de chamados por grupo:",
-            options=lista_grupos
-        )
+        if not df_aging.empty:
+            lista_grupos = sorted(df_aging['Atribuir a um grupo'].dropna().unique())
+            lista_grupos.insert(0, "Selecione um grupo...")
+            
+            grupo_selecionado = st.selectbox(
+                "Busca de chamados por grupo:",
+                options=lista_grupos
+            )
 
-        if grupo_selecionado != "Selecione um grupo...":
-            resultados_busca = df_aging[df_aging['Atribuir a um grupo'] == grupo_selecionado].copy()
-            
-            resultados_busca['Data de criação'] = resultados_busca['Data de criação'].dt.strftime('%d/%m/%Y')
-            
-            st.write(f"Encontrados {len(resultados_busca)} chamados para o grupo '{grupo_selecionado}':")
-            colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
-            st.dataframe(resultados_busca[colunas_para_exibir_busca], use_container_width=True)
+            if grupo_selecionado != "Selecione um grupo...":
+                resultados_busca = df_aging[df_aging['Atribuir a um grupo'] == grupo_selecionado].copy()
+                
+                resultados_busca['Data de criação'] = resultados_busca['Data de criação'].dt.strftime('%d/%m/%Y')
+                
+                st.write(f"Encontrados {len(resultados_busca)} chamados para o grupo '{grupo_selecionado}':")
+                colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
+                st.dataframe(resultados_busca[colunas_para_exibir_busca], use_container_width=True)
 
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
