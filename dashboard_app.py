@@ -135,7 +135,7 @@ try:
         df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_aging = analisar_aging(df_atual_filtrado)
         
-        # --- MODIFICAÇÃO CSS v2: Abordagem com margem negativa ---
+        # --- MODIFICAÇÃO CSS v3: Seletor específico para os botões ---
         st.markdown("""
         <style>
         .metric-box {
@@ -144,13 +144,14 @@ try:
             margin-bottom: 10px;
             height: 90px; /* Definir uma altura fixa para o card */
         }
-        /* Container do botão */
-        div[data-testid="stButton"] {
-            margin-top: -100px !important; /* Puxa o botão para cima. Ajuste fino se necessário */
-            z-index: 1; /* Garante que o botão fique na frente */
+        
+        /* AGORA O CSS SÓ SE APLICA A BOTÕES DENTRO DO NOSSO CONTAINER ESPECÍFICO */
+        .metric-card-container div[data-testid="stButton"] {
+            margin-top: -100px !important; /* Puxa o botão para cima. */
+            z-index: 1;
         }
-        /* Botão invisível */
-        .stButton button {
+
+        .metric-card-container .stButton button {
             background-color: transparent;
             border: none;
             color: transparent;
@@ -158,7 +159,7 @@ try:
             height: 90px; /* Altura da área clicável, igual à do card */
             cursor: pointer;
         }
-        .stButton button:hover {
+        .metric-card-container .stButton button:hover {
             background-color: rgba(233, 113, 50, 0.1); /* Efeito visual ao passar o mouse */
         }
 
@@ -179,7 +180,6 @@ try:
             )
             st.subheader("Análise de Antiguidade do Backlog Atual")
             
-            # Função para injetar o script de scroll (será chamada no final)
             def scroll_to_anchor():
                 st.markdown(
                     """
@@ -215,20 +215,19 @@ try:
                 aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
                 aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
 
-                # Inicializa o session_state
                 if 'faixa_selecionada' not in st.session_state:
                     st.session_state.faixa_selecionada = ordem_faixas[0]
 
-                # --- MODIFICAÇÃO v2: Função do botão ---
-                # Agora a função só atualiza o estado e ativa a "bandeira" de scroll
                 def setar_faixa_e_preparar_scroll(faixa):
                     st.session_state.faixa_selecionada = faixa
                     st.session_state.scroll_request = True
 
+                # --- MODIFICAÇÃO v3: Adiciona o container para isolar o CSS ---
+                st.markdown('<div class="metric-card-container">', unsafe_allow_html=True)
+                
                 cols = st.columns(len(ordem_faixas))
                 for i, row in aging_counts.iterrows():
                     with cols[i]:
-                        # Exibe a métrica visual
                         st.markdown(
                             f"""
                             <div class="metric-box">
@@ -237,14 +236,15 @@ try:
                             </div>
                             """, unsafe_allow_html=True
                         )
-                        # Adiciona o botão invisível que ficará sobreposto
                         st.button(
                             label=f" ", 
                             key=f"btn_{i}",
-                            on_click=setar_faixa_e_preparar_scroll, # Chama a nova função
+                            on_click=setar_faixa_e_preparar_scroll,
                             args=(row['Faixa de Antiguidade'],),
                             use_container_width=True
                         )
+                
+                st.markdown('</div>', unsafe_allow_html=True) # Fecha o container
 
             else:
                 st.warning("Nenhum dado válido para a análise de antiguidade.")
@@ -257,20 +257,17 @@ try:
 
             if not df_aging.empty:
                 st.markdown("---")
-                # Adiciona a âncora HTML para o scroll
                 st.markdown('<a id="detalhes_chamados"></a>', unsafe_allow_html=True)
                 st.subheader("Detalhar e Buscar Chamados")
                 
                 opcoes_filtro = aging_counts['Faixa de Antiguidade'].tolist()
                 
-                # O selectbox continua sincronizado com o session_state
                 st.selectbox(
                     "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):",
                     options=opcoes_filtro,
                     key='faixa_selecionada'
                 )
                 
-                # A lógica de filtro usa o valor do session_state
                 faixa_atual = st.session_state.faixa_selecionada
                 
                 if faixa_atual and not df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].empty:
@@ -296,7 +293,6 @@ try:
         with tab2:
             # (O código da tab2 permanece o mesmo, sem alterações)
             st.subheader("Resumo do Backlog Atual")
-            # ... (código original da tab2)
             if not df_aging.empty:
                 total_chamados = len(df_aging)
                 _, col_total_tab2, _ = st.columns([2, 1.5, 2])
@@ -342,11 +338,9 @@ try:
             else:
                 st.warning("Nenhum dado para gerar o report visual.")
                 
-        # --- MODIFICAÇÃO v2: Lógica de execução do scroll ---
-        # Este bloco é verificado no final de cada execução do script
         if 'scroll_request' in st.session_state and st.session_state.scroll_request:
             scroll_to_anchor()
-            st.session_state.scroll_request = False # Reseta a bandeira para não rolar novamente
+            st.session_state.scroll_request = False 
 
 except Exception as e:
     st.error(f"Ocorreu um erro ao carregar os dados: {e}")
