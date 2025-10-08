@@ -5,6 +5,7 @@ import numpy as np
 import base64
 from datetime import datetime
 import json
+import gspread
 
 # --- Configuração da Página ---
 st.set_page_config(
