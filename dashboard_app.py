@@ -58,12 +58,10 @@ def get_status(row):
         return "Redução de Backlog"
 
 # --- INTERFACE DO APLICATIVO ---
-
-# --- MUDANÇA: TÍTULO CENTRALIZADO ---
 st.markdown("<h1 style='text-align: center;'>Backlog Copa Energia + Belago</h1>", unsafe_allow_html=True)
 
-# --- MUDANÇA: SUBSTITUINDO O GIF PELA IMAGEM ESTÁTICA ---
-st.sidebar.image("logo_sidebar.png", use_container_width=True)
+# Parâmetro atualizado de 'use_container_width' para 'width'
+st.sidebar.image("logo_sidebar.png", width='stretch')
 
 st.sidebar.header("Carregar Arquivos")
 uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL (.csv)", type="csv")
