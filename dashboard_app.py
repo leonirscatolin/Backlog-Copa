@@ -7,7 +7,6 @@ from datetime import datetime
 from github import Github, Auth
 from io import StringIO
 from urllib.parse import quote 
-import streamlit.components.v1 as components # Importante ter esta linha
 
 # --- Configuração da Página ---
 st.set_page_config(
@@ -125,17 +124,18 @@ st.markdown("---")
 # --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
 
 def scroll_para_detalhes():
+    # Este script agora vai procurar pelo ID gerado pelo st.subheader
     js_code = """
     <script>
         setTimeout(function() {
-            var element = document.getElementById("detalhes_chamados");
+            var element = document.getElementById("detalhar-e-buscar-chamados");
             if (element) {
                 element.scrollIntoView({behavior: "smooth", block: "start"});
             }
         }, 300);
     </script>
     """
-    components.html(js_code, height=0)
+    st.markdown(js_code, unsafe_allow_html=True)
 
 try:
     df_atual = read_github_file(repo, "dados_atuais.csv")
@@ -150,10 +150,13 @@ try:
         
         st.markdown("""
         <style>
-        a.metric-box {
+        .metric-box {
             border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px;
             text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 10px; display: block;
+            margin-bottom: 10px;
+        }
+        a.metric-box {
+            display: block;
             color: inherit; 
             text-decoration: none;
         }
@@ -180,7 +183,16 @@ try:
                 total_chamados = len(df_aging)
                 _, col_total, _ = st.columns([2, 1.5, 2])
                 with col_total:
-                    st.markdown( f""" <div class="metric-box"> <span class="value">{total_chamados}</span> <span class="label">Total de Chamados</span> </div> """, unsafe_allow_html=True )
+                    # CORREÇÃO FORMATAÇÃO: Garantindo que este bloco use a mesma estrutura
+                    st.markdown(
+                        f"""
+                        <div class="metric-box">
+                            <span class="value">{total_chamados}</span>
+                            <span class="label">Total de Chamados</span>
+                        </div>
+                        """, 
+                        unsafe_allow_html=True
+                    )
                 st.markdown("---")
                 
                 aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
@@ -206,7 +218,7 @@ try:
                 for i, row in aging_counts.iterrows():
                     with cols[i]:
                         faixa_encoded = quote(row['Faixa de Antiguidade'])
-                        card_html = f""" <a href="?faixa={faixa_encoded}" target="_self" class="metric-box"> <span class="value">{row['Quantidade']}</span> <span class="label">{row['Faixa de Antiguidade']}</span> </a> """
+                        card_html = f"""<a href="?faixa={faixa_encoded}" target="_self" class="metric-box"><span class="value">{row['Quantidade']}</span><span class="label">{row['Faixa de Antiguidade']}</span></a>"""
                         st.markdown(card_html, unsafe_allow_html=True)
 
             else:
@@ -220,8 +232,8 @@ try:
 
             if not df_aging.empty:
                 st.markdown("---")
-                st.markdown('<a id="detalhes_chamados"></a>', unsafe_allow_html=True)
-                st.subheader("Detalhar e Buscar Chamados")
+                # CORREÇÃO ROLAGEM: Usando o método oficial do Streamlit para criar a âncora
+                st.subheader("Detalhar e Buscar Chamados", anchor="detalhar-e-buscar-chamados")
                 
                 st.selectbox( "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada' )
                 
@@ -282,7 +294,6 @@ try:
 except Exception as e:
     st.error(f"Ocorreu um erro ao carregar os dados: {e}")
 
-# Bloco de verificação da "bandeira" no final do script
 if 'scroll_request' in st.session_state and st.session_state.scroll_request:
     scroll_para_detalhes()
     st.session_state.scroll_request = False
