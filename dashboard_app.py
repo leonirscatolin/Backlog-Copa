@@ -15,7 +15,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- FUNÇÕES (As suas, sem alterações) ---
+# --- FUNÇÕES ---
 @st.cache_resource
 def get_github_repo():
     try:
@@ -89,19 +89,13 @@ def get_status(row):
         return "Redução de Backlog"
 
 # --- INTERFACE DO APLICATIVO ---
-
-# MUDANÇA: Logos e Título Centralizado
 col1, col2, col3 = st.columns([1, 4, 1])
 with col1:
-    st.image("logo_sidebar.png", width=150) # Use o nome do seu novo logo da sidebar
+    st.image("logo_sidebar.png", width=150)
 with col2:
     st.markdown("<h1 style='text-align: center;'>Backlog Copa Energia + Belago</h1>", unsafe_allow_html=True)
 with col3:
     st.image("logo_belago.png", width=150)
-
-
-# A barra lateral não tem mais o GIF/logo
-# st.sidebar.markdown(f"""...""", unsafe_allow_html=True) 
 
 # --- LÓGICA DE LOGIN E UPLOAD ---
 st.sidebar.header("Área do Administrador")
