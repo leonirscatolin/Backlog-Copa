@@ -142,17 +142,31 @@ try:
             text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 10px;
         }
-        /* Ajuste para esconder o botão, mantendo a área clicável */
-        .stButton>button {
+        /* MODIFICAÇÃO CSS PARA POSICIONAR O BOTÃO SOBRE O CARD */
+        /* O container de cada coluna de métrica */
+        .stColumns > div {
+            position: relative; /* Define a coluna como o referencial para o posicionamento absoluto */
+        }
+        /* O estilo do botão "invisível" */
+        .stButton button {
+            position: absolute; /* Posiciona o botão de forma absoluta */
+            top: 0;
+            left: 0;
+            width: 100%; /* Ocupa toda a largura do container */
+            height: 100%; /* Ocupa toda a altura do container */
+            opacity: 0; /* Torna o botão invisível */
+            z-index: 1; /* Garante que o botão esteja acima do markdown do card */
+            cursor: pointer; /* Mantém o cursor de ponteiro para indicar clicável */
             border: none;
             background-color: transparent;
-            color: transparent; /* Esconde o texto do botão */
-            padding: 0;
-            margin-top: -50px; /* Puxa o botão para cima sobrepondo o card */
-            height: 50px; /* Altura para cobrir a área do card */
-            width: 100%;
-            cursor: pointer;
+            padding: 0; /* Remove padding padrão do botão */
+            margin: 0; /* Remove margem padrão do botão */
         }
+        /* Estilo para quando o mouse passar por cima do botão invisível */
+        .stButton button:hover {
+            background-color: rgba(233, 113, 50, 0.1); /* Um leve brilho laranja ao passar o mouse */
+        }
+
         .metric-box .value {font-size: 2.5em; font-weight: bold; color: #375623;}
         .metric-box .label {font-size: 1em; color: #666666;}
         </style>
@@ -169,6 +183,21 @@ try:
                 """
             )
             st.subheader("Análise de Antiguidade do Backlog Atual")
+            
+            # --- MODIFICAÇÃO: DEFINIÇÃO DA FUNÇÃO DE SCROLL ---
+            # Função para rolar até a âncora "detalhes_chamados"
+            def scroll_to_anchor():
+                st.markdown(
+                    """
+                    <script>
+                        var element = document.getElementById("detalhes_chamados");
+                        if (element) {
+                            element.scrollIntoView({behavior: "smooth", block: "start"});
+                        }
+                    </script>
+                    """,
+                    unsafe_allow_html=True
+                )
             
             if not df_aging.empty:
                 total_chamados = len(df_aging)
@@ -192,15 +221,15 @@ try:
                 aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
                 aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
 
-                # --- INÍCIO DA MODIFICAÇÃO: LÓGICA DE INTERATIVIDADE ---
-                
                 # 1. Inicializa o session_state se ele ainda não existir
                 if 'faixa_selecionada' not in st.session_state:
                     st.session_state.faixa_selecionada = ordem_faixas[0] # Define um valor padrão
 
                 # 2. Função para ser chamada no clique do botão, atualizando o estado
-                def setar_faixa_selecionada(faixa):
+                #    AGORA TAMBÉM CHAMA A FUNÇÃO DE SCROLL
+                def setar_faixa_selecionada_e_rolar(faixa):
                     st.session_state.faixa_selecionada = faixa
+                    scroll_to_anchor() # Chama a função de scroll aqui
 
                 cols = st.columns(len(ordem_faixas))
                 for i, row in aging_counts.iterrows():
@@ -214,15 +243,14 @@ try:
                             </div>
                             """, unsafe_allow_html=True
                         )
-                        # Adiciona um botão (que ficará invisível) para capturar o clique
+                        # Adiciona um botão (agora invisível e sobrepondo o card) para capturar o clique
                         st.button(
-                            label=f" ", # Label pode ser vazia
+                            label=f" ", # Label vazia para o botão invisível
                             key=f"btn_{i}",
-                            on_click=setar_faixa_selecionada,
+                            on_click=setar_faixa_selecionada_e_rolar, # Chama a nova função
                             args=(row['Faixa de Antiguidade'],),
                             use_container_width=True
                         )
-                # --- FIM DA MODIFICAÇÃO ---
 
             else:
                 st.warning("Nenhum dado válido para a análise de antiguidade.")
@@ -234,22 +262,22 @@ try:
             st.dataframe(df_comparativo.set_index('Grupo').style.map(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
 
             if not df_aging.empty:
-                st.markdown("---") 
+                st.markdown("---")
+                # --- MODIFICAÇÃO: ANCHOR PARA O SCROLL ---
+                # Adiciona um elemento HTML com um ID para o JavaScript poder rolar até ele
+                st.markdown('<a id="detalhes_chamados"></a>', unsafe_allow_html=True)
                 st.subheader("Detalhar e Buscar Chamados")
-                
-                # --- INÍCIO DA MODIFICAÇÃO: SINCRONIZAÇÃO DO SELECTBOX ---
                 
                 opcoes_filtro = aging_counts['Faixa de Antiguidade'].tolist()
                 
-                # 3. O selectbox agora é controlado pelo e também controla o session_state
-                #    usando o parâmetro 'key'
+                # O selectbox é controlado pelo e também controla o session_state
                 st.selectbox(
                     "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):",
                     options=opcoes_filtro,
                     key='faixa_selecionada' # Esta chave faz a sincronização
                 )
                 
-                # 4. A lógica de filtro agora usa o valor do session_state
+                # A lógica de filtro agora usa o valor do session_state
                 faixa_atual = st.session_state.faixa_selecionada
                 
                 if faixa_atual and not df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].empty:
@@ -259,8 +287,6 @@ try:
                     st.dataframe(filtered_df[colunas_para_exibir], use_container_width=True)
                 else:
                     st.write("Não há chamados nesta categoria.")
-
-                # --- FIM DA MODIFICAÇÃO ---
                 
                 st.markdown("---")
                 st.subheader("Buscar Chamados por Grupo")
