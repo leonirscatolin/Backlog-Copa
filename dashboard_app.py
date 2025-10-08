@@ -7,6 +7,7 @@ from datetime import datetime
 from github import Github, Auth
 from io import StringIO
 from urllib.parse import quote 
+import streamlit.components.v1 as components # ADIÇÃO 1: Nova importação
 
 # --- Configuração da Página ---
 st.set_page_config(
@@ -124,22 +125,19 @@ st.markdown("---")
 
 # --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
 
-# ADIÇÃO 1: Definir a função de scroll aqui no escopo principal
+# ADIÇÃO 2: Função de rolagem reescrita para usar st.components
 def scroll_para_detalhes():
-    st.markdown(
-        """
-        <script>
-            // Usamos um pequeno delay para garantir que a página renderizou completamente
-            setTimeout(function() {
-                var element = document.getElementById("detalhes_chamados");
-                if (element) {
-                    element.scrollIntoView({behavior: "smooth", block: "start"});
-                }
-            }, 250);
-        </script>
-        """,
-        unsafe_allow_html=True
-    )
+    js_code = """
+    <script>
+        setTimeout(function() {
+            var element = document.getElementById("detalhes_chamados");
+            if (element) {
+                element.scrollIntoView({behavior: "smooth", block: "start"});
+            }
+        }, 300);
+    </script>
+    """
+    components.html(js_code, height=0)
 
 try:
     df_atual = read_github_file(repo, "dados_atuais.csv")
@@ -198,11 +196,10 @@ try:
                 if 'faixa_selecionada' not in st.session_state:
                     st.session_state.faixa_selecionada = ordem_faixas[0]
                 
-                # ADIÇÃO 2: Verifica a URL e apenas levanta a "bandeira" de rolagem
+                # A lógica de levantar a "bandeira" permanece a mesma
                 if st.query_params.get("faixa"):
                     faixa_from_url = st.query_params.get("faixa")
                     if faixa_from_url in ordem_faixas:
-                        # Ativa a rolagem apenas se o filtro mudou
                         if st.session_state.faixa_selecionada != faixa_from_url:
                             st.session_state.scroll_request = True
                         st.session_state.faixa_selecionada = faixa_from_url
@@ -288,7 +285,7 @@ try:
 except Exception as e:
     st.error(f"Ocorreu um erro ao carregar os dados: {e}")
 
-# ADIÇÃO 3: Bloco de verificação da "bandeira" no final do script
+# ADIÇÃO 3: Bloco de verificação da "bandeira" no final do script. ESSA POSIÇÃO É CRUCIAL.
 if 'scroll_request' in st.session_state and st.session_state.scroll_request:
     scroll_para_detalhes()
     st.session_state.scroll_request = False # Reseta a bandeira
