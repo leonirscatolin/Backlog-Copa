@@ -7,14 +7,15 @@ from datetime import datetime
 from github import Github, Auth
 from io import StringIO
 
-# --- Configuração da Página ---
+# --- Configuração da Página (com a barra lateral recolhida) ---
 st.set_page_config(
     layout="wide", 
     page_title="Backlog Copa Energia + Belago",
-    page_icon="copaenergialogo_1691612041.webp"
+    page_icon="copaenergialogo_1691612041.webp",
+    initial_sidebar_state="collapsed"
 )
 
-# --- FUNÇÕES ---
+# --- FUNÇÕES (As suas, sem alterações) ---
 @st.cache_resource
 def get_github_repo():
     try:
@@ -88,22 +89,19 @@ def get_status(row):
         return "Redução de Backlog"
 
 # --- INTERFACE DO APLICATIVO ---
-st.title("Backlog Copa Energia + Belago")
 
-gif_path = "237f1d13493514962376f142bb68_1691760314.gif"
-belago_logo_path = "logo_belago.png"
-gif_base64 = get_base_64_of_bin_file(gif_path)
-belago_logo_base64 = get_base_64_of_bin_file(belago_logo_path)
-if gif_base64 and belago_logo_base64:
-    st.sidebar.markdown(
-        f"""
-        <div style="text-align: center;">
-            <img src="data:image/gif;base64,{gif_base64}" alt="Logo Copa Energia" style="width: 100%; border-radius: 15px; margin-bottom: 20px;">
-            <img src="data:image/png;base64,{belago_logo_base64}" alt="Logo Belago" style="width: 80%; border-radius: 15px;">
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+# MUDANÇA: Logos e Título Centralizado
+col1, col2, col3 = st.columns([1, 4, 1])
+with col1:
+    st.image("logo_sidebar.png", width=150) # Use o nome do seu novo logo da sidebar
+with col2:
+    st.markdown("<h1 style='text-align: center;'>Backlog Copa Energia + Belago</h1>", unsafe_allow_html=True)
+with col3:
+    st.image("logo_belago.png", width=150)
+
+
+# A barra lateral não tem mais o GIF/logo
+# st.sidebar.markdown(f"""...""", unsafe_allow_html=True) 
 
 # --- LÓGICA DE LOGIN E UPLOAD ---
 st.sidebar.header("Área do Administrador")
