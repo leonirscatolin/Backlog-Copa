@@ -124,16 +124,18 @@ st.markdown("---")
 
 # --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
 
+# ADIÇÃO 1: Definir a função de scroll aqui no escopo principal
 def scroll_para_detalhes():
     st.markdown(
         """
         <script>
-            var element = document.getElementById("detalhes_chamados");
-            if (element) {
-                setTimeout(function() {
+            // Usamos um pequeno delay para garantir que a página renderizou completamente
+            setTimeout(function() {
+                var element = document.getElementById("detalhes_chamados");
+                if (element) {
                     element.scrollIntoView({behavior: "smooth", block: "start"});
-                }, 200);
-            }
+                }
+            }, 250);
         </script>
         """,
         unsafe_allow_html=True
@@ -152,19 +154,14 @@ try:
         
         st.markdown("""
         <style>
-        .metric-box {
+        a.metric-box {
             border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px;
             text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 10px; display: block;
-        }
-        /* AJUSTE 1: CSS para remover o sublinhado dos links */
-        a.metric-box, a.metric-box:hover {
+            color: inherit; 
             text-decoration: none;
-            color: inherit;
         }
-        a.metric-box:hover {
-            background-color: #f0f2f6;
-        }
+        a.metric-box:hover { background-color: #f0f2f6; text-decoration: none; }
         .metric-box span { display: block; width: 100%; }
         .metric-box .value {font-size: 2.5em; font-weight: bold; color: #375623;}
         .metric-box .label {font-size: 1em; color: #666666;}
@@ -184,7 +181,6 @@ try:
             st.subheader("Análise de Antiguidade do Backlog Atual")
             
             if not df_aging.empty:
-                # AJUSTE 2: Centraliza a coluna do total e garante que usa o estilo .metric-box
                 total_chamados = len(df_aging)
                 _, col_total, _ = st.columns([2, 1.5, 2])
                 with col_total:
@@ -202,9 +198,11 @@ try:
                 if 'faixa_selecionada' not in st.session_state:
                     st.session_state.faixa_selecionada = ordem_faixas[0]
                 
+                # ADIÇÃO 2: Verifica a URL e apenas levanta a "bandeira" de rolagem
                 if st.query_params.get("faixa"):
                     faixa_from_url = st.query_params.get("faixa")
                     if faixa_from_url in ordem_faixas:
+                        # Ativa a rolagem apenas se o filtro mudou
                         if st.session_state.faixa_selecionada != faixa_from_url:
                             st.session_state.scroll_request = True
                         st.session_state.faixa_selecionada = faixa_from_url
@@ -290,6 +288,7 @@ try:
 except Exception as e:
     st.error(f"Ocorreu um erro ao carregar os dados: {e}")
 
+# ADIÇÃO 3: Bloco de verificação da "bandeira" no final do script
 if 'scroll_request' in st.session_state and st.session_state.scroll_request:
     scroll_para_detalhes()
-    st.session_state.scroll_request = False
+    st.session_state.scroll_request = False # Reseta a bandeira
