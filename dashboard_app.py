@@ -75,12 +75,37 @@ if gif_base64 and belago_logo_base64:
         unsafe_allow_html=True,
     )
 
-st.sidebar.header("Carregar Arquivos")
-uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL (.csv)", type="csv")
-uploaded_file_15dias = st.sidebar.file_uploader("2. Backlog de 15 DIAS ATRÁS (.csv)", type="csv")
+# --- LÓGICA DE LOGIN E UPLOAD ---
+st.sidebar.header("Área do Administrador")
+password = st.sidebar.text_input("Digite a senha para atualizar os dados:", type="password")
 
-if uploaded_file_atual and uploaded_file_15dias:
+# Verifica se a senha digitada é a mesma que está nos Secrets
+# O .get() é usado para evitar erro caso o secret ainda não tenha sido criado
+is_admin = password == st.secrets.get("ADMIN_PASSWORD", "")
+
+if is_admin:
+    st.sidebar.success("Acesso liberado!")
+    st.sidebar.header("Carregar Arquivos")
+    uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL (.csv)", type="csv")
+    uploaded_file_15dias = st.sidebar.file_uploader("2. Backlog de 15 DIAS ATRÁS (.csv)", type="csv")
+    
+    # Salva os arquivos na memória da sessão para que os usuários vejam
+    if uploaded_file_atual and uploaded_file_15dias:
+        st.session_state['uploaded_file_atual'] = uploaded_file_atual
+        st.session_state['uploaded_file_15dias'] = uploaded_file_15dias
+        st.sidebar.info("Arquivos carregados e visíveis para todos.")
+
+elif password:
+    st.sidebar.error("Senha incorreta.")
+
+# --- LÓGICA DE EXIBIÇÃO ---
+# Verifica se os arquivos já foram carregados em uma sessão anterior pelo admin
+if 'uploaded_file_atual' in st.session_state and 'uploaded_file_15dias' in st.session_state:
     try:
+        # Usa os arquivos salvos na memória da sessão
+        uploaded_file_atual = st.session_state['uploaded_file_atual']
+        uploaded_file_15dias = st.session_state['uploaded_file_15dias']
+
         df_atual = pd.read_csv(uploaded_file_atual, delimiter=';', encoding='latin1') 
         df_15dias = pd.read_csv(uploaded_file_15dias, delimiter=';', encoding='latin1')
         
@@ -230,4 +255,4 @@ if uploaded_file_atual and uploaded_file_15dias:
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
 else:
-    st.info("Aguardando o upload dos dois arquivos CSV.")
+    st.info("Para visualizar o dashboard, o administrador precisa primeiro carregar os arquivos do dia.")
