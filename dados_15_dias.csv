@@ -1,5 +1,8 @@
 ID do ticket;Tipo de ticket;Status;Data de criação;Atribuir a um indivíduo;Atribuir a um grupo;Duração do ticket (em dias);Descrição;Detalhes
-300-130488;Incident;Queued;17/09/2025;;COP-SAP MOBILE-3N;6;Categoria de Item para ordem 0013008611 Item 000010 não encontrada na tabela CATITM2REC ZEVV001 \/  \/ 1;"USUÁRIO AFETADO: MONICA
+100-98360;Service Request;Queued;16/09/2025;;COP-WEB-PORTAL;5;Acesso ao Copa On;Eu não consigo acessar o Copa On e também eu não consigo mudar a senha.
+100-98738;Service Request;Queued;19/09/2025;;APOIO-COP-ACESSO;2;Meu ZTNA não funciona;Meu ZTNA não funciona
+300-129218;Incident;Queued;01/09/2025;;COP-SAP MM-3N;20;"Erro ao tentar fazer a MIRO. Aparece a mensagem ""Entrar chave do domicílio fiscal"". Segue tela do erro em anexo.";"Erro ao tentar fazer a MIRO. Aparece a mensagem ""Entrar chave do domicílio fiscal"". Segue tela do erro em anexo."
+300-130488;Incident;Queued;17/09/2025;;COP-SAP MOBILE-3N;4;Categoria de Item para ordem 0013008611 Item 000010 não encontrada na tabela CATITM2REC ZEVV001 \/  \/ 1;"USUÁRIO AFETADO: MONICA
 CHAVE: LQMK
 TELEFONE: 84 33446706
 LOCALIZAÇÃO:centro 1235
@@ -8,15 +11,39 @@ DESCRIÇÃO:PROBLEMAS NA RECONCIALIAÇAO, DEVIDO A ORDEN PRESA 13008611
 0000681896
 PAT 1358956"
 ;;;;;;;;
-300-129218;Incident;Queued;01/09/2025;;COP-SAP MM-3N;22;"Erro ao tentar fazer a MIRO. Aparece a mensagem ""Entrar chave do domicílio fiscal"". Segue tela do erro em anexo.";"Erro ao tentar fazer a MIRO. Aparece a mensagem ""Entrar chave do domicílio fiscal"". Segue tela do erro em anexo."
-300-127657;Incident;Queued;09/08/2025;;COP-SAP-LES-LOG;45;Geração de variável;"Gostaria de saber se teria como gerar uma variável para agilizar meu trabalho dentro do SAP.
+300-130635;Incident;Queued;19/09/2025;;COP-FAT MOVEL;2;NA NOTA SAI O CPF DO CLIENTE E NÃO O CNPJ, POREM NO SISTEMA ESTÁ CADASTRADO O CNPJ DO CLIENTE;"NOTA : 7122
+SERIE27
+
+
+TI / faturamento móvel
+
+Desde o mês 05/2025 as notas emitidas através do faturamento móvel para o cliente 41143 - MAURICIO PEREIRA DOS SANTOS PINTURA,  estão sendo rejeitadas pela SEFAZ através do código de Rejeição 728.
+
+NA NOTA SAI O CPF DO CLIENTE E NÃO O CNPJ, POREM NO SISTEMA ESTÁ CADASTRADO O CNPJ DO CLIENTE
+
+E a  informação apresentada  é que está sem informação da I.E. do destinatário.
+
+Devido  a este rejeição, as vendas estão sendo realizadas através de venda certa."
+;;;;;;;;
+;;;;;;;;
+100-97738;Service Request;Queued;10/09/2025;;COP-AUT-SAP-LOGÍSTICA-SD/PAT/IDM;11;SAP não deixa acessar impressoras após ajustes de perfil da logística de Araucária.;SAP não deixa acessar impressoras após ajustes de perfil da logística de Araucária.
+300-127657;Incident;Queued;09/08/2025;;COP-SAP-LES-LOG;43;Geração de variável;"Gostaria de saber se teria como gerar uma variável para agilizar meu trabalho dentro do SAP.
 
 As prints que eu preciso estão em anexo.
 
 Centro: 1200
 Capuava"
 ;;;;;;;;
-300-130354;Incident;Queued;15/09/2025;;COP-SAP MOBILE-3N;8;Categoria de Item para ordem 0012981989 Item 000010 não encontrada na tabela CATITM2REC ZEVV001 \/  \/ 1;"Viagem: 681416
+;;;;;;;;
+100-97278;Service Request;Queued;05/09/2025;;COP-SAP LES-3N;16;"HORARIO TRABALHO: ADM
+DESCRIÇÃO DO PROBLEMA: Os CTES do Transportador 702340 Expresso Via Norte não esta subindo ZLESR004 - MONITOR - PAGAMENTO DE FRETES";"USUÁRIO AFETADO: Valdoir Jose Farencena Puchale  
+CHAVE: LQXD
+TELEFONE: 55 996098329
+EMAIL:valdoir.puchale@copaenergia.com.br
+LOCALIZAÇÃO: Santa Maria
+HORARIO TRABALHO: ADM
+DESCRIÇÃO DO PROBLEMA: Os CTES do Transportador 702340 Expresso Via Norte não esta subindo ZLESR004 - MONITOR - PAGAMENTO DE FRETES"
+300-130354;Incident;Queued;15/09/2025;;COP-SAP MOBILE-3N;6;Categoria de Item para ordem 0012981989 Item 000010 não encontrada na tabela CATITM2REC ZEVV001 \/  \/ 1;"Viagem: 681416
 PAT: 1358044
 Centro: 1242
 
@@ -24,16 +51,7 @@ Centro: 1242
 Obs: sistema informa que o item 10 não foi encontrado na tabela  para ordem 12981989
 
 Cliente: 132168"
-300-126711;Incident;Queued;26/07/2025;;COP-SAP MOBILE-3N;59;Erro na transação IDM;"Não estou conseguindo usar a transação IDM, dá erro de carregando dados.
-
-Centro: 1234
-Mataripe
-
-Segue em anexo."
-100-97193;Service Request;Queued;04/09/2025;;COP-SAP CO-3N;19;SAP-CO -criação de relatório - visão na transação GR55;"Prezados,
-Por favor, poderia me dar apoio na criação de um  relatório (não sei qual transação que cria) para ter a visão na transação GR55, semelhante ao grupo de relatório ZC01, grupo de centro de custo KSS2_PROD e grupo de classe de centro de custo FECH_CUSTO.
-Segue arquivo com o arquivo que consulto hoje e, quero desenvolver um semelhante, com grupos de contas e centros diferentes."
-300-130484;Incident;Queued;17/09/2025;;COP-SAP-MM-COMPRAS;6;ALTERAÇÃO APROVADOR - REQUISIÇÃO E PEDIDOS;"Boa tarde!
+300-130484;Incident;Queued;17/09/2025;;COP-SAP-MM-COMPRAS;4;ALTERAÇÃO APROVADOR - REQUISIÇÃO E PEDIDOS;"Boa tarde!
 
 Estamos precisando fazer a alteração do aprovador dos pedidos locais de Montes Claros
  
@@ -44,35 +62,77 @@ Chave do antigo aprovador: GKY7
 Nome do antigo aprovador: HONÓRIO ROBERT GOMES DE MOURA
 Chave do novo aprovador: LQQ7
 Nome do novo aprovador: REGINALDO SANTOS BICALHO"
-300-130641;Incident;Queued;19/09/2025;;COP-SAP SD-3N;4;"PAT=00000000000001359952; Reconciliação->  PROBLEMA no SAP = status:NOK,mensagem:Categoria de Item para ordem 0012966082 Item 000010 não encontrada na tabela CATITM2REC ZEVV001 \/  \/ 3";"PAT=00000000000001359952; Reconciliação->  PROBLEMA no SAP = status:NOK,mensagem:Categoria de Item para ordem 0012966082 Item 000010 não encontrada na tabela CATITM2REC ZEVV001 \/  \/ 3"
-300-130503;Incident;Queued;17/09/2025;;COP-SAP SD-3N;6;"PAT=00000000000001358857; Reconciliação->  PROBLEMA no SAP = status:NOK,mensagem:Categoria de Item para ordem 0013015403 Item 000020 não encontrada na tabela CATITM2REC ZEVV001 \/  \/ 1";"PAT=00000000000001358857; Reconciliação->  PROBLEMA no SAP = status:NOK,mensagem:Categoria de Item para ordem 0013015403 Item 000020 não encontrada na tabela CATITM2REC ZEVV001 \/  \/ 1
+;;;;;;;;
+100-97193;Service Request;Queued;04/09/2025;;COP-SAP CO-3N;17;SAP-CO -criação de relatório - visão na transação GR55;"Prezados,
+Por favor, poderia me dar apoio na criação de um  relatório (não sei qual transação que cria) para ter a visão na transação GR55, semelhante ao grupo de relatório ZC01, grupo de centro de custo KSS2_PROD e grupo de classe de centro de custo FECH_CUSTO.
+Segue arquivo com o arquivo que consulto hoje e, quero desenvolver um semelhante, com grupos de contas e centros diferentes."
+100-97446;Service Request;Queued;08/09/2025;;COP-APLIC-NOTES;13;Solicito acesso ao Lotus Notes - pasta contrato para a funcionária Pietra Miranda de Campos - GT53;Solicito acesso ao Lotus Notes - pasta contrato para a funcionária Pietra Miranda de Campos - GT53
+300-126711;Incident;Queued;26/07/2025;;COP-SAP MOBILE-3N;57;Erro na transação IDM;"Não estou conseguindo usar a transação IDM, dá erro de carregando dados.
+
+Centro: 1234
+Mataripe
+
+Segue em anexo."
+100-98324;Service Request;New;16/09/2025;;COP-POWER-BI;5;Solicito a licença o Power BI, para atualização, acompanhamento dos dados Energizados;Solicito a licença o Power BI, para atualização, acompanhamento dos dados Energizados
+100-98325;Service Request;New;16/09/2025;;COP-POWER-BI;5;Solicito a licença o Power BI, para atualização, acompanhamento dos dados Energizados;Solicito a licença o Power BI, para atualização, acompanhamento dos dados Energizados
+300-130641;Incident;Queued;19/09/2025;;COP-SAP SD-3N;2;"PAT=00000000000001359952; Reconciliação->  PROBLEMA no SAP = status:NOK,mensagem:Categoria de Item para ordem 0012966082 Item 000010 não encontrada na tabela CATITM2REC ZEVV001 \/  \/ 3";"PAT=00000000000001359952; Reconciliação->  PROBLEMA no SAP = status:NOK,mensagem:Categoria de Item para ordem 0012966082 Item 000010 não encontrada na tabela CATITM2REC ZEVV001 \/  \/ 3"
+100-98346;Service Request;Queued;16/09/2025;;COP-IMPRESSORA;5;impressora Leopardo A7 e Promax erro de impressao.;"impressora Leopardo A7 e Promax erro de impressao.
+
+centro 1232 f439 e FT1862"
+300-130503;Incident;Queued;17/09/2025;;COP-SAP SD-3N;4;"PAT=00000000000001358857; Reconciliação->  PROBLEMA no SAP = status:NOK,mensagem:Categoria de Item para ordem 0013015403 Item 000020 não encontrada na tabela CATITM2REC ZEVV001 \/  \/ 1";"PAT=00000000000001358857; Reconciliação->  PROBLEMA no SAP = status:NOK,mensagem:Categoria de Item para ordem 0013015403 Item 000020 não encontrada na tabela CATITM2REC ZEVV001 \/  \/ 1
 viagem-681836
 centro: 1232"
-300-130481;Incident;Queued;17/09/2025;;COP-SAP-SD-TRIBUTARIO;6;930 Rejeicao: CST com beneficio fiscal e nao informado o codigo de beneficio fiscal;"solicito um empurra notas 
+300-130481;Incident;Queued;17/09/2025;;COP-SAP-SD-TRIBUTARIO;4;930 Rejeicao: CST com beneficio fiscal e nao informado o codigo de beneficio fiscal;"solicito um empurra notas 
 nf 143748
 n° doc 20811567"
-300-127920;Incident;Queued;13/08/2025;;COP-SAP MM-3N;41;emissão de nota de GLP granel, está criando uma condição indevida na Vl de saída. (emissão de transferência).;"emissão de nota de GLP granel, está criando uma condição indevida na Vl de saída. (emissão de transferência).
+300-127920;Incident;Queued;13/08/2025;;COP-SAP MM-3N;39;emissão de nota de GLP granel, está criando uma condição indevida na Vl de saída. (emissão de transferência).;"emissão de nota de GLP granel, está criando uma condição indevida na Vl de saída. (emissão de transferência).
 todas as notas estão ocorrendo isso.
 Transação: cria uma MIGO e vai na VLES0008"
-300-130427;Incident;Queued;16/09/2025;;COP-SAP SD-3N;7;SEGUE ERRO NO RECONCILIAR A PAT 1357884/681328 - 15/09/25;"SEGUE ERRO NO RECONCILIAR A PAT 1357884/681328 - 15.09.25
+300-130427;Incident;Queued;16/09/2025;;COP-SAP SD-3N;5;SEGUE ERRO NO RECONCILIAR A PAT 1357884/681328 - 15/09/25;"SEGUE ERRO NO RECONCILIAR A PAT 1357884/681328 - 15.09.25
 
 
 PAT=00000000000001357884; Reconciliação->  PROBLEMA no SAP = status:NOK,mensagem:Categoria de Item para ordem 0012947638 Item 000030 não encontrada na tabela CATITM2REC ZEVV001 \/ ZE02 \/ 5"
-100-93071;Service Request;Queued;25/07/2025;;COP-SAP LES-3N;60;DESCRIÇÃO DO PROBLEMA:  Usuário verificou que após a atualização do Notifis e parametrização dos créditos de pis e cofins as notas de serviço passaram a constar o registro no livro fiscal de entradas das notas que compõe o sped fiscal. Segue anexo o livro para validação das notas NF 8549 a 8582.;"USUÁRIO AFETADO: DE CARVALHO RAYMUNDO, RAFAEL
+100-93071;Service Request;Queued;25/07/2025;;COP-SAP LES-3N;58;DESCRIÇÃO DO PROBLEMA:  Usuário verificou que após a atualização do Notifis e parametrização dos créditos de pis e cofins as notas de serviço passaram a constar o registro no livro fiscal de entradas das notas que compõe o sped fiscal. Segue anexo o livro para validação das notas NF 8549 a 8582.;"USUÁRIO AFETADO: DE CARVALHO RAYMUNDO, RAFAEL
 CHAVE: czoc
 TELEFONE:  84  33446715
 EMAIL:CZOC@copaenergia.com.br
 LOCALIZAÇÃO: Natal - 1235
 HORARIO TRABALHO: ADM
 DESCRIÇÃO DO PROBLEMA:  Foram lançadas notas de serviço pelo notifis, as quais constam indevidamente no livro fiscal e com CFOP errado. Segue anexo o livro para validação das notas NF 8549 a 8582."
-300-127695;Incident;Queued;11/08/2025;;COP-SAP MM-3N;43;"Transação ZMM0058
+300-127695;Incident;Queued;11/08/2025;;COP-SAP MM-3N;41;"Transação ZMM0058
 Linha 9 do Mapa Envasado com a soma equivocada";A soma total da linha 9 de diferenças não esta apresentando o calculo correto, vem somando os dias anteriores na coluna dia.
-300-130012;Incident;Queued;10/09/2025;;COP-SAP MOBILE-3N;13;"Viagem 679449  Pat Saida 1354330
+300-130565;Incident;Queued;18/09/2025;;COP-SAP PM;3;Não permite fazer a ordem de venda pela ZRF;"Não permite fazer a ordem de venda pela ZRF
+
+RM: 367757
+Código principal: 45197
+Não existe clientes para emissor da ordem.
+Centro: 1007
+Jardinópolis"
+100-98578;Service Request;Queued;18/09/2025;;COP-INFRA;3;"Erro de distribuição de carga trabalho 88 no logon do SAP Liquigas, fora do Citrix (anexo)
+Usuário solicita acesso SAP Liquigás
+ fora do Citrix.";"USUÁRIO AFETADO: Marianna
+CHAVE: KN57
+TELEFONE:16 988408555
+LOCALIZAÇÃO:JARDINOPOLIS
+ 
+DESCRIÇÃO: Usuário solicita acesso SAP Liquigás
+ fora do Citrix."
+300-129870;Incident;Queued;09/09/2025;;COP-SAP-SD-TRIBUTARIO;12;nota presa no monitor;"nota presa no monitor
+
+NOTA: 56
+SERIE : 02
+DOC: 20680622
+CENTRO: 1206"
+100-98765;Service Request;New;19/09/2025;;COP-SEGURANÇA;2;E-mail Ecovadis;Preciso realizar a troca senha do meu login de acesso a plataforma do Ecovadis, mas não está chegando o e-mail deles para troca da senha...vide anexo. Por favor, verifiquem se há algum e-mail bloqueado. Caso positivo, peço liberação do remetente para que possamos preencher a plataforma do compromisso esg da Copa.
+100-98707;Service Request;New;19/09/2025;;COP-POWER-BI;2;Instalar o Power BI no meu PC;Instalar o Power BI no meu PC
+100-98763;Service Request;New;19/09/2025;;COP-ORIENTAÇÃO-GRC;2;liberar acesso da transação SU3;liberar acesso da transação SU3, para configurar a impressora para PDF
+100-98667;Service Request;Queued;18/09/2025;;COP-POWER-BI;3;Solicito a instalação da ultima versão do Power BI desktop na minha maquina.;O departamento de tesouraria em parceira com a equipe de inteligência de dados está com um projeto de criação de um painel para área que será colocado no analytics. Por esse motivo preciso do Power BI desktop instalado na minha maquina para fazer as correções necessárias no Power Bi que foi construído pela consultoria.
+300-130012;Incident;Queued;10/09/2025;;COP-SAP MOBILE-3N;11;"Viagem 679449  Pat Saida 1354330
 
 PAT=00000000000001354330; Reconciliação->  PROBLEMA no SAP = status:NOK,mensagem:Categoria de Item para ordem 0012911230 Item 000020 não encontrada na tabela CATITM2REC ZEVV001 \/  \/ 1";"Viagem 679449  Pat Saida 1354330
 
 PAT=00000000000001354330; Reconciliação->  PROBLEMA no SAP = status:NOK,mensagem:Categoria de Item para ordem 0012911230 Item 000020 não encontrada na tabela CATITM2REC ZEVV001 \/  \/ 1"
-100-97877;Service Request;Queued;12/09/2025;;COP-SHAREPOINT;11;"Criar uma nova pasta no Share point
+100-97877;Service Request;Queued;12/09/2025;;COP-SHAREPOINT;9;"Criar uma nova pasta no Share point
 Nome: Gestão - Financeira
 Responsável: Fabiana Modesto 
 
@@ -81,7 +141,7 @@ Nome: Gestão - Financeira
 Responsável: Fabiana Modesto 
 
 Dúvidas falar com Fabiana Modesto, chave KI37"
-100-98482;Service Request;Queued;17/09/2025;;COP-SAP SD-3N;6;Problema com impressão;"Problema com impressão
+100-98482;Service Request;Queued;17/09/2025;;COP-SAP SD-3N;4;Problema com impressão;"Problema com impressão
 
 algumas notas estão saindo com má qualidade, está atrapalhando nossa rotina de trabalho
 Mataripe.
@@ -118,8 +178,10 @@ mat201
 172.31.206.227 
 
 MAT201_ML451X"
-300-126677;Incident;Queued;25/07/2025;;COP-SAP LES-3N;60;Nos dias 24 e 25 rodamos o monitor de frete, referente ao transportador 420976, todos fretes foram bandeirados, porém entram com valores menores no livro fiscal. Anexo como está constando.;Nos dias 24 e 25 rodamos o monitor de frete, referente ao transportador 420976, todos fretes foram bandeirados, porém entram com valores menores no livro fiscal. Anexo como está constando.
-100-95799;Service Request;Queued;20/08/2025;;COP-SAP LES-3N;34;erro no lançamento de fretes;"USUÁRIO AFETADO: Leticia
+300-126677;Incident;Queued;25/07/2025;;COP-SAP LES-3N;58;Nos dias 24 e 25 rodamos o monitor de frete, referente ao transportador 420976, todos fretes foram bandeirados, porém entram com valores menores no livro fiscal. Anexo como está constando.;Nos dias 24 e 25 rodamos o monitor de frete, referente ao transportador 420976, todos fretes foram bandeirados, porém entram com valores menores no livro fiscal. Anexo como está constando.
+300-129902;Incident;Queued;09/09/2025;;COP-GESTAO;12;Impressora do faturamento móvel leopardo promax está realizando impressões muito fracas, a impressora já foi testada e está ok, problema está Fatmóvel necessário verificar configuração.;"Impressora do faturamento móvel leopardo promax está realizando impressões muito fracas, a impressora já foi testada e está ok, problema está Fatmóvel necessário verificar configuração.
+Unidade: Santa Maria 1225"
+100-95799;Service Request;Queued;20/08/2025;;COP-SAP LES-3N;32;erro no lançamento de fretes;"USUÁRIO AFETADO: Leticia
 CHAVE: G0KY    
 TELEFONE:55 33044200
 LOCALIZAÇÃO:1225 santa maria
@@ -128,8 +190,13 @@ DESCRIÇÃO: Fretes com erro  no CTE. sobem para libro fiscal com valor incorreto.
 sendo necessário estornar e lançar de novo.
 
 exemplo Frete 68209-3"
-300-129873;Incident;New;09/09/2025;;COP-BW-BO;14;Conciliação SAP x BW - Agosto/25;Estou com problema de itens não conciliados no BW.
-300-129577;Incident;Queued;04/09/2025;;COP-WEB-PORTAL;19;"300-129299 - 02/09/2025
+;;;;;;;;
+;;;;;;;;
+300-130655;Incident;Queued;19/09/2025;;COP-SAP MM;2;pedido nº 4503695815 de transferência não crio recebimento, porém tentando fazer o processo manual conforme orientação anexa;peço verificar por não criou o recebimento . segue o passo que fizemos onde não ocorre a criação da VL.
+300-129873;Incident;New;09/09/2025;;COP-BW-BO;12;Conciliação SAP x BW - Agosto/25;Estou com problema de itens não conciliados no BW.
+100-98768;Service Request;New;19/09/2025;;APOIO-COP-SEDE;2;impressora não imprime;as impressoras da unidade não imprimem a partir dos computadores
+100-98668;Service Request;New;18/09/2025;;COP-POWER-BI;3;Gerente Luciana Pinheiro, nao consegue acessar os relatórios do meu analytics.;Sem acesso.
+300-129577;Incident;Queued;04/09/2025;;COP-WEB-PORTAL;17;"300-129299 - 02/09/2025
 300-126759 - 31/07/2025
 100-83681 - 07/05/2025
 O acesso ao link da Petrobras, para realização de agendamentos e alterações, para compra de GLP, está muito ruim, pois demora para entrar na pagina https://canalcliente.petrobras.com.br.
@@ -140,16 +207,65 @@ Podem dar uma solução para esse caso?";"300-129299 - 02/09/2025
 O acesso ao link da Petrobras, para realização de agendamentos e alterações, para compra de GLP, está muito ruim, pois demora para entrar na pagina https://canalcliente.petrobras.com.br.
 Parece que, existe algum log de bloqueio a rede para algumas operações. Não é a 1° vez que realizo e informou o problema.
 Podem dar uma solução para esse caso?"
-300-129305;Incident;Queued;02/09/2025;;COP-SAP LES-3N;21;No processo de transferência entre centros, na transação VL10B, não está gerando o número de RECEBIMENTO no pedido ME21N, ou seja, o processo tem que ser realizado manualmente pela VL31N e VL32N.;No processo de transferência entre centros, na transação VL10B, não está gerando o número de RECEBIMENTO no pedido ME21N, ou seja, o processo tem que ser realizado manualmente pela VL31N e VL32N.
-100-97276;Service Request;Queued;05/09/2025;;COP-SAP FI-3N;18;O boleto de um cliente oriundo da unidade Copa de Socorro, está sendo gerado com o endereço da Copa energia da unidade de São Jose.;"O boleto de um cliente oriundo da unidade Copa de Socorro, está sendo gerado com o endereço da Copa energia da unidade de São Jose.  SAP 6969
+300-129299;Incident;Queued;02/09/2025;;COP-WEB-PORTAL;19;"300-126759 - 31/07/2025
+100-83681 - 07/05/2025
+O acesso ao link da Petrobras, para realização de agendamentos e alterações, para compra de GLP, está muito ruim, pois demora para entrar na pagina https://canalcliente.petrobras.com.br.
+Parece que, existe algum log de bloqueio a rede para algumas operações. Não é a 1° vez que realizo e informou o problema.
+Podem dar uma solução para esse caso?";"300-126759 - 31/07/2025
+100-83681 - 07/05/2025
+O acesso ao link da Petrobras, para realização de agendamentos e alterações, para compra de GLP, está muito ruim, pois demora para entrar na pagina https://canalcliente.petrobras.com.br.
+Parece que, existe algum log de bloqueio a rede para algumas operações. Não é a 1° vez que realizo e informou o problema.
+Podem dar uma solução para esse caso?"
+300-129305;Incident;Queued;02/09/2025;;COP-SAP LES-3N;19;No processo de transferência entre centros, na transação VL10B, não está gerando o número de RECEBIMENTO no pedido ME21N, ou seja, o processo tem que ser realizado manualmente pela VL31N e VL32N.;No processo de transferência entre centros, na transação VL10B, não está gerando o número de RECEBIMENTO no pedido ME21N, ou seja, o processo tem que ser realizado manualmente pela VL31N e VL32N.
+100-98117;Service Request;Queued;15/09/2025;;COP-AUT-SAP-GRCI;6;usuários perderam acesso a transações;"USUÁRIO AFETADO: Ludmila
+CHAVE: LYKY
+TELEFONE: 34 991661454
+LOCALIZAÇÃO: Uberlândia
+
+DESCRIÇÃO: 
+usuários perderam acesso a transações a pôs migração do sistema!
+TRANSAÇÃO: VL32N / VL09 / 
+Chave: LKYW - Rosilene Thais de Oliveira Santos
+Chave: LH0Y – Roberta Machado Santos
+Chave: LYKY – Ludmila F. Gonzaga Gondim
+ 
+TRANSAÇÃO: ME22N
+Chave: LKYW - Rosilene Thais de Oliveira Santos"
+300-130659;Incident;Queued;19/09/2025;;COP-SAP MM;2;ERRO DE RELATÓRIO ZMM0045;"Olá,
+
+Preciso de ajuda para corrigir o relatório ZMM0045 dos dias 15 e 16.
+
+Como houve a implantação de um novo processo, houve vários cancelamentos de NFs que continuam sendo contabilizados no relatório.
+
+Geralmente, quem me ajuda nessa demanda é o Ariel. Como são vários clientes com esse problema, deixarei os erros consolidados e nos falamos quando for para resolver."
+300-129990;Incident;Queued;10/09/2025;;RDM-GTR;11;Estamos com problema na aprovação de RDM 2001541;Estamos com problema na aprovação de RDM 2001541, Ao submeter a aprovação da gestora da área Suellen Cristina Soares aparece erro e a aprovação não é realziada.
+100-97276;Service Request;Queued;05/09/2025;;COP-SAP FI-3N;16;O boleto de um cliente oriundo da unidade Copa de Socorro, está sendo gerado com o endereço da Copa energia da unidade de São Jose.;"O boleto de um cliente oriundo da unidade Copa de Socorro, está sendo gerado com o endereço da Copa energia da unidade de São Jose.  SAP 6969
 
 em anexo."
-300-129990;Incident;Queued;10/09/2025;;RDM-GTR;13;Estamos com problema na aprovação de RDM 2001541;Estamos com problema na aprovação de RDM 2001541, Ao submeter a aprovação da gestora da área Suellen Cristina Soares aparece erro e a aprovação não é realziada.
-100-92336;Service Request;Queued;17/07/2025;;COP-SAP MM-3N;68;Erro SAP Direcionado a Equipe de MM;"Prezados, Precisamos de uma ajuda em relação ao um pedido que está puxando valor unitário errado, porém quando realizamos o calculo com base a NF está correta e quando vai para os impostos puxa erroneamente.
+100-97403;Service Request;Queued;08/09/2025;;COP-WEB-PORTAL;13;Solicito acesso ao certificado digital para realizar o processo de baixa do xml das notas fiscais diretamente no site da Sefaz.;Solicito acesso ao certificado digital para realizar o processo de baixa do xml das notas fiscais diretamente no site da Sefaz.
+100-92336;Service Request;Queued;17/07/2025;;COP-SAP MM-3N;66;Erro SAP Direcionado a Equipe de MM;"Prezados, Precisamos de uma ajuda em relação ao um pedido que está puxando valor unitário errado, porém quando realizamos o calculo com base a NF está correta e quando vai para os impostos puxa erroneamente.
 
 Gostaria de uma call para poder esclarecer melhor este chamado"
-100-98418;Service Request;New;17/09/2025;;COP-TRUSTY;6;Solicito se possível a liberação da maquina.;Solicito se possível a liberação da maquina a noite,  para cursos vinculados a companhia, como Power BI, Data Science Academy , Inglês etc.
-300-127634;Incident;Queued;08/08/2025;;COP-SAP LES-3N;46;"Valor considerado de Base de cálculo do cálculo do PIS/COFINS divergênte do valor do documento.
+100-98418;Service Request;New;17/09/2025;;COP-TRUSTY;4;Solicito se possível a liberação da maquina.;Solicito se possível a liberação da maquina a noite,  para cursos vinculados a companhia, como Power BI, Data Science Academy , Inglês etc.
+300-130349;Incident;Queued;15/09/2025;;COP-SAP MOBILE-3N;6;"1) O campo [pDif] está inválido. Valor '-73.0000' incorreto. 
+
+2) O campo [vICMSDif] está inválido. Valor '-391.21' incorreto.";"OLÁ, BOA TARDE. 
+
+POR GENTILEZA REALIZAR VALIDAÇÃO DE NOTAS REJEITADAS PELO SISTEMA SIVA PLUS. 
+
+Centro 1222
+Viagem 0000680860
+Material 100077 PROPANO
+
+ERRO -501 
+501 ERRO AO GERAR NÚMERO DO LOTE
+N'F 85 , 84 , 83 , 82 
+
+A UNIDADE AGUARDA ORIENTAÇÃO. 
+
+ATENCIOSAMENTE."
+300-130642;Incident;Queued;19/09/2025;;APOIO-COP-SEDE;2;Não consigo acessar SAP via link remoto.;Não consigo acessar SAP via link remoto.
+300-127634;Incident;Queued;08/08/2025;;COP-SAP LES-3N;44;"Valor considerado de Base de cálculo do cálculo do PIS/COFINS divergênte do valor do documento.
 
 Estão sendo considerados três valores diferentes no SAP e comprometendo os lançamentos dos tributos incidentes sobre os valores do frete.
 
@@ -162,8 +278,18 @@ Estão sendo considerados três valores diferentes no SAP e comprometendo os lança
 Exemplo
 CTe nº 50685
 Número Interno 19888001"
-300-129910;Incident;Queued;09/09/2025;;COP-WEB-PORTAL;14;Assinatura digital;Estou tentando realizar a assinatura digital em um documento e não estou conseguindo.
-300-130370;Incident;Queued;16/09/2025;;COP-AUT-SAP-LOGÍSTICA-SD/CPR/ZRF;7;Erro na geração de viagem ZRF;"Erro ao + gerar viagem para o cliente:
+300-130638;Incident;Queued;19/09/2025;;APOIO-COP-SEDE;2;"Solicito acesso ao WhatsApp corporativo na máquina.
+
+Temos alguns grupos com motoristas que utilizamos durante todo o dia. Ter o WhatsApp corporativo disponível no computador facilitaria o suporte aos motoristas, ajudaria na conciliação das demandas e tornaria a interação com o pessoal mais ágil, já que muitas situações precisam ser resolvidas diretamente pela máquina.
+
+numero 21998189387";"Solicito acesso ao WhatsApp corporativo na máquina.
+
+Temos alguns grupos com motoristas que utilizamos durante todo o dia. Ter o WhatsApp corporativo disponível no computador facilitaria o suporte aos motoristas, ajudaria na conciliação das demandas e tornaria a interação com o pessoal mais ágil, já que muitas situações precisam ser resolvidas diretamente pela máquina.
+
+numero 21998189387"
+300-129910;Incident;Queued;09/09/2025;;COP-WEB-PORTAL;12;Assinatura digital;Estou tentando realizar a assinatura digital em um documento e não estou conseguindo.
+300-130163;Incident;Queued;12/09/2025;;COP-PRJ INCORP CONTROLADORIA N2;9;NF NAO ESTA BANDEIRANDO;USUARIO SOLICITA QUE A NF EM ANEXO BANDEIRASSE.
+300-130370;Incident;Queued;16/09/2025;;COP-AUT-SAP-LOGÍSTICA-SD/CPR/ZRF;5;Erro na geração de viagem ZRF;"Erro ao + gerar viagem para o cliente:
 
 321869 - Construtora Medeiros Carvalho Eireli 
 311987 - Edifício Cosmopolita Shopping Park
@@ -173,7 +299,26 @@ Aparece dois pontos vermelhos
 o Código do cliente não foi gerado
 
 Centro: Suape"
-100-98507;Service Request;Queued;17/09/2025;;COP-AUT-SAP-LOGÍSTICA-SD;6;sem acesso a impressora SAP.;"USUÁRIO AFETADO: Marcelo
+300-130554;Incident;Queued;18/09/2025;;COP-TELECOM;3;WLQCV1-AP003;"Nome do Host |
+172.31.193.97
+Endereço IP |
+172.31.193.97
+
+Co Cascavel"
+300-130516;Incident;Queued;18/09/2025;;COP-TELECOM;4;WLQCA1-AP002;"Nome para Exibição 
+WLQCA1-AP002
+
+Nome do Host 
+172.31.168.183
+
+Endereço IP 
+172.31.168.183"
+300-130646;Incident;New;19/09/2025;;APOIO-COP-SEDE;2;Estou com um problema não sei se é no outlook ou na maquina;Toda vez que tento salvar um arquivo como pdf não consigo, mas quando salvo como word  e vou inserir em algum email no outlook ele aparece com pdf.
+300-130653;Incident;Queued;19/09/2025;;COP-FAT MOVEL;2;Ov's liberadas mas não entram no IDM;Ov's do granel do dia 22/09 estão liberadas, mas não entram no idm
+300-130339;Incident;Queued;15/09/2025;;COP-INFRA;6;ACESSO AO CANAL CLIENTE;"Prezados, eu tenho dificuldade para acessar o canal cliente da petrobras. A rede da empresa bloqueia o acesso e só consigo realizar os agendamentos via celular ou quando roteio a internet 4g para o notebook.
+
+Peço por gentileza para que seja verificada essa situação"
+100-98507;Service Request;Queued;17/09/2025;;COP-AUT-SAP-LOGÍSTICA-SD;4;sem acesso a impressora SAP.;"USUÁRIO AFETADO: Marcelo
 CHAVE: J60t
 GESTOR:
 TELEFONE:349 98078368
@@ -183,64 +328,30 @@ DESCRIÇÃO: sem acesso a impressora SAP.
 paro de imprimir e depois deixo de aparecer para imprimir!
 
 ---"
-100-97889;Service Request;Queued;12/09/2025;;COP-AUT-SAP-LOGÍSTICA-LES;11;O colaborador Gilvane Bortolomedi, chave b8ky segue sem acesso a impressão no SAP. Preciso que seja liberado o acesso.;O colaborador Gilvane Bortolomedi, chave b8ky segue sem acesso a impressão no SAP. Preciso que seja liberado o acesso.
-300-127044;Incident;Queued;31/07/2025;;COP-SAP LES-3N;54;Erro no transportador;"Quando vou gerar uma nota na transação ZLES0008 gera com outro transportador.
+300-130650;Incident;Queued;19/09/2025;;COP-RECONCILIAÇÃO;2;"ERRO DE RECONCILIAÇÃO 
+TRIP-682595
+PAT-1360459
 
-Cód transportadora: 416633
-Erro ocorre com mais frequência com a TTG 700233
-Nota: 265039
-Pedido: 4503608875
+ERRO DE NUMERAÇÃO DE SERIE";"ERRO DE RECONCILIAÇÃO 
+TRIP-682595
+PAT-1360459
 
-Centro: 1207"
-300-126940;Incident;Queued;30/07/2025;;COP-SAP LES-3N;55;Erro no transportador;"Quando vou gerar uma nota na transação ZLES0008 gera com outro transportador.
+ERRO DE NUMERAÇÃO DE SERIE"
+300-130629;Incident;New;19/09/2025;;COP-TELECOM;2;WCPOF1-AP001;"NOME : WCPOF1-AP001
 
-Cód transportadora: 416633
-Erro ocorre com mais frequência com a TTG 700233
-Nota: 264692-1
-Pedido: 4503605320
+HOST : 172.31.235.69
 
-Centro: 1207"
-;;;;;;;;
-300-129840;Incident;Queued;08/09/2025;;COP-WEB-PORTAL;15;Sem localizar revendas no site  Liquigás, Copa e Copa Energia.;"Quando o cliente entra em contato com a central para solicitar gás e a respectiva revenda não é localizada no sistema, este é orientado a realizar a busca por meio do site. Entretanto, ao tentar localizar a revenda, o cliente não obtém êxito, pois o sistema apresenta a mensagem de “cidade inválida”, mesmo quando a unidade federativa (UF) é informada corretamente.
+IP: 172.31.235.69"
+300-130630;Incident;New;19/09/2025;;COP-TELECOM;2;WLQCV1-AP003;"NOME : WLQCV1-AP003
 
-Ressaltamos que essa situação ocorre em todos os sites consultados, incluindo Liquigás, Copa e Copa Energia."
-100-98207;Service Request;New;16/09/2025;;COP-SAP-MM-TRIBUTARIO;7;"Bom dia 
-por favor, solicito autorização para executar (como administrador) o programa da receita federal (receita BX_1.9.24), na pasta: C:\Users\p558\Downloads\ReceitanetBX-1.9.24.exe""";"Bom dia 
-por favor, solicito autorização para executar (como administrador) o programa da receita federal (receita BX_1.9.24), na pasta: C:\Users\p558\Downloads\ReceitanetBX-1.9.24.exe"""
-100-98687;Service Request;Pending;19/09/2025;NEVES DA SILVA,EDNEA;APOIO-COP-ACESSO;4;Fazer alterações no AD dos usuários em anexo, para diminuir o risco dos usuários;"1- Desmarcar a opção ""Password never expires""
 
-2 - Alterar todos para uma senha forte e aleatória"
-300-130471;Incident;Pending;17/09/2025;NEVES DA SILVA,EDNEA;APOIO-COP-ACESSO;6;Acesso a pasta de rede local;"Solicito acesso a pasta de rede local utilizada pelo time de soluções de RH no seguinte local: 
+HOST :  172.31.193.97
 
-U:\GERENCIA_SOLUCOES_DE_RH\APOIO\DHO, SUCESSÃO E TREINAMENTO\04_PROJETOS"
-100-98397;Service Request;Queued;16/09/2025;NEVES DA SILVA,EDNEA;APOIO-COP-SEDE;7;Foi instalado o software do equipamento novo no laboratório, porém, estava funcionando e após o equipamento fazer atualização foi pedida a instalação.;"Boa Tarde!
-
-Foi instalado o software do equipamento novo no laboratório, porém, estava funcionando e após o equipamento fazer atualização foi pedida a instalação.
-
-Como não foi possível colocar o usuário SAPUROGAS para o computador, foi colocado o do funcionário Diego temporariamente. 
-
-O computador fez uma reinicialização automática para atualização e depois do mesmo, consta como se não estivesse instalado o software do equipamento.
-
-Entramos em contato com o técnico e ele nos informou que seria preciso contatar a TI.
-
-Poderiam verificar, por favor?
-
-Obrigada!
-
-OBS: Eu entro as 15h, caso possível, poderiam entrar em contato após esse horário?"
-100-97157;Service Request;Pending;04/09/2025;DE BARROS DA SILVA,ERICKSON;APOIO-COP-UNIDADES;19;Realizar relatório fotográfico detalhado das instalações de rede.;"Realizar relatório fotográfico detalhado das instalações de rede das seguintes unidades, incluindo os racks e suas dimensões:
-
-Barra de São Francisco
-Campo Grande
-Cariacica
-Maceió
-Mossoró
-Presidente Prudente
-Terminal Sul"
-100-98754;Service Request;Pending;19/09/2025;DE BARROS DA SILVA,ERICKSON;APOIO-COP-SEDE;4;Necessito acesso administrador para execução de diagnóstico da Dell no desktop defeituoso;Estamos com um problema em uma máquina, de asset DCESL1-51084, que está apresentando problemas de desligamento repentino. Não sabemos a causa, e ao entrarmos em contato com o T.I, nos orientaram a solicitar apoio da fabricante Dell, pois o computador ainda está na garantia. Dito isso, entrei em contato com a Dell na sexta passada (12/09/2025) para pedir o reparo, e pediram para realizar um processo de diagnóstico remoto, que infelizmente foi frustrado devido a minha conta não ter acesso como administrador para poder executar o programa de diagnóstico da Dell. Desta forma, a fabricante solicitou que fosse autorizado a execução do diagnóstico como administrador, e para tanto solicito sua ajuda para poder dar vazão a essa demanda.
-300-130579;Incident;Queued;18/09/2025;LUIS GARCIA,RICARDO;COP-AUT-SAP-TRIBUTÁRIO-LES/MM/SD;5;CTE referente as ( Destrocas) que estão gerando crédito e diferencial de alíquota ICMS;"Ao lançar os CT-es 27140-1 e 27148-1, referente as ( Destrocas) o sistema  está gerando crédito e diferencial de alíquota de ICMS.
-Os lançamento foram estornados para correção imediata."
-300-130622;Incident;Pending;19/09/2025;DE JESUS SOUZA,RODRIGO;COP-TELECOM;4;usuário esta com muita instabilidade;"---
+IP: 172.31.193.97"
+100-98413;Service Request;Queued;17/09/2025;;COP-ACESSO-SAP;4;"impressoras de utilização em pocket para imprimir NF nos clientes estão com impressão fraca. Se tornando ilegível a verificação das informações para os clientes e para nos. 
+Não temos impressoras reservas.";"impressoras de utilização em pocket para imprimir NF nos clientes estão com impressão fraca. Se tornando ilegível a verificação das informações para os clientes e para nos. 
+Não temos impressoras reservas."
+300-130622;Incident;Queued;19/09/2025;;COP-TELECOM;2;usuário esta com muita instabilidade;"---
 
 USUÁRIO AFETADO: Dayane
 CHAVE:P3HZ
@@ -250,24 +361,154 @@ LOCALIZAÇÃO: londrina
 
 DESCRIÇÃO: usuário esta com muita instabilidade na rede e esta afetando outlook, fica sem sincronizar por intervalos!
 ---"
-100-97446;Service Request;Pending;08/09/2025;DE MEDEIROS MARIZ NETO,EDGAR;COP-APLIC-NOTES;15;Solicito acesso ao Lotus Notes - pasta contrato para a funcionária Pietra Miranda de Campos - GT53;Solicito acesso ao Lotus Notes - pasta contrato para a funcionária Pietra Miranda de Campos - GT53
-100-98346;Service Request;Active;16/09/2025;DARIO DURAN CARRILLO,VICTOR;COP-SAP MOBILE;7;impressora Leopardo A7 e Promax erro de impressao.;"impressora Leopardo A7 e Promax erro de impressao.
+100-98753;Service Request;Queued;19/09/2025;;APOIO-COP-SEDE;2;Excel solicitando chave do produto ou acesso  e não consigo abrir arquivos, preciso enviar planilhas e preciso do excel com urgência;Excel solicitando chave do produto ou acesso  e não consigo abrir arquivos, preciso enviar planilhas e preciso do excel com urgência
+300-130415;Incident;Queued;16/09/2025;;COP-SAP SD-3N;5;"Problema de reconciliação.
 
-centro 1232 f439 e FT1862"
-300-130401;Incident;Active;16/09/2025;DARIO DURAN CARRILLO,VICTOR;COP-SAP MOBILE;7;erro em danfinhos;"USUÁRIO AFETADO:Rosilene
-CHAVE:lkyw
+Centro: 1230
+TRIP: 681028
+PAT:1357360";"PAT=00000000000001357360; Reconciliação->  Erro SIVA-> E001: Ordem de Venda:0012982072 - Não encontrado informações para reconciliação. CONDOMINIO DO ED. RESID. ALFREDO GAE001: Ordem de Venda:0012989711 - Não encontrado informações para reconciliação. RESIDENCIAL VIVA AMERICAE001: Ordem de Venda:0012990127 - Não encontrado informações para reconciliação. RESIDENCIAL PARK PRIMAVERAE001: Ordem de Venda:0012990970 - Não encontrado informações para reconciliação. CONDOMINIO RESIDENCIAL MANHATTAN II"
+300-130636;Incident;Queued;19/09/2025;;PROD-COP-LINUX;2;"Boa tarde!
+
+Minha pasta foi excluida, preciso que façam o backup. 
+
+\\Sdc-vfssd01\fssd01\LOGISTICA\DISTRIBUICAO\COORD_ROTEIRIZACAO\APOIO\ROTEIRIZACAO (NOME DA PASTA  LEANDRO BACKUP).";"Boa tarde!
+
+Minha pasta foi excluida, preciso que façam o backup. 
+
+\\Sdc-vfssd01\fssd01\LOGISTICA\DISTRIBUICAO\COORD_ROTEIRIZACAO\APOIO\ROTEIRIZACAO (NOME DA PASTA  LEANDRO BACKUP)."
+100-97886;Service Request;Queued;12/09/2025;;COP-ACESSO-SAP;9;As impressoras forma desinstaladas do meu Notebook, preciso que sejam instaladas para eu conseguir realizar a impressões. Máquina NCEIE1-00614;"As impressoras forma desinstaladas do meu Notebook, preciso que sejam instaladas para eu conseguir realizar a impressões. Máquina NCEIE1-00614
+
+ip:  173.31.193.156
+
+Obs: realizado tentativa de acesso no N1, porém ao tentar acessar pelo asset ou pelo IP a conexão não é efetuada."
+100-97889;Service Request;Queued;12/09/2025;;COP-AUT-SAP-LOGÍSTICA-LES;9;O colaborador Gilvane Bortolomedi, chave b8ky segue sem acesso a impressão no SAP. Preciso que seja liberado o acesso.;O colaborador Gilvane Bortolomedi, chave b8ky segue sem acesso a impressão no SAP. Preciso que seja liberado o acesso.
+100-98649;Service Request;New;18/09/2025;;COP-POWER-BI;3;INSTALAÇÃO DO SOFTWARE NA MAQUINA;NECESSITO DO SOFTWARE DO POWER BI INSTALADO EM MEU DESKTOP PARA EXECUÇÃO DO SERVIÇO DE ANALISE DE DADOS DO MEU CENTRO OPERATIVO
+300-127044;Incident;Queued;31/07/2025;;COP-SAP LES-3N;52;Erro no transportador;"Quando vou gerar uma nota na transação ZLES0008 gera com outro transportador.
+
+Cód transportadora: 416633
+Erro ocorre com mais frequência com a TTG 700233
+Nota: 265039
+Pedido: 4503608875
+
+Centro: 1207"
+300-126940;Incident;Queued;30/07/2025;;COP-SAP LES-3N;53;Erro no transportador;"Quando vou gerar uma nota na transação ZLES0008 gera com outro transportador.
+
+Cód transportadora: 416633
+Erro ocorre com mais frequência com a TTG 700233
+Nota: 264692-1
+Pedido: 4503605320
+
+Centro: 1207"
+300-130634;Incident;Queued;19/09/2025;;APOIO-COP-SEDE;2;Usuária está na unidade DAC São José, a mesma viaja para várias unidade por decorrência de trabalho, e está em processo de auditoria na unidade, porém seu notebook não está conseguindo se conectar a rede da unidade, solicita prioridade no atendimento pois precisa realizar o processo.;"Notebook: NCEIT1-58083
+Telefone: 047 98920-2945"
+300-130556;Incident;Queued;18/09/2025;;COP-RECONCILIAÇÃO;3;erro reconciliação;"erro ao reconciliar INOVA
+Pat  1359395
+Trip 682037
+e9s5
+1012"
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+300-129840;Incident;Queued;08/09/2025;;COP-WEB-PORTAL;13;Sem localizar revendas no site  Liquigás, Copa e Copa Energia.;"Quando o cliente entra em contato com a central para solicitar gás e a respectiva revenda não é localizada no sistema, este é orientado a realizar a busca por meio do site. Entretanto, ao tentar localizar a revenda, o cliente não obtém êxito, pois o sistema apresenta a mensagem de “cidade inválida”, mesmo quando a unidade federativa (UF) é informada corretamente.
+
+Ressaltamos que essa situação ocorre em todos os sites consultados, incluindo Liquigás, Copa e Copa Energia."
+100-98471;Service Request;New;17/09/2025;;COP-POWER-BI;4;Acesso a relatórios na Central Analitics;"USUÁRIO AFETADO: EDERSON
+CHAVE:SMEW
 GESTOR:
-TELEFONE: 34 33036311
-LOCALIZAÇÃO: 1027
+TELEFONE: 41 988901243
+LOCALIZAÇÃO: ARAUCARIA
 
-DESCRIÇÃO:
- Os danfinhos 4201/4202/4203/4205/4206/4207/4208/4209/4214/4215/4216/4220/4221/4222/4223/4224/4225/4226/4227/4229-19 saíram sem a informação da Retenção IR 0,24% nos dados adicionais
+DESCRIÇÃO: Acesso a relatórios na Central Analitics"
+300-130654;Incident;Queued;19/09/2025;;COP-SAP WF;2;favor liberar travada na liberação 13056785;favor liberar travada na liberação 13056785
+100-98764;Service Request;New;19/09/2025;;APOIO-COP-ACESSO;2;modificar hierarquia no sênior;"---
+USUÁRIO AFETADO: Denílson
+CHAVE: C11B
+TELEFONE: 98 987175233
+LOCALIZAÇÃO: 1236
 
-cliente 18242 - Municipio de Uberlândia"
-100-98413;Service Request;Active;17/09/2025;DARIO DURAN CARRILLO,VICTOR;COP-SAP MOBILE;6;"impressoras de utilização em pocket para imprimir NF nos clientes estão com impressão fraca. Se tornando ilegível a verificação das informações para os clientes e para nos. 
-Não temos impressoras reservas.";"impressoras de utilização em pocket para imprimir NF nos clientes estão com impressão fraca. Se tornando ilegível a verificação das informações para os clientes e para nos. 
-Não temos impressoras reservas."
-300-129200;Incident;Pending;01/09/2025;DARIO DURAN CARRILLO,VICTOR;COP-SAP MOBILE;22;ERRO DE RECONCILIAÇÃO - DAC CARIACICA;"Boa tarde!
+DESCRIÇÃO: modificar hierarquia no sênior alterar e aderir equipe do antigo supervisor: João Victor Silva Setúbal - BN52"
+100-98760;Service Request;Queued;19/09/2025;;APOIO-COP-ACESSO;2;Acesso a pasta de rede;"acesso a pasta de rede caminho: 
+
+M:\Unidades\Fortaleza\GOPE-IV\GCO-FO\SMS
+
+anexo print."
+100-98207;Service Request;New;16/09/2025;;COP-SAP-MM-TRIBUTARIO;5;"Bom dia 
+por favor, solicito autorização para executar (como administrador) o programa da receita federal (receita BX_1.9.24), na pasta: C:\Users\p558\Downloads\ReceitanetBX-1.9.24.exe""";"Bom dia 
+por favor, solicito autorização para executar (como administrador) o programa da receita federal (receita BX_1.9.24), na pasta: C:\Users\p558\Downloads\ReceitanetBX-1.9.24.exe"""
+100-98630;Service Request;Queued;18/09/2025;;COP-POWER-BI;3;usuário não consegue acessar ao databriks;"USUÁRIO AFETADO: Arthur
+CHAVE:T7J6
+GESTOR:
+TELEFONE: 27 998076073
+LOCALIZAÇÃO: externo
+
+DESCRIÇÃO: usuário não consegue acessar ao databriks, senha que foi fornecida não faz efeito!
+---"
+100-98434;Service Request;Pending;17/09/2025;NEVES DA SILVA,EDNEA;APOIO-COP-ACESSO;4;Acesso a pasta de Rede;"Acesso as pastas de rede: 
+R:\SHARE\NOVOS_ NEGOCIOS\SUP_VENDAS\SUP_LOGISTICO
+ 
+W:\DuqCaxias\GCO-DC\SULOG-DC
+ 
+W:\DuqCaxias\GCO-DC\PORTARIA"
+100-98687;Service Request;Pending;19/09/2025;NEVES DA SILVA,EDNEA;APOIO-COP-ACESSO;2;Fazer alterações no AD dos usuários em anexo, para diminuir o risco dos usuários;"1- Desmarcar a opção ""Password never expires""
+
+2 - Alterar todos para uma senha forte e aleatória"
+300-130471;Incident;Pending;17/09/2025;NEVES DA SILVA,EDNEA;APOIO-COP-ACESSO;4;Acesso a pasta de rede local;"Solicito acesso a pasta de rede local utilizada pelo time de soluções de RH no seguinte local: 
+
+U:\GERENCIA_SOLUCOES_DE_RH\APOIO\DHO, SUCESSÃO E TREINAMENTO\04_PROJETOS"
+100-98094;Service Request;Pending;15/09/2025;DE BARROS DA SILVA,ERICKSON;APOIO-COP-UNIDADES;6;usuaria necessita de clonagem da maquina;"Kace nao converte boot.
+maquina windows 10 versao 20h2"
+100-98690;Service Request;Pending;19/09/2025;DE BARROS DA SILVA,ERICKSON;APOIO-COP-UNIDADES;2;Solicito atualização do sistema do notebook que me foi repassado, pois o mesmo está parado há mais de 06 meses e se faz necessário envio de um técnico para atualização e recolocação do domínio.;Solicito atualização do sistema do notebook que me foi repassado, pois o mesmo está parado há mais de 06 meses e se faz necessário envio de um técnico para atualização e recolocação do domínio.
+100-98754;Service Request;Pending;19/09/2025;DE BARROS DA SILVA,ERICKSON;APOIO-COP-SEDE;2;Necessito acesso administrador para execução de diagnóstico da Dell no desktop defeituoso;Estamos com um problema em uma máquina, de asset DCESL1-51084, que está apresentando problemas de desligamento repentino. Não sabemos a causa, e ao entrarmos em contato com o T.I, nos orientaram a solicitar apoio da fabricante Dell, pois o computador ainda está na garantia. Dito isso, entrei em contato com a Dell na sexta passada (12/09/2025) para pedir o reparo, e pediram para realizar um processo de diagnóstico remoto, que infelizmente foi frustrado devido a minha conta não ter acesso como administrador para poder executar o programa de diagnóstico da Dell. Desta forma, a fabricante solicitou que fosse autorizado a execução do diagnóstico como administrador, e para tanto solicito sua ajuda para poder dar vazão a essa demanda.
+100-98712;Service Request;Pending;19/09/2025;DE BARROS DA SILVA,ERICKSON;APOIO-COP-UNIDADES;2;Atualizar Notebook;"Atualizar Notebook
+preciso que seja feita a atualização do meu Notebook
+
+CHAVE : KN35
+CONTATO : 31 992135690
+ASET:  NCEIE1-11256
+LOCALIDADE : IBIRITÉ"
+300-130532;Incident;Pending;18/09/2025;DE BARROS DA SILVA,ERICKSON;APOIO-COP-UNIDADES;3;"Solicito suporte técnico na unidade de Passo Fundo para atualizar e configurar o notebook que está sob minha responsabilidade.
+O equipamento ficou alguns meses desligado e sem uso, devido a troca de coordenador de distribuição na unidade.";ASSET: NCEPF1-63060
+300-130607;Incident;Pending;19/09/2025;DE BARROS DA SILVA,ERICKSON;APOIO-COP-UNIDADES;2;Usuário precisa atualizar sua máquina para migrar do citrix.;"chave: lqpt
+Máquina: NLQSL1-11085
+Unidade: CO São Luis
+a maquina precisa ser atualizada, porém não foi possível atualizar via kace.
+Contato: 098 97017-2597"
+100-97157;Service Request;Pending;04/09/2025;DE BARROS DA SILVA,ERICKSON;APOIO-COP-UNIDADES;17;Realizar relatório fotográfico detalhado das instalações de rede.;"Realizar relatório fotográfico detalhado das instalações de rede das seguintes unidades, incluindo os racks e suas dimensões:
+
+Barra de São Francisco
+Campo Grande
+Cariacica
+Maceió
+Mossoró
+Presidente Prudente
+Terminal Sul"
+300-130579;Incident;Queued;18/09/2025;LUIS GARCIA,RICARDO;COP-AUT-SAP-TRIBUTÁRIO-LES/MM/SD;3;CTE referente as ( Destrocas) que estão gerando crédito e diferencial de alíquota ICMS;"Ao lançar os CT-es 27140-1 e 27148-1, referente as ( Destrocas) o sistema  está gerando crédito e diferencial de alíquota de ICMS.
+Os lançamento foram estornados para correção imediata."
+300-130438;Incident;Pending;17/09/2025;REGINA ARTUSO DE ANDRADE,CLAUDIA;COP-ORIENTAÇÃO-GRC;4;Problema com algumas transações do SAP;"Colaborador relatou ter perdido acesso a algumas transações do SAP, Imagem da mensagem anexada ao chamado, Erro aparece no Canto inferior esquerdo da tela. 
+
+Chave: LGMI
+Centro: 1236"
+100-97338;Service Request;Pending;05/09/2025;REGINA ARTUSO DE ANDRADE,CLAUDIA;COP-ORIENTAÇÃO-GRC;16;Acesso a Transação no SAP;"Acesso a Transação no SAP
+
+solicito acesso a transação :  ZSD_VENDAS_001
+
+CHAVE : LQSN
+CONTATO: 81 981385953
+LOCALIDADE:  CO SUAPE"
+100-98203;Service Request;Pending;16/09/2025;REGINA ARTUSO DE ANDRADE,CLAUDIA;COP-ORIENTAÇÃO-GRC;5;"Gentileza, solicito acesso a transação ""FBL5N - Partidas individuais de clientes"" para a chave E3Z0  - Marcelly Damasceno Santos.";"Gentileza, solicito acesso a transação ""FBL5N - Partidas individuais de clientes"" para a chave E3Z0  - Marcelly Damasceno Santos."
+300-130136;Incident;Queued;12/09/2025;DOS ANJOS AFONSO,DANIELA;COP-AUT-SAP-GRCI;9;Bloqueio no local de Expedição do SAP - centro 1230 - chave KWN2;Esse erro de local de Expedição não está permitindo concluir VL para emissão de nota de transferência e nem concluir entrega/faturamento na entrada de nota no KEEPTRUE.
+300-130287;Incident;Active;15/09/2025;DARIO DURAN CARRILLO,VICTOR;COP-SAP MOBILE;6;MONITOR DE MDFE NÃO PUXA DADOS DO MOTORISTA;"Bom dia!
+
+Prezados, estou com um problema no monitor de MDFe. 
+
+O monitor parou de puxar automaticamente os dados do motorista informados no PAT
+
+Atualmente, toda vez que vou emitir um MDFe tenho que colocar manualmente o nome e CPF do motorista.
+
+Outro agravante é que no MDFe impresso, o nome do motorista e CPF estão saindo no campo errado.
+
+Segue anexo"
+300-129200;Incident;Pending;01/09/2025;DARIO DURAN CARRILLO,VICTOR;COP-SAP MOBILE;20;ERRO DE RECONCILIAÇÃO - DAC CARIACICA;"Boa tarde!
 
 Prezados, no teste piloto de faturamento móvel do CIF envasado de Cariacica.
 
@@ -279,25 +520,76 @@ PAT SAÍDA: 1341526
 PAT RETORNO: 1346787
 VIAGEM: 673086
 CENTRO: 1247"
-300-130287;Incident;Active;15/09/2025;DARIO DURAN CARRILLO,VICTOR;COP-SAP MOBILE;8;MONITOR DE MDFE NÃO PUXA DADOS DO MOTORISTA;"Bom dia!
+300-128166;Incident;Pending;18/08/2025;DARIO DURAN CARRILLO,VICTOR;COP-SAP MOBILE;34;Nota entregue para lançamento em Agosto, porém a data de emissão da nota é 03/02/2025 não sendo possível o lançamento da nota com essa data , por esse motivo realizamos o lançamento com data do dia 15/08/2025 dia , que a nota foi lançada no sistema;Nota entregue para lançamento em Agosto, porém a data de emissão da nota é 03/02/2025 não sendo possível o lançamento da nota com essa data , por esse motivo realizamos o lançamento com data do dia 15/08/2025 dia , que a nota foi lançada no sistema
+300-130620;Incident;Active;19/09/2025;DARIO DURAN CARRILLO,VICTOR;COP-SAP-NFE;2;Não estamos conseguindo estornar a nota fiscal a nota Fiscal 17438/2 , a nota está denegada e precisando estornar.;"Não estamos conseguindo estornar a nota fiscal a nota Fiscal 17438/2 , a nota está denegada e precisando estornar.
+Doc 20740994
+Cliente 128782"
+300-130311;Incident;Active;15/09/2025;DARIO DURAN CARRILLO,VICTOR;COP-SAP-NFE;6;"TENTEI REALIZAR O CANCELAMENTO DE UMA NF MAS NÃO ESTÁ FUNCIONANDO
+NF: 130239
+FILIAL: 1202 SANTOS";"TENTEI REALIZAR O CANCELAMENTO DE UMA NF MAS NÃO ESTÁ FUNCIONANDO
+NF: 130239
+FILIAL: 1202 SANTOS"
+300-130401;Incident;Active;16/09/2025;DARIO DURAN CARRILLO,VICTOR;COP-SAP MOBILE;5;erro em danfinhos;"USUÁRIO AFETADO:Rosilene
+CHAVE:lkyw
+GESTOR:
+TELEFONE: 34 33036311
+LOCALIZAÇÃO: 1027
 
-Prezados, estou com um problema no monitor de MDFe. 
+DESCRIÇÃO:
+ Os danfinhos 4201/4202/4203/4205/4206/4207/4208/4209/4214/4215/4216/4220/4221/4222/4223/4224/4225/4226/4227/4229-19 saíram sem a informação da Retenção IR 0,24% nos dados adicionais
 
-O monitor parou de puxar automaticamente os dados do motorista informados no PAT
-
-Atualmente, toda vez que vou emitir um MDFe tenho que colocar manualmente o nome e CPF do motorista.
-
-Outro agravante é que no MDFe impresso, o nome do motorista e CPF estão saindo no campo errado.
-
-Segue anexo"
-300-130552;Incident;Queued;18/09/2025;CARLOS DE MELO,CLOVIS;COP-SAP SD-3N;5;Solicito verificação de falha na geração de ordem de venda ZS71;Solicito verificação de falha na geração de ordem de venda do cliente 321869. Trata-se de um cliente MI. Peço verificar se pode estar relacionado a hierarquia do cliente no CPR e no ZRF
-300-130047;Incident;Queued;11/09/2025;CARLOS DE MELO,CLOVIS;COP-SAP SD-3N;12;Problema no registro de boletos no dia 09/09/2025 cobrança bancária. (direcionar para Sr Julio e Alberto);Problema no registro de boletos no dia 09/09/2025 na cobrança bancária de cliente. Bancos Itaú e BB. Na maioria dos casos nas unidades de SP.
-300-130391;Incident;Pending;16/09/2025;PEREIRA SILVA MEDEIROS,ADRIANA;COP-GMI-SMIL-SUSTENTAÇÃO;7;"Intensidade de impressão via TXT - Zulos   58303 - CONDOMINIO EDIFICIO FONTANA DI TREV Rota: 90206 - ref.08.2025
+cliente 18242 - Municipio de Uberlândia"
+100-98362;Service Request;Queued;16/09/2025;CARLOS DE MELO,CLOVIS;COP-SAP SD-3N;5;Todas notas emitidas no ato da entrega em contingencia;"Centro: 1222
+Pat: 681672
+Viagem: 1358620
+Frota: F366
+Veículo: PLK1346
+Produto entregue Butano"
+300-130552;Incident;Queued;18/09/2025;CARLOS DE MELO,CLOVIS;COP-SAP SD-3N;3;Solicito verificação de falha na geração de ordem de venda ZS71;Solicito verificação de falha na geração de ordem de venda do cliente 321869. Trata-se de um cliente MI. Peço verificar se pode estar relacionado a hierarquia do cliente no CPR e no ZRF
+300-130047;Incident;Queued;11/09/2025;CARLOS DE MELO,CLOVIS;COP-SAP SD-3N;10;Problema no registro de boletos no dia 09/09/2025 cobrança bancária. (direcionar para Sr Julio e Alberto);Problema no registro de boletos no dia 09/09/2025 na cobrança bancária de cliente. Bancos Itaú e BB. Na maioria dos casos nas unidades de SP.
+100-98328;Service Request;Pending;16/09/2025;PEREIRA SILVA MEDEIROS,ADRIANA;COP-GMI-SMIL-SUSTENTAÇÃO;5;Inclusão de novos integrantes nos Workflows de SMI - Pagamentos Realizados.;"Inclusão de novos integrantes nos Workflows de SMI - Pagamentos Realizados.
+Incluir chaves:
+lh77
+qzj0"
+300-130391;Incident;Pending;16/09/2025;PEREIRA SILVA MEDEIROS,ADRIANA;COP-GMI-SMIL-SUSTENTAÇÃO;5;"Intensidade de impressão via TXT - Zulos   58303 - CONDOMINIO EDIFICIO FONTANA DI TREV Rota: 90206 - ref.08.2025
 Prestador de serviço, está relatando que as impressões estão saindo com a intensidade muito clara, quando são realizadas via txt, vou encaminhar o mesmo arquivo que eles estão usando para gerar impressão para analise.";"Intensidade de impressão via TXT - Zulos
 
 58303 - CONDOMINIO EDIFICIO FONTANA DI TREV Rota: 90206 - ref.08.2025
 
 Prestador de serviço, está relatando que as impressões estão saindo com a intensidade muito clara, quando são realizadas via txt, vou encaminhar o mesmo arquivo que eles estão usando para gerar impressão para analise."
+100-98551;Service Request;Pending;17/09/2025;PEREIRA SILVA MEDEIROS,ADRIANA;COP-GMI-SMIL-SUSTENTAÇÃO;4;"Erro ao anexar foto nas OS - CONTRI
+
+Link: https://mi.copaenergia.com.br/wps/portal/medicaoindividualizada/servicos/ordem-servicos/!ut/p/z0/04_Sj9CPykssy0xPLMnMz0vMAfIj8nKt8jNTrMoLivV88tMz8_QLsh0VAZSk7Xs!/
+
+Prestador, não está conseguindo anexar as fotos nas ordens para finalização das OS, solicito apoio.";"Erro ao anexar foto nas OS - CONTRI
+
+Link: https://mi.copaenergia.com.br/wps/portal/medicaoindividualizada/servicos/ordem-servicos/!ut/p/z0/04_Sj9CPykssy0xPLMnMz0vMAfIj8nKt8jNTrMoLivV88tMz8_QLsh0VAZSk7Xs!/
+
+Prestador, não está conseguindo anexar as fotos nas ordens para finalização das OS, solicito apoio."
+300-130615;Incident;Pending;19/09/2025;PEREIRA SILVA MEDEIROS,ADRIANA;COP-GMI-SMIL-SUSTENTAÇÃO;2;"Erro ao tentar logar no app - VERITAS
+
+Técnico de SC, não está conseguindo acessar o app de leitura
+
+CPF: 70836574249
+JOSIVALDO SILVA DO NASCIMENTO";"Erro ao tentar logar no app - VERITAS
+
+Técnico de SC, não está conseguindo acessar o app de leitura
+
+CPF: 70836574249
+JOSIVALDO SILVA DO NASCIMENTO"
+300-130600;Incident;Pending;19/09/2025;PEREIRA SILVA MEDEIROS,ADRIANA;COP-GMI-SMIL-SUSTENTAÇÃO;2;Ação Manual - Status 802 -Os dados de centro do material 100003 estão bloqueados;Ação Manual - Status 802 -Os dados de centro do material 100003 estão bloqueados
+300-130649;Incident;Pending;19/09/2025;PEREIRA SILVA MEDEIROS,ADRIANA;COP-GMI-SMIL-SUSTENTAÇÃO;2;Ajustar parâmetros de Condomínio;"USUÁRIO AFETADO: Mariana
+CHAVE:  buqz
+TELEFONE: 48/33819800
+LOCALIZAÇÃO: Sao jose SC
+
+DESCRIÇÃO: Ajustar parâmetros de Condomínio que foi realizado troca de titularidade!
+código 136585 Residencial Boulevard das Palmeiras"
+100-98762;Service Request;Active;19/09/2025;PEREIRA SILVA MEDEIROS,ADRIANA;COP-GMI-SMIL-SUSTENTAÇÃO;2;Portal do cliente (PMI) - erro no ESQUECI MINHA SENHA;Clientes da Medição Individualizada relataram erro para realizar a ação de ESQUECI MINHA SENHA no Portal de Medição Individualizada. Para validar o erro, foi realizado um teste em PRD onde foi constatado que ao preencher os campos da tela do ESQUECI MINHA SENHA (CPF + e-mail) e clicar no botar ENVIAR, o erro acontece: erro 403 - Forbidden
+300-130574;Incident;Pending;18/09/2025;PEREIRA SILVA MEDEIROS,ADRIANA;COP-GMI-SMIL-SUSTENTAÇÃO;3;"AÇÃO MANUAL - Teste unitario app QAS
+RDMs";"AÇÃO MANUAL - Teste unitario app QAS
+RDMs"
+300-130199;Incident;Pending;12/09/2025;PEREIRA SILVA MEDEIROS,ADRIANA;COP-GMI-SMIL-SUSTENTAÇÃO;9;testes unitários das rdms: 200-1408 troca de titularidade transação ZSD0207;testes unitários das rdms: 200-1408 troca de titularidade transação ZSD0207 Parametros não estão sendo preenchidos
 ;;;;;;;;
 ;;;;;;;;
 ;;;;;;;;
@@ -390,6 +682,7 @@ Prestador de serviço, está relatando que as impressões estão saindo com a intens
 ;;;;;;;;
 ;;;;;;;;
 ;;;;;;;;
+300-130038;Incident;Active;11/09/2025;CARLOS ASSENCIO,FABIO;COP-SAP-FRETES;10;Erro ao reconciliar pat;Bom dia, estou com problemas ao reconciliar a PAT 1355409, referente a viagem 680047.
 ;;;;;;;;
 ;;;;;;;;
 ;;;;;;;;
@@ -414,27 +707,14 @@ Prestador de serviço, está relatando que as impressões estão saindo com a intens
 ;;;;;;;;
 ;;;;;;;;
 ;;;;;;;;
-300-130524;Incident;Queued;18/09/2025;HENRIQUE DE FREITAS,CAIO;COP-SAP-SDM-LOG;5;"Impressora: 172.31.169.232
+300-130524;Incident;Queued;18/09/2025;HENRIQUE DE FREITAS,CAIO;COP-SAP-SDM-LOG;3;"Impressora: 172.31.169.232
 Não esta realizando impressões a partir do SAP de notas fiscais. 
 
 Preciso de suporte URGENTE!";"Impressora: 172.31.169.232
 Não esta realizando impressões a partir do SAP de notas fiscais. 
 
 Preciso de suporte URGENTE!"
-300-130635;Incident;Queued;19/09/2025;REGINA RIBEIRO LUZ,CLAUDIA;COP-AUT-SAP-SUP-VENDAS-ADM;4;NA NOTA SAI O CPF DO CLIENTE E NÃO O CNPJ, POREM NO SISTEMA ESTÁ CADASTRADO O CNPJ DO CLIENTE;"NOTA : 7122
-SERIE27
-
-
-TI / faturamento móvel
-
-Desde o mês 05/2025 as notas emitidas através do faturamento móvel para o cliente 41143 - MAURICIO PEREIRA DOS SANTOS PINTURA,  estão sendo rejeitadas pela SEFAZ através do código de Rejeição 728.
-
-NA NOTA SAI O CPF DO CLIENTE E NÃO O CNPJ, POREM NO SISTEMA ESTÁ CADASTRADO O CNPJ DO CLIENTE
-
-E a  informação apresentada  é que está sem informação da I.E. do destinatário.
-
-Devido  a este rejeição, as vendas estão sendo realizadas através de venda certa."
-100-97714;Service Request;Queued;10/09/2025;REGINA RIBEIRO LUZ,CLAUDIA;COP-AUT-SAP-SUP-VENDAS-ADM;13;"Ordem não subiram para o IDM criadas pela Assistente 
+100-97714;Service Request;Queued;10/09/2025;REGINA RIBEIRO LUZ,CLAUDIA;COP-AUT-SAP-SUP-VENDAS-ADM;11;"Ordem não subiram para o IDM criadas pela Assistente 
 Obs.: Clientes pertenciam a outro DAC";"Ordem não subiram para o IDM 
 Obs.: Clientes pertenciam a outro DAC 
 
@@ -488,7 +768,34 @@ Ordens que não subiram e foram faturadas manualmente:
 ;;;;;;;;
 ;;;;;;;;
 ;;;;;;;;
-300-129208;Incident;Queued;01/09/2025;MOREIRA DOS SANTOS,JOSINALDO;COP-SAP-FRETES;22;"VIAGEM FOI FATURADA PARA FROTA/TRANSPORTADOR ERRADO...FOI FEITO O ESTORNO E O FATURAMENTO CORRETO (VEICULO/TRANSPOTADOR).
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+100-98294;Service Request;Active;16/09/2025;NEVES DA SILVA GONCALVES,DARCI;APOIO-COP-ACESSO;5;Usuário solicita liberar os acesso e adquirir os caminhos para acesso a aplicações da copa.;"USUÁRIO AFETADO: Silas
+CHAVE:F885
+GESTOR:
+TELEFONE: 71 982422774
+LOCALIZAÇÃO: Consultor externo
+
+DESCRIÇÃO: usuário solicita liberar os acesso e adquirir os caminhos para acesso a aplicações da copa. 
+ja foi solicitado o reenvio do termo!"
+300-129208;Incident;Queued;01/09/2025;MOREIRA DOS SANTOS,JOSINALDO;COP-SAP-FRETES;20;"VIAGEM FOI FATURADA PARA FROTA/TRANSPORTADOR ERRADO...FOI FEITO O ESTORNO E O FATURAMENTO CORRETO (VEICULO/TRANSPOTADOR).
 NA SAÍDA PUXOU OS DADOS CORRETOS, MAIS NO RETORNO PUXOU DO FATURAMENTO ERRADO.";"F2849
 PAT SAIDA 1342319
 PAT RETORNO 1343191
@@ -501,26 +808,128 @@ NA SAÍDA PUXOU OS DADOS CORRETOS, MAIS NO RETORNO PUXOU DO FATURAMENTO ERRADO."
 ;;;;;;;;
 ;;;;;;;;
 ;;;;;;;;
-300-130565;Incident;Pending;18/09/2025;DE OLIVEIRA MANCO,TAMILIS;COP-SAP SD;5;Não permite fazer a ordem de venda pela ZRF;"Não permite fazer a ordem de venda pela ZRF
+300-130319;Incident;Pending;15/09/2025;GALDINO TORRES,OTAVIO;APOIO-COP-SEDE;6;Usuária informa que notebook recebeu atualização na rede da unidade, após atualizar não conecta mais a rede de internet da unidade.;"Contato: 016 99795-8519
+Unidade: Jardinópolis
+Notebook: 172.31.205.112"
+300-130549;Incident;Queued;18/09/2025;GALDINO TORRES,OTAVIO;APOIO-COP-SEDE;3;Computador com muita lentidão - NOVO CHAMADO;"Computador com muita lentidão, forma abertos 4 chamados para resolver o problema mas não mudou em nada
+os chamados foram :
+300-125556
+100-85104
+100-85782
+300-128727
 
-RM: 367757
-Código principal: 45197
-Não existe clientes para emissor da ordem.
-Centro: 1007
-Jardinópolis"
-300-130625;Incident;Pending;19/09/2025;CARLOS DA SILVA RIBEIRO,ELI;COP-SAP MOBILE;4;"Chamado Softmovel: 2285
+foi informado que iria ser encaminhado um técnico para verificar o problema mas até agora não foi resolvido.
+Estou sem trabalhar e minhas demandas estão atrasando.
+
+ACESSO REMOTO NÃO FUNCIONA.
+
+CHAVE :  FAQY
+CONTATO : 43 98816-7836
+LOCALIDADE : LONDRINA
+ASET: DCELO1-37543
+
+ENTRAR EM CONTATO APENAS POR TELEFONE OU PELO WHATAPP"
+100-98648;Service Request;Queued;18/09/2025;GALDINO TORRES,OTAVIO;APOIO-COP-SEDE;3;Erro na hora de baixar arquivos ao servidor da Copa;"USUÁRIO AFETADO: JONATHAN
+CHAVE:36UJ
+GESTOR:
+TELEFONE:1194762-8892
+LOCALIZAÇÃO: externo Apisul
+
+DESCRIÇÃO: Erro na hora de baixar arquivos da empresa APISULOG no servidor da Copa.
+erro no anexo!"
+100-98647;Service Request;Queued;18/09/2025;GALDINO TORRES,OTAVIO;APOIO-COP-SEDE;3;Erro na hora de baixar arquivos ao servidor da Copa;"USUÁRIO AFETADO:LUCIANA
+CHAVE:z8le
+GESTOR:
+TELEFONE:1194762-8892
+LOCALIZAÇÃO: externo Apisul
+
+DESCRIÇÃO: Erro na hora de baixar arquivos da empresa APISULOG no servidor da Copa.
+erro no anexo!"
+100-98629;Service Request;New;18/09/2025;GALDINO TORRES,OTAVIO;APOIO-COP-SEDE;3;"Boa tarde,
+Instalar o certificado digital ""na maquina"" para envio dos documentos para PETRONECT. Recebimento de valores ICMS da Petrobras.";"Instalar o certificado digital ""na maquina"" para envio dos documentos para PETRONECT. Recebimento de valores ICMS da Petrobras."
+300-127564;Incident;Pending;07/08/2025;GALDINO TORRES,OTAVIO;APOIO-COP-SEDE;45;Favor verificar o PLANNER, pois, o mesmo não está extraindo as informações corretas apenas na minha máquina. Ficam faltando diversas informação quando extraio para o Excel e necessito dessas informações diariamente.;Favor verificar o PLANNER, pois, o mesmo não está extraindo as informações corretas apenas na minha máquina. Ficam faltando diversas informação quando extraio para o Excel e necessito dessas informações diariamente.
+300-130591;Incident;Pending;18/09/2025;DE OLIVEIRA MANCO,TAMILIS;COP-SAP MOBILE;3;"VIAGENS NÃO RECEBIDAS NO INOVA PARA RECONCILIAÇÃO:
+
+682457;
+682430;
+682429";"VIAGENS NÃO RECEBIDAS NO INOVA PARA RECONCILIAÇÃO:
+
+682457;
+682430;
+682429;
+
+VEÍCULOS PENDENTES DE RECONCILIAÇÃO"
+300-130604;Incident;Active;19/09/2025;DE OLIVEIRA MANCO,TAMILIS;COP-SAP MOBILE;2;"Centro 1218 Ponta Grossa
+Frota F622
+Viagem 682436
+PAT 1360223
+Descrição do erro: Viagem 682436 - não subiu as informações da NF para o INOVA e no monitor SivaServer Portal a NF 2209-4 consta em status “Processando”";"Centro 1218 Ponta Grossa
+Frota F622
+Viagem 682436
+PAT 1360223
+Descrição do erro: Viagem 682436 - não subiu as informações da NF para o INOVA e no monitor SivaServer Portal a NF 2209-4 consta em status “Processando”
+
+Imagens em anexo."
+300-130559;Incident;Pending;18/09/2025;DE OLIVEIRA MANCO,TAMILIS;COP-SAP MOBILE;3;VIAGEM NÃO RECONCILIADA;"CENTRO 1222
+VIAGEM 682140
+PAT 1359567
+FROTA f2479
+ERRO: a viagem apresentou um erro, relatado no chamado 300-130519. onde a OV apareceu no PAT, mas não no SIVA+. ao tentar fechar a viagem apareceu o erro abaixo:
+
+ Erro SIVA-> E001: Ordem de Venda:0013006367 - Não encontrado informações para reconciliação. 3KSO COMERCIAL DE GAS LTDA"
+300-130519;Incident;Pending;18/09/2025;DE OLIVEIRA MANCO,TAMILIS;COP-SAP MOBILE;3;"Softmovel: 2276 
+OV NÃO APARECEU DISPONÍVEL PARA VENDA NO SIVA+";"centro 1222
+viagem 682140
+pat 1359567
+frota f2479
+OV 13006367
+
+erro: a OV subiu para o PAT, o cliente apareceu disponível para visita no SIVA+, mas a OV não apareceu disponível para lançamento no app."
+300-130563;Incident;Pending;18/09/2025;DE OLIVEIRA MANCO,TAMILIS;COP-SAP MOBILE;3;"Softmovel: 2282 
+ERRO: NF 8483-23 e NF 8500-23
+
+Centro:1230
+TRIP: 681238
+PAT: 1357749";"PAT=00000000000001357749; Reconciliação->  Erro SIVA-> E001: Ordem de Venda:0012990969 - Não encontrado informações para reconciliação. CONDOMINIO ED. RESID. MAANAIME001: Ordem de Venda:0012987876 - Não encontrado informações para reconciliação. CONDOMINIO DO RESID. PORTAL DAS DUN"
+100-96289;Service Request;Active;26/08/2025;DE OLIVEIRA MANCO,TAMILIS;COP-SAP MOBILE;26;"DESCRIÇÃO DO PROBLEMA:  Nos Danfinhos 3874-19 / 735-17 / 727-17 / 730-17 / 732-17 / 725-17 / 726-17 / 729-17 / 733-17 / 734-17 no 
+
+
+Campo Dados adicionais não saiu a informação: RET IR 0,24%";"USUÁRIO AFETADO:THAIS DE OLIVEIRA SANTOS, ROSILENE
+CHAVE: lkyw
+TELEFONE:  34 3303 6312
+EMAIL: LKYW@copaenergia.com.br
+LOCALIZAÇÃO:  Uberlândia 
+HORARIO TRABALHO: adm  
+DESCRIÇÃO DO PROBLEMA:  Nos Danfinhos 
+
+3874-19  
+735-17  
+727-17  
+730-17  
+732-17  
+725-17  
+726-17  
+729-17  
+733-17  
+734-17 
+
+
+Campo Dados adicionais não saiu a informação: 
+RET IR 0,24% NO 
+Cliente : 18242 Municipio de Uberlândia"
+300-130625;Incident;Pending;19/09/2025;CARLOS DA SILVA RIBEIRO,ELI;COP-SAP MOBILE;2;"Chamado Softmovel: 2285
 Data:19/09/2025
 Hora: 12:00
 
 Cliente informa que não está recebendo PDF em seu email, apenas XML 46424.";Cliente informa que não está recebendo PDF em seu email, apenas XML 46424.
-100-97023;Service Request;Pending;03/09/2025;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;20;Romaneio do Caminhão ADF4477 – ICMS não está sendo calculado;"Estamos enfrentando, novamente, a falha no romaneio do caminhão ADF4477, onde o ICMS não está sendo calculado corretamente.
+300-130514;Incident;Pending;17/09/2025;CARLOS DA SILVA RIBEIRO,ELI;COP-SAP MOBILE;4;Não estou conseguindo reconciliar;"Não estou conseguindo reconciliar
 
-Informo que chamados anteriores já haviam sido abertos sobre essa mesma situação, sendo o mais recente o de número 300125831, porém o problema ainda não foi solucionado.
+Pat 1359621
+viagem 682034
+centro 1212
 
-Solicitamos a revisão urgente do caso e a correção definitiva da falha, uma vez que o erro impacta diretamente no processo fiscal e não consigo pagar o fornecedor."
-300-129692;Incident;Pending;05/09/2025;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;18;"os seguintes CTE's não estão migrando para o monitor de pagamento (ZLESR004) DO CENTRO 1233; mesmo eu já enviando os arquivos xml's do mesmo para o email: nfeprdsap@copaenergia.com.br";"os seguintes CTE's não estão migrando para o monitor de pagamento (ZLESR004) DO CENTRO 1233; mesmo eu já enviando os arquivos xml's do mesmo para o email: nfeprdsap@copaenergia.com.br"
-300-127944;Incident;Pending;14/08/2025;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;40;"Ao acessar a transação ZLESR004 para efetuar o pagamento dos fretes (como realizado com outros fornecedores a exemplo da TORPEDO TRANSPORTES - 700279) os CTE's da transportadora TTG - 700370 não estão migrando para este monitor apesar de eu mesmo ter enviado ontem (13/08) o xml (vide anexo), o próprio transportador já confirmou que envia os arquivos conforme lhes foi solicitado;";"Ao acessar a transação ZLESR004 para efetuar o pagamento dos fretes (como realizado com outros fornecedores a exemplo da TORPEDO TRANSPORTES - 700279) os CTE's da transportadora TTG - 700370 não estão migrando para este monitor apesar de eu mesmo ter enviado ontem (13/08) o xml (vide anexo), o próprio transportador já confirmou que envia os arquivos conforme lhes foi solicitado;"
-100-94836;Service Request;Pending;12/08/2025;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;42;"Transportador não esta subindo no notifis
+erro: status globol concluído"
+100-94836;Service Request;Pending;12/08/2025;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;40;"Transportador não esta subindo no notifis
 
 
 
@@ -529,10 +938,38 @@ O transportador não está conseguindo emitir CTe porque os notifis não estão subi
 estou fazendo o processo dos notifis , porem ao verificar com transportador o mesmo não esta conseguindo emitir os CTE 
 
 código do transportador JVM 700252"
-300-130419;Incident;Pending;16/09/2025;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;7;Ajuste na impressão automática de relatórios;"Ajuste na impressão automática de relatórios  
-sou da logistica e quando realizo o processo de faturamento no IDM não esta saindo os relatorio de ordem de carregamento , folha de rota  e romaneio de forma automatica, esse processo falicita muito a atividade.
-onde estou tendo que ir manualmente na transação ZLES0014 - ZLES0014  para realizar esse trabalho."
-100-98324;Service Request;Active;16/09/2025;HENRIQUE MELO DE OLIVEIRA,GUILHERME;COP-POWER-BI;7;Solicito a licença o Power BI, para atualização, acompanhamento dos dados Energizados;Solicito a licença o Power BI, para atualização, acompanhamento dos dados Energizados
+100-97023;Service Request;Pending;03/09/2025;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;18;Romaneio do Caminhão ADF4477 – ICMS não está sendo calculado;"Estamos enfrentando, novamente, a falha no romaneio do caminhão ADF4477, onde o ICMS não está sendo calculado corretamente.
+
+Informo que chamados anteriores já haviam sido abertos sobre essa mesma situação, sendo o mais recente o de número 300125831, porém o problema ainda não foi solucionado.
+
+Solicitamos a revisão urgente do caso e a correção definitiva da falha, uma vez que o erro impacta diretamente no processo fiscal e não consigo pagar o fornecedor."
+300-130645;Incident;Pending;19/09/2025;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;2;VL com valor divergente.;"documento de transporte (romaneio) está apresentando divergência em valores deveria apresentar o valor de R$1509,76 que é o valor que gerou o fictício e o definitivo 
+deveria ser o mesmo valor, porém dentro do sistema na transação VI02 é constatado que o valor está divergente.
+
+Obs: no status da VI deve estar CCC porém nessa está CCA (não transmitido) 
+
+Em anexo informações via e-mail.
+
+VI Afetada: 926337
+
+Obs: usuário solicitou para entrar em contato entre 6:00 até 15:00."
+300-130332;Incident;Pending;15/09/2025;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;6;Valor Frete MG - adicional domingos/feriados;"Os fretes de entrega em MG oriundos de Brasília estão saindo com o adicional de domingos/feriados  indevidamente.
+
+Segue VT/VI para análise e correção:
+
+VT 9000311727
+VI 9000319898"
+300-128064;Incident;Pending;15/08/2025;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;37;impressão de romaneios -;impressão de romaneios - transação ZLES0014 - as informaçõe não estão aparecendo no relatórios dos seguintes  documentos - 862305/921073 - 862306/921074 - 862303/921071
+300-130400;Incident;Pending;16/09/2025;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;5;"Na VI 9000320154 e processando o valor adicional de R$ 672,00 tem que ser retirado para calcular corretamente o valor da VI.
+
+LGY3
+PAULINIA 1201";"Na VI 9000320154 e processando o valor adicional de R$ 672,00 tem que ser retirado para calcular corretamente o valor da VI.
+
+LGY3
+PAULINIA 1201"
+300-129692;Incident;Pending;05/09/2025;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;16;"os seguintes CTE's não estão migrando para o monitor de pagamento (ZLESR004) DO CENTRO 1233; mesmo eu já enviando os arquivos xml's do mesmo para o email: nfeprdsap@copaenergia.com.br";"os seguintes CTE's não estão migrando para o monitor de pagamento (ZLESR004) DO CENTRO 1233; mesmo eu já enviando os arquivos xml's do mesmo para o email: nfeprdsap@copaenergia.com.br"
+300-127944;Incident;Pending;14/08/2025;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;38;"Ao acessar a transação ZLESR004 para efetuar o pagamento dos fretes (como realizado com outros fornecedores a exemplo da TORPEDO TRANSPORTES - 700279) os CTE's da transportadora TTG - 700370 não estão migrando para este monitor apesar de eu mesmo ter enviado ontem (13/08) o xml (vide anexo), o próprio transportador já confirmou que envia os arquivos conforme lhes foi solicitado;";"Ao acessar a transação ZLESR004 para efetuar o pagamento dos fretes (como realizado com outros fornecedores a exemplo da TORPEDO TRANSPORTES - 700279) os CTE's da transportadora TTG - 700370 não estão migrando para este monitor apesar de eu mesmo ter enviado ontem (13/08) o xml (vide anexo), o próprio transportador já confirmou que envia os arquivos conforme lhes foi solicitado;"
+100-97022;Service Request;Pending;03/09/2025;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;18;"Ao tentarmos dar entrada nos CTE's 18155-7 (pedido 4503560849) e 18147-7 (pedido - 4503558839) do transportador TTG (431525) identificamos que o mesmo está direcionado para o centro 1237, acreditamos que seja em função do pedido está como CIF e o domicilio fiscal contar como PERNAMBUCO;";"Ao tentarmos dar entrada nos CTE's 18155-7 (pedido 4503560849) e 18147-7 (pedido - 4503558839) do transportador TTG (431525) identificamos que o mesmo está direcionado para o centro 1237, acreditamos que seja em função do pedido está como CIF e o domicilio fiscal contar como PERNAMBUCO;"
 ;;;;;;;;
 ;;;;;;;;
 ;;;;;;;;
@@ -546,18 +983,14 @@ onde estou tendo que ir manualmente na transação ZLES0014 - ZLES0014  para reali
 ;;;;;;;;
 ;;;;;;;;
 ;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-300-130573;Incident;Pending;18/09/2025;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;5;Nota não subiu no monitor mas está na GRC;"Nota não subiu no Keep True
+300-130573;Incident;Pending;18/09/2025;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;3;Nota não subiu no monitor mas está na GRC;"Nota não subiu no Keep True
 
 Nota: 
 9649-2 sequencia  até 9690-2
 
 Centro: 1212
 Barueri"
-300-130538;Incident;Pending;18/09/2025;SILVA SIMOES,FABIO;COP-SAP FI;5;"Estorno de documento com erro 5107811899
+300-130538;Incident;Pending;18/09/2025;SILVA SIMOES,FABIO;COP-SAP FI;3;"Estorno de documento com erro 5107811899
 o número foi lançado incorretamente e precisamos ajustar
 Numero lançado 4209
 numero correto 4206";"Estorno de documento com erro 5107811899
@@ -565,10 +998,21 @@ o número foi lançado incorretamente e precisamos ajustar
 Numero lançado 4209
 numero correto 4206
 precisamos estornar para acertar o número"
-300-130367;Incident;Pending;16/09/2025;SILVA SIMOES,FABIO;COP-SAP CO;7;Falha de registro boletos nos bancos;"Bom dia, houve erro de registro de boletos nos banco Itaú e Banco do Brasil 15.09.2025. Erros sendo tratados com o Sr Julio TI.
+300-130423;Incident;Pending;16/09/2025;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;5;NF Petrobras;"Boa tarde,
+
+Prezados a NF 10596 não consta no KT, podem migrar a mesma.
+
+Atenciosamente,"
+300-130025;Incident;Pending;10/09/2025;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;11;FIZ A ENTRADA DE UMA NOTA COM O PRODUTO ERRADO PELO KEEPTRUE, TIVE QUE ESTORNAR PELO KEEPTRUE PARA ACERTAR, MAS AI NÃO CONSEGUI ESTORNAR TODOS OS FLUXOS E NÃO CONSIGO DAR ENTRADA COM O PRODUTO CERTO;FIZ A ENTRADA DE UMA NOTA COM O PRODUTO ERRADO PELO KEEPTRUE, TIVE QUE ESTORNAR PELO KEEPTRUE PARA ACERTAR, MAS AI NÃO CONSEGUI ESTORNAR TODOS OS FLUXOS E NÃO CONSIGO DAR ENTRADA COM O PRODUTO CERTO
+300-130541;Incident;Pending;18/09/2025;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;3;Nota não apareceu no Keep True;"Nota não apareceu no Keep True
+Nota: 13416-3
+CNPJ: 01104588/0001-81
+
+Centro: 1136"
+300-130367;Incident;Pending;16/09/2025;SILVA SIMOES,FABIO;COP-SAP CO;5;Falha de registro boletos nos bancos;"Bom dia, houve erro de registro de boletos nos banco Itaú e Banco do Brasil 15.09.2025. Erros sendo tratados com o Sr Julio TI.
 
 Grato"
-300-130449;Incident;Pending;17/09/2025;SILVA SIMOES,FABIO;COP-SAP FI;6;"Solicito análise lançamento contábil com o campo texto em branco - URGENTE
+300-130449;Incident;Pending;17/09/2025;SILVA SIMOES,FABIO;COP-SAP FI;4;"Solicito análise lançamento contábil com o campo texto em branco - URGENTE
 
 Peço direcionar esse chamado para a mesa de FI";"Solicito análise lançamento contábil com o campo texto em branco - URGENTE
 
@@ -577,31 +1021,158 @@ Ressalto que, o campo texto é parte integrante e essencial na composição do lanç
 Em anexo, consta os lançamentos identificados com o campo texto em branco.
 
 Peço direcionar esse chamado para a mesa de FI"
-300-130541;Incident;Pending;18/09/2025;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;5;Nota não apareceu no Keep True;"Nota não apareceu no Keep True
-Nota: 13416-3
-CNPJ: 01104588/0001-81
-
-Centro: 1136"
-100-96977;Service Request;Pending;03/09/2025;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;20;"Ao realizar a entrada de uma nota via Keep True, ao informar a data de saída da mercadoria e clicar em Avançar, o sistema apresenta uma mensagem de erro que impede a finalização da entrada da nota.
+100-96977;Service Request;Pending;03/09/2025;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;18;"Ao realizar a entrada de uma nota via Keep True, ao informar a data de saída da mercadoria e clicar em Avançar, o sistema apresenta uma mensagem de erro que impede a finalização da entrada da nota.
 
 Foi observado que, ao deslogar do SAP e acessar novamente, o processo é concluído normalmente.";"Ao realizar a entrada de uma nota via Keep True, ao informar a data de saída da mercadoria e clicar em Avançar, o sistema apresenta uma mensagem de erro que impede a finalização da entrada da nota.
 
 Foi observado que, ao deslogar do SAP e acessar novamente, o processo é concluído normalmente."
-300-130025;Incident;Pending;10/09/2025;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;13;FIZ A ENTRADA DE UMA NOTA COM O PRODUTO ERRADO PELO KEEPTRUE, TIVE QUE ESTORNAR PELO KEEPTRUE PARA ACERTAR, MAS AI NÃO CONSEGUI ESTORNAR TODOS OS FLUXOS E NÃO CONSIGO DAR ENTRADA COM O PRODUTO CERTO;FIZ A ENTRADA DE UMA NOTA COM O PRODUTO ERRADO PELO KEEPTRUE, TIVE QUE ESTORNAR PELO KEEPTRUE PARA ACERTAR, MAS AI NÃO CONSEGUI ESTORNAR TODOS OS FLUXOS E NÃO CONSIGO DAR ENTRADA COM O PRODUTO CERTO
+300-130156;Incident;Pending;12/09/2025;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;9;NF não aparece no KEEP 20282-1;NF 20282-1 não esta aparecendo no KEEP chave 43250909475421000143550010000202821006409265
 ;;;;;;;;
-300-130656;Incident;Pending;19/09/2025;ALVARENGA RANGEL LIANG,ALINE;COP-SAP MOBILE;4;encerramento de viagem;"encerramento de viagem
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+300-130644;Incident;Pending;19/09/2025;ALVARENGA RANGEL LIANG,ALINE;COP-SAP MOBILE;2;Erro na reconciliação da Viagem;"USUÁRIO AFETADO: Humberto
+CHAVE: u62c
+GESTOR:
+TELEFONE: 31 999087330
+LOCALIZAÇÃO: Ibirité
+
+DESCRIÇÃO:
+Erro na reconciliação da Viagem
+Trip 681145
+
+PAT=00000000000001357616; Reconciliação->  Erro SIVA-> E001: Ordem de Venda:0013021620 - Não encontrado informações para reconciliação. EMPRESER EMPRESA DE PRESTACAO DE SE
+
+ 
+
+Trip 682556
+
+PAT=00000000000001360396; Reconciliação->  Erro SIVA-> E001: Ordem de Venda:0013044090 - Não encontrado informações para reconciliação. CLUBE CAMPESTRE DE BELO HORIZONTEE001: Ordem de Venda:0013043681 - Não encontrado informações para reconciliação. CLUBE CAMPESTRE DE BELO HORIZONTE
+
+ 
+
+Trip 681884
+
+PAT=00000000000001358938; Reconciliação->  Erro SIVA-> E001: Ordem de Venda:0013032504 - Não encontrado informações para reconciliação. RONARO TRINDADE CORREA
+
+ 
+
+Trip 681145
+
+PAT=00000000000001357616; Reconciliação->  Erro SIVA-> E001: Ordem de Venda:0013021620 - Não encontrado informações para reconciliação. EMPRESER EMPRESA DE PRESTACAO DE SE"
+300-130590;Incident;Pending;18/09/2025;ALVARENGA RANGEL LIANG,ALINE;COP-SAP MOBILE;3;VIAGEM NÃO ENCERRA;"USUÁRIO RELATA QUE NÃO CONSEGUE ENCERRAR VIAGEM EM UM ORDEM DE VENDA.
+
+VIAGEM: 682120
+OV: 13005883"
+300-130656;Incident;Pending;19/09/2025;ALVARENGA RANGEL LIANG,ALINE;COP-SAP MOBILE;2;encerramento de viagem;"encerramento de viagem
 
 viagem: 682969
 frota: 2h65
 PAT: 1361232
 centro: 1200"
-100-94295;Service Request;Pending;06/08/2025;CARDOSO SOUZA DA SILVA,RONALD;COP-SAP LES-3N;48;DESCRIÇÃO DO PROBLEMA: AO GERAR PEDIDO DE FRETE DO CUSTO FIXO NA TRANSAÇÃO ZLES0029 ESTA DANDO ERRO (em anexo).;"Ao tentar gerar o frete do custo fixo quinzenal do Purogas, dá a mensagem de erro em anexo.
+300-130657;Incident;Pending;19/09/2025;ALVARENGA RANGEL LIANG,ALINE;COP-SAP MOBILE;2;encerramento de viagem;"encerramento de viagem
+
+viagem: 682976
+frota: 6379
+PAT: 1361241
+centro: 1200"
+300-130658;Incident;Pending;19/09/2025;ALVARENGA RANGEL LIANG,ALINE;COP-SAP MOBILE;2;encerramento de viagem;"encerramento de viagem
+
+
+viagem: 683059
+frota: 1d64
+PAT: 1361370
+centro: 1200"
+100-94295;Service Request;Pending;06/08/2025;CARDOSO SOUZA DA SILVA,RONALD;COP-SAP LES-3N;46;DESCRIÇÃO DO PROBLEMA: AO GERAR PEDIDO DE FRETE DO CUSTO FIXO NA TRANSAÇÃO ZLES0029 ESTA DANDO ERRO (em anexo).;"Ao tentar gerar o frete do custo fixo quinzenal do Purogas, dá a mensagem de erro em anexo.
 O erro é persistente pois já foi aberto chamado no mês passado e o mesmo continua."
-300-129149;Incident;Queued;01/09/2025;CARDOSO SOUZA DA SILVA,RONALD;COP-SAP LES-3N;22;Não gero os pedidos no monitor do NOTFIS;Não gero os pedidos no monitor do NOTFIS das despesas intramunicipais do transportador Expresso via norte - 702340 - VTs 868606-868835-869752-870139
-100-98707;Service Request;Pending;19/09/2025;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;4;Instalar o Power BI no meu PC;Instalar o Power BI no meu PC
-300-130642;Incident;Pending;19/09/2025;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;4;Não consigo acessar SAP via link remoto.;Não consigo acessar SAP via link remoto.
-100-98649;Service Request;Pending;18/09/2025;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;5;INSTALAÇÃO DO SOFTWARE NA MAQUINA;NECESSITO DO SOFTWARE DO POWER BI INSTALADO EM MEU DESKTOP PARA EXECUÇÃO DO SERVIÇO DE ANALISE DE DADOS DO MEU CENTRO OPERATIVO
-300-129819;Incident;Pending;08/09/2025;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;15;Na agenda do meu outlook, não consta mais a opção do Teams para agendar reuniões. Poderiam me ajudar por favor?;
+300-129149;Incident;Queued;01/09/2025;CARDOSO SOUZA DA SILVA,RONALD;COP-SAP LES-3N;20;Não gero os pedidos no monitor do NOTFIS;Não gero os pedidos no monitor do NOTFIS das despesas intramunicipais do transportador Expresso via norte - 702340 - VTs 868606-868835-869752-870139
+100-98397;Service Request;Pending;16/09/2025;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;5;Foi instalado o software do equipamento novo no laboratório, porém, estava funcionando e após o equipamento fazer atualização foi pedida a instalação.;"Boa Tarde!
+
+Foi instalado o software do equipamento novo no laboratório, porém, estava funcionando e após o equipamento fazer atualização foi pedida a instalação.
+
+Como não foi possível colocar o usuário SAPUROGAS para o computador, foi colocado o do funcionário Diego temporariamente. 
+
+O computador fez uma reinicialização automática para atualização e depois do mesmo, consta como se não estivesse instalado o software do equipamento.
+
+Entramos em contato com o técnico e ele nos informou que seria preciso contatar a TI.
+
+Poderiam verificar, por favor?
+
+Obrigada!
+
+OBS: Eu entro as 15h, caso possível, poderiam entrar em contato após esse horário?"
+100-98462;Service Request;Pending;17/09/2025;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;4;migração citrix;Solicito atualização do notebook pois ainda estou utilizando o citrix
+100-98509;Service Request;Pending;17/09/2025;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;4;"Boa tarde!
+
+Não sei se é nesta opção de chamado, o Colaborador de chave: KPKF não está acessando em sua máquina o programa da balança TOLEDO. Precisamos deste acesso para ele, que trabalha no faturamento.
+
+Favor verificar urgente!
+
+Grato!";"Boa tarde!
+
+Não sei se é nesta opção de chamado, o Colaborador de chave: KPKF não está acessando em sua máquina o programa da balança TOLEDO. Precisamos deste acesso para ele, que trabalha no faturamento.
+
+Favor verificar urgente!
+
+Grato!"
+300-130507;Incident;Pending;17/09/2025;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;4;Notebook do usuário sem acesso a internet!;"USUÁRIO AFETADO: SIDNEY
+GESTOR: 
+TELEFONE:83 981092334
+LOCALIZAÇÃO: Joao Pessoa
+
+DESCRIÇÃO:  Notebook do usuário sem acesso a internet!
+NCEJP1-60180
+---"
+300-130545;Incident;Pending;18/09/2025;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;3;Não consigo acessar a global;Falha ao acessar VPN
+300-130547;Incident;Pending;18/09/2025;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;3;Maquina DCEDC1-25102  não esta reconhecendo a rede de internet do cabo.;"USUÁRIO AFETADO: Marcos
+CHAVE:sy96
+GESTOR:
+TELEFONE: 21 980532511
+LOCALIZAÇÃO: Duque de Caxias
+
+DESCRIÇÃO: Maquina DCEDC1-25102  não esta reconhecendo a rede de internet do cabo.
+
+---"
+300-129819;Incident;Pending;08/09/2025;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;13;Na agenda do meu outlook, não consta mais a opção do Teams para agendar reuniões. Poderiam me ajudar por favor?;
+100-98443;Service Request;Pending;17/09/2025;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;4;Reativação do Excel;Aplicativo do Excel apresenta falha na ativação do produto.
+100-98598;Service Request;Pending;18/09/2025;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;3;Maquina NCEFO1-11488 não esta dando acesso ao usuário!;"USUÁRIO AFETADO:JOSENIR
+CHAVE:2g50
+GESTOR:
+TELEFONE:85 987149055
+LOCALIZAÇÃO: Fortaleza
+
+DESCRIÇÃO: Maquina NCEFO1-11488 não esta dando acesso ao usuário! maquina atribuída recentemente!
+---"
+100-98730;Service Request;Pending;19/09/2025;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;2;usuário solicita instalação da  impressora.  SJC202_C3060ND e liberar para imprimir  em COR.;"USUÁRIO AFETADO: Lucas
+CHAVE:UAG9
+GESTOR:
+TELEFONE: 12 987049545
+LOCALIZAÇÃO: São José dos Campos
+ 
+
+DESCRIÇÃO: usuário solicita instalação da  impressora.  SJC202_C3060ND e liberar para imprimir  em COR."
+300-130637;Incident;Pending;19/09/2025;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;2;Ztna com ícone vermelho, os Apps funcionam porém tem travado bastante o excel e a mala direta do word também não funciona devido a conexão que está ruim. Anexo o print do ícone;Ztna com ícone vermelho, os Apps funcionam porém tem travado bastante o excel e a mala direta do word também não funciona devido a conexão que está ruim. Anexo o print do ícone
+300-130366;Incident;Pending;16/09/2025;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;5;Aplicativo Teams com problemas;"Aplicativo Teams vem apresentando os problemas:
+
+- Não consigo receber ligações mesmo com status disponível
+- Diariamente aparece conversas não lidas, sendo que todas foram lidas/finalizadas."
+100-98616;Service Request;Pending;18/09/2025;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;3;Instalação Visio;"Instalação Visio
+
+Preciso entregar uma demanda até a próxima quarta e o Visio é a principal ferramenta para a  conclusão."
+300-130533;Incident;Pending;18/09/2025;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;3;Solicito um novo carregador, dado que o que estou utilizando no momento, apresenta mal contato, não carregando a maior parte do tempo.;Solicito um novo carregador, dado que o que estou utilizando no momento, apresenta mal contato, não carregando a maior parte do tempo.
 ;;;;;;;;
 ;;;;;;;;
 ;;;;;;;;
@@ -617,33 +1188,43 @@ O erro é persistente pois já foi aberto chamado no mês passado e o mesmo continu
 ;;;;;;;;
 ;;;;;;;;
 ;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-300-130495;Incident;Pending;17/09/2025;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;6;"solicito apoio com a NF 183809 
-n°doc 20815420";é uma nf de transferência de produto e esta apresentando um erro pela segunda vez e não é resolvido
-100-98752;Service Request;Pending;19/09/2025;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP WF;4;Há workflow que estão vindo para aprovação do Laercio  porém já vem aprovados.;"Temos alguns workflow que já vem aprovados porem continuam vindo para a caixa do Gerente executivo Laercio Primo.
+100-98654;Service Request;Pending;18/09/2025;DO CARMO,DENIS;APOIO-COP-SEDE;3;Instalação de drive de impressora;Solicito a instarão do drive de impressora do escritório no PC de assed: DCESD2-10061
+300-130588;Incident;Pending;18/09/2025;DO CARMO,DENIS;APOIO-COP-SEDE;3;LICENÇA M365;"USUÁRIO NÃO CONSEGUE ACESSAR SERVIÇOS DA MICROSOFT POIS NÃO POSSUI LICENÇA, COMO EM ANEXO.
+
+FAVOR ATRIBUIR UMA LICENÇA DO OFFICE."
+300-130043;Incident;Pending;11/09/2025;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP WF;10;Ordem liberadas em todas alçadas, mas permanece bloqueada 12961566;Ordem liberadas em todas alçadas, mas permanece bloqueada 12961566
+100-98752;Service Request;Pending;19/09/2025;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP WF;2;Há workflow que estão vindo para aprovação do Laercio  porém já vem aprovados.;"Temos alguns workflow que já vem aprovados porem continuam vindo para a caixa do Gerente executivo Laercio Primo.
 
 Favor encaminhar esse chamado para equipe do Ariel da TI."
-300-129666;Incident;Pending;05/09/2025;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;18;CORREÇÃO DA DATA DE EMISSÃO REFERENTE LANÇAMENTO PELA MIRO 5107813483-2025 FORNECEDOR 447258 PRESTASERV PRESTADORA;Correção da data de emissão de um lançamento feito pela MIRO sob nº  5107813483-2025 Nº DOC 5101262083 FORNECEDOR 447258 PRESTASERV PRESTADORA, a data de emissão está divergente da NF, lançado com emissão05.09.2025, porém o correto é 04.02.2025 - não conseguimos correção devido o primeiro lançamento ter sido feito pelo KT, mas o estorno foi pela MIRO, logo não é mais possível realizar novo lançamento pela ferramenta KT
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-300-130638;Incident;Pending;19/09/2025;BRAGA MARTINS,EDEMILSON;COP-SEGURANÇA;4;"Solicito acesso ao WhatsApp corporativo na máquina.
+300-129666;Incident;Pending;05/09/2025;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;16;CORREÇÃO DA DATA DE EMISSÃO REFERENTE LANÇAMENTO PELA MIRO 5107813483-2025 FORNECEDOR 447258 PRESTASERV PRESTADORA;Correção da data de emissão de um lançamento feito pela MIRO sob nº  5107813483-2025 Nº DOC 5101262083 FORNECEDOR 447258 PRESTASERV PRESTADORA, a data de emissão está divergente da NF, lançado com emissão05.09.2025, porém o correto é 04.02.2025 - não conseguimos correção devido o primeiro lançamento ter sido feito pelo KT, mas o estorno foi pela MIRO, logo não é mais possível realizar novo lançamento pela ferramenta KT
+300-130639;Incident;Pending;19/09/2025;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;2;devolução de venda;"não consigo fazer a devolução com o valor correto
 
-Temos alguns grupos com motoristas que utilizamos durante todo o dia. Ter o WhatsApp corporativo disponível no computador facilitaria o suporte aos motoristas, ajudaria na conciliação das demandas e tornaria a interação com o pessoal mais ágil, já que muitas situações precisam ser resolvidas diretamente pela máquina.
+isso impede de fazer a devolução 
 
-numero 21998189387";"Solicito acesso ao WhatsApp corporativo na máquina.
 
-Temos alguns grupos com motoristas que utilizamos durante todo o dia. Ter o WhatsApp corporativo disponível no computador facilitaria o suporte aos motoristas, ajudaria na conciliação das demandas e tornaria a interação com o pessoal mais ágil, já que muitas situações precisam ser resolvidas diretamente pela máquina.
+yd01
+Transação VA01"
+300-130569;Incident;Pending;18/09/2025;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;3;TRANSAÇÃO MIRO;"USUARIO INFORMA QUE NÃO CONSEGUE FINALIZAR A NF DE UM MATERIAL NA TRANSAÇÃO MIRO POIS É EXIBIDO O ERRO: 
 
-numero 21998189387"
+STATUS DE SISTEMA ABER ESTA ATIVO, PROCEDIMENTO SO PODE SER EXECUTADO SE O STATUS PERMITIR.
+
+PEDIDO: 4503685207
+ORDEM DE MANUTENÇÃO: 150002753"
+300-130495;Incident;Pending;17/09/2025;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;4;"solicito apoio com a NF 183809 
+n°doc 20815420";é uma nf de transferência de produto e esta apresentando um erro pela segunda vez e não é resolvido
+300-130551;Incident;Pending;18/09/2025;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;3;"""ordem utilizada, porem pendente consumindo limite de credito indevidamente";"""ordem utilizada, porem pendente consumindo limite de credito indevidamente. Não conseguimos recusa-la
+12987946
+13004936
+13011167"""
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+100-98319;Service Request;Pending;16/09/2025;RITALO SANTOS DA SILVA,CARLOS;COP-SEGURANÇA;5;Instalação App WhatsApp Business;"Por gentileza, instalar o aplicativo do App WhatsApp Business para as usuárias.
+
+Edilaine de Sousa Simão, chave 4ifq"
+100-98215;Service Request;Active;16/09/2025;RITALO SANTOS DA SILVA,CARLOS;COP-SEGURANÇA;5;Aplicativo Tuvis apresenta bloqueio: FortiGuard Intrusion Prevention - Access Blocked;Aplicativo Tuvis apresenta bloqueio: FortiGuard Intrusion Prevention - Access Blocked
+100-98640;Service Request;Pending;18/09/2025;BRAGA MARTINS,EDEMILSON;COP-SEGURANÇA;3;PRoblemas em recebimento de email;"Não estou recebendo emails da Pulses e também estamos com travas em nosso mailing ""Pricing"" que não recebeu a mensagem enviada pela bruna e por mim ontem a noite"
 ;;;;;;;;
 ;;;;;;;;
 ;;;;;;;;
@@ -653,43 +1234,14 @@ numero 21998189387"
 ;;;;;;;;
 ;;;;;;;;
 ;;;;;;;;
-;;;;;;;;
-100-98617;Service Request;Active;18/09/2025;SANTIAGO ALMEIDA,LUCCA;COP-OneID-Suporte;5;solicitamos o monitoramento das movimentações de contas de usuário (inclusão e exclusão) no grupo GG_PROXYWHAPP;Os alertas relacionados a essas movimentações devem ser enviados para o e-mail seg-info@copaenergia.com.br.
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
+100-98617;Service Request;Active;18/09/2025;SANTIAGO ALMEIDA,LUCCA;COP-OneID-Suporte;3;solicitamos o monitoramento das movimentações de contas de usuário (inclusão e exclusão) no grupo GG_PROXYWHAPP;Os alertas relacionados a essas movimentações devem ser enviados para o e-mail seg-info@copaenergia.com.br.
+300-130661;Incident;Pending;20/09/2025;CESAR PRESTES,JULIO;PROD-COP-NOC;2;EC SÃO JOSÉ - SDWAN;"Nome do Host  WLQSJ2-SDWAN
+Endereço IP  172.31.199.252
+
+ALGAR INTERNET: Down
+
+Designação: 8680195
+Protocolo Algar:  202527228540"
 ;;;;;;;;
 ;;;;;;;;
 ;;;;;;;;
@@ -706,14 +1258,43 @@ numero 21998189387"
 ;;;;;;;;
 ;;;;;;;;
 ;;;;;;;;
-300-130626;Incident;Queued;19/09/2025;DURAN PRADO,MARCELO;COP-SAP CO-3N;4;Habilitar campo na transação KS02,o campo é Área Funcional, pois esse campo precisa ser habilitado para entrar informação.;"Habilitar campo na transação KS02,o campo é Área Funcional, pois esse campo precisa ser habilitado para entrar informação.
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+300-130626;Incident;Queued;19/09/2025;DURAN PRADO,MARCELO;COP-SAP CO-3N;2;Habilitar campo na transação KS02,o campo é Área Funcional, pois esse campo precisa ser habilitado para entrar informação.;"Habilitar campo na transação KS02,o campo é Área Funcional, pois esse campo precisa ser habilitado para entrar informação.
 Foi solicita ao criar centro de custo precisamos visualizar (Área Funcional), deste centro de custo."
 ;;;;;;;;
 ;;;;;;;;
 ;;;;;;;;
 ;;;;;;;;
 ;;;;;;;;
-100-98634;Service Request;Pending;18/09/2025;CARDOSO SILVA,IRENE;COP-IMPRESSORA;5;Impressora  com defeito;"Impressora apresenta um barulho estranho no rolamento, está bem barulhento.
+100-98634;Service Request;Pending;18/09/2025;CARDOSO SILVA,IRENE;COP-IMPRESSORA;3;Impressora  com defeito;"Impressora apresenta um barulho estranho no rolamento, está bem barulhento.
 
 BRBSQBK0SK
 
@@ -721,3 +1302,65 @@ Laserjet MFPP Q52645
 
 Localidade: Guararapes"
 ;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+300-130446;Incident;Active;17/09/2025;LUCAS MENDES DOS SANTOS,LEVI;COP-SENIOR;4;Atualização da base cadastral dos funcionários no sistema SAP - URGENTE;"Atualização da base cadastral dos funcionários no sistema SAP - URGENTE
+
+É necessário fazer uma nova carga do Sênior para o SAP do cadastro funcionários, pois vários funcionários migraram de área e os centros de custos não foram alterados causando distorções na apropriação das despesas de viagens.
+
+Abri o chamado n.100-81460 em março/2025 sem resposta até o momento."
+300-130419;Incident;Pending;16/09/2025;CARLO GONCALVES DA SILVA,JEAN;COP-INFRA;5;Ajuste na impressão automática de relatórios;"Ajuste na impressão automática de relatórios  
+sou da logistica e quando realizo o processo de faturamento no IDM não esta saindo os relatorio de ordem de carregamento , folha de rota  e romaneio de forma automatica, esse processo falicita muito a atividade.
+onde estou tendo que ir manualmente na transação ZLES0014 - ZLES0014  para realizar esse trabalho."
+100-98742;Service Request;Pending;19/09/2025;CARLO GONCALVES DA SILVA,JEAN;COP-INFRA;2;Erro ao iniciar teams.;O aplicativo não abre e apresenta erro.
+300-130632;Incident;Pending;19/09/2025;SCATOLIN JUNIOR,LEONIR;APOIO-COP-SD;2;erro no MFA;"USUÁRIO AFETADO: Nilton
+CHAVE: lqnc
+TELEFONE: 43 991123168
+LOCALIZAÇÃO: londrina
+
+DESCRIÇÃO: erro no MFA usuário não esta recebendo notificaçoes!"
