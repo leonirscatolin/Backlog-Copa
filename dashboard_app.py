@@ -142,6 +142,17 @@ try:
             text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 10px;
         }
+        /* Ajuste para esconder o botão, mantendo a área clicável */
+        .stButton>button {
+            border: none;
+            background-color: transparent;
+            color: transparent; /* Esconde o texto do botão */
+            padding: 0;
+            margin-top: -50px; /* Puxa o botão para cima sobrepondo o card */
+            height: 50px; /* Altura para cobrir a área do card */
+            width: 100%;
+            cursor: pointer;
+        }
         .metric-box .value {font-size: 2.5em; font-weight: bold; color: #375623;}
         .metric-box .label {font-size: 1em; color: #666666;}
         </style>
@@ -181,9 +192,20 @@ try:
                 aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
                 aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
 
+                # --- INÍCIO DA MODIFICAÇÃO: LÓGICA DE INTERATIVIDADE ---
+                
+                # 1. Inicializa o session_state se ele ainda não existir
+                if 'faixa_selecionada' not in st.session_state:
+                    st.session_state.faixa_selecionada = ordem_faixas[0] # Define um valor padrão
+
+                # 2. Função para ser chamada no clique do botão, atualizando o estado
+                def setar_faixa_selecionada(faixa):
+                    st.session_state.faixa_selecionada = faixa
+
                 cols = st.columns(len(ordem_faixas))
                 for i, row in aging_counts.iterrows():
                     with cols[i]:
+                        # Exibe a métrica visualmente
                         st.markdown(
                             f"""
                             <div class="metric-box">
@@ -192,6 +214,16 @@ try:
                             </div>
                             """, unsafe_allow_html=True
                         )
+                        # Adiciona um botão (que ficará invisível) para capturar o clique
+                        st.button(
+                            label=f" ", # Label pode ser vazia
+                            key=f"btn_{i}",
+                            on_click=setar_faixa_selecionada,
+                            args=(row['Faixa de Antiguidade'],),
+                            use_container_width=True
+                        )
+                # --- FIM DA MODIFICAÇÃO ---
+
             else:
                 st.warning("Nenhum dado válido para a análise de antiguidade.")
 
@@ -204,16 +236,32 @@ try:
             if not df_aging.empty:
                 st.markdown("---") 
                 st.subheader("Detalhar e Buscar Chamados")
+                
+                # --- INÍCIO DA MODIFICAÇÃO: SINCRONIZAÇÃO DO SELECTBOX ---
+                
                 opcoes_filtro = aging_counts['Faixa de Antiguidade'].tolist()
-                selected_bucket = st.selectbox("Selecione uma faixa de idade para ver os detalhes:", options=opcoes_filtro)
-                if selected_bucket and not df_aging[df_aging['Faixa de Antiguidade'] == selected_bucket].empty:
-                    filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == selected_bucket].copy()
+                
+                # 3. O selectbox agora é controlado pelo e também controla o session_state
+                #    usando o parâmetro 'key'
+                st.selectbox(
+                    "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):",
+                    options=opcoes_filtro,
+                    key='faixa_selecionada' # Esta chave faz a sincronização
+                )
+                
+                # 4. A lógica de filtro agora usa o valor do session_state
+                faixa_atual = st.session_state.faixa_selecionada
+                
+                if faixa_atual and not df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].empty:
+                    filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].copy()
                     filtered_df['Data de criação'] = filtered_df['Data de criação'].dt.strftime('%d/%m/%Y')
                     colunas_para_exibir = ['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
                     st.dataframe(filtered_df[colunas_para_exibir], use_container_width=True)
                 else:
                     st.write("Não há chamados nesta categoria.")
 
+                # --- FIM DA MODIFICAÇÃO ---
+                
                 st.markdown("---")
                 st.subheader("Buscar Chamados por Grupo")
                 lista_grupos = sorted(df_aging['Atribuir a um grupo'].dropna().unique())
