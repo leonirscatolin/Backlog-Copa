@@ -4,53 +4,23 @@ import plotly.express as px
 import numpy as np
 import base64
 from datetime import datetime
-from github import Github, Auth
-from io import StringIO
 
-# --- Configuração da Página (com a barra lateral recolhida) ---
+# --- Configuração da Página ---
 st.set_page_config(
     layout="wide", 
     page_title="Backlog Copa Energia + Belago",
     page_icon="copaenergialogo_1691612041.webp",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="collapsed" # Garante que a barra lateral comece recolhida
 )
 
-# --- FUNÇÕES (As suas, sem alterações) ---
-@st.cache_resource
-def get_github_repo():
-    try:
-        auth = Auth.Token(st.secrets["GITHUB_TOKEN"])
-        g = Github(auth=auth)
-        return g.get_repo("leonirscatolin/dashboard-backlog")
-    except Exception as e:
-        st.error("Erro de conexão com o repositório. Verifique o GITHUB_TOKEN.")
-        st.stop()
-
-def update_github_file(_repo, file_path, file_content):
-    commit_message = f"Dados atualizados em {datetime.now().strftime('%d/%m/%Y %H:%M')}"
-    try:
-        contents = _repo.get_contents(file_path)
-        _repo.update_file(contents.path, commit_message, file_content, contents.sha)
-        st.sidebar.info(f"Arquivo '{file_path}' atualizado.")
-    except Exception:
-        _repo.create_file(file_path, commit_message, file_content)
-        st.sidebar.info(f"Arquivo '{file_path}' criado.")
-    st.cache_data.clear()
-
-@st.cache_data(ttl=300)
-def read_github_file(_repo, file_path):
-    try:
-        content_file = _repo.get_contents(file_path)
-        content = content_file.decoded_content.decode("utf-8")
-        return pd.read_csv(StringIO(content), delimiter=';', encoding='latin1')
-    except Exception:
-        return pd.DataFrame()
-
+# --- FUNÇÕES ---
 def get_base_64_of_bin_file(bin_file):
     try:
-        with open(bin_file, 'rb') as f: data = f.read()
+        with open(bin_file, 'rb') as f:
+            data = f.read()
         return base64.b64encode(data).decode()
-    except FileNotFoundError: return None
+    except FileNotFoundError:
+        return None
 
 def processar_dados_comparativos(df_atual, df_15dias):
     contagem_atual = df_atual.groupby('Atribuir a um grupo').size().reset_index(name='Atual')
@@ -62,9 +32,12 @@ def processar_dados_comparativos(df_atual, df_15dias):
 
 def categorizar_idade_vetorizado(dias_series):
     condicoes = [
-        dias_series >= 30, (dias_series >= 21) & (dias_series <= 29),
-        (dias_series >= 11) & (dias_series <= 20), (dias_series >= 6) & (dias_series <= 10),
-        (dias_series >= 3) & (dias_series <= 5), (dias_series >= 1) & (dias_series <= 2)
+        dias_series >= 30,
+        (dias_series >= 21) & (dias_series <= 29),
+        (dias_series >= 11) & (dias_series <= 20),
+        (dias_series >= 6) & (dias_series <= 10),
+        (dias_series >= 3) & (dias_series <= 5),
+        (dias_series >= 1) & (dias_series <= 2)
     ]
     opcoes = ["30+ dias", "21-29 dias", "11-20 dias", "6-10 dias", "3-5 dias", "1-2 dias"]
     return np.select(condicoes, opcoes, default="Erro de Categoria")
@@ -89,58 +62,28 @@ def get_status(row):
         return "Redução de Backlog"
 
 # --- INTERFACE DO APLICATIVO ---
-
-# MUDANÇA: Logos e Título Centralizado
 col1, col2, col3 = st.columns([1, 4, 1])
 with col1:
-    st.image("logo_sidebar.png", width=150) # Use o nome do seu novo logo da sidebar
+    st.image("logo_sidebar.png", width=150)
 with col2:
     st.markdown("<h1 style='text-align: center;'>Backlog Copa Energia + Belago</h1>", unsafe_allow_html=True)
 with col3:
     st.image("logo_belago.png", width=150)
 
+st.sidebar.header("Carregar Arquivos")
+uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL (.csv)", type="csv")
+uploaded_file_15dias = st.sidebar.file_uploader("2. Backlog de 15 DIAS ATRÁS (.csv)", type="csv")
 
-# A barra lateral não tem mais o GIF/logo
-# st.sidebar.markdown(f"""...""", unsafe_allow_html=True) 
-
-# --- LÓGICA DE LOGIN E UPLOAD ---
-st.sidebar.header("Área do Administrador")
-password = st.sidebar.text_input("Senha para atualizar dados:", type="password")
-is_admin = password == st.secrets.get("ADMIN_PASSWORD", "")
-
-repo = get_github_repo()
-
-if is_admin:
-    st.sidebar.success("Acesso de administrador liberado.")
-    st.sidebar.header("Carregar Novos Arquivos")
-    uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL (.csv)", type="csv")
-    uploaded_file_15dias = st.sidebar.file_uploader("2. Backlog de 15 DIAS ATRÁS (.csv)", type="csv")
-    
-    if st.sidebar.button("Salvar Novos Dados no Site"):
-        if uploaded_file_atual and uploaded_file_15dias:
-            with st.spinner("Salvando arquivos..."):
-                update_github_file(repo, "dados_atuais.csv", uploaded_file_atual.getvalue())
-                update_github_file(repo, "dados_15_dias.csv", uploaded_file_15dias.getvalue())
-            st.sidebar.balloons()
-        else:
-            st.sidebar.warning("Carregue os dois arquivos para salvar.")
-elif password:
-    st.sidebar.error("Senha incorreta.")
-
-st.markdown("---")
-
-# --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
-try:
-    df_atual = read_github_file(repo, "dados_atuais.csv")
-    df_15dias = read_github_file(repo, "dados_15_dias.csv")
-
-    if df_atual.empty or df_15dias.empty:
-        st.warning("Ainda não há dados para exibir. O administrador precisa carregar os arquivos pela primeira vez.")
-    else:
+if uploaded_file_atual and uploaded_file_15dias:
+    try:
+        df_atual = pd.read_csv(uploaded_file_atual, delimiter=';', encoding='latin1') 
+        df_15dias = pd.read_csv(uploaded_file_15dias, delimiter=';', encoding='latin1')
+        
         df_atual_filtrado = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
-        df_aging = analisar_aging(df_atual_filtrado)
         
+        df_aging = analisar_aging(df_atual_filtrado)
+
         st.markdown("""
         <style>
         .metric-box {
@@ -279,5 +222,7 @@ try:
             else:
                 st.warning("Nenhum dado para gerar o report visual.")
 
-except Exception as e:
-    st.error(f"Ocorreu um erro ao carregar os dados: {e}")
+    except Exception as e:
+        st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
+else:
+    st.info("Aguardando o upload dos dois arquivos CSV.")
