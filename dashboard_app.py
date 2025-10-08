@@ -6,6 +6,7 @@ import base64
 from datetime import datetime
 from github import Github, Auth
 from io import StringIO
+from urllib.parse import quote # Import para tratar espaços na URL
 
 # --- Configuração da Página (com a barra lateral recolhida) ---
 st.set_page_config(
@@ -16,6 +17,7 @@ st.set_page_config(
 )
 
 # --- FUNÇÕES ---
+# (Todas as suas funções de dados permanecem as mesmas)
 @st.cache_resource
 def get_github_repo():
     try:
@@ -98,18 +100,16 @@ with col3:
     st.image("logo_belago.png", width=150)
 
 # --- LÓGICA DE LOGIN E UPLOAD ---
+# (Esta seção permanece a mesma)
 st.sidebar.header("Área do Administrador")
 password = st.sidebar.text_input("Senha para atualizar dados:", type="password")
 is_admin = password == st.secrets.get("ADMIN_PASSWORD", "")
-
 repo = get_github_repo()
-
 if is_admin:
     st.sidebar.success("Acesso de administrador liberado.")
     st.sidebar.header("Carregar Novos Arquivos")
     uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL (.csv)", type="csv")
     uploaded_file_15dias = st.sidebar.file_uploader("2. Backlog de 15 DIAS ATRÁS (.csv)", type="csv")
-    
     if st.sidebar.button("Salvar Novos Dados no Site"):
         if uploaded_file_atual and uploaded_file_15dias:
             with st.spinner("Salvando arquivos..."):
@@ -135,34 +135,23 @@ try:
         df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_aging = analisar_aging(df_atual_filtrado)
         
-        # --- MODIFICAÇÃO CSS v3: Seletor específico para os botões ---
+        # --- CSS SIMPLIFICADO ---
+        # Apenas para o estilo do card, sem hacks de posicionamento
         st.markdown("""
         <style>
         .metric-box {
             border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px;
             text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 10px;
-            height: 90px; /* Definir uma altura fixa para o card */
+            display: block; /* Garante que o link ocupe o espaço do bloco */
         }
-        
-        /* AGORA O CSS SÓ SE APLICA A BOTÕES DENTRO DO NOSSO CONTAINER ESPECÍFICO */
-        .metric-card-container div[data-testid="stButton"] {
-            margin-top: -100px !important; /* Puxa o botão para cima. */
-            z-index: 1;
+        .metric-box:hover {
+            background-color: #f0f2f6; /* Efeito visual ao passar o mouse */
+            text-decoration: none; /* Remove sublinhado do link */
         }
-
-        .metric-card-container .stButton button {
-            background-color: transparent;
-            border: none;
-            color: transparent;
-            width: 100%;
-            height: 90px; /* Altura da área clicável, igual à do card */
-            cursor: pointer;
+        a {
+            text-decoration: none; /* Remove sublinhado de todos os links */
         }
-        .metric-card-container .stButton button:hover {
-            background-color: rgba(233, 113, 50, 0.1); /* Efeito visual ao passar o mouse */
-        }
-
         .metric-box .value {font-size: 2.5em; font-weight: bold; color: #375623;}
         .metric-box .label {font-size: 1em; color: #666666;}
         </style>
@@ -180,23 +169,11 @@ try:
             )
             st.subheader("Análise de Antiguidade do Backlog Atual")
             
-            def scroll_to_anchor():
-                st.markdown(
-                    """
-                    <script>
-                        var element = document.getElementById("detalhes_chamados");
-                        if (element) {
-                            element.scrollIntoView({behavior: "smooth", block: "start"});
-                        }
-                    </script>
-                    """,
-                    unsafe_allow_html=True
-                )
-            
             if not df_aging.empty:
                 total_chamados = len(df_aging)
                 _, col_total, _ = st.columns([2, 1.5, 2])
                 with col_total:
+                     # O total não precisa ser clicável, então mantemos o st.markdown
                     st.markdown(
                         f"""
                         <div class="metric-box">
@@ -215,41 +192,35 @@ try:
                 aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
                 aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
 
+                # --- LÓGICA DE ESTADO (SESSION STATE) ---
+                # 1. Define um valor padrão se não houver nada na URL ou na sessão
                 if 'faixa_selecionada' not in st.session_state:
                     st.session_state.faixa_selecionada = ordem_faixas[0]
 
-                def setar_faixa_e_preparar_scroll(faixa):
-                    st.session_state.faixa_selecionada = faixa
-                    st.session_state.scroll_request = True
-
-                # --- MODIFICAÇÃO v3: Adiciona o container para isolar o CSS ---
-                st.markdown('<div class="metric-card-container">', unsafe_allow_html=True)
+                # 2. Verifica se um filtro foi passado pela URL e atualiza o estado
+                if "faixa" in st.query_params:
+                    faixa_from_url = st.query_params["faixa"]
+                    if faixa_from_url in ordem_faixas:
+                        st.session_state.faixa_selecionada = faixa_from_url
                 
+                # --- CRIAÇÃO DOS CARDS CLICÁVEIS COM HTML ---
                 cols = st.columns(len(ordem_faixas))
                 for i, row in aging_counts.iterrows():
                     with cols[i]:
-                        st.markdown(
-                            f"""
-                            <div class="metric-box">
-                                <div class="value">{row['Quantidade']}</div>
-                                <div class="label">{row['Faixa de Antiguidade']}</div>
-                            </div>
-                            """, unsafe_allow_html=True
-                        )
-                        st.button(
-                            label=f" ", 
-                            key=f"btn_{i}",
-                            on_click=setar_faixa_e_preparar_scroll,
-                            args=(row['Faixa de Antiguidade'],),
-                            use_container_width=True
-                        )
-                
-                st.markdown('</div>', unsafe_allow_html=True) # Fecha o container
+                        faixa_encoded = quote(row['Faixa de Antiguidade']) # Trata espaços: '6-10 dias' -> '6-10%20dias'
+                        card_html = f"""
+                        <a href="?faixa={faixa_encoded}#detalhes_chamados" target="_self" class="metric-box">
+                            <div class="value">{row['Quantidade']}</div>
+                            <div class="label">{row['Faixa de Antiguidade']}</div>
+                        </a>
+                        """
+                        st.markdown(card_html, unsafe_allow_html=True)
 
             else:
                 st.warning("Nenhum dado válido para a análise de antiguidade.")
 
             st.subheader("Comparativo de Backlog: Atual vs. 15 Dias Atrás")
+            # (O código do comparativo permanece o mesmo)
             df_comparativo = processar_dados_comparativos(df_atual_filtrado.copy(), df_15dias_filtrado.copy())
             df_comparativo['Status'] = df_comparativo.apply(get_status, axis=1)
             df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True)
@@ -257,17 +228,18 @@ try:
 
             if not df_aging.empty:
                 st.markdown("---")
+                # Âncora para o scroll do link
                 st.markdown('<a id="detalhes_chamados"></a>', unsafe_allow_html=True)
                 st.subheader("Detalhar e Buscar Chamados")
                 
-                opcoes_filtro = aging_counts['Faixa de Antiguidade'].tolist()
-                
+                # O selectbox continua sincronizado com o session_state
                 st.selectbox(
                     "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):",
-                    options=opcoes_filtro,
+                    options=ordem_faixas,
                     key='faixa_selecionada'
                 )
                 
+                # A lógica de filtro lê o valor do session_state
                 faixa_atual = st.session_state.faixa_selecionada
                 
                 if faixa_atual and not df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].empty:
@@ -279,6 +251,7 @@ try:
                     st.write("Não há chamados nesta categoria.")
                 
                 st.markdown("---")
+                # (O código de busca por grupo permanece o mesmo)
                 st.subheader("Buscar Chamados por Grupo")
                 lista_grupos = sorted(df_aging['Atribuir a um grupo'].dropna().unique())
                 lista_grupos.insert(0, "Selecione um grupo...")
@@ -308,6 +281,7 @@ try:
                 st.markdown("---")
                 
                 aging_counts_tab2 = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
+                # (Restante do código da tab2...)
                 aging_counts_tab2.columns = ['Faixa de Antiguidade', 'Quantidade']
                 ordem_faixas_tab2 = ["1-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
                 todas_as_faixas_tab2 = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas_tab2})
@@ -337,10 +311,6 @@ try:
 
             else:
                 st.warning("Nenhum dado para gerar o report visual.")
-                
-        if 'scroll_request' in st.session_state and st.session_state.scroll_request:
-            scroll_to_anchor()
-            st.session_state.scroll_request = False 
 
 except Exception as e:
     st.error(f"Ocorreu um erro ao carregar os dados: {e}")
