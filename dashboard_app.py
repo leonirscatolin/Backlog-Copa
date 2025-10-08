@@ -5,15 +5,14 @@ import numpy as np
 import base64
 from datetime import datetime
 
-# --- Configuração da Página ---
+# Configuração da página
 st.set_page_config(
     layout="wide", 
     page_title="Backlog Copa Energia + Belago",
-    page_icon="copaenergialogo_1691612041.webp",
-    initial_sidebar_state="collapsed" # Faz a barra lateral começar recolhida
+    page_icon="copaenergialogo_1691612041.webp"
 )
 
-# --- FUNÇÕES (sem alterações) ---
+# --- FUNÇÕES ---
 def get_base_64_of_bin_file(bin_file):
     try:
         with open(bin_file, 'rb') as f:
@@ -60,16 +59,11 @@ def get_status(row):
 
 # --- INTERFACE DO APLICATIVO ---
 
-# --- MUDANÇA 1: LOGOS NO TOPO DA PÁGINA ---
-col1, col2, col3 = st.columns([1, 4, 1])
-with col1:
-    st.image("237f1d13493514962376f142bb68_1691760314.gif")
-with col2:
-    st.title("Backlog Copa Energia + Belago")
-with col3:
-    st.image("logo_belago.png")
-# --- FIM DA MUDANÇA ---
+# --- MUDANÇA: TÍTULO CENTRALIZADO ---
+st.markdown("<h1 style='text-align: center;'>Backlog Copa Energia + Belago</h1>", unsafe_allow_html=True)
 
+# --- MUDANÇA: SUBSTITUINDO O GIF PELA IMAGEM ESTÁTICA ---
+st.sidebar.image("logo_sidebar.png", use_container_width=True)
 
 st.sidebar.header("Carregar Arquivos")
 uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL (.csv)", type="csv")
