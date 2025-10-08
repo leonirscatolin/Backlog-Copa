@@ -122,21 +122,6 @@ elif password:
 st.markdown("---")
 
 # --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
-
-def scroll_para_detalhes():
-    # Este script agora vai procurar pelo ID gerado pelo st.subheader
-    js_code = """
-    <script>
-        setTimeout(function() {
-            var element = document.getElementById("detalhar-e-buscar-chamados");
-            if (element) {
-                element.scrollIntoView({behavior: "smooth", block: "start"});
-            }
-        }, 300);
-    </script>
-    """
-    st.markdown(js_code, unsafe_allow_html=True)
-
 try:
     df_atual = read_github_file(repo, "dados_atuais.csv")
     df_15dias = read_github_file(repo, "dados_15_dias.csv")
@@ -158,10 +143,18 @@ try:
         a.metric-box {
             display: block;
             color: inherit; 
-            text-decoration: none;
+            text-decoration: none !important;
         }
-        a.metric-box:hover { background-color: #f0f2f6; text-decoration: none; }
-        .metric-box span { display: block; width: 100%; }
+        a.metric-box:hover { 
+            background-color: #f0f2f6; 
+            text-decoration: none !important;
+        }
+        /* Garante que o texto dentro do card não seja sublinhado */
+        .metric-box span { 
+            display: block; 
+            width: 100%;
+            text-decoration: none !important;
+        }
         .metric-box .value {font-size: 2.5em; font-weight: bold; color: #375623;}
         .metric-box .label {font-size: 1em; color: #666666;}
         </style>
@@ -183,7 +176,7 @@ try:
                 total_chamados = len(df_aging)
                 _, col_total, _ = st.columns([2, 1.5, 2])
                 with col_total:
-                    # CORREÇÃO FORMATAÇÃO: Garantindo que este bloco use a mesma estrutura
+                    # Usando a estrutura estável para o card de Total
                     st.markdown(
                         f"""
                         <div class="metric-box">
@@ -206,11 +199,10 @@ try:
                 if 'faixa_selecionada' not in st.session_state:
                     st.session_state.faixa_selecionada = ordem_faixas[0]
                 
+                # Lógica de filtro que funciona
                 if st.query_params.get("faixa"):
                     faixa_from_url = st.query_params.get("faixa")
                     if faixa_from_url in ordem_faixas:
-                        if st.session_state.faixa_selecionada != faixa_from_url:
-                            st.session_state.scroll_request = True
                         st.session_state.faixa_selecionada = faixa_from_url
                         st.query_params.clear()
 
@@ -232,8 +224,7 @@ try:
 
             if not df_aging.empty:
                 st.markdown("---")
-                # CORREÇÃO ROLAGEM: Usando o método oficial do Streamlit para criar a âncora
-                st.subheader("Detalhar e Buscar Chamados", anchor="detalhar-e-buscar-chamados")
+                st.subheader("Detalhar e Buscar Chamados")
                 
                 st.selectbox( "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada' )
                 
@@ -293,7 +284,3 @@ try:
 
 except Exception as e:
     st.error(f"Ocorreu um erro ao carregar os dados: {e}")
-
-if 'scroll_request' in st.session_state and st.session_state.scroll_request:
-    scroll_para_detalhes()
-    st.session_state.scroll_request = False
