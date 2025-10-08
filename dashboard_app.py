@@ -11,7 +11,7 @@ from io import StringIO
 st.set_page_config(
     layout="wide", 
     page_title="Backlog Copa Energia + Belago",
-    page_icon="copaenergialogo_1691612041.webp",
+    page_icon="logo_sidebar.png",
     initial_sidebar_state="collapsed"
 )
 
