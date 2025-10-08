@@ -12,7 +12,7 @@ st.set_page_config(
     layout="wide", 
     page_title="Backlog Copa Energia + Belago",
     page_icon="copaenergialogo_1691612041.webp",
-    initial_sidebar_state="minimal"
+    initial_sidebar_state="collapsed"
 )
 
 # --- FUNÇÕES (As suas, sem alterações) ---
