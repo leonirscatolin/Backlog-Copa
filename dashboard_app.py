@@ -124,7 +124,6 @@ st.markdown("---")
 
 # --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
 
-# ADIÇÃO 1: Definir a função de scroll aqui no escopo principal
 def scroll_para_detalhes():
     st.markdown(
         """
@@ -151,15 +150,25 @@ try:
         df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_aging = analisar_aging(df_atual_filtrado)
         
+        # --- CSS CORRIGIDO ---
         st.markdown("""
         <style>
-        .metric-box {
+        a.metric-box {
             border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px;
             text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 10px; display: block;
+            margin-bottom: 10px;
+            display: block;
+            color: inherit; /* Faz o texto dentro do link herdar a cor, em vez de ser azul */
         }
-        .metric-box:hover { background-color: #f0f2f6; text-decoration: none; }
-        a { text-decoration: none; }
+        a.metric-box:hover {
+            background-color: #f0f2f6;
+            text-decoration: none;
+        }
+        /* MODIFICAÇÃO CHAVE: Estilizando os spans para se comportarem como blocos */
+        .metric-box span {
+            display: block; /* Faz os spans empilharem verticalmente */
+            width: 100%;
+        }
         .metric-box .value {font-size: 2.5em; font-weight: bold; color: #375623;}
         .metric-box .label {font-size: 1em; color: #666666;}
         </style>
@@ -181,7 +190,8 @@ try:
                 total_chamados = len(df_aging)
                 _, col_total, _ = st.columns([2, 1.5, 2])
                 with col_total:
-                    st.markdown( f""" <div class="metric-box"> <div class="value">{total_chamados}</div> <div class="label">Total de Chamados</div> </div> """, unsafe_allow_html=True )
+                    # O total não é clicável, então usamos <div>
+                    st.markdown( f""" <div class="metric-box"> <span class="value">{total_chamados}</span> <span class="label">Total de Chamados</span> </div> """, unsafe_allow_html=True )
                 st.markdown("---")
                 
                 aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
@@ -195,11 +205,9 @@ try:
                 if 'faixa_selecionada' not in st.session_state:
                     st.session_state.faixa_selecionada = ordem_faixas[0]
 
-                # ADIÇÃO 2: Verifica a URL e apenas levanta a "bandeira" de rolagem
                 if "faixa" in st.query_params:
                     faixa_from_url = st.query_params["faixa"]
                     if faixa_from_url in ordem_faixas:
-                        # Se o valor clicado for diferente do que já está na sessão, ativamos a rolagem
                         if st.session_state.faixa_selecionada != faixa_from_url:
                             st.session_state.scroll_request = True
                         st.session_state.faixa_selecionada = faixa_from_url
@@ -208,7 +216,13 @@ try:
                 for i, row in aging_counts.iterrows():
                     with cols[i]:
                         faixa_encoded = quote(row['Faixa de Antiguidade'])
-                        card_html = f""" <a href="?faixa={faixa_encoded}" target="_self" class="metric-box"> <div class="value">{row['Quantidade']}</div> <div class="label">{row['Faixa de Antiguidade']}</div> </a> """
+                        # --- HTML CORRIGIDO: Usando <span> em vez de <div> ---
+                        card_html = f"""
+                        <a href="?faixa={faixa_encoded}" target="_self" class="metric-box">
+                            <span class="value">{row['Quantidade']}</span>
+                            <span class="label">{row['Faixa de Antiguidade']}</span>
+                        </a>
+                        """
                         st.markdown(card_html, unsafe_allow_html=True)
 
             else:
@@ -252,11 +266,12 @@ try:
         with tab2:
             # (Código da tab2 permanece o mesmo)
             st.subheader("Resumo do Backlog Atual")
+            # ... (código da tab2)
             if not df_aging.empty:
                 total_chamados = len(df_aging)
                 _, col_total_tab2, _ = st.columns([2, 1.5, 2])
                 with col_total_tab2:
-                    st.markdown( f""" <div class="metric-box"> <div class="value">{total_chamados}</div> <div class="label">Total de Chamados</div> </div> """, unsafe_allow_html=True )
+                    st.markdown( f"""<div class="metric-box"><span class="value">{total_chamados}</span><span class="label">Total de Chamados</span></div>""", unsafe_allow_html=True )
                 st.markdown("---")
                 
                 aging_counts_tab2 = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
@@ -270,7 +285,7 @@ try:
                 cols_tab2 = st.columns(len(ordem_faixas_tab2))
                 for i, row in aging_counts_tab2.iterrows():
                     with cols_tab2[i]:
-                        st.markdown( f""" <div class="metric-box"> <div class="value">{row['Quantidade']}</div> <div class="label">{row['Faixa de Antiguidade']}</div> </div> """, unsafe_allow_html=True )
+                        st.markdown( f"""<div class="metric-box"><span class="value">{row['Quantidade']}</span><span class="label">{row['Faixa de Antiguidade']}</span></div>""", unsafe_allow_html=True )
                 
                 st.markdown("---")
                 st.subheader("Ofensores (Todos os Grupos)")
@@ -279,13 +294,13 @@ try:
                 fig_top_ofensores.update_traces(textposition='outside', marker_color='#375623')
                 fig_top_ofensores.update_layout(height=max(400, len(top_ofensores) * 25)) 
                 st.plotly_chart(fig_top_ofensores, use_container_width=True)
+
             else:
                 st.warning("Nenhum dado para gerar o report visual.")
 
 except Exception as e:
     st.error(f"Ocorreu um erro ao carregar os dados: {e}")
 
-# ADIÇÃO 3: Bloco de verificação da "bandeira" no final do script
 if 'scroll_request' in st.session_state and st.session_state.scroll_request:
     scroll_para_detalhes()
-    st.session_state.scroll_request = False # Reseta a bandeira
+    st.session_state.scroll_request = False
