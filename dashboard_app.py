@@ -123,6 +123,23 @@ elif password:
 st.markdown("---")
 
 # --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
+
+# ADIÇÃO 1: Definir a função de scroll aqui no escopo principal
+def scroll_para_detalhes():
+    st.markdown(
+        """
+        <script>
+            var element = document.getElementById("detalhes_chamados");
+            if (element) {
+                setTimeout(function() {
+                    element.scrollIntoView({behavior: "smooth", block: "start"});
+                }, 200);
+            }
+        </script>
+        """,
+        unsafe_allow_html=True
+    )
+
 try:
     df_atual = read_github_file(repo, "dados_atuais.csv")
     df_15dias = read_github_file(repo, "dados_15_dias.csv")
@@ -139,16 +156,10 @@ try:
         .metric-box {
             border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px;
             text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 10px;
-            display: block;
+            margin-bottom: 10px; display: block;
         }
-        .metric-box:hover {
-            background-color: #f0f2f6;
-            text-decoration: none;
-        }
-        a {
-            text-decoration: none;
-        }
+        .metric-box:hover { background-color: #f0f2f6; text-decoration: none; }
+        a { text-decoration: none; }
         .metric-box .value {font-size: 2.5em; font-weight: bold; color: #375623;}
         .metric-box .label {font-size: 1em; color: #666666;}
         </style>
@@ -166,35 +177,11 @@ try:
             )
             st.subheader("Análise de Antiguidade do Backlog Atual")
             
-            # ADIÇÃO 1: Função de rolagem com JavaScript
-            def scroll_para_detalhes():
-                st.markdown(
-                    """
-                    <script>
-                        var element = document.getElementById("detalhes_chamados");
-                        if (element) {
-                            // Usamos um pequeno delay para garantir que a página renderizou
-                            setTimeout(function() {
-                                element.scrollIntoView({behavior: "smooth", block: "start"});
-                            }, 200);
-                        }
-                    </script>
-                    """,
-                    unsafe_allow_html=True
-                )
-
             if not df_aging.empty:
                 total_chamados = len(df_aging)
                 _, col_total, _ = st.columns([2, 1.5, 2])
                 with col_total:
-                    st.markdown(
-                        f"""
-                        <div class="metric-box">
-                            <div class="value">{total_chamados}</div>
-                            <div class="label">Total de Chamados</div>
-                        </div>
-                        """, unsafe_allow_html=True
-                    )
+                    st.markdown( f""" <div class="metric-box"> <div class="value">{total_chamados}</div> <div class="label">Total de Chamados</div> </div> """, unsafe_allow_html=True )
                 st.markdown("---")
                 
                 aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
@@ -208,25 +195,20 @@ try:
                 if 'faixa_selecionada' not in st.session_state:
                     st.session_state.faixa_selecionada = ordem_faixas[0]
 
-                # Verifica o parâmetro na URL
+                # ADIÇÃO 2: Verifica a URL e apenas levanta a "bandeira" de rolagem
                 if "faixa" in st.query_params:
                     faixa_from_url = st.query_params["faixa"]
                     if faixa_from_url in ordem_faixas:
+                        # Se o valor clicado for diferente do que já está na sessão, ativamos a rolagem
+                        if st.session_state.faixa_selecionada != faixa_from_url:
+                            st.session_state.scroll_request = True
                         st.session_state.faixa_selecionada = faixa_from_url
-                        # ADIÇÃO 2: Chama a função de rolagem se o parâmetro existir
-                        scroll_para_detalhes()
-                
+
                 cols = st.columns(len(ordem_faixas))
                 for i, row in aging_counts.iterrows():
                     with cols[i]:
                         faixa_encoded = quote(row['Faixa de Antiguidade'])
-                        # ADIÇÃO 3: Removemos o #... do link
-                        card_html = f"""
-                        <a href="?faixa={faixa_encoded}" target="_self" class="metric-box">
-                            <div class="value">{row['Quantidade']}</div>
-                            <div class="label">{row['Faixa de Antiguidade']}</div>
-                        </a>
-                        """
+                        card_html = f""" <a href="?faixa={faixa_encoded}" target="_self" class="metric-box"> <div class="value">{row['Quantidade']}</div> <div class="label">{row['Faixa de Antiguidade']}</div> </a> """
                         st.markdown(card_html, unsafe_allow_html=True)
 
             else:
@@ -240,14 +222,10 @@ try:
 
             if not df_aging.empty:
                 st.markdown("---")
-                st.markdown('<a id="detalhes_chamados"></a>', unsafe_allow_html=True) # A âncora continua aqui
+                st.markdown('<a id="detalhes_chamados"></a>', unsafe_allow_html=True)
                 st.subheader("Detalhar e Buscar Chamados")
                 
-                st.selectbox(
-                    "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):",
-                    options=ordem_faixas,
-                    key='faixa_selecionada'
-                )
+                st.selectbox( "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada' )
                 
                 faixa_atual = st.session_state.faixa_selecionada
                 
@@ -301,9 +279,13 @@ try:
                 fig_top_ofensores.update_traces(textposition='outside', marker_color='#375623')
                 fig_top_ofensores.update_layout(height=max(400, len(top_ofensores) * 25)) 
                 st.plotly_chart(fig_top_ofensores, use_container_width=True)
-
             else:
                 st.warning("Nenhum dado para gerar o report visual.")
 
 except Exception as e:
     st.error(f"Ocorreu um erro ao carregar os dados: {e}")
+
+# ADIÇÃO 3: Bloco de verificação da "bandeira" no final do script
+if 'scroll_request' in st.session_state and st.session_state.scroll_request:
+    scroll_para_detalhes()
+    st.session_state.scroll_request = False # Reseta a bandeira
