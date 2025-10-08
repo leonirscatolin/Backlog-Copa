@@ -1,23 +1,5 @@
 [theme]
-# Cor primária para elementos interativos (widgets, botões, etc.)
-# Usaremos o seu laranja para dar destaque.
-primaryColor="#e97132"
-
-# Cor de fundo principal do app.
-# Usaremos o seu verde escuro.
-backgroundColor="#243834"
-
-# Cor de fundo para a barra lateral e outros elementos secundários.
-# Uma versão um pouco mais clara do fundo principal fica bom.
-secondaryBackgroundColor="#2f4541"
-
-# Cor do texto principal.
-# PRECISA ser uma cor clara para ser legível no fundo escuro.
-textColor="#FFFFFF"
-
-# Fonte padrão (pode manter a sua).
-font="sans serif"
-
-[browser]
-gatherUsageStats = false
-toolbarMode = "minimal"
+base="light"
+primaryColor="#f28801"
+secondaryBackgroundColor="#ff9002"
+textColor="#000000"
