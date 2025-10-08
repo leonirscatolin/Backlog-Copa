@@ -4,22 +4,52 @@ import plotly.express as px
 import numpy as np
 import base64
 from datetime import datetime
+from github import Github, Auth
+from io import StringIO
 
-# Configuração da página
+# --- Configuração da Página ---
 st.set_page_config(
     layout="wide", 
     page_title="Backlog Copa Energia + Belago",
     page_icon="copaenergialogo_1691612041.webp"
 )
 
-# --- FUNÇÕES ---
+# --- FUNÇÕES (As suas, sem alterações) ---
+@st.cache_resource
+def get_github_repo():
+    try:
+        auth = Auth.Token(st.secrets["GITHUB_TOKEN"])
+        g = Github(auth=auth)
+        return g.get_repo("leonirscatolin/dashboard-backlog")
+    except Exception as e:
+        st.error("Erro de conexão com o repositório. Verifique o GITHUB_TOKEN.")
+        st.stop()
+
+def update_github_file(_repo, file_path, file_content):
+    commit_message = f"Dados atualizados em {datetime.now().strftime('%d/%m/%Y %H:%M')}"
+    try:
+        contents = _repo.get_contents(file_path)
+        _repo.update_file(contents.path, commit_message, file_content, contents.sha)
+        st.sidebar.info(f"Arquivo '{file_path}' atualizado.")
+    except Exception:
+        _repo.create_file(file_path, commit_message, file_content)
+        st.sidebar.info(f"Arquivo '{file_path}' criado.")
+    st.cache_data.clear()
+
+@st.cache_data(ttl=300)
+def read_github_file(_repo, file_path):
+    try:
+        content_file = _repo.get_contents(file_path)
+        content = content_file.decoded_content.decode("utf-8")
+        return pd.read_csv(StringIO(content), delimiter=';', encoding='latin1')
+    except Exception:
+        return pd.DataFrame()
+
 def get_base_64_of_bin_file(bin_file):
     try:
-        with open(bin_file, 'rb') as f:
-            data = f.read()
+        with open(bin_file, 'rb') as f: data = f.read()
         return base64.b64encode(data).decode()
-    except FileNotFoundError:
-        return None
+    except FileNotFoundError: return None
 
 def processar_dados_comparativos(df_atual, df_15dias):
     contagem_atual = df_atual.groupby('Atribuir a um grupo').size().reset_index(name='Atual')
@@ -75,45 +105,49 @@ if gif_base64 and belago_logo_base64:
         unsafe_allow_html=True,
     )
 
-# --- LÓGICA DE LOGIN E UPLOAD ---
+# --- LÓGICA DE LOGIN E UPLOAD (MODIFICADA) ---
 st.sidebar.header("Área do Administrador")
-password = st.sidebar.text_input("Digite a senha para atualizar os dados:", type="password")
+password = st.sidebar.text_input("Senha para atualizar dados:", type="password")
 
 # Verifica se a senha digitada é a mesma que está nos Secrets
-# O .get() é usado para evitar erro caso o secret ainda não tenha sido criado
 is_admin = password == st.secrets.get("ADMIN_PASSWORD", "")
 
+repo = get_github_repo()
+
+# Se for admin, mostra os botões de upload
 if is_admin:
-    st.sidebar.success("Acesso liberado!")
-    st.sidebar.header("Carregar Arquivos")
+    st.sidebar.success("Acesso de administrador liberado.")
+    st.sidebar.header("Carregar Novos Arquivos")
     uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL (.csv)", type="csv")
     uploaded_file_15dias = st.sidebar.file_uploader("2. Backlog de 15 DIAS ATRÁS (.csv)", type="csv")
     
-    # Salva os arquivos na memória da sessão para que os usuários vejam
-    if uploaded_file_atual and uploaded_file_15dias:
-        st.session_state['uploaded_file_atual'] = uploaded_file_atual
-        st.session_state['uploaded_file_15dias'] = uploaded_file_15dias
-        st.sidebar.info("Arquivos carregados e visíveis para todos.")
-
+    if st.sidebar.button("Salvar Novos Dados no Site"):
+        if uploaded_file_atual and uploaded_file_15dias:
+            with st.spinner("Salvando arquivos..."):
+                update_github_file(repo, "dados_atuais.csv", uploaded_file_atual.getvalue())
+                update_github_file(repo, "dados_15_dias.csv", uploaded_file_15dias.getvalue())
+            st.sidebar.balloons()
+        else:
+            st.sidebar.warning("Carregue os dois arquivos para salvar.")
+# Se a senha for digitada mas estiver errada, mostra um erro
 elif password:
     st.sidebar.error("Senha incorreta.")
 
-# --- LÓGICA DE EXIBIÇÃO ---
-# Verifica se os arquivos já foram carregados em uma sessão anterior pelo admin
-if 'uploaded_file_atual' in st.session_state and 'uploaded_file_15dias' in st.session_state:
-    try:
-        # Usa os arquivos salvos na memória da sessão
-        uploaded_file_atual = st.session_state['uploaded_file_atual']
-        uploaded_file_15dias = st.session_state['uploaded_file_15dias']
+st.markdown("---")
 
-        df_atual = pd.read_csv(uploaded_file_atual, delimiter=';', encoding='latin1') 
-        df_15dias = pd.read_csv(uploaded_file_15dias, delimiter=';', encoding='latin1')
-        
+# --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
+# O resto do código continua como estava, lendo sempre do GitHub
+try:
+    df_atual = read_github_file(repo, "dados_atuais.csv")
+    df_15dias = read_github_file(repo, "dados_15_dias.csv")
+
+    if df_atual.empty or df_15dias.empty:
+        st.warning("Ainda não há dados para exibir. O administrador precisa carregar os arquivos pela primeira vez.")
+    else:
         df_atual_filtrado = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
-        
         df_aging = analisar_aging(df_atual_filtrado)
-
+        
         st.markdown("""
         <style>
         .metric-box {
@@ -252,7 +286,5 @@ if 'uploaded_file_atual' in st.session_state and 'uploaded_file_15dias' in st.se
             else:
                 st.warning("Nenhum dado para gerar o report visual.")
 
-    except Exception as e:
-        st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
-else:
-    st.info("Para visualizar o dashboard, o administrador precisa primeiro carregar os arquivos do dia.")
+except Exception as e:
+    st.error(f"Ocorreu um erro ao carregar os dados: {e}")
