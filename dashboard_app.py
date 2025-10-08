@@ -7,7 +7,6 @@ from datetime import datetime
 from github import Github, Auth
 from io import StringIO
 from urllib.parse import quote 
-import streamlit.components.v1 as components # ADIÇÃO 1: Nova importação
 
 # --- Configuração da Página ---
 st.set_page_config(
@@ -125,19 +124,20 @@ st.markdown("---")
 
 # --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
 
-# ADIÇÃO 2: Função de rolagem reescrita para usar st.components
 def scroll_para_detalhes():
-    js_code = """
-    <script>
-        setTimeout(function() {
+    st.markdown(
+        """
+        <script>
             var element = document.getElementById("detalhes_chamados");
             if (element) {
-                element.scrollIntoView({behavior: "smooth", block: "start"});
+                setTimeout(function() {
+                    element.scrollIntoView({behavior: "smooth", block: "start"});
+                }, 200);
             }
-        }, 300);
-    </script>
-    """
-    components.html(js_code, height=0)
+        </script>
+        """,
+        unsafe_allow_html=True
+    )
 
 try:
     df_atual = read_github_file(repo, "dados_atuais.csv")
@@ -152,14 +152,19 @@ try:
         
         st.markdown("""
         <style>
-        a.metric-box {
+        .metric-box {
             border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px;
             text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 10px; display: block;
-            color: inherit; 
-            text-decoration: none;
         }
-        a.metric-box:hover { background-color: #f0f2f6; text-decoration: none; }
+        /* AJUSTE 1: CSS para remover o sublinhado dos links */
+        a.metric-box, a.metric-box:hover {
+            text-decoration: none;
+            color: inherit;
+        }
+        a.metric-box:hover {
+            background-color: #f0f2f6;
+        }
         .metric-box span { display: block; width: 100%; }
         .metric-box .value {font-size: 2.5em; font-weight: bold; color: #375623;}
         .metric-box .label {font-size: 1em; color: #666666;}
@@ -179,6 +184,7 @@ try:
             st.subheader("Análise de Antiguidade do Backlog Atual")
             
             if not df_aging.empty:
+                # AJUSTE 2: Centraliza a coluna do total e garante que usa o estilo .metric-box
                 total_chamados = len(df_aging)
                 _, col_total, _ = st.columns([2, 1.5, 2])
                 with col_total:
@@ -196,7 +202,6 @@ try:
                 if 'faixa_selecionada' not in st.session_state:
                     st.session_state.faixa_selecionada = ordem_faixas[0]
                 
-                # A lógica de levantar a "bandeira" permanece a mesma
                 if st.query_params.get("faixa"):
                     faixa_from_url = st.query_params.get("faixa")
                     if faixa_from_url in ordem_faixas:
@@ -285,7 +290,6 @@ try:
 except Exception as e:
     st.error(f"Ocorreu um erro ao carregar os dados: {e}")
 
-# ADIÇÃO 3: Bloco de verificação da "bandeira" no final do script. ESSA POSIÇÃO É CRUCIAL.
 if 'scroll_request' in st.session_state and st.session_state.scroll_request:
     scroll_para_detalhes()
-    st.session_state.scroll_request = False # Reseta a bandeira
+    st.session_state.scroll_request = False
