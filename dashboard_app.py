@@ -4,9 +4,8 @@ import plotly.express as px
 import numpy as np
 import base64
 from datetime import datetime
-import json
 
-# --- Configuração da Página ---
+# Configuração da página
 st.set_page_config(
     layout="wide", 
     page_title="Backlog Copa Energia + Belago",
@@ -32,9 +31,12 @@ def processar_dados_comparativos(df_atual, df_15dias):
 
 def categorizar_idade_vetorizado(dias_series):
     condicoes = [
-        dias_series >= 30, (dias_series >= 21) & (dias_series <= 29),
-        (dias_series >= 11) & (dias_series <= 20), (dias_series >= 6) & (dias_series <= 10),
-        (dias_series >= 3) & (dias_series <= 5), (dias_series >= 1) & (dias_series <= 2)
+        dias_series >= 30,
+        (dias_series >= 21) & (dias_series <= 29),
+        (dias_series >= 11) & (dias_series <= 20),
+        (dias_series >= 6) & (dias_series <= 10),
+        (dias_series >= 3) & (dias_series <= 5),
+        (dias_series >= 1) & (dias_series <= 2)
     ]
     opcoes = ["30+ dias", "21-29 dias", "11-20 dias", "6-10 dias", "3-5 dias", "1-2 dias"]
     return np.select(condicoes, opcoes, default="Erro de Categoria")
@@ -49,14 +51,15 @@ def analisar_aging(df_atual):
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
     return df
 
+# --- FUNÇÃO DE STATUS RESTAURADA ---
 def get_status(row):
     diferenca = row['Diferença']
     if diferenca > 0:
-        return "Alta demanda"
+        return "Alta Demanda"
     elif diferenca == 0:
-        return "Demora na resolução"
-    else:
-        return "Alta demanda / Demora na resolução"
+        return "Estável / Atenção"
+    else: # diferenca < 0
+        return "Redução de Backlog"
 
 # --- INTERFACE DO APLICATIVO ---
 st.title("Backlog Copa Energia + Belago")
@@ -225,11 +228,6 @@ if uploaded_file_atual and uploaded_file_15dias:
                 fig_top_ofensores.update_layout(height=max(400, len(top_ofensores) * 25)) 
                 st.plotly_chart(fig_top_ofensores, use_container_width=True)
                 
-                # A seção de histórico foi desativada para garantir estabilidade
-                st.markdown("---")
-                st.subheader("Evolução do Histórico de Backlog")
-                st.warning("Esta funcionalidade está em manutenção e será reintroduzida em uma futura versão estável.")
-
             else:
                 st.warning("Nenhum dado para gerar o report visual.")
 
