@@ -3,3 +3,6 @@ base="light"
 primaryColor="#f28801"
 secondaryBackgroundColor="#ff9002"
 textColor="#000000"
+
+[toolbar]
+visible = false
