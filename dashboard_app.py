@@ -133,6 +133,7 @@ try:
         df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_aging = analisar_aging(df_atual_filtrado)
 
+        # A MELHOR FORMA É COLOCAR A REGRA CSS JUNTO COM AS OUTRAS, COMO VOCÊ FEZ AQUI.
         st.markdown("""
         <style>
         #GithubIcon {
