@@ -132,12 +132,12 @@ try:
         df_atual_filtrado = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_aging = analisar_aging(df_atual_filtrado)
-
-        # A MELHOR FORMA É COLOCAR A REGRA CSS JUNTO COM AS OUTRAS, COMO VOCÊ FEZ AQUI.
+        
+        # <<< ALTERAÇÃO APLICADA AQUI >>>
         st.markdown("""
         <style>
         #GithubIcon {
-          visibility: hidden;
+          display: none !important;
         }
         .metric-box {
             border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px;
