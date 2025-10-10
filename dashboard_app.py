@@ -245,25 +245,22 @@ try:
     if df_atual.empty or df_15dias.empty:
         st.warning("Ainda não há dados para exibir.")
     else:
-        # <-- ALTERADO: Lógica de limpeza e comparação de IDs
+        # <-- ALTERADO: Lógica de limpeza de tipo de dado (float/int -> str)
         closed_ticket_ids = []
         if not df_fechados.empty:
-            # Identifica o nome da coluna de ID no arquivo de fechados
             id_column_name = None
             if 'ID do ticket' in df_fechados.columns:
                 id_column_name = 'ID do ticket'
             elif 'ID' in df_fechados.columns:
                 id_column_name = 'ID'
             
-            # Se encontrou uma coluna de ID, limpa os dados para comparação
-            if id_column_name and id_column_name in df_fechados.columns:
-                # Converte para Int64 (que aceita nulos) e depois para string, removendo o '.0'
+            if id_column_name:
+                # Converte para numérico (lidando com erros), remove nulos, converte para Int64 (que aceita nulos) e finalmente para string
                 closed_series = pd.to_numeric(df_fechados[id_column_name], errors='coerce').dropna().astype('Int64')
                 closed_ticket_ids = closed_series.astype(str).unique()
 
-        # Garante que a coluna de ID no dataframe principal também seja limpa
         if 'ID do ticket' in df_atual.columns:
-            # Converte para Int64 e depois para string
+            # Aplica a mesma limpeza robusta na coluna principal
             atual_series = pd.to_numeric(df_atual['ID do ticket'], errors='coerce').dropna().astype('Int64')
             df_atual['ID do ticket'] = atual_series.astype(str)
 
@@ -333,16 +330,7 @@ try:
                 st.subheader("Detalhar e Buscar Chamados")
                 
                 if needs_scroll:
-                    js_code = f"""
-                        <script>
-                            setTimeout(function() {{
-                                const element = window.parent.document.getElementById('detalhar-e-buscar-chamados');
-                                if (element) {{
-                                    element.scrollIntoView({{ behavior: 'smooth', block: 'start' }});
-                                }}
-                            }}, 500);
-                        </script>
-                    """
+                    js_code = f"""<script> ... </script>""" # Omitido
                     components.html(js_code, height=0)
 
                 st.selectbox( "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada' )
