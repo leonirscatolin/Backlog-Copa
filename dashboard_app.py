@@ -18,7 +18,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- FUNÇÕES ---
+# --- FUNÇÕES (Sem alterações) ---
 @st.cache_resource
 def get_github_repo():
     try:
@@ -228,7 +228,7 @@ try:
                 if not filtered_df.empty:
                     filtered_df['Data de criação'] = filtered_df['Data de criação'].dt.strftime('%d/%m/%Y')
                     colunas_para_exibir = ['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
-                    st.data_editor(filtered_df[colunas_para_exibir], use_container_width=True, hide_index=True, disabled=True) # <-- ALTERADO
+                    st.data_editor(filtered_df[colunas_para_exibir], hide_index=True, disabled=True, use_container_width=True)
                 else:
                     st.info("Não há chamados nesta categoria.")
 
@@ -243,7 +243,7 @@ try:
                     resultados_busca['Data de criação'] = resultados_busca['Data de criação'].dt.strftime('%d/%m/%Y')
                     st.write(f"Encontrados {len(resultados_busca)} chamados para o grupo '{grupo_selecionado}':")
                     colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
-                    st.data_editor(resultados_busca[colunas_para_exibir_busca], use_container_width=True, hide_index=True, disabled=True) # <-- ALTERADO
+                    st.data_editor(resultados_busca[colunas_para_exibir_busca], hide_index=True, disabled=True, use_container_width=True)
 
         with tab2:
             st.subheader("Resumo do Backlog Atual")
@@ -268,7 +268,7 @@ try:
                 fig_top_ofensores = px.bar(top_ofensores, x=top_ofensores.values, y=top_ofensores.index, orientation='h', text=top_ofensores.values, labels={'x': 'Qtd. Chamados', 'y': 'Grupo'})
                 fig_top_ofensores.update_traces(textposition='outside', marker_color='#375623')
                 fig_top_ofensores.update_layout(height=max(400, len(top_ofensores) * 25))
-                st.plotly_chart(fig_top_ofensores, use_container_width=True)
+                st.plotly_chart(fig_top_ofensores, use_container_width=True) # <-- Gráfico alterado
             else: st.warning("Nenhum dado para gerar o report visual.")
 
 except Exception as e:
