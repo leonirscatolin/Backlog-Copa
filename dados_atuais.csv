@@ -397,9 +397,6 @@ Segue solicitação do PPP do ex-colaborador MARCIO SOUSA DA SILVA, solicitado a
 Já foi solicitado para o setor de cadastro verificar mas não encontraram nada diferente. 
 
 A ordem está correta como manifesto."
-100-99542;Service Request;Active;2025-09-30 11:06:23;FERNANDO MARQUES,CLAYTON;COP-ACESSO-SAP;9;SAP NÃO IMPRIME;"SAP NÃO IMPRIME, SEGUE TELA ABAIXO.
-
-IMPRESSORA REINICIADA, PORÉM, PERSISTE."
 100-99545;Service Request;Active;2025-09-30 11:25:15;SANTIAGO ALMEIDA,LUCCA;COP-OneID-Suporte;9;É possível criar um processo no troca senha, que retorne um erro caso a senha não seja aceita no SAP?;"Atualmente muitos usuários não conseguem acessar o SAP por definir uma senha não aceita na troca de senha central. Porém no momento da troca o sistema não avisa se a troca foi efetiva por sistema. É possível criar um processo para fazer a validação?
 Também solicito evidência dos últimos usuários que realizaram a troca de senha e não conseguiram logar no SAP, devido a política de senha."
 100-99551;Service Request;Active;2025-09-30 11:55:18;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;9;CORRECAO DE ASSINATURA EM PPP ANTIGO - IDE PAULO RUZZA;"EX COLABORADOR - IDE PAULO RUZZA
@@ -503,11 +500,6 @@ Trabalhou na unidade 1004 DA Socorro / São Paulo"
 Preciso de ajuda nesta questão.
 
 Grato!"
-100-100245;Service Request;Active;2025-10-07 16:33:36;REGINA ARTUSO DE ANDRADE,CLAUDIA;COP-ORIENTAÇÃO-GRC;2;Acesso a transações no SAP;"Solicito, por gentileza, acesso às seguintes transações no SAP. Esse acesso é necessário para facilitar a automação de alguns dos nossos painéis e otimizar o processo de atualização das informações.
-
-SM36
-SM49 / SM69
-SA38 / SE38"
 100-99601;Service Request;New;2025-09-30 16:50:49;;Service Desk (L1);9;"Erro nas ordens que ja foram atendidas mas esta na ZSDOV_PENDENTES como ordem em aberto
 ordem 12970708, 13070602, 13085483,13085483 e 13088609
 centro 1216 canal 20/20";Ordens ja atendidas dentro do fluxo NF ja emitidas mas no sistema consta como ordem pendente.
@@ -1363,8 +1355,6 @@ Cadastro
 14035
 Nova Escala: 698
 Novo Horário: 591"
-100-100016;Service Request;Pending;2025-10-06 10:46:03;NEVES DA SILVA,EDNEA;APOIO-COP-ACESSO;3;Acesso a Pasta na Rede;"Preciso do acesso a pasta abaixo
-R:\RH\DESENVOLVIMENTO_HUMANO_ORGANIZACIONAL\APOIO"
 100-100020;Service Request;Pending;2025-10-06 11:05:43;CRISTINA PINTO SANTOS,GLAUCIA;COP-RH-FACILITIES;3;Cartão de Visitas;Cartão de Visitas
 100-100025;Service Request;Pending;2025-10-06 11:12:18;NEVES DA SILVA,EDNEA;APOIO-COP-ACESSO;3;\\SDC-VFSSD01.distribuidora.biz\FSSD01\SHARE\CONTROLADORIA\CONTROLADORIA_TRIBUTARIO\FILIAIS\1139;Solicito liberação de acesso ao caminho: \\SDC-VFSSD01.distribuidora.biz\FSSD01\SHARE\CONTROLADORIA\CONTROLADORIA_TRIBUTARIO\FILIAIS\1139
 300-131744;Incident;Pending;2025-10-06 13:20:29;PEREIRA SILVA MEDEIROS,ADRIANA;COP-GMI-SMIL-SUSTENTAÇÃO;3;Contas SMI- Cliente 2058472 teve  cancelamento da conta emitida em 06/2025 NF 736122-01 , porem foi realizado novo apontamento mas no SAP ainda esta em aberto.;Contas SMI- Cliente 2058472 teve  cancelamento da conta emitida em 06/2025 NF 736122-01 , porem foi realizado novo apontamento mas no SAP ainda esta em aberto.
@@ -1393,13 +1383,7 @@ Esses campos são fundamentais para garantir que a comunicação enviada ao clie
 300-131777;Incident;Pending;2025-10-06 18:38:40;SILVA SIMOES,FABIO;COP-SAP FI;3;Dificuldade Impressão de Boleto SAP - FRANCINE FERMINO REIS ZU54;"Colaboradora FRANCINE FERMINO REIS ZU54 não está conseguindo imprimir o boleto pelo SAP. 
 
 Transação: ZFI0025"
-100-100136;Service Request;Pending;2025-10-07 08:22:14;CARDOSO,CLEVERSON;APOIO-COP-SD;2;Não estou conseguindo abrir arquivos em PDF;Não Consigo abrir arquivos em PDF na minha máquina e e-mail, não consegui encontrar local melhor para fazer a solicitação, por isto, fiz por aqui
-100-100148;Service Request;Pending;2025-10-07 09:33:25;PEREIRA SILVA MEDEIROS,ADRIANA;COP-GMI-SMIL-SUSTENTAÇÃO;2;testes unitários das rdms: 200-1408 troca de titularidade transação ZSD0207 Parametros não estão sendo preenchidos;testes unitários das rdms: 200-1408 troca de titularidade transação ZSD0207 Parametros não estão sendo preenchidos
 300-131827;Incident;Pending;2025-10-07 14:00:14;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;2;"O CTE 4648-2 da transportadora TORPEDO TRANSPORTES (700279) não migrou para o monitor de pagamento de fretes (ZLESR004), já o CTE 4616-2 migrou, porém com os valores ""zerados"", do centro 1233;";"O CTE 4648-2 da transportadora TORPEDO TRANSPORTES (700279) não migrou para o monitor de pagamento de fretes (ZLESR004), já o CTE 4616-2 migrou, porém com os valores ""zerados"", do centro 1233;"
-100-100215;Service Request;Pending;2025-10-07 14:54:34;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;2;ativar pacote office no notebook, usuário informa que está sendo solicitado licença para uso.;"ativar pacote office no notebook, usuário informa que está sendo solicitado licença para uso.
-Unidade: CO São Luis
-Notebook: NCESL1-53028
-Contato: 098 98717-3233"
 300-131838;Incident;Pending;2025-10-07 14:58:26;CARLOS CABRINI,JEAN;PROD-COP-NOC;2;CO FORTALEZA - SDWAN;"CO FORTALEZA - SDWAN
 Designação: 08680147
 Protocolo algar:   202529309863"
@@ -1412,14 +1396,6 @@ email: falecom.jalisson@gmail.com"
 100-100221;Service Request;Pending;2025-10-07 15:10:15;DA SILVA CACULA,CLAUDETE;COP-RH-TREINAMENTO&AV.DESEMPENHO;2;Boleto mensalidade;Comprovante de pagamento
 300-131842;Incident;Pending;2025-10-07 15:20:33;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;2;EMPURRAR NOTAS DE SERVIÇO;"EMPURRAR NOTAS DE SERVIÇO PARA O KT, FORAM EMITIDAS DIA 01/10, ENVIADAS PARA O E-MAIL NFE E NFE_TAXFY E ATE O MOMENTO, NAO ESTÃO APARECENDO NO KT.
 SÃO 20 NOTAS AO TOTAL DE 1 FORNECEDOR"
-100-100228;Service Request;Pending;2025-10-07 15:27:05;LUCAS MENDES DOS SANTOS,LEVI;COP-SENIOR;2;Liberação de Waapi;"Boa tarde.
-
-Precisamos liberar o ponto mobilidade para o time ADM/OP das unidades por conta do evope.
-
-Segue lista em anexo. 
-
-
-At.te,"
 300-131847;Incident;Pending;2025-10-07 15:43:20;DE BARROS DA SILVA,ERICKSON;PROD-COP-LINUX;2;Ausência de Arquivos/pastas na rede;"Boa tarde!
 
 Notamos que algumas pastas e arquivos sumiram da nossa visualização no DAC (pasta ADM):
@@ -1605,7 +1581,6 @@ Capuava"
 - Jesus Alberto Quijano Padron- 121957
 
 Ambas foram alinhadas com o GCO e com BP."
-300-131453;Incident;Queued;2025-10-01 15:37:51;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES-3N;8;CTE 37558 NÃO MIGROU PARA O MONITOR;O cte 37558 não migrou para o monitor, cód transportadora 416363
 100-99760;Service Request;Queued;2025-10-02 10:35:15;PISCIOTTANO LEITAO,LEONARDO;COP-RH-TREINAMENTO&AV.DESEMPENHO;7;"Gostaria de tirar dúvidas sobre o programa de ""auxílio educação"".";"Tenho duas (2) Dúvidas: 
 
 A primeira (1) dúvida: fui selecionado para uma bolsa de pós-graduação  em Eng. de Segurança do Trabalho e, infelizmente, a universidade não abriu vaga até hoje. Estou precisando fazer inglês (Open English). Pode ser feita uma substituição da opção de curso? 
@@ -1687,7 +1662,6 @@ Essas pessoas estão com o Vinicius Washington De Andrade Cham
 mas devem estar com Fernando Alves Fernandes
 
 ssegue anexo"
-100-100220;Service Request;Queued;2025-10-07 15:07:37;MACEDO GONCALVES MALARDO,INGRID;COP-RH-REMUNERAÇÃO;2;Estou realizando a gestão interina de Cascavel e preciso do acesso ao cartão ponto do pessoal em anexo.;Estou realizando a gestão interina de Cascavel e preciso do acesso ao cartão ponto do pessoal em anexo.
 300-131843;Incident;Queued;2025-10-07 15:23:32;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES-3N;2;FRETES NÃO ESTÃO MIGRANDO PARA O MINITOR DE FRETES NO SAP - TRANSAÇÃO ZLESR004 - TRANSPORTAFORES  701811 BERTOLINI - 701840 JC DISTRIBUIDORA.;"OS CTe's DA TRANSPORTADORA BERTOLINI NÃO ESTÁ MAIS MIGRANDO PARA O MONITOR DE FRETES TRANSAÇÃO ZLESR004 - O PREÇO FIXO DO FRETE TEVE REAJUSTE EM AGOSTO E OS FRETES QUE AINDA MIGRARAM NÃO ESTÃO COM OS VALORES ATUALIZADOS. OS NOVOS VALORES FIXO DOS CTE's É R$ 3.721,86 IVA FK.
 
 ESTOU FAZENDO O LANÇAMENTO DOS CTE MANUALMENTE, MAS PRECISO DA REGULARIZAÇÃO DOS VALORES NO SISTEMA PARA QUE POSSAMOS APROVÁ-LOS PELO MONITOR DE FRETES. 
@@ -1713,80 +1687,3 @@ o número está marcando comercial, porém, é pessoal"
 
 nº 688196
 PAT Saída: 1371616"
-100-92165;Service Request;Resolved-Validation;2025-07-16 14:30:04;DA SILVA CACULA,CLAUDETE;COP-RH-ADMPESSOAL;85;Afastamento Justiniano Afonso Nunes - 13547 - Barueri;"Prezada, 
-
-Gentileza providenciar o Dut enviar para o colaborador, orientá-lo e expert.
-
-11-98190-5240 Maria Gabriela - filha - maria.gabriela_1995@hotmail.com
-
-Atestado:
-03/07/2025 - 20 dias - I64 (Acidente vascular cerebral, não especificado como hemorrágico ou isquêmico)"
-100-98550;Service Request;Resolved-Validation;2025-09-17 16:55:57;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;22;Criar turno;"Solicito criação de turno referente a novos empregados conforme planilha em anexo.
-
-Este processo se faz necessário devido ao horário estendido do envase industrial para atendimento aos clientes."
-100-99054;Service Request;Resolved-Validation;2025-09-24 08:04:47;DE SOUZA AGUIAR DE JESUS,BEATRIZ;COP-RH-ADMPESSOAL;15;Afastamento - CO CAPUAVA -  JOSE EDSON MOREIRA DA SILVA - 12146;"Segue anexo histórico de afastamento do colaborador JOSE EDSON MOREIRA DA SILVA - 12146
-
-Perícia por análise documental.
-
-Favor emitir a carta DUT e enviar ao colaborador para incluir no meu INSS.
-
-Enviar para o colaborador o termo caso o mesmo queira receber a antecipação e quando receber de volta abrir um novo chamado para que a Jana faça a antecipação.
-
-📌 Orientações sobre Antecipação do Auxílio-Doença.
- 
-Antecipação do Auxílio-Doença
-Conforme previsto na Convenção Coletiva de Trabalho (CCT), a empresa poderá realizar a antecipação do auxílio-doença. Para isso, é imprescindível que o colaborador assine o Termo de Antecipação e Devolução do Auxílio-Doença;
- 
-•         O colaborador deverá manter a empresa informada sobre a concessão do benefício previdenciário, a fim de que possamos cessar as antecipações do auxílio-doença.
-Ressaltamos que, conforme a CCT, não é permitido o recebimento simultâneo do benefício concedido pelo INSS e da antecipação realizada pela empresa;
- 
-⏰ Prazo para Envio do Termo
-O prazo para envio do termo permanece até o dia 17 de cada mês; 
- 
-📆 Limite de Antecipações
-Reforçamos que, conforme a CCT, as antecipações estão limitadas a 180 dias (cerca de 6 a 7 parcelas), até que o INSS inicie o pagamento do benefício.  Após a concessão e envio do histórico de créditos, as antecipações serão automaticamente suspensas."
-100-99316;Service Request;Resolved-Validation;2025-09-26 14:49:13;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;13;SOLICITAÇÃO DE PPP;"DOCUMENTAÇÃO PARA SOLICITAÇÃO DE PPP
-REQUERENTE: ROMARIO ELIAS DE OLIVEIRA LOPES
-DOCUMENTO PARA REVISÃO DE APOSENTADORIA"
-100-99801;Service Request;Resolved-Validation;2025-10-02 14:04:01;SOUZA,AMILTON;COP-RH-FOPAG;7;"SOLICITAÇÃO DE RELAÇÃO DE SALÁRIOS
-REQUERENTE: PAULO ROLLSING FILHO";"SOLICITAÇÃO DE RELAÇÃO DE SALÁRIOS 
-REQUERENTE: PAULO ROLLSING FILHO
-PERIODO: 18/04/1979 A 07/03/1981
-MOTIVO: NÃO CONSTAR NA CNIS
-
-FAVOR ENCAMINHAR DIRETAMENTE PARA ESCRITÓRIO ADVOGADOS:
-EMAIL: daiane.almeida@anildoadvogados.com.br"
-100-99822;Service Request;Resolved-Validation;2025-10-02 15:10:44;DA SILVA CACULA,CLAUDETE;COP-RH-ADMPESSOAL;7;Avaliação de alta médica do empregado Sr. Marcelo Aparecido Gomes da Silva - Matrícula n.º 100401745.;Agendamento com o médico de trabalho para avaliação da alta médica do empregado Sr. Marcelo Aparecido Gomes da Silva - Matrícula n.º 100401745, com restrições laborais.
-100-100003;Service Request;Resolved-Validation;2025-10-06 10:27:23;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;3;solicitação de VR /Cancelamento - VR - CO BARUERI;"Prezados 
-
-Recebemos o chamado nº 100-99848, ref. ALTERAÇÃO DE ESCALA, realizamos alteração, conforme solicitação do gestor. Essa alteração de escala tem impacto no benefício VALE REFIÇÃO, para colaboradores abaixo.
-
-
- Solicito compra de VR e cancelamento de VR, conforme abaixo. 
-
-*Rafael Araújo Mineiro
-Início do Benefícios: 03/10/25
-Motivo:  O refeitório da unidade não disponibiliza refeições no novo horário do colaborador.
-
-
-*Marivone Mendes de Souza
-Descontinuar a partir de 03/10/2025
-Motivo: O refeitório fornece refeição no novo horário em que o colaboradora vai trabalhar.
-
-Desde já agradeço
-
-
-Adalgisa Serra – HUB de Atendimento"
-100-100073;Service Request;Resolved-Validation;2025-10-06 14:40:09;DE SOUZA AGUIAR DE JESUS,BEATRIZ;COP-RH-ADMPESSOAL;3;Boa tarde, preciso aplicar uma advertência por escrito para funcionário que ultrapassou horas de trabalho sem autorização, equipe já havia assinado ata de reunião sobre o assunto, no dia 02/10 ajudante bateu 10 minutos antes no hotel para pernoite e o motorista 10 minutos depois, assim infringindo a TAC. Solicito orientação sobre o assunto;Boa tarde, preciso aplicar uma advertência por escrito para funcionário que ultrapassou horas de trabalho sem autorização, equipe já havia assinado ata de reunião sobre o assunto, no dia 02/10 ajudante bateu 10 minutos antes no hotel para pernoite e o motorista 10 minutos depois, assim infringindo a TAC. Solicito orientação sobre o assunto
-100-100091;Service Request;Resolved-Validation;2025-10-06 16:02:12;DA SILVA FERRAZ,EDSON;COP-RH-ADMPESSOAL;3;No dia 15/10 daremos início à promoção Botijão do Milhão e, conforme regras internas, os funcionários não poderão participar dos sorteios de prêmios.;"Minha gestora, Elisangela Marques, pediu que eu falasse com o responsável para obter a base de CPFs dos colaboradores ativos, exclusivamente para bloquear a participação desses CPFs no sorteio. Vale reforçar, de forma clara que:
-
-Os CPFs serão usados somente para impedir a participação nos sorteios, nada além disso.
-Os dados não serão expostos, não ficarão visíveis para revendas nem para participantes.
-O acesso será restrito à equipe necessária do Trade e o tratamento seguirá a LGPD.
-Após a apuração da promoção, a base será removida/apagada do arquivo utilizado para o bloqueio.
-Você poderia fornecer essa base, por favor? Se possível, preciso do arquivo até o mais breve, isso garante que a lista de sorteio já saia corretamente sem incluir colaboradores.
-
-O Edson Ferraz me instruiu a abrir esse chamado."
-100-100161;Service Request;Resolved-Validation;2025-10-07 10:11:52;GOMES DE ARRUDA,ROSIMARA;COP-RH-HUB;2;Carta fiança;"Bom dia! Fui transferida para Recife e preciso de uma carta fiança para alugar um imovel.
-Peço a gentileza apoio em providenciar"
-100-100182;Service Request;Resolved-Validation;2025-10-07 11:38:26;DE SOUSA SIMAO,EDILAINE;COP-RH-FOPAG;2;Oficio 058/2025 candidatura SINDICAL;Segue em anexo,  oficio nº 058/2025 , registro de candidatura dos empregado da Copa energia como diretores sindicais
