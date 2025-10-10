@@ -138,14 +138,13 @@ if is_admin:
             # Força a limpeza do cache das funções para garantir a releitura
             read_github_text_file.clear()
             read_github_file.clear()
-            # st.sidebar.balloons() # <-- Linha removida
-            st.sidebar.success("Dados salvos com sucesso!") # Adicionando um feedback visual alternativo
+            st.sidebar.success("Dados salvos com sucesso!")
         else:
             st.sidebar.warning("Carregue os dois arquivos para salvar.")
 elif password:
     st.sidebar.error("Senha incorreta.")
 
-st.markdown("---")
+# st.markdown("---") # <-- Linha removida
 
 # --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
 try:
