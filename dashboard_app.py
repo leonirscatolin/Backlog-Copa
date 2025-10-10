@@ -145,7 +145,8 @@ try:
     datas_referencia = read_github_text_file(repo, "datas_referencia.txt")
     data_atual_str = datas_referencia.get('data_atual', 'N/A')
     data_15dias_str = datas_referencia.get('data_15dias', 'N/A')
-    st.markdown(f"""<div style="text-align: center; font-size: 0.9em; color: #666;">Data de referência dos dados: <b>{data_atual_str}</b> (Atual) e <b>{data_15dias_str}</b> (15 Dias Atrás).</div><br>""", unsafe_allow_html=True)
+
+    # <-- TEXTO DA DATA FOI REMOVIDO DAQUI
 
     if df_atual.empty or df_15dias.empty:
         st.warning("Ainda não há dados para exibir.")
@@ -158,6 +159,10 @@ try:
         with tab1:
             st.info("""**Filtros e Regras Aplicadas:**\n- Grupos contendo 'RH' foram desconsiderados da análise.\n- A contagem de 'Dias em Aberto' considera o dia da criação como Dia 1.""")
             st.subheader("Análise de Antiguidade do Backlog Atual")
+
+            # <-- TEXTO DA DATA FOI MOVIDO PARA CÁ E AJUSTADO
+            st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str} (dados atuais)</i></p>", unsafe_allow_html=True)
+
             if not df_aging.empty:
                 total_chamados = len(df_aging)
                 _, col_total, _ = st.columns([2, 1.5, 2])
@@ -189,18 +194,15 @@ try:
                 st.markdown("---")
                 st.subheader("Detalhar e Buscar Chamados")
                 
-                # --- CÓDIGO DE ROLAGEM CORRIGIDO ---
                 if needs_scroll:
                     js_code = f"""
                         <script>
                             setTimeout(function() {{
-                                // Procura o elemento na PÁGINA PRINCIPAL, fora da "janelinha" do componente
                                 const element = window.parent.document.getElementById('detalhar-e-buscar-chamados');
                                 if (element) {{
-                                    // Se encontrar, rola a página até ele
                                     element.scrollIntoView({{ behavior: 'smooth', block: 'start' }});
                                 }}
-                            }}, 500); // Meio segundo de espera é suficiente
+                            }}, 500);
                         </script>
                     """
                     components.html(js_code, height=0)
