@@ -45,7 +45,6 @@ def read_github_file(_repo, file_path):
     try:
         content_file = _repo.get_contents(file_path)
         content = content_file.decoded_content.decode("utf-8")
-        # Adiciona um tratamento para arquivo vazio
         if not content.strip():
             return pd.DataFrame()
         return pd.read_csv(StringIO(content), delimiter=';', encoding='latin1')
@@ -65,12 +64,6 @@ def read_github_text_file(_repo, file_path):
         return dates
     except Exception:
         return {}
-
-def get_base_64_of_bin_file(bin_file):
-    try:
-        with open(bin_file, 'rb') as f: data = f.read()
-        return base64.b64encode(data).decode()
-    except FileNotFoundError: return None
 
 def processar_dados_comparativos(df_atual, df_15dias):
     contagem_atual = df_atual.groupby('Atribuir a um grupo').size().reset_index(name='Atual')
@@ -105,6 +98,45 @@ def get_status(row):
     elif diferenca == 0: return "Estável / Atenção"
     else: return "Redução de Backlog"
 
+# --- ESTILIZAÇÃO CSS ---
+# <-- ALTERADO: Bloco de CSS movido para o topo e usando st.html()
+st.html("""
+    <style>
+        #GithubIcon { visibility: hidden; }
+        .metric-box {
+            border: 1px solid #CCCCCC;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+        a.metric-box {
+            display: block;
+            color: inherit;
+            text-decoration: none !important;
+        }
+        a.metric-box:hover {
+            background-color: #f0f2f6;
+            text-decoration: none !important;
+        }
+        .metric-box span {
+            display: block;
+            width: 100%;
+            text-decoration: none !important;
+        }
+        .metric-box .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #375623;
+        }
+        .metric-box .label {
+            font-size: 1em;
+            color: #666666;
+        }
+    </style>
+""")
+
 # --- INTERFACE DO APLICATIVO ---
 try:
     logo_copa = Image.open("logo_sidebar.png")
@@ -126,21 +158,17 @@ if is_admin:
     st.sidebar.header("Carregar Novos Arquivos")
     uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL (.csv)", type="csv")
     uploaded_file_15dias = st.sidebar.file_uploader("2. Backlog de 15 DIAS ATRÁS (.csv)", type="csv")
-    # <-- ALTERADO: Adicionado novo campo de upload para chamados fechados
     uploaded_file_fechados = st.sidebar.file_uploader("3. Chamados FECHADOS no dia (Opcional)", type="csv")
     
     data_arquivo_15dias = st.sidebar.date_input( "Data de referência do arquivo de 15 DIAS", value=date.today() )
     if st.sidebar.button("Salvar Novos Dados no Site"):
-        # Upload principal ainda depende dos dois arquivos obrigatórios
         if uploaded_file_atual and uploaded_file_15dias:
             with st.spinner("Salvando arquivos e datas de referência..."):
                 update_github_file(repo, "dados_atuais.csv", uploaded_file_atual.getvalue())
                 update_github_file(repo, "dados_15_dias.csv", uploaded_file_15dias.getvalue())
                 
-                # Se um arquivo de fechados foi enviado, salva ele também
                 if uploaded_file_fechados:
                     update_github_file(repo, "dados_fechados.csv", uploaded_file_fechados.getvalue())
-                # Se não, garante que o arquivo antigo seja limpo criando um arquivo vazio
                 else:
                     update_github_file(repo, "dados_fechados.csv", "")
 
@@ -155,7 +183,6 @@ if is_admin:
                 )
                 update_github_file(repo, "datas_referencia.txt", datas_referencia_content)
 
-            # Limpa o cache de todas as funções para garantir a releitura
             read_github_text_file.clear()
             read_github_file.clear()
             st.sidebar.success("Dados salvos com sucesso!")
@@ -177,7 +204,7 @@ try:
 
     df_atual = read_github_file(repo, "dados_atuais.csv")
     df_15dias = read_github_file(repo, "dados_15_dias.csv")
-    df_fechados = read_github_file(repo, "dados_fechados.csv") # <-- ALTERADO: Lê o novo arquivo
+    df_fechados = read_github_file(repo, "dados_fechados.csv")
     datas_referencia = read_github_text_file(repo, "datas_referencia.txt")
     data_atual_str = datas_referencia.get('data_atual', 'N/A')
     data_15dias_str = datas_referencia.get('data_15dias', 'N/A')
@@ -186,7 +213,6 @@ try:
     if df_atual.empty or df_15dias.empty:
         st.warning("Ainda não há dados para exibir.")
     else:
-        # <-- ALTERADO: Lógica para deduzir os chamados fechados
         if not df_fechados.empty and 'ID do ticket' in df_fechados.columns:
             closed_ticket_ids = df_fechados['ID do ticket'].dropna().unique()
             original_count = len(df_atual)
@@ -198,7 +224,9 @@ try:
         df_atual_filtrado = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_aging = analisar_aging(df_atual_filtrado)
-        st.markdown("""<style>...</style>""", unsafe_allow_html=True) # CSS Omitido
+        
+        # A antiga chamada ao st.markdown(<style>) foi removida daqui
+
         tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
         with tab1:
             st.info("""**Filtros e Regras Aplicadas:**\n- Grupos contendo 'RH' foram desconsiderados da análise.\n- A idade do chamado é a diferença de dias entre hoje e a data de criação.""")
@@ -241,7 +269,16 @@ try:
                 st.subheader("Detalhar e Buscar Chamados")
                 
                 if needs_scroll:
-                    js_code = f"""<script>...</script>""" # Omitido por brevidade
+                    js_code = f"""
+                        <script>
+                            setTimeout(function() {{
+                                const element = window.parent.document.getElementById('detalhar-e-buscar-chamados');
+                                if (element) {{
+                                    element.scrollIntoView({{ behavior: 'smooth', block: 'start' }});
+                                }}
+                            }}, 500);
+                        </script>
+                    """
                     components.html(js_code, height=0)
 
                 st.selectbox( "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada' )
@@ -269,7 +306,7 @@ try:
                     st.data_editor(resultados_busca[colunas_para_exibir_busca], use_container_width=True, hide_index=True, disabled=True)
 
         with tab2:
-            # Código da Tab 2 omitido por brevidade...
+            # O código da Tab 2 foi omitido por brevidade, não há alterações nele
             pass
 
 except Exception as e:
