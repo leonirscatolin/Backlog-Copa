@@ -8,6 +8,7 @@ from github import Github, Auth
 from io import StringIO
 from urllib.parse import quote
 import streamlit.components.v1 as components
+import pytz # Importa a biblioteca para fusos horários
 
 # --- Configuração da Página ---
 st.set_page_config(
@@ -117,9 +118,10 @@ if is_admin:
                 update_github_file(repo, "dados_atuais.csv", uploaded_file_atual.getvalue())
                 update_github_file(repo, "dados_15_dias.csv", uploaded_file_15dias.getvalue())
                 
-                # <-- ALTERAÇÃO 1: Salva a data E a hora atual ---
+                # <-- ALTERAÇÃO 1: Define o fuso horário de São Paulo e salva a hora correta ---
+                tz_sp = pytz.timezone('America/Sao_Paulo')
                 data_arquivo_atual = date.today()
-                hora_atualizacao = datetime.now().strftime('%H:%M')
+                hora_atualizacao = datetime.now(tz_sp).strftime('%H:%M')
                 datas_referencia_content = (
                     f"data_atual:{data_arquivo_atual.strftime('%d/%m/%Y')}\n"
                     f"data_15dias:{data_arquivo_15dias.strftime('%d/%m/%Y')}\n"
@@ -164,9 +166,9 @@ try:
             st.info("""**Filtros e Regras Aplicadas:**\n- Grupos contendo 'RH' foram desconsiderados da análise.\n- A contagem de 'Dias em Aberto' considera o dia da criação como Dia 1.""")
             st.subheader("Análise de Antiguidade do Backlog Atual")
 
-            # <-- ALTERAÇÃO 2: Exibe a data E a hora da atualização ---
+            # <-- ALTERAÇÃO 2: Ajusta o texto para o novo formato solicitado ---
             texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
-            st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str} (data da última atualização){texto_hora}</i></p>", unsafe_allow_html=True)
 
             if not df_aging.empty:
                 total_chamados = len(df_aging)
