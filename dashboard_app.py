@@ -222,15 +222,13 @@ try:
                     components.html(js_code, height=0)
 
                 st.selectbox( "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada' )
-                
-                # <-- ALTERADO: Lógica corrigida para exibir a mensagem
                 faixa_atual = st.session_state.faixa_selecionada
                 filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].copy()
                 
                 if not filtered_df.empty:
                     filtered_df['Data de criação'] = filtered_df['Data de criação'].dt.strftime('%d/%m/%Y')
                     colunas_para_exibir = ['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
-                    st.dataframe(filtered_df[colunas_para_exibir], use_container_width=True, hide_index=True)
+                    st.data_editor(filtered_df[colunas_para_exibir], use_container_width=True, hide_index=True, disabled=True) # <-- ALTERADO
                 else:
                     st.info("Não há chamados nesta categoria.")
 
@@ -245,7 +243,7 @@ try:
                     resultados_busca['Data de criação'] = resultados_busca['Data de criação'].dt.strftime('%d/%m/%Y')
                     st.write(f"Encontrados {len(resultados_busca)} chamados para o grupo '{grupo_selecionado}':")
                     colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
-                    st.dataframe(resultados_busca[colunas_para_exibir_busca], use_container_width=True, hide_index=True)
+                    st.data_editor(resultados_busca[colunas_para_exibir_busca], use_container_width=True, hide_index=True, disabled=True) # <-- ALTERADO
 
         with tab2:
             st.subheader("Resumo do Backlog Atual")
