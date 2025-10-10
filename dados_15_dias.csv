@@ -7,7 +7,9 @@ LOCALIZAÇÃO:centro 1235
 DESCRIÇÃO:PROBLEMAS NA RECONCIALIAÇAO, DEVIDO A ORDEN PRESA 13008611
 0000681896
 PAT 1358956"
-;;;;;;;;
+100-98550;Service Request;Queued;17/09/2025;;COP-RH-RELAÇÕESTRAB&SIND;6;Criar turno;"Solicito criação de turno referente a novos empregados conforme planilha em anexo.
+
+Este processo se faz necessário devido ao horário estendido do envase industrial para atendimento aos clientes."
 300-129218;Incident;Queued;01/09/2025;;COP-SAP MM-3N;22;"Erro ao tentar fazer a MIRO. Aparece a mensagem ""Entrar chave do domicílio fiscal"". Segue tela do erro em anexo.";"Erro ao tentar fazer a MIRO. Aparece a mensagem ""Entrar chave do domicílio fiscal"". Segue tela do erro em anexo."
 300-127657;Incident;Queued;09/08/2025;;COP-SAP-LES-LOG;45;Geração de variável;"Gostaria de saber se teria como gerar uma variável para agilizar meu trabalho dentro do SAP.
 
@@ -15,7 +17,11 @@ As prints que eu preciso estão em anexo.
 
 Centro: 1200
 Capuava"
-;;;;;;;;
+100-98573;Service Request;Queued;18/09/2025;;COP-RH-HUB;5;"Solicitação FALE CONOSCO.
+
+SEGUE NOTIFICAÇÃO EXTRAJUDICIAL PARA ENTREGA DE DOCUMENTOS DO VÍNCULO  (PPP, PCMSO, LTCAT) DO EX-FUNCIONÁRIO GENIVALDO JOSE DA SILVA, CPF sob o nº 460.579.274-00, CONFORME SE VERIFICA EM ANEXO.";"Solicitação FALE CONOSCO.
+
+SEGUE NOTIFICAÇÃO EXTRAJUDICIAL PARA ENTREGA DE DOCUMENTOS DO VÍNCULO (PPP, PCMSO, LTCAT) DO EX-FUNCIONÁRIO GENIVALDO JOSE DA SILVA, CPF sob o nº 460.579.274-00, CONFORME SE VERIFICA EM ANEXO."
 300-130354;Incident;Queued;15/09/2025;;COP-SAP MOBILE-3N;8;Categoria de Item para ordem 0012981989 Item 000010 não encontrada na tabela CATITM2REC ZEVV001 \/  \/ 1;"Viagem: 681416
 PAT: 1358044
 Centro: 1242
@@ -200,7 +206,7 @@ Nota: 264692-1
 Pedido: 4503605320
 
 Centro: 1207"
-;;;;;;;;
+100-98706;Service Request;Queued;19/09/2025;;COP-RH-SOLUÇÕES;4;atestado médico;bom dia , enviei um atestado do dia 17.09.2025,porém o mesmo foi recusado, gostaria de saber do motivo da recusa.
 300-129840;Incident;Queued;08/09/2025;;COP-WEB-PORTAL;15;Sem localizar revendas no site  Liquigás, Copa e Copa Energia.;"Quando o cliente entra em contato com a central para solicitar gás e a respectiva revenda não é localizada no sistema, este é orientado a realizar a busca por meio do site. Entretanto, ao tentar localizar a revenda, o cliente não obtém êxito, pois o sistema apresenta a mensagem de “cidade inválida”, mesmo quando a unidade federativa (UF) é informada corretamente.
 
 Ressaltamos que essa situação ocorre em todos os sites consultados, incluindo Liquigás, Copa e Copa Energia."
@@ -298,122 +304,557 @@ Prestador de serviço, está relatando que as impressões estão saindo com a intens
 58303 - CONDOMINIO EDIFICIO FONTANA DI TREV Rota: 90206 - ref.08.2025
 
 Prestador de serviço, está relatando que as impressões estão saindo com a intensidade muito clara, quando são realizadas via txt, vou encaminhar o mesmo arquivo que eles estão usando para gerar impressão para analise."
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
+100-91214;Service Request;Pending;08/07/2025;JOSE BRITO VIEIRA,JAILSON;COP-RH-ADMPESSOAL;77;Afastamento unidade: Belém;"Afastamento unidade: Belém
+
+Colaborador LUCIVALDO DA SILVA CORREA-780107, encontra-se afastado pelo INSS até a data 30/09/2025.
+
+Favor, acompanhar seu retorno ou afastamento. Segue em anexo histórico do afastamento."
+100-91795;Service Request;Active;14/07/2025;SILVA FERREIRA,MARIANA;COP-RH-ADMPESSOAL;71;AFASTAMENTO UNIDADE: CO MATARIPE - ERBERT HELENO PITA DE SOUZA;"ENCAMINHAMENTO INSS – CO MATARIPE – Erbert Heleno Pita De Souza – 121806
+
+Colaborador apresentou atestado na plataforma, medico do trabalho da Copa Energia. Dr.Marcelo deu o aceite de encaminhamento ao INSS.
+
+Favor, fazer o DUT e encaminhar para a Expert agendar a pericia, acompanhar o afastamento  e manter o colaborador informado.
+
+Segue em anexo histórico da indicação do afastamento."
+100-91565;Service Request;Pending;11/07/2025;SILVA FERREIRA,MARIANA;COP-RH-ADMPESSOAL;74;AFASTAMENTO UNIDADE: CO MATARIPE - ROSEVALDO NASCIMENTO DA SILVA;"ENCAMINHAMENTO INSS – CO MATARIPE – Rosevaldo Nascimento Da Silva – 117253
+
+Colaborador encontra-se afastado, beneficio  cessa em 11/07/2025, enviado Laudo medico para  Expert agendar nova pericia., pois colaborador não vai retornar ao trabalho.
+
+Favor, acompanhar.
+Segue em anexo histórico do afastamento
+
+Auxílio doença pelo INSS concedido do dia 15/07/2025 a 31/10/2025."
+100-91588;Service Request;Pending;11/07/2025;SILVA FERREIRA,MARIANA;COP-RH-ADMPESSOAL;74;AFASTAMENTO UNIDADE: CO MATARIPE - RAIMUNDO DA CRUZ SANTOS;"ENCAMINHAMENTO INSS – MATARIPE – Raimundo Da Cruz Santos – 117017
+
+Colaborador encontra-se afastado, realizou nova perícia no INSS em 17/06/25, que está em fase de ANALISE DOCUMENTAL.
+
+Colaborador não vai retornar ao trabalho, já foi solicitado para ele apresentar novo atestado na  plataforma ATESTADO.ME, porém até o presente momento não apresentou. 
+ 
+Favor, acompanhar.
+
+Segue em anexo histórico do afastamento
+
+Anexado relatório médico emitido no dia 03.07.2025, solicitando um afastamento entre 120 a 180 dias do colaborador.
+
+Funcionário com Benefício concedido pelo INSS em 31/07/2025.
+O funcionário fez uma solicitação de prorrogação do benefício em 01/08/2025.
+Prorrogação de benefício concedida até 27/10/2025."
+100-96955;Service Request;Pending;02/09/2025;SILVA FERREIRA,MARIANA;COP-RH-ADMPESSOAL;21;Afastamento - CO Mataripe -  CARLOS PINHEIRO REIS - 730072;"Segue anexo histórico de afastamento do colaborador  CARLOS PINHEIRO REIS - 730072
+
+Perícia por análise documental.
+
+Favor emitir a carta DUT (09/08/2025) e enviar ao colaborador para incluir no meu INSS.
+
+Enviar para o colaborador o termo caso o mesmo queira receber a antecipação e quando receber de volta abrir um novo chamado para que a Jana faça a antecipação."
+100-94288;Service Request;Active;06/08/2025;SILVA FERREIRA,MARIANA;COP-RH-HUB;48;AFASTAMENTO UNIDADE: DA ARACAJU - SAMUEL LEONARDO CORREIA DE MEDEIROS - 105249;"Segue anexo histórico de afastamento de SAMUEL LEONARDO CORREIA DE MEDEIROS - 105249
+
+Ultima atualização em: 25/07/2025
+
+benefício do colaborador Samuel Leonardo Correia De Medeiros permanece em análise.
+
+Colaborador solicitou antecipação do auxílio doença em 05/08/2025.
+
+No dia 15/08/2025 o médico cirurgião emitiu relatório médico autorizando o retorno ao trabalho.
+
+Funcionário Retornou as atividades laborais 26/08/2025, conforme ASO de Retorno em anexo."
+100-97830;Service Request;Active;11/09/2025;SILVA FERREIRA,MARIANA;COP-RH-HUB;12;PPP DE EX- FUNCIONÁRIO  IZAIAS JOAQUIM DE SANTANA;"O EX- FUNCIONÁRIO IZAIAS JOAQUIM DE SANTANA SOLICITA PPP.
+
+Izaías Santana <izaiasbass@gmail.com>"
+100-96311;Service Request;Pending;27/08/2025;SILVA FERREIRA,MARIANA;COP-RH-HUB;27;AFASTAMENTO CO MATARIPE - CARLOS PINHEIRO REIS - 730072;O funcionário Carlos Pinheiro Reis no dia 11/08/2025 apresentou atestado de 15 dias de afastamento por dores na coluna e no dia 25/08/2025 apresentou relatório médico informando que não tem condições de retornar ao trabalho até fazer um cirurgia.
+100-94767;Service Request;Pending;12/08/2025;SILVA FERREIRA,MARIANA;COP-RH-HUB;42;AFASTAMENTO UNIDADE CO MATARIPE: JOÃO RAIMUNDO DA SILVA VITÓRIO;Funcionário sem previsão de retorno.
+100-94774;Service Request;Pending;12/08/2025;SILVA FERREIRA,MARIANA;COP-RH-HUB;42;AFASTAMENTO UNIDADE CO MATARIPE: RONALDO MOREIRA;Funcionário sem previsão de retorno
+100-93150;Service Request;Pending;25/07/2025;DA SILVA CACULA,CLAUDETE;COP-RH-ADMPESSOAL;60;Afastamento CO SJCampos, colaborador Luiz Carlos Silvestre;"Anexo Atualização do Afastamento do colaborador Luiz Carlos Silvestre;
+
+Contatos do colaborador:
+
+email: luizcarlos.silvestre1973@gmail.com
+Tel.12 99673-9368"
+100-93678;Service Request;Pending;31/07/2025;DA SILVA CACULA,CLAUDETE;COP-RH-ADMPESSOAL;54;Afastamento SJCampos, Lair Regiane de Sousa.;Afastamento SJCampos, Lair Regiane de Sousa, em 24/07 passou por perícia do INSS, a solicitação foi negada, Decisão anexa, o colaborador irá solicitar um novo benefício apresentando o relatório médico (anexo) de afastamento por mais 6 meses.
+100-98246;Service Request;Active;16/09/2025;DA SILVA CACULA,CLAUDETE;COP-RH-HUB;7;solicitação do PPP;"Solicito o PPP para compor meu processo de aposentadoria.
+
+Matricula: 13924"
+100-98002;Service Request;Pending;14/09/2025;DA SILVA CACULA,CLAUDETE;COP-RH-HUB;9;O meu filho, Marcello Moura de Almeida Andrade, foi diagnosticado com Transtorno de Deficit de Atenção e Heperatividade.;Com o diagnostico do TDAH, o Marcello precisa semanalmente realizar sessões de terapia e faz uso contínuo de medicamento. Dessa forma ele precisa deslocar-se até a clinica, pelo menos umas vez por semana, somado a isso, tem-se os altos custos do medicamento.
+100-95724;Service Request;Queued;20/08/2025;DA SILVA CACULA,CLAUDETE;COP-RH-ADMPESSOAL;34;"Afastamento colaborador DIEGO ANTUNES - 121801, unidade Barueri.
+
+Favor confeccionar o DUT com data de 05/08/2025.";"Afastamento colaborador DIEGO ANTUNES - 121801, unidade Barueri.
+
+Favor confeccionar o DUT com data de 05/08/2025."
+100-98761;Service Request;Pending;19/09/2025;DA SILVA CACULA,CLAUDETE;COP-RH-TREINAMENTO&AV.DESEMPENHO;4;"Correção prazo - Bolsa de Estudos 
+Curso de Inglês - Daniel Tardelli.";"Prezados(as),
+
+Boa tarde!
+
+Espero que estejam bem.
+
+Ao revisar meu Termo de Concessão de Bolsa de Estudos verifiquei que me equivoquei quanto ao prazo do curso. Acabei colocando 12 meses, mas o curso é de 24 meses. 
+
+Em anexo estou enviando o Termo corrigido para validação dos 12 meses restantes.
+
+Desde já, agradeço a atenção."
+100-92211;Service Request;Active;16/07/2025;DA SILVA CACULA,CLAUDETE;COP-RH-ADMPESSOAL;69;Afastamento CHARLES PEREIRA RIBEIRO - 14150 - Barueri;"Não há atestados no sistema.
+
+Não há atualização recente expert sobre o afastamento."
+100-92216;Service Request;Active;16/07/2025;DA SILVA CACULA,CLAUDETE;COP-RH-ADMPESSOAL;69;Afastamento DAMIAO PINHEIRO CUSTODIO - 13715 - Barueri;"Não há atestados no sistema.
+
+Não há atualização recente expert sobre o afastamento."
+100-92352;Service Request;Active;17/07/2025;DA SILVA CACULA,CLAUDETE;COP-RH-ADMPESSOAL;68;Afastamento FRANCISCO VALTER VIANA - 11919 - Barueri;"Acompanhar Afastamento:
+
+Não há atestados no sistema.
+
+Não há atualização recente expert sobre o afastamento."
+100-92356;Service Request;Active;17/07/2025;DA SILVA CACULA,CLAUDETE;COP-RH-ADMPESSOAL;68;Afastamento JOSE CARLOS LACERDA - 11500 - Barueri;"Acompanhar Afastamento:
+
+Não há atestados no sistema.
+
+Não há atualização recente expert sobre o afastamento."
+100-92359;Service Request;Active;17/07/2025;DA SILVA CACULA,CLAUDETE;COP-RH-ADMPESSOAL;68;Afastamento JOSE GOMES DA SILVA - 7805 - Barueri;"Acompanhar Afastamento:
+
+Não há atestados no sistema.
+
+Não há atualização recente expert sobre o afastamento."
+100-92020;Service Request;Active;15/07/2025;DA SILVA CACULA,CLAUDETE;COP-RH-ADMPESSOAL;70;Afastamento Valdeci Sales Da Silva - 13111 - Barueri;"O colaborador anexou novo atestado na plataforma que findará no dia 08/10/2025.
+
+A expert vai enviar para novo afastamento,"
+100-93451;Service Request;Pending;29/07/2025;BRITO DA CRUZ,LUCELIA;COP-RH-ADMPESSOAL;56;AFASTAMENTO: BRASILIA - MAURO FRANCISCO BARBOSA COSTA;"REAGENDAMENTO DE PERÍCIA - COPA BRASILIA - MAURO FRANCISCO BARBOSA COSTA
+
+Colaborador afastado desde 18/08/2016, possui benefício B31 – Auxílio por Incapacidade Temporária ativo e foi encaminhado para reabilitação judicial profissional obrigatória pelo INSS. 
+
+Segue em anexo histórico de afastamento."
+100-91225;Service Request;Pending;08/07/2025;BRITO DA CRUZ,LUCELIA;COP-RH-ADMPESSOAL;77;AFASTAMENTO_UNIDADE BRASILIA - DAGIVALDO ALVES NUNES-30332;"Colaborador DAGIVALDO ALVES NUNES-30332 , encontrar-se afastado, segue  documento para a contestação, peço seu apoio para protocolização na Agência da Previdência ou Correios e nos encaminhar o protocolo. 
+
+Em anexo segue documentos ref. afastamento e contestação."
+100-93685;Service Request;Pending;31/07/2025;BRITO DA CRUZ,LUCELIA;COP-RH-HUB;54;AFASTAMENTO_UNIDADE BRASILIA_WELLINGTON DA SILVA CORREIA;"Colaborador WELLINGTON DA SILVA CORREIAM, matricula 30478 , encontrar-se afastado, segue  documento para a contestação, peço seu apoio para protocolização na Agência da Previdência ou Correios e nos encaminhar o protocolo. 
+
+Em anexo segue documentos ref. afastamento e contestação."
+100-97884;Service Request;Pending;12/09/2025;BRITO DA CRUZ,LUCELIA;COP-RH-HUB;11;AFASTAMENTO: BRASILIA - ALESSANDRO MARQUES FERREIRA - 114907;"12/11/2018 - Admissão.
+
+Em 10/02/2021, o funcionário foi ao médico e foi diagnosticado com transtorno de disco lombar ou de outros discos intervertebrais com radiculopatia (M54.4 - lumbago com ciática; M53.2 - instabilidades da coluna vertebral). Nessa data, apresentou atestado de 90 dias de afastamento, mantendo-se afastado pelo INSS desde então.
+
+Em 28/10/2022, o colaborador informou que já havia realizado cirurgia bariátrica e na coluna; ainda assim, segundo ele, não poderá retornar ao trabalho e deverá pleitear a aposentadoria.
+
+Término do auxílio-doença: 03/04/2023. Retorno ao trabalho com recomendação de retorno gradual das funções. 
+
+Afastamento: 27/07/2023. O último comunicado de decisão informa que a data de cessação do benefício é 20/11/2025.
+
+Segue, em anexo, o histórico de afastamento."
+100-97917;Service Request;Pending;12/09/2025;BRITO DA CRUZ,LUCELIA;COP-RH-HUB;11;AFASTAMENTO_UNIDADE BRASILIA - GIVALDO DA CRUZ RAMALHO OLIVEIRA;"02/07/2014 - O funcionário afastou devido acidente de trabalho (torção no punho);
+10/12/2015 - O funcionário entrou na justiça do trabalho contra a Liquigás solicitando reparação por danos causados pelo acidente de trabalho (processo em julgamento);
+15/03/2021- Data do último documento informado para a empresa, que informa a negação do pedido de auxilio doença pelo INSS, funcionário entrou com recurso contra o INSS;
+Desde 15/03/2021 a empresa vem tentando contato com o funcionário, porém não obteve retorno do mesmo.
+Conseguimos contado com o funcionário no dia 27/04/2022, onde nos informou que estava recorrendo judicialmente da decisão do INSS, a qual tinha dado o resultado de Indeferimento. 
+01/05/2023 - O funcionário enviou via e-mail o resultado da perícia constando como Deferido por tempo Indeterminado. """
+100-97918;Service Request;Pending;12/09/2025;BRITO DA CRUZ,LUCELIA;COP-RH-HUB;11;AFASTAMENTO_UNIDADE BRASILIA - MARCIO FERREIRA DA SILVA;"""10/03/2014 - Admissão;
+10/04/2017 - funcionário apresentou um atestado de 90 dias devido a forte dores no ombro e limitação funcional do braço. Conforme relatório médico, foi constatado Tendinopatia do Supraespinhas e Bicipital com Alterações Degenerativas. Funcionário foi submetido a fisioterapia de modo continuo e longo prazo, afastado por tempo indeterminado;
+25/04/2017 - funcionário afastou-se pelo INSS; 
+06/12/2018 - funcionário retornou ao serviço, porém voltou a sentir fortes dores no ombro e afastou-se novamente;
+13/03/2019 - funcionário retornou ao serviço, novamente voltou a sentir fortes dores no ombro;
+18/03/2019 - funcionário afastou novamente e encontra-se afastado até o momento;
+02/04/2019 - funcionário teve seu benefício foi negado pelo INSS, recorreu e conseguiu receber pela justiça;
+Em conversa com o funcionário por telefone no dia 02/10/2022, ele passou por uma cirurgia nos tendões, mas ainda continua com dores no ombro e limitação funcional do braço.
+Conforme avaliação médica os funcionário precisará passar por outra cirurgia, sem previsão de retorno e afirmou que não consegue voltar para exercer a mesma função.                                                                                                22/07/2021 - Foi reconhecido o direito de prorrogação do benefício. O funcionário foi encaminhado ao Serviço de Reabilitação Profissional do INSS. Sem previsão de retorno"
+100-97626;Service Request;Active;09/09/2025;ROMMEL SOARES DO AMARAL BRASILEIRO,FABIO;COP-RH-HUB;14;"Afastamento ARTHUR CARDOSO DE OLIVEIRA - 117173, CO CANOAS.
+
+Confeccionar DUT.
+
+Orientar colaborador em relação ao afastamento.";"Afastamento ARTHUR CARDOSO DE OLIVEIRA - 117173, CO CANOAS.
+
+Confeccionar DUT .
+
+Orientar colaborador em relação ao afastamento."
+100-98039;Service Request;Active;15/09/2025;ROMMEL SOARES DO AMARAL BRASILEIRO,FABIO;COP-RH-HUB;8;"Solicitação FALE CONOSCO
+
+Dados do Colaborador 
+NOME DO COLABORADOR: JORGE VALDIR CORREIA DA SILVA 
+CPF: 22845950063 
+PERÍODO TRABALHADO: 19/03/1981 a 10/10/1981 
+
+Documentos Solicitados: - LTCAT - Laudo Técnico das Condições Ambientais do Trabalho - PPP - Perfil Profissiográfico Previdenciário.
+
+Reiteramos a necessidade de retorno urgente para que possamos dar prosseguimento ao requerimento do colaborador em questão.";"Solicitação FALE CONOSCO
+
+Dados do Colaborador 
+NOME DO COLABORADOR: JORGE VALDIR CORREIA DA SILVA 
+CPF: 22845950063 
+PERÍODO TRABALHADO: 19/03/1981 a 10/10/1981 
+
+Documentos Solicitados: - LTCAT - Laudo Técnico das Condições Ambientais do Trabalho - PPP - Perfil Profissiográfico Previdenciário.
+
+Reiteramos a necessidade de retorno urgente para que possamos dar prosseguimento ao requerimento do colaborador em questão."
+100-98274;Service Request;Resolved-Validation;16/09/2025;ROMMEL SOARES DO AMARAL BRASILEIRO,FABIO;COP-RH-HUB;7;Solicitação de PPP para entrada em aposentadoria - Colaborador Osvaldir Ferreira Mosso;Colaborador informou ter solicitado em Julho ao RH presencialmente, porém, ainda não recebeu o documento em mãos,  deste modo, solicito através desse chamado a verificação da emissão do PPP, Colaborador Osvaldir Ferreira Mosso, caso não localizem, refaço o pedido para emissão do documento para que ele possa dar entrada em aposentadoria.
+100-95460;Service Request;Active;18/08/2025;ROMMEL SOARES DO AMARAL BRASILEIRO,FABIO;COP-RH-HUB;36;"Afastamento auxilio doença - CO CANOAS 
+Rodrigo da Luz Alexandre 117223.";Colaborador está internado e teve seu ultimo dia de trabalho em 14/07/2025.
+100-98500;Service Request;Active;17/09/2025;ROMMEL SOARES DO AMARAL BRASILEIRO,FABIO;COP-RH-HUB;6;"Ex-colaboradora solicitou o PPP 
+
+FABIANA CRISTINA SUZIGAN PIRES 
+TELEFONE: 19 98128-4589
+EMAIL: suziganp@gmail.com";"Ex-colaboradora solicitou o PPP 
+
+FABIANA CRISTINA SUZIGAN PIRES 
+TELEFONE: 19 98128-4589
+EMAIL: suziganp@gmail.com"
+100-91266;Service Request;Active;09/07/2025;ROMMEL SOARES DO AMARAL BRASILEIRO,FABIO;COP-RH-ADMPESSOAL;76;AFASTAMENTO_UNIDADE CANOAS;"Prezada
+
+Encaminhamento INSS - Tiago Silveira Pinto - 120627 - CO CANOAS
+
+Colaborador Tiago Silveira Pinto, encontra-se afastado, foi indicado por Dr. Marcelo, a realização de uma avaliação do médico do trabalho na unidade. Favor agendar com o colaborador, a avaliação para o dia 10/07/25 na unidade.
+
+Segue em anexo histórico do afastamento"
+100-91563;Service Request;Active;11/07/2025;ROMMEL SOARES DO AMARAL BRASILEIRO,FABIO;COP-RH-ADMPESSOAL;74;AFASTAMENTO UNIDADE: CO CANOAS;"ENCAMINHAMENTO INSS – CANOAS – Rosivaldo Brito – 780096
+
+colaborador encontra-se afastado, realizou nova perícia no INSS, está em fase de ANALISE DOCUMENTAL.
+Em 10/07/25, em contato com o mesmo  informado que ainda não saiu o resultado. Favor, acompanhar.
+
+Segue em anexo histórico do afastamento"
+100-93469;Service Request;Active;29/07/2025;ROMMEL SOARES DO AMARAL BRASILEIRO,FABIO;COP-RH-ADMPESSOAL;56;AFASTAMENTO:  CANOAS - Henrique Batista Moraes Fortes –118876;"ENCAMINHAMENTO AO INSS – CO CANOAS – Henrique Batista Moraes Fortes  – 118876.
+
+Colaborador apresentou atestado médico de 90 dias, no dia 22/07/25, Dr Marcelo/Medico do trabalho deu de ""Acordo"" para prosseguir com agendamento de pericia junto o INSS, baseados nos atestados relacionados abaixo:
+
+22/07/2025 - 90 dias - M17(gonartrose), M23 (transtornos internos do joelho)
+04/07/2025 - 13 dias - M23 (transtornos internos do joelho)
+16/06/2025 - 1 dia - M23 (transtornos internos do joelho)
+
+Orientações: 
+
+1) FAZER DUT PARA ENVIAR A EMPRESA EXPERT AGENDAR PERICIA.
+
+2) ORIENTAR COLABORADOR SOBRE SEU AFASTAMENTO,  E ENVIO DE DOCUMENTAÇÃO PARA O INSS, APOS O RETORNO DE EXPERT.
+
+3) ORIENTAR COLABORADOR QUANTO A SOLICITAÇÃO DE ANTECIPAÇÃO DE AUXILIO DOENÇA.
+
+Segue em anexo histórico de afastamento."
+100-97977;Service Request;Resolved-Validation;13/09/2025;ROMMEL SOARES DO AMARAL BRASILEIRO,FABIO;COP-RH-HUB;10;PPP - Ex colaboradora - Janete Aparecida Vilela;A ex colaboradora Janete Aparecida Vilela informou que solicitou PPP em Julho, antes do seu desligamento, ocorrido em 11/08. Informou que está precisando com urgência e questiona o prazo para entrega.
+100-94699;Service Request;Active;11/08/2025;ROMMEL SOARES DO AMARAL BRASILEIRO,FABIO;COP-RH-HUB;43;AFASTAMENTO: CO CANOAS- EDERSON ANDREI CRUZ CONCEIÇÃO-118875;"ENCAMINHAMENTO INSS – CO CANOAS – Ederson Andrei Cruz da Conceição – 118875.
+
+Colaborador apresentou atestado em 04/08/25, de 60 dias, o mesmo já se encontra afastado conforme registro em sistema. 
+Favor, providenciar, o envio da DUT à Expert para agendamento da perícia. 
+
+
+?? Orientações sobre Antecipação do Auxílio-Doença.
+
+? Verificação de Chamado
+Certifiquem-se de que o chamado foi devidamente aberto no Service Aid para registro e acompanhamento do afastamento;
+
+Antecipação do Auxílio-Doença
+Conforme previsto na Convenção Coletiva de Trabalho (CCT), a empresa poderá realizar a antecipação do auxílio-doença. Para isso, é imprescindível que o colaborador assine o Termo de Antecipação e Devolução do Auxílio-Doença;
+
+•	O colaborador deverá manter a empresa informada sobre a concessão do benefício previdenciário, a fim de que possamos cessar as antecipações do auxílio-doença.
+Ressaltamos que, conforme a CCT, não é permitido o recebimento simultâneo do benefício concedido pelo INSS e da antecipação realizada pela empresa;
+
+? Prazo para Envio do Termo
+O prazo para envio do termo permanece até o dia 17 de cada mês; 
+
+?? Limite de Antecipações
+Reforçamos que, conforme a CCT, as antecipações estão limitadas a 180 dias (cerca de 6 a 7 parcelas), até que o INSS inicie o pagamento do benefício.  Após a concessão, as antecipações serão automaticamente suspensas.
+
+
+Segue em anexo histórico do afastamento."
+100-91605;Service Request;Active;11/07/2025;ROMMEL SOARES DO AMARAL BRASILEIRO,FABIO;COP-RH-ADMPESSOAL;74;AFASTAMENTO UNIDADE: CO CANOAS;"ENCAMINHAMENTO INSS – CO CANOAS – Rogerio Camboim Da Silva – 50817
+
+Colaborador encontra-se afastado, beneficio concedido de 23/04/2025 até 30/09/2025
+
+
+Favor, acompanhar.
+
+Segue em anexo histórico do afastamento"
+100-91617;Service Request;Active;11/07/2025;ROMMEL SOARES DO AMARAL BRASILEIRO,FABIO;COP-RH-ADMPESSOAL;74;AFASTAMENTO UNIDADE: CO CANOAS;"ENCAMINHAMENTO AO INSS - CO CANOAS  - Alessandro dos Santos  - 119030
+
+Colaborador encontra-se afastado, beneficio cessa em 30/07/2025.
+
+Favor, acompanhar se o mesmo vai retornar ao trabalho ou permanece afastado.
+
+Segue em anexo histórico do afastamento"
+100-91619;Service Request;Active;11/07/2025;ROMMEL SOARES DO AMARAL BRASILEIRO,FABIO;COP-RH-ADMPESSOAL;74;AFASTAMENTO UNIDADE: CO CANOAS;"ENCAMINHAMENTO AO INSS - CO CANOAS  - RANS LOPES  - 119077
+
+Colaborador encontra-se afastado, beneficio cessa em 25/08/2025.
+
+Favor, acompanhar se o mesmo vai retornar ao trabalho ou permanece afastado.
+
+Segue em anexo histórico do afastamento"
+100-92121;Service Request;Active;16/07/2025;ROMMEL SOARES DO AMARAL BRASILEIRO,FABIO;COP-RH-ADMPESSOAL;69;AFASTAMENTO UNIDADE: CO CANOAS;"Afastamento prorrogado - DAVI PEREIRA GOULART
+
+Colaborador encontra-se afastado  seu  benefício B31 - Auxílio Por Incapacidade Temporária do colaborador cessa em 31/07/2025.
+
+Recomendamos que seja realizado o exame médico de retorno no primeiro dia útil após a cessação.
+
+Atenção:
+No caso de INAPTO no ERT solicitamos que nos comuniquem para programarmos o agendamento de uma Nova Perícia.
+
+Segue em anexo histórico do afastamento."
+100-91306;Service Request;Active;09/07/2025;ROMMEL SOARES DO AMARAL BRASILEIRO,FABIO;COP-RH-ADMPESSOAL;76;AFASTAMENTO UNIDADE: CO CANOAS;"ENCAMINHAMENTO INSS – CO CANOAS– WAGNER LEPICH DE OLIVEIRA
+
+Colaborador encontra-se afastado, realizou pericia em 08/07/2025. Colaborador ainda não confirmou se realizou a pericia.
+
+
+Há há histórico do afastamento junto a HUB.
+
+Favor, acompanhar retorno ao trabalho ou permanecia no afastamento."
+100-95490;Service Request;Resolved-Validation;18/08/2025;ROMMEL SOARES DO AMARAL BRASILEIRO,FABIO;COP-RH-HUB;36;"Solicitação de LTCAT , a solicitação foi realizada através do canal fale conosco da Companhia.
+
+No e-mail anexo contém a solicitação.";"Solicitação de LTCAT , a solicitação foi realizada através do canal fale conosco da Companhia.
+
+No e-mail anexo contém a solicitação.
+
+
+Boa tarde,
+
+Segue informações solicitadas (CTPS digital, cópia da CNH com CPF, extrato CNIS, procuração e ato ordinatório que dispensa a necessidade de outorga).
+
+Encaminho também o PPP já fornecido pela empresa e ressalto que a presente solicitação é para que a empresa disponibilize os laudos técnicos que embasaram o preenchimento do PPP anexo, conforme constante ao final do PPP: ""Foram retiradas do PPRA dos anos de 1998, 2003 e 2004 elaborados no Depósito de Blumenau pelos profissionais citados acima.""
+
+Não possuindo LTCAT referente aos períodos laborados, favor confeccionar o DSS 8030, SB 40 e/ou PPP - Perfil Profissiográfico Previdenciário com base no PRIMEIRO LAUDO existente para o setor e cargo ocupado, bem como fornecer cópia do mesmo.
+
+Estamos em contato com a empresa desde fevereiro deste ano sem retorno da empresa, portanto peço a gentileza que o setor responsável nos retorne o quanto antes.
+
+Atenciosamente,
+Hub de Atendimento de RH"
+100-98788;Service Request;Pending;21/09/2025;ROMMEL SOARES DO AMARAL BRASILEIRO,FABIO;COP-RH-HUB;2;Mudança de escala.;"Em virtude do treinamento de Brigadistas de Emergência, solicito, exclusivamente no dia 20/09/2025, a mudança de escala dos seguintes colaboradores:
+
+
+* ROBERIO GOMES DOS SANTOS, Matrícula: 100642, da escala atual 749 (SEG SEXT 07 12301400 16 SB 7 15) para a escala 604 (1040 1400 1500 1900 s1040 1900).
+
+
+* ROBERVAL DOS SANTOS SILVA, Matrícula: 730083, da escala atual 604 (1040 1400 1500 1900 s1040 1900) para a escala 749 (SEG SEXT 07 12301400 16 SB 7 15).
+
+
+* AMILTON JOSE SILVA DA PURIFICACAO, Matrícula: 107569, da escala atual 553 (0430 0900 1000 1250 Sab 0430 1250) para a escala 749 (SEG SEXT 07 12301400 16 SB 7 15). 
+NOTA: Acrescer 01 hora extra na antecipação da entrada para às 06:00h, para liberação da entrada de veículos no Centro Operativo.
+
+
+* EVELYN DUARTE DE CERQUEIRA, Matrícula: 730135, da escala atual 559 (0600 1100 1200 1420 sab 0600 1420) para a escala 553 (0430 0900 1000 1250 Sab 0430 1250)."
+100-93453;Service Request;Pending;29/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;56;Afastamento FLAVIO VIEIRA DO NASCIMENTO - 118968;"Acompanhar afastamento:
+
+
+Enviado para comunicação ao colaborador Dut enviado - Beneficio Inss ate 21/08/25"
+100-91927;Service Request;Pending;15/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;70;Afastamento LUCIANO FERREIRA DO NASCIMENTO - 112650 - Suape;"Aso de Ret Trab - 12/06 - guia no email  - novo atestado de 90 dias - ate 07/09/25 e requerimento de nova pericia. Tem guia de exame emitida pela Juliana Leão no Soc.
+Tel 81-9971-3849.
+
+Envio de carta de antecipação de auxilio para julho-25"
+100-91194;Service Request;Pending;08/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;77;Afastamento Bruno Messias da Silva - Suape;"Acompanhar processo de afastamento:
+Dut orientações enviado  email: brunomessias12042019@gmail.com (81) 995912612. 
+Ligar para esposa - Josi 81 99654-6704
+Em 04/07/2025 - A perícia do colaborador: Bruno Messias Da Silva ?foi realizada e finalizada como análise documental.
+
+O n° do requerimento é: 1615012063."
+100-93373;Service Request;Pending;29/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;56;Afastamento ALISON QUEIROZ DE SOUZA TORRES - 113405 - CO Suape;"Acompanhar Afastamento:
+
+O benefício B31 - Auxílio Por Incapacidade Temporária Previdenciária do colaborador ALISON QUEIROZ DE SOUZA TORRES cessa em 07/08/2025.
+
+Guia de Exame de Retorno ao Trabalho emitida no Soc pela Juliana Leão."
+100-93386;Service Request;Pending;29/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;56;Afastamento MARCIA REGINA DE SOUZA VIANA - CO Suape;"Acompanhar afastamento
+
+Email: marciaviana1717@gmail.com / 81-99961-3081 -DUT enviado - Em analise, 
+Pericia agendada para 03/11 15:40"
+100-93398;Service Request;Pending;29/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;56;Afastamento MELQUIADES SILVA DO NASCIMENTO - 112796 - CO Suape;"Acompanhar afastamento 
+
+27/05- vai fazer novo agendamente ou vai pra justiça - Sem nova solicitação.
+
+Tem atestado ate 13/08/2025"
+100-93463;Service Request;Pending;29/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;56;Afastamento SERGIO LUIZ MELO DA SILVA - 116015 - CO Suape;"Acompanhar afastamento
+
+""sergioluiz99@hotmail.com - ligar para saber o resultado da pericia -
+ pericia presencial agendada para 26/08/25"""
+100-93575;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento WELLINGTON HERCULANO DE SANTANA 110912;"Acompanhar afastamento
+
+Atestado de 180 dias - ate 24/08/2025"
+100-92330;Service Request;Pending;17/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;68;Afastamento Regilvan De Oliveira Mariano - 115968 - Suape;"Acompanhar afastamento:
+
+Fazer DUT conforme atestado 
+
+15/07/2025 - 90 dias - M758 (Outras lesões do ombro)"
+100-93444;Service Request;Pending;29/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;56;Afastamento ALVARO AUGUSTO DE OLIVEIRA - 118845 - CO Suape;"Acompanhar afastamento
+
+Aso de Ret Trab - 12/06 - no sistema SOC
+- Ligar - 81 98700-3172  - Fez nova cirurgia
+tem pericia amanha e vai colocar novo atestado - falei 11/06 - Atestado de 120 dias ate 08/10/2025"
+100-93446;Service Request;Pending;29/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;56;Afastamento ASSIS GOMES DA SILVA - 112649 - CO Suape;"Acompanhar afastamento
+
+beneficio concedido COMO b31 ate 30/10/2025"
+100-93448;Service Request;Pending;29/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;56;Afastamento CLEYBER BEZERRA DOS SANTOS - 117519 - CO Suape;"Acompanhar afastamento
+
+Entrar em contato com o colaborador e solicitar o envio do atestado, bem como verificar a falta de 
+retorno da Kelle em todo período solicitado anterior ao HUB. Tem Atesado ate 14/09/25"
+100-93517;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento ALEXANDRE VARZEA BORGES - 750051 - CO Suape;Atualizar afastamento
+100-93522;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento ANTONIO ODILON JOSE - 750026 - CO Suape;Atualizar o afastamento
+100-93524;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento DOMINGOS DIAS DA SILVA 750003 - CO Suape;Atualizar afastamento
+100-93525;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento ELIAS JOAQUIM DE SANTANA - 102000071 - DA Ipojuca;Atualizar afastamento
+100-93527;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento FABIO RIBEIRO DOS SANTOS - 102000327 - CO Suape;"Atualizar o afastamento 
+
+ Atestado de 60 dias -  ate 18/06"
+100-93528;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento GLEYDSON DA SILVA - 111312 - CO Suape;Atualizar afastamento
+100-93529;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento ISAAC NUNES DA SILVA 102000018 - DA Ipojuca;Atualizar afastamento
+100-93530;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento JACILENE COSMO DA SILVA 700043 - CO Ipojuca;Atualizar afastamento
+100-93532;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento JOSE FERNANDO FERREIRA - 115482 - CO Suape;Atualizar afastamento
+100-93533;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento JUDAS TADEU FERREIRA DA SILVA 111018 - CO Suape;Atestado de 120 dias - ate 16/10/2025
+100-93543;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento KAIO DE SOUZA MONTEIRO 115767 - CO Suape;Atualizar afastamento
+100-93548;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento LUIZ CARLOS DA SILVA 102000061 - CO Suape;Atualizar agastamento
+100-93549;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento LUIZ MONTENEGRO NETO - 700086 - CO Suape;"Acompanhar afastamento 
+
+Atestado de 365 dias - ate 01/11/2025"
+100-93550;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento MARCOS PAULO DA SILVA 111313 - CO Suape;Atualizar afastamento
+100-93552;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;afastamento MAURICIO JOSE DA SILVA - 750048 - CO Suape;Atualizar afastamento
+100-93558;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento MIGUEL FELINTO CAVALCANTI - 710107 - CO Suape;Atualizar afastamento
+100-93560;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento OSCAR JOSE DE SOUZA MONTEIRO ROSA FILHO - 106060 - CO Suape;Atualizar afastamento
+100-93564;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento RAPHAEL PACHECO SERAFIM 112088 - CO Suape;Atualizar afastamento
+100-93566;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento ROMILDO OLIVEIRA DE SOUZA JUNIOR 102000266 - CO Suape;"Atualizar o afastamento - 
+
+Atestado de 60 dias -  ate 28/05"
+100-93568;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento RONALDO RIBEIRO DO NASCIMENTO 750114 - Suape;Atualizar afastamento
+100-93569;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento SIDNEI SOARES DE OLIVEIRA 112488 - CO Suape;Atualizar afastamento
+100-93572;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento SILVIO DE SOUZA LIMA 111206 - CO Suape;Atualizar afastamento
+100-93573;Service Request;Pending;30/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;55;Afastamento WAGNER VITOR NASCIMENTO DA SILVA 115631;Atualizar afastamento
+100-93454;Service Request;Pending;29/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;56;Afastamento HALAMIR JOAQUIM DOS SANTOS - 750115 - CO Suape;"Acompanhar Afastamento
+
+Beneficio Inss ate 02/09/25"
+100-93456;Service Request;Pending;29/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;56;Afastamento HELDER JOSE DOS SANTOS -113074 - Suape;"Acompanhar afastamento
+
+Ja pediu prorrogação, vai fazer nova cirurgia, 
+esta fazendo o pre cirurgico. Pericia em 11/09/2025"
+100-93458;Service Request;Pending;29/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;56;Afastamento LUCIAN HELLAN BATISTA CORDEIRO - 112437 - Suape;"Acompanhar afastamento
+
+Exame de Retorno ao trabalho dia 13/07 no email - (81) 992236745"
+100-93459;Service Request;Pending;29/07/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;56;Afastamento MARCIO BATISTA DA COSTA - 102000396 - CO Suape;"Acompanhar afastamento
+
+Beneficio cessou 20/05, está em processo judicial"
+100-98755;Service Request;Pending;19/09/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-HUB;4;"Afastamento do colaborador ALEXANDRE PINTO DO NASCIMENTO - 111121, unidade CO Suape.
+
+Colaborador reintegrado em 05.09.2025 e já afastado pelo INSS.
+
+Atestado de 90 dias a partir de 12.09.2025.
+
+Solicitou a prorrogação do benefício e está no aguardo da decisão.";"Afastamento do colaborador ALEXANDRE PINTO DO NASCIMENTO - 111121, unidade CO Suape.
+
+Colaborador reintegrado em 05.09.2025 e já afastado pelo INSS.
+
+Atestado de 90 dias a partir de 12.09.2025.
+
+Solicitou a prorrogação do benefício e está no aguardo da decisão."
+100-98732;Service Request;Active;19/09/2025;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-HUB;4;Abonar dias de atestado médico.;"Conforme informações abaixo, o colaborador inseriu seu atestado na plataforma com atraso devido o mesmo encontrar-se internado na UTI do hospital e só recebeu o atestado ontem ao receber alta do hospital.
+
+Dados dos colaborador:
+Jose Edson Moreira Da Silva
+Tipo
+1.Atestado Médico/Odontológico
+Local
+Rede D'or São Luiz Hospital E Maternidade Brasil - Santo André
+CID
+****
+Atendente
+Leandro Gouveia Dos Santos
+Registro
+CRM: 126281/SP
+Médico (CRM) (Ativo)
+Data inicial
+06/09/2025
+Data de retorno
+06/10/2025
+Duração
+30 dias
+Situação
+--"
+100-90695;Service Request;Pending;03/07/2025;SALES SANTOS FERREIRA,ELACI;COP-RH-ADMPESSOAL;82;Solicitação de PPP para ex funcionário Luciano Lima, 103928. CO Natal;Solicitação de ex funcionário
+100-92611;Service Request;Active;21/07/2025;SALES SANTOS FERREIRA,ELACI;COP-RH-ADMPESSOAL;64;Solicitação do PPP;Por favor enviar o PPP, para que possa enviar para o Advogado
+100-93895;Service Request;Active;04/08/2025;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;50;Solicito PPP do ex-colaborador Carlos Alberto Moreira Lopes, a solicitação foi realizada através do canal fale conosco da Companhia.;"Solicito PPP do ex-colaborador Carlos Alberto Moreira Lopes, a solicitação foi realizada através do canal fale conosco da Companhia.
+
+Segue documentação necessária para confecção do PPP."
+100-92033;Service Request;Active;15/07/2025;SALES SANTOS FERREIRA,ELACI;COP-RH-ADMPESSOAL;70;"Criação de PPP para o ex colaborador JOÃO CARLOS DOS SANTOS (CPF: 123.870.105-68) conforme doc. anexo.
+Existe uma notificação do advogado que não foi possível anexar no pedido, por gentileza entrar em contato para que eu possa envia-la.";"Criação de PPP para o ex colaborador JOÃO CARLOS DOS SANTOS (CPF: 123.870.105-68) conforme doc. anexo.
+Existe uma notificação do advogado que não foi possível anexar no pedido, por gentileza entrar em contato para que eu possa envia-la."
+100-92274;Service Request;Active;17/07/2025;SALES SANTOS FERREIRA,ELACI;COP-RH-ADMPESSOAL;68;Solicitação PPP;"Gentileza emitir documento PPP para contagem de tempo de trabalho meu e mail:
+
+janete.vilela@copaenergia.com.br"
+100-90953;Service Request;Active;07/07/2025;SALES SANTOS FERREIRA,ELACI;COP-RH-ADMPESSOAL;78;"Solicito PPP do ex-colaborador RICARDO VALDECIR RODRIGUES CORREA, a solicitação foi realizada através do canal fale conosco da Companhia.
+
+Segue documentação necessária para confecção do PPP.";Solicito PPP do ex-colaborador RICARDO VALDECIR RODRIGUES CORREA, a solicitação foi realizada através do canal fale conosco da Companhia.
+100-92188;Service Request;Active;16/07/2025;SALES SANTOS FERREIRA,ELACI;COP-RH-ADMPESSOAL;69;Solicitação de PPP - João Carlos dos Santos - C.O. Campo Grande;"Solicitação realizada pela central de atendimento Fale Conosco Liquigas.
+
+PPP - João Carlos dos Santos - C.O. Campo Grande"
+100-94285;Service Request;Active;06/08/2025;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;48;Solicitação de PPP para Processo Trabalhista do demitido Amilton Pereira da Silva, demissão em Julho/2023.;"Solicitação de PPP para Processo Trabalhista do demitido Amilton Pereira da Silva (Araucária), demissão em Julho/2023.
+
+Verificado que na época não foi feito o PPP.
+
+Por gentileza enviar no email:
+suzana.vieira@copaenergia.com.br"
+100-95531;Service Request;Active;19/08/2025;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;36;PPP;Solicitar PPP para aposentadoria
+100-95135;Service Request;Active;15/08/2025;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;39;"Bom dia!
+Gostaria que me envia-se o ppp para meu e-mail";"Bom dia!
+Gostaria de que me envia-se o ppp para meu e-mail"
+100-97401;Service Request;Resolved-Validation;08/09/2025;DE BARROS FERREIRA AMADOR,JANAINA;COP-RH-ADMPESSOAL;15;PPP DEMITIDA - 100449 - MARIA ANGELICA DA ROCHA;PPP demissional de 2024 não emitido. Anexo e-mail de solicitação. Enviado ao QSMS em 08/09/2025 para inclusão dos registros ambientais
+100-96316;Service Request;Pending;27/08/2025;DE BARROS FERREIRA AMADOR,JANAINA;COP-RH-ADMPESSOAL;27;"AFASTAMENTO - 104950
+LILIAN CASSIANO - MATRIZ";Afastamento desde 06/2025. Perícia em 05/09/2025 - INSS reagendou pericia para o dia 24/10/2025 às 13:30.
+100-96333;Service Request;Pending;27/08/2025;DE BARROS FERREIRA AMADOR,JANAINA;COP-RH-ADMPESSOAL;27;AFASTAMENTO - 120955 - WALCIRLEY PAULO JERONIMO - MATRIZ;"Data da cessação do benefício: 31/10/2025.
+Entrar em contato em 15/10/2025 para verificar se o colaborador será liberado pelo médico assistente"
+100-93257;Service Request;Pending;28/07/2025;DE BARROS FERREIRA AMADOR,JANAINA;COP-RH-ADMPESSOAL;57;"Colaborador (A) ativo no INSS no beneficio b32 - aposentadoria por invalidez.  MAT: 980510??ADRIANA FELIPE SAMPAIO - Matriz  - ULTIMA ATUALIZAÇÃO EXPERT: 04/2025
+Acompanhamento de atualização de benefício: OK
+Consulta CPF: OK;
+Consulta CNF: OK";"Colaborador (A) ativo no INSS no beneficio b32 - aposentadoria por invalidez.  MAT: 980510??ADRIANA FELIPE SAMPAIO - ULTIMA ATUALIZAÇÃO EXPERT: 04/2025
+Acompanhamento de atualização de benefício: OK
+Consulta CPF: OK;
+Consulta CNF: OK"
+100-93260;Service Request;Pending;28/07/2025;DE BARROS FERREIRA AMADOR,JANAINA;COP-RH-ADMPESSOAL;57;"100800318	JOSE ANTONIO NETO - Aposentado por invalidez";"Colaborador (A) ativo no INSS no beneficio b32 - aposentadoria por invalidez.  MAT: 100800318	JOSE ANTONIO NETO - Matriz  - ULTIMA ATUALIZAÇÃO EXPERT: 04/2025
+Acompanhamento de atualização de benefício: OK
+Consulta CPF: OK;
+Consulta CNF: OK"
+100-93265;Service Request;Pending;28/07/2025;DE BARROS FERREIRA AMADOR,JANAINA;COP-RH-ADMPESSOAL;57;20472 - DECIO CAMPOS VARGAS - Auxilio Doença - B31;"Benefício foi concedido até 25/07/2026.
+Entrar em contato ao final de junho de 2026 para avaliarmos o retorno às atividades."
+100-93267;Service Request;Pending;28/07/2025;DE BARROS FERREIRA AMADOR,JANAINA;COP-RH-ADMPESSOAL;57;"108065	- EDISON RONALD RODRIGUES - Aposentado afastado";"108065	- EDISON RONALD RODRIGUES - Aposentado afastado - Acompanhamento do afastamento com Dr. Marcelo. Colaborador incluiu o último atestado em 05/2025 sem previsão de alta."
+100-93270;Service Request;Pending;28/07/2025;DE BARROS FERREIRA AMADOR,JANAINA;COP-RH-ADMPESSOAL;57;100800105 - JOSE SANTOS SILVA - Aposentado por invalidez;"Colaborador (A) ativo no INSS no beneficio b32 - aposentadoria por invalidez.  100800105 - JOSE SANTOS SILVA - ULTIMA ATUALIZAÇÃO EXPERT: 04/2025
+Acompanhamento de atualização de benefício: OK
+Consulta CPF: OK"
+100-93271;Service Request;Pending;28/07/2025;DE BARROS FERREIRA AMADOR,JANAINA;COP-RH-ADMPESSOAL;57;100800118- LUIS FERREIRA - Aposentado por invalidez;"Colaborador (A) ativo no INSS no beneficio b32 - aposentadoria por invalidez.  100800118- LUIS FERREIRA - Aposentado por invalidez
+ - ULTIMA ATUALIZAÇÃO EXPERT: 04/2025
+Acompanhamento de atualização de benefício: OK
+Consulta CPF: OK"
+100-93283;Service Request;Pending;28/07/2025;DE BARROS FERREIRA AMADOR,JANAINA;COP-RH-ADMPESSOAL;57;14494 - SIMONE LIMA LOURENCO - AUXILIO DOENÇA - B31;ÚLTIMO ATESTADO - DE 23/06/2025 A 20/10/2025
+100-98411;Service Request;Queued;17/09/2025;DE BARROS FERREIRA AMADOR,JANAINA;COP-RH-ADMPESSOAL;6;Contratação Jovem Aprendiz;"Solicito contratação de Jovem Aprendiz devido ao Jovem Aprendiz anterior ter solicitado seu desligamento da companhia.
+Aprendiz anterior Luan Souza Santos."
+100-97305;Service Request;Active;05/09/2025;PISCIOTTANO LEITAO,LEONARDO;COP-RH-TREINAMENTO&AV.DESEMPENHO;18;Solicitação de curso de curta duração;"Curso IT Business Partner (12h, online).             FIAP – Analista de Negócios Online
+Link do curso: https://www.fiap.com.br/shift/curso/business/analista-de-negocios-online/
+
+A próxima turma começa dia 20/09, serão 3 sábados seguidos (9h às 13h).
+
+Valor: R$ 990,00
+
+ Para os colaboradores:   Manuel L Ribeiro da Silva LIma,  Clóvis Carlos de Melo; Claudio Marcio Piscinato,  Roger Ferro, Marcelo Duran; Rita de Cassia Bassinelolo."
+100-97579;Service Request;Queued;09/09/2025;PISCIOTTANO LEITAO,LEONARDO;COP-RH-TREINAMENTO&AV.DESEMPENHO;14;Antecipação da quitação da Bolsa de Estudos;"Estou concluindo o MBA em Engenharia de Processos, contudo, ainda restam 11 parcelas para quitação do débito com a instituição que totaliza R$ 1.766,60.
+
+Em negociação com a universidade, consegui um desconto de 5,13 % para realizar a antecipação das parcelas e a quitação deste saldo.
+
+Quero validar esta possibilidade, visto que através do programa de bolsas de estudos, parte desta mensalidade é ressarcida pela empresa."
+100-92770;Service Request;Pending;22/07/2025;GIMENES,IDALINA;COP-RH-ADMPESSOAL;63;Afastamento - CO Campo Grandre - MARCELO AUGUSTO DA ROCHA PEREIRA - 100101089;"Segue anexo histórico de afastamento do funcionário MARCELO AUGUSTO DA ROCHA PEREIRA - 100101089 - CO Campo Grande.
+
+O Funcionário encontra-se já afastado no sistema, e terá nova pericia em 04/11/2025"
+100-93046;Service Request;Pending;24/07/2025;GIMENES,IDALINA;COP-RH-ADMPESSOAL;61;Afastamento - CO Campo Grande - Carlos Roberto Silva Strogueia - 120810;"funcionário  Carlos Roberto Silva Strogueia - 120810
+
+Irá passar em pericia em 09/09/2025, segue anexo.
+
+Não foi possível anexar o histórico do e-mail por falha no sistema."
+100-93047;Service Request;Pending;24/07/2025;GIMENES,IDALINA;COP-RH-ADMPESSOAL;61;Afastamento - CO CAMPO GRANDE -Mario Sergio Muller - 100100730;"Segue anexo histórico de afastamento do funcionário Mario Sergio Muller - 100100730 
+
+cessação do beneficio em: 31/08/2025
+
+Agendar exame de retorno ao trabalho."
+100-93127;Service Request;Pending;25/07/2025;GIMENES,IDALINA;COP-RH-ADMPESSOAL;60;Afastamento - CO Campo Grande - NILTON APARECIDO DA SILVA DOS SANTOS 100101142;"Segue anexo histórico de afastamento.
+
+Pericia agendada para 18/09/2025"
+100-92880;Service Request;Pending;23/07/2025;GIMENES,IDALINA;COP-RH-ADMPESSOAL;62;Afastamento -  CO CAMPO GRANDE – Alex Silva Justino – 100101163;"Segue anexo e-mail com o histórico de afastamento do funcionário Alex Silva Justino – 100101163.
+
+A ultima atualização do caso foi em 10/07/2025, onde a expert enviou o e-mail informando que o funcionário havia realizado uma pericia e estava aguardando o resultado.
+
+No momento é acompanhar o resultado da pericia dele"
+100-92885;Service Request;Pending;23/07/2025;GIMENES,IDALINA;COP-RH-ADMPESSOAL;62;Afastamento - CO CAMPO GRANDE – Waldir Oliveira Campos – 100101150;"Segue anexo histórico de e-mail sobre o afastamento do funcionário Waldir Oliveira Campos – 100101150
+
+Ultima atualização do afastamento foi em 21/07/2025. A expert enviou o e-mail informando que o Auxílio por incapacidade temporária do colaborador Waldir Oliveira Campos foi concedido com cessação em 06/08/2025.
+
+Sendo assim, deverá agendar exame de retorno ao trabalho para o funcionário em 07/08/2025.
+
+Hoje, 5 de agosto, o colaborador entrou em contato conosco. Ele informou que tem uma consulta marcada com o médico amanhã 06/08 para saber se receberá autorização para voltar ao trabalho. Ele também comentou que ainda está fazendo sessões de fisioterapia e que continua sentindo dores."
+100-94806;Service Request;Pending;12/08/2025;GIMENES,IDALINA;COP-RH-HUB;42;Afastamento - CO Campo Grande -  IGOR THALES FERREIRA BARBERIZ – 100101182;"Segue anexo histórico de afastamento do colaborador  IGOR THALES FERREIRA BARBERIZ – 100101182
+
+O próprio colaborador solicitou perícia e o benefício está em análise.
+
+Favor emitir a carta DUT (24/07/2025) e enviar ao colaborador para incluir no meu INSS.
+
+Enviar para o colaborador o termo caso o mesmo queira receber a antecipação e quando receber de volta abrir um novo chamado para que a Jana faça a antecipação."
 300-130524;Incident;Queued;18/09/2025;HENRIQUE DE FREITAS,CAIO;COP-SAP-SDM-LOG;5;"Impressora: 172.31.169.232
 Não esta realizando impressões a partir do SAP de notas fiscais. 
 
@@ -444,50 +885,212 @@ Ordens que não subiram e foram faturadas manualmente:
 12951700
 12936582 
 12936521"
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
+100-98767;Service Request;Active;19/09/2025;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;4;HO por recomendação médica;"Somente para conhecimento.
+
+Por orientação médica, precisarei permanecer em home office por mais 3 semanas, conforme atestado e laudo médico em anexo.
+
+P.S.: Havia submetido o documento pela plataforma atestado.me, mas foi recusado. Por orientação da BP, estou encaminhando por este canal."
+100-92935;Service Request;Pending;23/07/2025;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-ADMPESSOAL;62;Afastamento WILLIAM GILIARDO MACHADO SIDES - Passo Fundo;"Beneficio incapacidade concedido - Acidente de trabalho.
+
+William (54) 9 9144-4010"
+100-92938;Service Request;Pending;23/07/2025;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-ADMPESSOAL;62;Afastamento LEANDRO SUSANA DIAS APOLINARIO - Passo fundo;02/06 -VAI AGENDAR NOVA PERICIA, ATESTADO NA PLATAFORAM 90 DIAS, ate 17/08
+100-92167;Service Request;Pending;16/07/2025;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-ADMPESSOAL;69;Afastamento Dieison Campos Ribeiro 117232 - Passo Fundo;"Status atualizado:
+
+Em contato com o INSS (Protocolo: 202590961584), fui informada de que o colaborador DIEISON DE CAMPOS RIBEIRO possui um benefício B31 - Auxílio Por Incapacidade Temporária Previdenciária implantado por via judicial, com data de cessação em 09/08/2025
+
+54 98122-3078"
+100-93018;Service Request;Pending;24/07/2025;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-ADMPESSOAL;61;AFASTAMENTO: GURUPI - HEMERSON PIRES DE FREITAS - 104972;"AFASTAMENTO: GURUPI - HEMERSON PIRES DE FREITAS - 104972
+
+Colaborador reintegrado em 10/08/2029, encontra-se afastado desde 26/02/2025.
+
+Realizou pericia em 07/07/205, a mesma encontra-se em está em análise.
+
+Em contato solicitando atualização do estado de saúde.
+
+Acompanhar 
+
+
+Histórico em anexo."
+100-91285;Service Request;Pending;09/07/2025;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-ADMPESSOAL;76;AFASTAMENTO UNIDADE: CO GOIANA - DIVINO CAMPOS;"ENCAMINHAMENTO AO INSS - CO GOIANIA - DIVINO CAMPOS FREITAS - 107339
+
+Colaborador encontra-se afastado, realizou nova pericia no INSS, está em fase de ANALISE DOCUMENTAL.
+
+Em 09/07/25, em contato com o mesmo fui informado que ainda não saiu o resultado. Favor, acompanhar.
+
+Segue em anexo histórico do afastamento"
+100-91290;Service Request;Pending;09/07/2025;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-ADMPESSOAL;76;AFASTAMENTO UNIDADE: CO GURUPI - ROGERIO DE ARAUJO;"Encaminhamento ao INSS - Rogerio De Araujo Lima/118922.
+
+Colaborador encontra-se afastado, foi encaminhado para fazer ASO de Retorno ao trabalho em 02/07/202, porém, médico do trabalho, solicitou uma avaliação psiquiatra e ortopédica. Na cidade do colaborador não tem atendimento psiquiátrico pelo plano de Saúde SEGUROS UMIMED, estamos aguardando, resposta a OI UNIMAX, quanto ao encaminhamento do colaborador ao especialista.
+
+Histórico do afastamento será encaminhado via e-mail, pois o arquivo é pesado e não aceitou anexar neste chamado."
+100-94396;Service Request;Pending;07/08/2025;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;47;Afastamento JONES BATISTA GONCALVES 119162 - CO Passo Fundo;"Atualizar afastamento:
+
+Data da cessação do benefício: 11/10/2025.
+
+
+Jones (54) 9 9431-2109"
+100-94397;Service Request;Pending;07/08/2025;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;47;Afastamento JORGE LUIZ DA ROSA 50126 - CO Passo Fundo;Atualizar Afastamento
+100-94398;Service Request;Pending;07/08/2025;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;47;Afastamento VALTER RODRIGO VIANA DE FREITAS 110685 - CO Passo Fundo;Atualizar afastamento
+100-98710;Service Request;Resolved-Validation;19/09/2025;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;4;Quero cadastra meu filho recém-nascido no plano.;Nome dele: Theo de Oliveira Costa.
+100-92331;Service Request;Pending;17/07/2025;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-ADMPESSOAL;68;Afastamento Antonio Eloi Hannecker - 100192 - Passo Fundo;"Acompanhar afastamento: 
+
+
+Antonio Eloi (11) 9 9117-1820
+
+Fazer DUT e orientar colaborador
+
+15/07/2025 - 90 dias - M751 (Síndrome do Manguito Rotador) 
+25/06/2025 - 1 dia - M751 (Síndrome do Manguito Rotador)
+16/06/2025 - 6 dias - M751 (Síndrome do Manguito Rotador)"
+100-92925;Service Request;Pending;23/07/2025;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-ADMPESSOAL;62;Afastamento ALESSANDRO GONCALVES DE OLIVEIRA - Passo Fundo;"Acompanhar:
+
+Afastado ate 24/06 - Guias emitidas email para 26/06/25 - Beneficio ate 09/09/2025
+
+Data de cessação do benefício: 10/12/2025.
+
+
+Laudo médico em 21/07/2025 de 180 dias.
+
+
+Alessandro (54) 9 9953-6099"
+100-94236;Service Request;Pending;06/08/2025;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;48;Afastamento EDILAR IVO BIZZON - 103010 - CO Passo Fundo;"Afastado desde 2021 - Telefone: 54 9 8120-2851
+
+Solicitei novos documentos do afastamento."
+100-94237;Service Request;Pending;06/08/2025;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;48;Afastamento EDINALDO ALVES DA SILVA - 117075 - CO Passo Fundo;"Acompanhar:
+Ultimo afastamento terminou em 06/07/2025 - Verificar condições de retorno"
+100-94239;Service Request;Pending;06/08/2025;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;48;Afastamento GIACOMO PIANA BAREA -119214 - CO Passo Fundo;Ultimo atestado de afastamento terminou em 29/11/24 - atualizar
+100-97804;Service Request;Pending;11/09/2025;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;12;Troca de Horário/Escala do colaborador Carlos Emanuel dos Santos Ornelas;"Em decorrência de padronização e atendimento a produção, solicito a troca de Horário/Escala do colaborador Carlos Emanuel dos Santos Ornelas - Unidade de Brasília.
+
+Obs: Informações da escala no anexo"
+100-98787;Service Request;Pending;21/09/2025;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;2;Informe de Casamento;segue certidão de casamento para atualizar o estado cívil de divorciado para casado e incluir minha cônjuge nos benefícios da empresa (convênio entre outros), e pedir abatimento de dias segundo a convenção coletiva
+100-92277;Service Request;Pending;17/07/2025;VIANA FERREIRA BRAGA,ROSELI;COP-RH-ADMPESSOAL;68;Afastamento RAFAEL DIAS - 111202 - Pelotas;"Acompanhar: 
+
+Não possui atestado na plataforma e sem atualização da expert."
+100-94535;Service Request;Active;08/08/2025;VIANA FERREIRA BRAGA,ROSELI;COP-RH-HUB;46;"Afastamento CO Barueri
+Ronaldo Lucena Barros – 14088";"Auxilio por incapacidade temporária do colaborador Ronaldo Lucena Barros – 14088.
+A perícia do colaborador Ronaldo Lucena Barros foi realizada e finalizada como análise documental.
+
+O n°.do requerimento é: 294165328.
+O DUT é 04/07/2025 e o 16º dia é 20/07/2025."
+100-94399;Service Request;Pending;07/08/2025;VIANA FERREIRA BRAGA,ROSELI;COP-RH-HUB;47;Afastamento Marcelo Aparecido Gomes Da Silva - 100401745 - CO Barueri;"Fazer Dut e Orientar Colaborador
+
+contatos: 11 99824-6629 - email: marcelosgomes.02.05@gmail.com"
+100-92361;Service Request;Pending;17/07/2025;VIANA FERREIRA BRAGA,ROSELI;COP-RH-HUB;68;Afastamento VALDEMAR LOPES GONCALVES - 11918 - Barueri;"Acompanhar Afastamento:
+
+Atestado no sistema de 120 dias ate 13/08/2025
+
+Não há atualização recente expert sobre o afastamento."
+100-92165;Service Request;Active;16/07/2025;VIANA FERREIRA BRAGA,ROSELI;COP-RH-ADMPESSOAL;69;Afastamento Justiniano Afonso Nunes - 13547 - Barueri;"Prezada, 
+
+Gentileza providenciar o Dut enviar para o colaborador, orientá-lo e expert.
+
+11-98190-5240 Maria Gabriela - filha - maria.gabriela_1995@hotmail.com
+
+Atestado:
+03/07/2025 - 20 dias - I64 (Acidente vascular cerebral, não especificado como hemorrágico ou isquêmico)"
+100-91975;Service Request;Pending;15/07/2025;VIANA FERREIRA BRAGA,ROSELI;COP-RH-ADMPESSOAL;70;Afastamento FABIANO BROSK SIQUEIRA - 14194 - Barueri;"Acompanhar afastamento
+Ultima atualização:
+
+Novo DUT e orientações enviada colaborador no dia 03/07. 
+comprovante de agendamento da pericia para dia 08/08/2025 às 09:20 hs
+Novo atestado ate 02/09/2025 - 11 99116-6360 -email: brosk_@hotmail.com"
+100-91980;Service Request;Pending;15/07/2025;VIANA FERREIRA BRAGA,ROSELI;COP-RH-HUB;70;Afastamento Francisco Lins De Albuquerque Neto - 100618 - Barueri;"Acompanhar afastamento.
+Ultima atualização:
+
+Colaborador informado sobre o processo de afastamento.
+
+ 11 96165 5082 - e-mail linsfrancisco102@gmail.com"
+100-91984;Service Request;Pending;15/07/2025;VIANA FERREIRA BRAGA,ROSELI;COP-RH-ADMPESSOAL;70;Afastamento GIULIANO REIS SILVA - 120995 - Barueri;"Acompanhar o afastamento:
+
+Ultima atualização:
+
+Em publicação do INSS verifiquei que o colaborador GIULIANO REIS SILVA tem uma perícia agendada para 28/07/2025 às 09h20 na AGÊNCIA DA PREVIDÊNCIA SOCIAL CARAPICUÍBA. Comprovante em anexo. 
+
+Ultimo 24/04/25 ate 23/07/2025 - 90 dias, vai voltar no medico dia 30/06, pedi para colocar na plataforma de atestados. - 11 95450-3280"
+100-92007;Service Request;Pending;15/07/2025;VIANA FERREIRA BRAGA,ROSELI;COP-RH-ADMPESSOAL;70;Afastamento LUCIANA DE BRITO CARVALHO - 14295 - Barueri;"Beneficio concedido ate 30/06/2025 - novo atestado ate 06/07.
+Sem novo atestado na plataforma. Verificar se vai voltar ou continuar no afastamento.
+Esta em processo judicial."
+100-91154;Service Request;Active;08/07/2025;VIANA FERREIRA BRAGA,ROSELI;COP-RH-ADMPESSOAL;77;AFASTAMEENTO ALEXANDRE DE PAULA DAS NEVES - PELOTAS;"Orientar o colaborador sobre o requerimento de afastamento aberto 1976813745. o colaborador que continua internado e a esposa Aline que esta tratando.
+Contato (53) 9 9201-4558 - email: alexandredepaula878@gmail.com - 
+
+A Dut já foi enviada no e-mail. Coletar assinatura no temo de antecipação do auxilio doença em anexo."
+100-95812;Service Request;Pending;20/08/2025;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;34;Afastamento - CO Duque de Caxias -  CLAUDIO LUIZ DOS SANTOS – 110080;"Segue anexo histórico de afastamento do colaborador  CLAUDIO LUIZ DOS SANTOS – 110080
+
+Perícia por análise documental.
+
+Favor emitir a carta DUT (11/08/2025) e enviar ao colaborador para incluir no meu INSS."
+100-95098;Service Request;Pending;15/08/2025;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;39;Afastamento - CO Duque de Caxias -  IVO JUNIO TAURINO BARBOSA – 120552;"Segue anexo histórico de afastamento de IVO JUNIO TAURINO BARBOSA – 120552.
+
+Perícia por análise documental.
+
+Segue anexo histórico de afastamento do colaborador.
+
+Favor emitir a carta DUT (23/07/2025) e enviar ao colaborador para incluir no meu INSS.
+
+Enviar para o colaborador o termo caso o mesmo queira receber a antecipação e quando receber de volta abrir um novo chamado para que a Jana faça a antecipação."
+100-96201;Service Request;Pending;26/08/2025;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;28;Afastamento - CO Duque de Caxias -  Gabriel Reis Serpa – 101500693;"Segue anexo histórico de afastamento do colaborador  Gabriel Reis Serpa – 101500693
+
+O próprio colaborador solicitou perícia, Requerimento: 1254815363.
+
+Favor emitir a carta DUT (12/08/2025) e enviar ao colaborador para incluir no meu INSS.
+
+Enviar para o colaborador o termo caso o mesmo queira receber a antecipação e quando receber de volta abrir um novo chamado para que a Jana faça a antecipação."
+100-97042;Service Request;Pending;03/09/2025;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;20;Afastamento - CO Duque de Caxias -  Jefferson Almeida Soares – 101500730;"Segue anexo histórico de afastamento do colaborador  Jefferson Almeida Soares – 101500730
+
+Perícia agendada para o dia 31/10/2025.
+
+Favor emitir a carta DUT (27/08/2025) e enviar ao colaborador para apresentar no dia da perícia.
+
+Enviar para o colaborador o termo caso o mesmo queira receber a antecipação e quando receber de volta abrir um novo chamado para que a Jana faça a antecipação."
+100-93266;Service Request;Pending;28/07/2025;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-ADMPESSOAL;57;Afastamento - CO Duque de Caxias - Marcos Vinicius Gramosa – 101500640;"Segue anexo histórico de afastamento do funcionário Marcos Vinicius Gramosa – 101500640
+
+
+Beneficio em analise, acompanhar com o funcionário"
+100-94103;Service Request;Pending;05/08/2025;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;49;Afastamento - CO Duque de Caxias - Claudio Luis Da Silva - 101500455;"Segue anexo histórico de afastamento de - Claudio Luis Da Silva - 101500455.
+
+Irá realizar nova pericia em 08/08/2025."
+100-94105;Service Request;Pending;05/08/2025;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;49;Afastamento - CO Duque de Caxias - JOSE RICARDO SILVA GOMES - 85068;"Segue anexo histórico de afastamento de JOSE RICARDO SILVA GOMES - 85068
+
+pericia indeferida já com ação judicial, tem um  laudo medico pedido afastamento indeterminado"
+100-94107;Service Request;Pending;05/08/2025;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;49;Afastamento - CO Duque de Caxias -  Gleison Gouveia Dos Santos – 118902;"Segue anexo histórico de afastamento de Gleison Gouveia Dos Santos – 118902.
+
+perícia presencial agendada para 18/08/2025 às 10h20"
+100-94108;Service Request;Pending;05/08/2025;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;49;Afastamento - DUQUE DE CAXIAS – Jonathan De Oliveira Feliciano – 121076;"Segue anexo histórico de afastamento de Jonathan De Oliveira Feliciano – 121076.
+
+Está com perícia agendada para o dia 11/09 às 08:40h na agência."
+100-94110;Service Request;Pending;05/08/2025;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;49;Afastamento - CO Duque de Caxias - ANDRE MARCELO PEREIRA VIEIRA - 101500490;"Segue anexo histórico de afastamento de ANDRE MARCELO PEREIRA VIEIRA - 101500490
+
+Benefício INSS concedido até o dia 29/11/2025."
+100-93819;Service Request;Pending;01/08/2025;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;53;Afastamento - CO Duque de Caxias - IAMARA DA ROSA ROCHA - 121309;"Segue anexo histórico de afastamento.
+
+Nesse caso a funcionária deveria retornar em 23/07/2025, porém havia uma pericia agendada, na qual foi identificada cancelamento pelo aplicativo Meu INSS.
+
+Tentei contato com a funcionária pelo numero que está no e-mail: 11959748971, mas a mesma não respondeu.
+
+Obs: o sistema de pesquisa do chamado não identificou o nome da funcionária: IAMARA DA ROSA ROCHA
+
+Precisamos entender qual o motivo do cancelamento e agendar o exame de retorno ao trabalho."
+100-93822;Service Request;Pending;01/08/2025;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;53;Afastamento - CO Duque de Caxias - Matheu S Cassiano Da Silva - 121230;"Segue anexo histórico de afastamento de Matheu S Cassiano Da Silva - 121230
+
+Ele irá realizar a pericia em 10/09/2025
+
+Enviei a informação da pericia para o funcionário pelo e-mail matheusaliceleticia300916@gmail.com
+Não foi encontrado numero de telefone para contato."
+100-93148;Service Request;Pending;25/07/2025;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-ADMPESSOAL;60;Afastamento - CO Duque de Caxias - CARLOS ALBERTO PONCIANO DE OLIVEIRA;"Segue histórico de afastamento de CARLOS ALBERTO PONCIANO DE OLIVEIRA
+
+Pericia agendada para 20/08/2025"
+100-94815;Service Request;Pending;12/08/2025;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;42;Afastamento - CO Duque de Caxias - HESLEY DE SOUZA GONZAGA - 101500622;"Segue anexo histórico de e-mail de afastamento de HESLEY DE SOUZA GONZAGA 
+
+O benefício do Hesley foi concedido até o dia 31/08/2025. Segue anexo comunicado de decisão."
+100-94518;Service Request;Pending;08/08/2025;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;46;Afastamento - CO Duque de Caxias - Daniel Nascimento De Medeiros – 121557;"DUT envida e funcionário informado.
+
+Fazer acompanhamento do resultado da pericia."
+100-94922;Service Request;Pending;13/08/2025;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;41;Afastamento - CO DUQUE DE CAXIAS – Rafael Afonso Leonardo – 110802;"Segue anexo histórico de afastamento de Rafael Afonso Leonardo – 110802
+
+Tem pericia agendada para o dia 09/09/2025.
+O funcionário foi informado pelo whatsapp n° (21) 96681-9307 
+
+Também já foi enviado o termo de solicitação de auxilio doença para que o funcionário preencha e nos envie."
 300-129208;Incident;Queued;01/09/2025;MOREIRA DOS SANTOS,JOSINALDO;COP-SAP-FRETES;22;"VIAGEM FOI FATURADA PARA FROTA/TRANSPORTADOR ERRADO...FOI FEITO O ESTORNO E O FATURAMENTO CORRETO (VEICULO/TRANSPOTADOR).
 NA SAÍDA PUXOU OS DADOS CORRETOS, MAIS NO RETORNO PUXOU DO FATURAMENTO ERRADO.";"F2849
 PAT SAIDA 1342319
@@ -495,12 +1098,12 @@ PAT RETORNO 1343191
 
 VIAGEM FOI FATURADA PARA FROTA/TRANSPORTADOR ERRADO...FOI FEITO O ESTORNO E O FATURAMENTO CORRETO (VEICULO/TRANSPOTADOR).
 NA SAÍDA PUXOU OS DADOS CORRETOS, MAIS NO RETORNO PUXOU DO FATURAMENTO ERRADO."
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
+100-97202;Service Request;Queued;04/09/2025;FERREIRA DIAS DA SILVA,JAKELINE;COP-RH-ADMPESSOAL;19;Solicito segunda via do crachá;Venho solicitar a emissão de um novo crachá, uma vez que o meu foi perdido. ao deixar o local, não percebi que minha mochila estava aberta, o que ocasionou a perda do mesmo.
+100-97571;Service Request;Queued;09/09/2025;FERREIRA DIAS DA SILVA,JAKELINE;COP-RH-ADMPESSOAL;14;Quero uma segunda vida do meu crachá por motivos de extravio.;Quero uma segunda via do meu crachá por motivo de extravio.
+100-97521;Service Request;Queued;08/09/2025;FERREIRA DIAS DA SILVA,JAKELINE;COP-RH-ADMPESSOAL;15;segunda via do meu crachá;Já faz um bom tempo que solicitei a segunda via do meu crachá e até hoje nada
+100-97118;Service Request;Queued;03/09/2025;FERREIRA DIAS DA SILVA,JAKELINE;COP-RH-ADMPESSOAL;20;Solicito envio de um cracha para a colaboradora MARIA CLARA BARRETO OLIVEIRA (matricula 120600) lotada em São José/SC.  A mesma já solicitou anteriormente, porem ainda sem retorno e devido a problemas no relogio de ponto com a digital, não teve acesso para marcação via cracha, devido a ausencia do mesmo;Solicito envio de um cracha para a colaboradora MARIA CLARA BARRETO OLIVEIRA (matricula 120600) lotada em São José/SC.  A mesma já solicitou anteriormente, porem ainda sem retorno e devido a problemas no relogio de ponto com a digital, não teve acesso para marcação via cracha, devido a ausencia do mesmo
+100-96992;Service Request;Queued;03/09/2025;FERREIRA DIAS DA SILVA,JAKELINE;COP-RH-ADMPESSOAL;20;Perda de cracha;Perdi meu cracha, preciso da emissão de um novo. CYNTHIA SANTOS GARRIDO MATRICULA 117182
+100-97854;Service Request;Queued;11/09/2025;FERREIRA DIAS DA SILVA,JAKELINE;COP-RH-ADMPESSOAL;12;Solicito a emissão da segunda via do cartão do colaborador Willian Machado Teixeira;Empregado relata dificuldade em fazer a solicitação e alega ter perdido a carteira onde constava o cartão.
 300-130565;Incident;Pending;18/09/2025;DE OLIVEIRA MANCO,TAMILIS;COP-SAP SD;5;Não permite fazer a ordem de venda pela ZRF;"Não permite fazer a ordem de venda pela ZRF
 
 RM: 367757
@@ -533,23 +1136,164 @@ código do transportador JVM 700252"
 sou da logistica e quando realizo o processo de faturamento no IDM não esta saindo os relatorio de ordem de carregamento , folha de rota  e romaneio de forma automatica, esse processo falicita muito a atividade.
 onde estou tendo que ir manualmente na transação ZLES0014 - ZLES0014  para realizar esse trabalho."
 100-98324;Service Request;Active;16/09/2025;HENRIQUE MELO DE OLIVEIRA,GUILHERME;COP-POWER-BI;7;Solicito a licença o Power BI, para atualização, acompanhamento dos dados Energizados;Solicito a licença o Power BI, para atualização, acompanhamento dos dados Energizados
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
+100-94662;Service Request;Active;11/08/2025;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;43;Solicito o relatório do meu PPP;Relatório PPP
+100-92927;Service Request;Active;23/07/2025;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-ADMPESSOAL;62;Afastamento EDSON CARLOS PEREIRA FREIRE - Montes Claros;"Acompanhar
+
+Colaborador em afastamento fazendo curso para recolocação de atividade."
+100-98015;Service Request;Active;14/09/2025;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;9;Chamado 100-91047  finalizado sem total atendimento. Falta LTCAT solicitada pelo funcionário.;"Peço apoio para o Chamado 100-91047  finalizado sem total atendimento. 
+Falta LTCAT solicitada pelo funcionário -  Fabiano Rodrigues - matrícula 13703; 
+O PPP foi enviado. 
+fone do funcionário: 14 99605-5409
+email: ""Fabiano Rodrigues"" <ffabiano.rod@gmail.com>
+Obs.: Ele solicitou a aposentadoria especial e necessita do documento para anexar à solicitação junto ao INSS."
+100-94284;Service Request;Pending;06/08/2025;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-ADMPESSOAL;48;Afastamento - CO. Natal - Francisco dos Santos Barbosa;"Segue histórico de e-mail de Francisco dos Santos Barbosa:
+
+FAZER ACOMPANHAMENTO :
+
+No momento, não consta nenhum agendamento presencial para perícia, e os documentos foram devidamente encaminhados ao INSS.
+Ressalto que, no ato da solicitação, o colaborador optou pelo benefício em caráter permanente. Dessa forma, durante a análise, o perito do INSS irá avaliar se o colaborador está apto para aposentadoria ou outro tipo de benefício."
+100-96039;Service Request;Active;22/08/2025;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;32;PPP Ex-colaborador: PEDRO AUGUSTO RODRIGUES VIEIRA;"Olá 
+
+Solicita PPP o ex-colaborador para fins de aposentadoria: PEDRO AUGUSTO RODRIGUES VIEIRA
+
+
+Solicitante:
+
+ANILDO IVO DA SILVA – SOCIEDADE INDIVIDUAL DE ADVOCACIA
+
+solicitacao@anildoadvogados.com.br
+
+Av. Guilherme Schell, 5304 – Canoas/RS
+
+Telefone: 51 30759200"
+100-92996;Service Request;Active;24/07/2025;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;61;Solicitação de PPP - ROMARIO ELIAS DE OLIVEIRA LOPES;"O ex-colaborador ROMARIO ELIAS DE OLIVEIRA LOPES solicita o PPP para fins de aposentadoria. 
+
+Telefone: 51 989586886"
+100-94229;Service Request;Active;06/08/2025;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;48;OBRIGAÇÃO DE FAZER: Reintegração ao trabalho - CICERO VIEIRA DE ALENCAR FILHO - 0016363-87.2024.5.16.0022;"OBRIGAÇÃO DE FAZER: Reintegração ao trabalho - CICERO VIEIRA DE ALENCAR FILHO - 0016363-87.2024.5.16.0022
+
+Os documentos de readmissão foram providenciados, porém o ASO está pendente e as devidas assinados da documentação. Colaborador foi notificado via telegramas para comparecer na clinica, para fazer ASO mas não compareceu. 
+
+Na Folha de Ponto Eletrônico, o mesmo está ativo.
+
+Estou aguardando  Jurídico responder como proceder."
+100-92712;Service Request;Pending;21/07/2025;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-ADMPESSOAL;64;AFASTAMENTO: JARDINOPOLIS;"ENCAMINHAMENTO INSS  CO JARDINOPOLIS  Vinicius Manoel Tolentino Santos -100700643
+
+Colaborador afastado desde 05/05/2025,  realizou pericia Documental em 11/07/2025.
+
+Status: Aguardando resultado de perícia do INSS.
+
+OBS: Já tem solic. antecipação de auxilio.
+
+Segue em anexo histórico do afastamento."
+100-92826;Service Request;Pending;22/07/2025;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-ADMPESSOAL;63;AFASTAMENTO: CO JARDINÓPOLIS -  MARCOS ANTONIO DE MIRANDA SANTOS - 100700559;"ENCAMINHAMENTO AO INSS - CO JARDINÓPOLIS -  MARCOS ANTONIO DE MIRANDA SANTOS - 100700559.
+
+Colaborador afastado desde 04/01/2006, ?foi realizada pericia documental em 07/2025, n° do requerimento é: 1501686559. 
+
+Colaborador está com um advogado para tentar se aposentar.
+
+09/07/25 - enviado DUT, e-mail da filha (nana-brito@outlook.com) 
+
+Status: ANALISE DOCUMENTAL
+
+Histórico do agastamento em anexo."
+100-92845;Service Request;Active;22/07/2025;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-ADMPESSOAL;63;AFASTAMENTO: SÃO LUÍS - RAIMUNDO NONATO MONTEIRO SOUZA_30390;"AFASTAMENTO: SÃO LUÍS - RAIMUNDO NONATO MONTEIRO SOUZA_30390
+
+Colaborador afastado desde 12/01/2022, 
+não compareceu à agência para realizar o processo de reabilitação profissional previdenciária. Por esse motivo, a reabilitação consta como abandonada no sistema do INSS.
+
+22/07/25 - Em contato com o colaborador, via zap, porque ele não atende telefone, o mesmo passou o laudo medico e o atestado. 
+
+Orientemos ele para enviar o atestado via plataforma, já cobrei várias vezes e nada. Ele passou uma mensagem do advogado dele informado que ele, vai entrar com solicitação de aposentadoria por invalidez.
+
+
+Recomendado pela Expert que seja realizado o exame médico de retorno.
+Atenção:
+No caso de INAPTO no ERT solicitamos que nos comuniquem para programarmos o agendamento de uma Nova Perícia."
+100-92847;Service Request;Pending;22/07/2025;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-ADMPESSOAL;63;AFASTAMENTO:UBERLANDIA – Jose Rafael Candido da Silva– 20268;"AFASTAMENTO:UBERLANDIA – Jose Rafael Candido da Silva– 20268
+
+
+Colaborador aposentado afastado, desde 15/08/2024, beneficio cessar em 18/09/2025.
+
+Acompanhar, retorno ao trabalho ou permanência no afastamento.
+
+histórico de afastamento em anexo."
+100-92235;Service Request;Active;16/07/2025;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-ADMPESSOAL;69;AFASTAMENTO: CO JARDINOPOLIS-MAICON HENRIQUE;"ENCAMINHAMENTO INSS – CO JARDINOPOLIS – Maicon Henrique Fonseca – 100700638
+
+Colaborador afastado está com perícia agendada para 09/09/2025 às 08h10 agência RIBEIRÃO PRETO - AMADOR BUENO.
+
+OBS: Já fez uma solicitação de antecipação de auxilio doença.
+
+Acompanhar realização da pericia em 09/09/2025."
+100-92237;Service Request;Pending;16/07/2025;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-ADMPESSOAL;69;AFASTAMENTO: CO SÃO LUIS- MARCOS VIVINICIUS BASTOS MIRANDA;"ENCAMINHAMENTO INSS – CO SAO LUIS – MARCOS VIVINICIUS BASTOS MIRANDA-109323
+
+Colaborador afastado, beneficio cessar em 31/07/2025. 
+
+Entrar em contato com o mesmo e verificar se o mesmo está Apto ao trabalho ou permanece afastado. 
+Orientar sobre o novo processo de envio de Atestado na plataforma.
+
+Segue em anexo histórico."
+100-97743;Service Request;Pending;10/09/2025;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;13;AFASTAMENTO- UBERLÂNDIA-JHONNY SILVESTRE - 102700341;"ENCAMINHAMENTO AO INSS - CO Uberlândia -  JHONNY SILVESTRE - 102700341.
+
+Colaborador encontra-se afastado:   
+
+- 1º Atestado em 01/07/2025: de 11/07/2025 para 10 dias; M774 (Metatarsalgia)
+- 2º Atestado em 08/07/2025: de 08/07/2025 a 23/07/2025 para 15 dias;
+M774 (Metatarsalgia) e M255 
+ 
+ 
+- 1º Atestado em 01/07/2025: de 11/07/2025 para 10 dias; M774 (Metatarsalgia)
+- 2º Atestado em 08/07/2025: de 08/07/2025 a 23/07/2025 para 15 dias;
+M774 (Metatarsalgia) e M255 (outra entesopatia do pé).
+ 
+ 
+Sendo assim, para fins de afastamento previdenciário, a partir de 16/07/2025. DUT já enviado para o colaborador. 
+
+OBS: Colaborador abriu chamado n° 100-91251 em 09/07/25, ele foi encerrado.
+
+Realizado antecipação de Auxilio Doença.
+Pericia agendado presencial para 09/09/25, colaborador perdeu o horário,  teve sua perícia remarcada, para o dia 20/10/2025, conforme anexo. 
+
+Vale lembrar que o colaborador teve atestado médico na plataforma que foi recusado por atraso no envio, que vai até o dia 17/09/25.  
+
+Em conversa com o colaborador ele informou que não está em condições de retornar ao trabalho e vai aguardar a perícia médica. 
+
+Colaborador foi orientado para enviar um novo atestado via plataforma ATESTADO ME.
+
+Perícia remarcada, para o dia 20/10/2025.
+
+Abrir chamado para nova antecipação de auxílio-doença, ref. folha de OUT/25.
+
+Em anexo consta histórico do afastamento e dados da nova pericia agendada."
+100-96809;Service Request;Pending;01/09/2025;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;22;AFASTAMENTO-SÃO LUÍS - MARCOS  DE SOUSA SOARES;"AFASTAMENTO-SÃO LUÍS - MARCOS  DE SOUSA SOARES-820030
+
+Colaborador encontra-se afastado desde 15/0/2025.
+
+Pericia agendada p/ 26/03/26
+Último atestado recebido:  20/08/25 até 27/03/26.
+
+Seguem em anexo histórico, demais informações anexo na pasta do colaborador."
+100-97070;Service Request;Pending;03/09/2025;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;20;AFASTAMENTO - CO SÃO LUÍS - MAXIMO DO ESPIRITO S.RIBEIRO JUNIOR;"AFASTAMENTO - CO SÃO LUÍS - MAXIMO DO ESPIRITO S.RIBEIRO JUNIOR
+
+Ex-colaborador reintegrado encontra-se afastado desde 27/11/2009, por incapacidade temporária.
+
+Em 01/09/25 - solicitei informação do colaborador, ele enviou uma Declaração de Benefícios. 
+
+Em 02/09/25 - solicitei informação da Expert melhores informações sobre a situação do colaborador.
+
+Em 03/09/25 - recebi a informação da expert, que o  colaborador foi encaminhado para o processo de Reabilitação Profissional Previdenciária. Não há data limite definida, e o benefício será mantido durante todo o processo. É importante que o colaborador siga as orientações disponibilizadas pelo INSS e mantenha contato com a agência responsável pelo benefício durante todo o período de reabilitação. 
+
+Em 03/09/25 - solicitado do colaborador melhores informações sobre a reabilitação.
+
+
+Histórico do afastamento (e-mail expert e declaração de beneficio está em anexo e na pasta do colaborador)."
+100-93028;Service Request;Active;24/07/2025;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;61;CONTESTAÇÃO/CORREÇÃO - PPP - Denilson Cristiano Calvi - C.O. Paulinia;"CONTESTAÇÃO/CORREÇÃO - PPP - Denilson Cristiano Calvi - C.O. Paulinia
+
+""Eliana Estevam Andretto
+Assistente Previdenciário
+Fone: 19-38822030
+WhatsApp:19- 992238568""
+
+Email com anexo em 24/07"
 300-130573;Incident;Pending;18/09/2025;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;5;Nota não subiu no monitor mas está na GRC;"Nota não subiu no Keep True
 
 Nota: 
@@ -588,7 +1332,7 @@ Foi observado que, ao deslogar do SAP e acessar novamente, o processo é concluíd
 
 Foi observado que, ao deslogar do SAP e acessar novamente, o processo é concluído normalmente."
 300-130025;Incident;Pending;10/09/2025;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;13;FIZ A ENTRADA DE UMA NOTA COM O PRODUTO ERRADO PELO KEEPTRUE, TIVE QUE ESTORNAR PELO KEEPTRUE PARA ACERTAR, MAS AI NÃO CONSEGUI ESTORNAR TODOS OS FLUXOS E NÃO CONSIGO DAR ENTRADA COM O PRODUTO CERTO;FIZ A ENTRADA DE UMA NOTA COM O PRODUTO ERRADO PELO KEEPTRUE, TIVE QUE ESTORNAR PELO KEEPTRUE PARA ACERTAR, MAS AI NÃO CONSEGUI ESTORNAR TODOS OS FLUXOS E NÃO CONSIGO DAR ENTRADA COM O PRODUTO CERTO
-;;;;;;;;
+100-97566;Service Request;Active;09/09/2025;VIEIRA DENCK,ROXANE;COP-RH-HUB;14;DOCUMENTOS PARA  JURÍDICO - PROCESSO N.º 0021078-22.2025.5.04.0201 - RODRIGO DA SILVA CONCEIÇÃO;SUBSÍDIOS - PROCESSO N.º 0021078-22.2025.5.04.0201 - RODRIGO DA SILVA CONCEIÇÃO x LIQUIGAS DISTRIBUIDORA S.A -  1º VARA DE CANOAS - PRAZO 22/09
 300-130656;Incident;Pending;19/09/2025;ALVARENGA RANGEL LIANG,ALINE;COP-SAP MOBILE;4;encerramento de viagem;"encerramento de viagem
 
 viagem: 682969
@@ -602,39 +1346,123 @@ O erro é persistente pois já foi aberto chamado no mês passado e o mesmo continu
 300-130642;Incident;Pending;19/09/2025;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;4;Não consigo acessar SAP via link remoto.;Não consigo acessar SAP via link remoto.
 100-98649;Service Request;Pending;18/09/2025;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;5;INSTALAÇÃO DO SOFTWARE NA MAQUINA;NECESSITO DO SOFTWARE DO POWER BI INSTALADO EM MEU DESKTOP PARA EXECUÇÃO DO SERVIÇO DE ANALISE DE DADOS DO MEU CENTRO OPERATIVO
 300-129819;Incident;Pending;08/09/2025;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;15;Na agenda do meu outlook, não consta mais a opção do Teams para agendar reuniões. Poderiam me ajudar por favor?;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
+100-98214;Service Request;Pending;16/09/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-HUB;7;Inclusao no plano odontologico;Quero fazer a inclusao na assistencia odontologica UNIODONTO. Trabalho no CO Uberlandia
+100-94155;Service Request;Pending;05/08/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-HUB;49;Afastamento - CO Capuava - Antonio Marcos Serpa Dos Santos - 100174;informamos que a perícia do(a) colaborador(a) Antonio Marcos Serpa Dos Santos, com requerimento N°1406985629, agendada para o dia 25/08/2025 às 10h20 na agência de Ribeirão Pires, de acordo com a disponibilidade do INSS. Comprovante em anexo
+100-97914;Service Request;Pending;12/09/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-HUB;11;Solicitação PPP Waldomiro de Moura - demitido  - Araucária PR;Solicitação PPP Waldomiro de Moura - demitido  - Araucária PR
+100-94793;Service Request;Pending;12/08/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-HUB;42;Afastamento - CO Capuava - Rafael Andrade Leandro – 120771;"Funcionário Rafael Andrade Leandro – 120771 afastado.
+O mesmo solicitou o beneficio na data de 31/07/2025 e já está em análise."
+100-94538;Service Request;Pending;08/08/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-ADMPESSOAL;46;Afastamento - CO Capuava - Jose Ronaldo Garcia Batista – 14301;"Funcionário foi informado em 08/08/2025 para realizar a pericia documental, já foi enviada a DUT e o documento de solicitação do auxilio doença.
+
+Jose Ronaldo Garcia Batista – 14301
+
+Acompanhar resultado da pericia."
+100-94810;Service Request;Pending;12/08/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-HUB;42;Afastamento - DA Santos - DA SANTOS – Fabio Yamaga – 100471;"Segue anexo histórico de afastamento de Fabio Yamaga – 100471
+
+Tem uma perícia de prorrogação agendada para 17/09/2025 às 16h na agência SANTOS. Comprovante em anexo."
+100-94813;Service Request;Pending;12/08/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-HUB;42;Afastamento - DA SANTOS – Edimilson Moraes Do Nascimento – 11690;O benefício B91 – Auxílio por Incapacidade Temporária Acidentária, do colaborador Edimilson Moraes do Nascimento - 11690, foi concedido com início em 12/03/2025 e cessação em 01/10/2025.
+100-94258;Service Request;Pending;06/08/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-HUB;48;Afastamento - DA SAO JOSE DO RIO PRETO – Jose Fabiano Goncalves – 14290;"Segue anexo histórico de email do afastamento de  Jose Fabiano Goncalves – 14290
+
+Auxílio por incapacidade temporária do colaborador JOSE FABIANO GONCALVES foi concedido com o início fixado em 20/05/2025 e cessação em 29/10/2025.
+
+17988336858"
+100-94144;Service Request;Pending;05/08/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-HUB;49;Afastamento - CO Cascavel - LUCAS CHARLEI COSTA CANHETE;Lucas irá realizar a pericia no dia 15/08/2025
+100-97612;Service Request;Pending;09/09/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-HUB;14;Solicitação de PPP - Via Judicial - Marcelo Munhoz da Silva - PRAZO 15 DIAS;"Prezados (as)
+
+
+Encaminho, em anexo, ofício solicitando a remessa de documentação a este Juízo, observado autos n. 5005189-49.2025.4.04.7112
+
+
+Os documentos poderão ser encaminhados ao correio eletrônico desta Vara Federal (rssro01@jfrs.jus.br).
+
+
+Solicito confirmação de leitura, de forma expressa.
+
+
+Atenciosamente,
+
+
+Mateus Henrique Chapoval
+
+Estagiário
+
+Justiça Federal
+
+Subseção de Santa Rosa/RS"
+100-97210;Service Request;Resolved-Validation;04/09/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-ADMPESSOAL;19;Afastamento - CO Ibirité -  Washington Jones Dos Santos - 102400169;"Segue anexo histórico de afastamento do colaborador  Washington Jones Dos Santos - 102400169
+
+Perícia por análise documental.
+
+Favor emitir a carta DUT (20/08/2025) e enviar ao colaborador para incluir no meu INSS.
+
+Enviar para o colaborador o termo caso o mesmo queira receber a antecipação e quando receber de volta abrir um novo chamado para que a Jana faça a antecipação."
+100-97037;Service Request;Pending;03/09/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-ADMPESSOAL;20;Afastamento - CO Socorro -  Roberta Gomes De Oliveira Lopes – 100401921;"Segue anexo histórico de afastamento da colaboradora  Roberta Gomes De Oliveira Lopes – 100401921
+
+A própria colaborador solicitou perícia e o benefício está em exigência.
+
+Favor emitir a carta DUT e enviar a colaboradora para incluir no meu INSS.
+
+Enviar para a colaboradora o termo caso a mesma queira receber a antecipação e quando receber de volta abrir um novo chamado para que a Jana faça a antecipação."
+100-96042;Service Request;Pending;22/08/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-HUB;32;Afastamento - CO Ibirité -  Anderson da Silva Lima – 102400159;"Segue anexo histórico de afastamento do colaborador  Anderson da Silva Lima – 102400159
+
+Favor informar ao colaborador que o benefício será por análise documental e orienta-lo.
+
+Favor emitir a carta DUT (29/07/2025) e enviar ao colaborador para incluir no meu INSS.
+
+Enviar para o colaborador o termo caso o mesmo queira receber a antecipação e quando receber de volta abrir um novo chamado para que a Jana faça a antecipação."
+100-95118;Service Request;Pending;15/08/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-HUB;39;Afastamento - CO Capuava -  JOELTON DA SILVA – 14063;"Segue anexo histórico de afastamento do colaborador JOELTON DA SILVA – 14063.
+
+Perícia por análise documental.
+
+Favor emitir a carta DUT e enviar ao colaborador para incluir no meu INSS.
+
+Enviar para o colaborador o termo caso o mesmo queira receber a antecipação e quando receber de volta abrir um novo chamado para que a Jana faça a antecipação.
+
+Atenciosamente,
+Hub de Atendimento de RH"
+100-94585;Service Request;Pending;11/08/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-ADMPESSOAL;43;Afastamento - CO Capuava - Fernando De Oliveira Da Rocha – 117034;"Bom dia!
+
+Prezada Tamires,
+A perícia do colaborador Fernando De Oliveira Da Rocha ?foi realizada e finalizada como análise documental.
+Favor orientar ao colaborador, emitir o DUT e acompanhar o afastamento.
+Segue anexo o termo para o colaborador assinar caso o mesmo tenha interesse em receber o adiantamento."
+100-97824;Service Request;Pending;11/09/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-HUB;12;"Por favor, solicitamos o PPP do ex funcionário
+EDMILSON FREIRE DE ASSIS, CPF 129.829.958-02, nascimento 29/03/1968 demissão no ano de 1995 AJUDANTE. Informa que entregou os documentos para a rh local ha 60 dias.";"e-mail edmilson.freire1968@gmail.com 
+CELULAR 1198567-0132"
+100-97851;Service Request;Pending;11/09/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-HUB;12;"venho através desse chamado solicitar o PPP do colaborador Arnaldo Giacometti o mesmo não consegue abrir um chamado.
+
+email do colaborador: arnaldogiacometti@gmail.com";"venho através desse chamado solicitar o PPP do colaborador Arnaldo Giacometti o mesmo não consegue abrir um chamado.
+
+email do colaborador: arnaldogiacometti@gmail.com"
+100-92928;Service Request;Pending;23/07/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-ADMPESSOAL;62;Afastamento MICHELLE ALVES PIMENTA - Ibirite;"novo Atestado de 180 dias  a partir de 08/07/2025
+
+Contatos
+michelly.sons07@gmail.com - 31-99856-6301"
+100-92932;Service Request;Pending;23/07/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-ADMPESSOAL;62;Afastamento TIAGO CAMPOS SOARES - Ibirite;"Acompanhar
+
+colaborador afastado ate abril de 2026"
+100-92933;Service Request;Resolved-Validation;23/07/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-ADMPESSOAL;62;Afastamento TIAGO CAMPOS SOARES - Ibirite;"Acompanhar
+
+colaborador afastado ate abril de 2026"
+100-98766;Service Request;Pending;19/09/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-ADMPESSOAL;4;Atestado Retorno ao Trabalho;Segue anexo atestado de Apto ao Retorno do trabalho, colaborador José Fabiano Gonçalves - matricula: 14290.
+100-97513;Service Request;Pending;08/09/2025;CORREIA LIMA DA SILVA,TAMIRES;COP-RH-HUB;15;O Sr. Lucio João Kindini solicita PPP;O Sr. Lucio João Kindini solicita PPP, trabalhou até 05/04/1988.
 300-130495;Incident;Pending;17/09/2025;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;6;"solicito apoio com a NF 183809 
 n°doc 20815420";é uma nf de transferência de produto e esta apresentando um erro pela segunda vez e não é resolvido
 100-98752;Service Request;Pending;19/09/2025;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP WF;4;Há workflow que estão vindo para aprovação do Laercio  porém já vem aprovados.;"Temos alguns workflow que já vem aprovados porem continuam vindo para a caixa do Gerente executivo Laercio Primo.
 
 Favor encaminhar esse chamado para equipe do Ariel da TI."
 300-129666;Incident;Pending;05/09/2025;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;18;CORREÇÃO DA DATA DE EMISSÃO REFERENTE LANÇAMENTO PELA MIRO 5107813483-2025 FORNECEDOR 447258 PRESTASERV PRESTADORA;Correção da data de emissão de um lançamento feito pela MIRO sob nº  5107813483-2025 Nº DOC 5101262083 FORNECEDOR 447258 PRESTASERV PRESTADORA, a data de emissão está divergente da NF, lançado com emissão05.09.2025, porém o correto é 04.02.2025 - não conseguimos correção devido o primeiro lançamento ter sido feito pelo KT, mas o estorno foi pela MIRO, logo não é mais possível realizar novo lançamento pela ferramenta KT
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
+100-97122;Service Request;Queued;04/09/2025;DE SOUZA AGUIAR DE JESUS,BEATRIZ;COP-RH-ADMPESSOAL;19;Estagio obrigatório;"Bom dia, 
+
+Estou finalizando o relatório das minhas atividades na empresa para encaminhar à faculdade, a fim de contabilizar as horas obrigatórias do meu curso.
+Entretanto, a faculdade solicita que esse documento seja assinado por um advogado da empresa com registro na OAB.
+
+Gostaria de saber como devo proceder nesse caso ou a quem devo encaminhar o relatório para que seja realizada a assinatura.
+
+Agradeço desde já pela orientação."
+100-96963;Service Request;Queued;02/09/2025;DE SOUZA AGUIAR DE JESUS,BEATRIZ;COP-RH-ADMPESSOAL;21;Referente a contratação de jovem aprendiz para unidade de Santa Maria, gostaria de rever o cálculo e também conferir se a transferência da funcionária Luiza Alves Cassanego foi efetivada para essa unidade. Por que com mais um funcionário a mais o cálculo irá ser alterado.;Referente a contratação de jovem aprendiz para unidade de Santa Maria, gostaria de rever o cálculo e também conferir se a transferência da funcionária Luiza Alves Cassanego foi efetivada para essa unidade. Por que com mais um funcionário a mais o cálculo irá ser alterado.
+100-98785;Service Request;Queued;20/09/2025;DE SOUZA AGUIAR DE JESUS,BEATRIZ;COP-RH-ADMPESSOAL;3;Solicito novo crachá para funcionário Nilson dos Santos de Oliveira - 117061;Solicito novo crachá para funcionário Nilson dos Santos de Oliveira - 117061, pois o atual não está sendo reconhecido no relógio ponto.
+100-95974;Service Request;Active;22/08/2025;DE SOUZA AGUIAR DE JESUS,BEATRIZ;COP-RH-ADMPESSOAL;32;Brigada de Emergência;Inclusão/Exclusão/Manter Brigadistas
+100-97652;Service Request;Active;09/09/2025;DE SOUZA AGUIAR DE JESUS,BEATRIZ;COP-RH-ADMPESSOAL;14;Inclusão no prêmio da brigada de emergência o TST Alan dos Anjos Cpsta - Mat. 122032.;Inclusão no prêmio da brigada de emergência o TST Alan dos Anjos Cpsta - Mat. 122032.
 300-130638;Incident;Pending;19/09/2025;BRAGA MARTINS,EDEMILSON;COP-SEGURANÇA;4;"Solicito acesso ao WhatsApp corporativo na máquina.
 
 Temos alguns grupos com motoristas que utilizamos durante todo o dia. Ter o WhatsApp corporativo disponível no computador facilitaria o suporte aos motoristas, ajudaria na conciliação das demandas e tornaria a interação com o pessoal mais ágil, já que muitas situações precisam ser resolvidas diretamente pela máquina.
@@ -644,75 +1472,256 @@ numero 21998189387";"Solicito acesso ao WhatsApp corporativo na máquina.
 Temos alguns grupos com motoristas que utilizamos durante todo o dia. Ter o WhatsApp corporativo disponível no computador facilitaria o suporte aos motoristas, ajudaria na conciliação das demandas e tornaria a interação com o pessoal mais ágil, já que muitas situações precisam ser resolvidas diretamente pela máquina.
 
 numero 21998189387"
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
+100-98741;Service Request;Resolved-Validation;19/09/2025;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;4;VALE REFEIÇÃO - TROCA DE HORÁRIO;"Boa tarde!
+
+Prezada Gisele,
+Fiz a alteração de horário do colaborador GLAYSON MAGNO GALHARDO FERREIRA, mat. 112863 - CO Belém para 2ª a 6ª feira 1200 1600 1700 2100 e SAB 1200 1600, favor verificar se neste caso cabe recebimento de vale refeição."
+100-98579;Service Request;Resolved-Validation;18/09/2025;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;5;Ressarcimento de valor utilizado no vale transporte.;"Solicitei a inclusão do vale transporte no dia 26/06/2025 para carregar os créditos após minhas férias no dia  15/07/2025, conforme protocolo 100-89814 .
+
+Essa recarga só foi realizada no dia 14/08/2025, durante esse período utilizei recursos próprios para recarregamento do vale transporte e poder realizar o deslocamentos para o trabalho.
+
+Então venho solicitar o ressarcimento  do valor de R$ 127,00, utilizado nas recargas.
+
+Segue anexado o comprovante das recargas no aplicativo de vale transporte."
+100-98717;Service Request;Resolved-Validation;19/09/2025;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;4;O colaborado Fernando Alves de Oliveira, matrícula 112794, deseja cancelar o vale transporte.;O colaborado Fernando Alves de Oliveira, matrícula 112794, deseja cancelar o vale transporte.
+100-98700;Service Request;Pending;19/09/2025;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;4;Funcionário ERLON ANDERSON DA SILVA SOUZA, 121893.  solicitou cancelamento do cartão e foi feito.   Acontece que ficou saldo no cartão e o mesmo deu problema no CHIP.   Solicito novo cartão para retirada do saldo.;Número do cartão: 3685370706 - 082024
+100-98631;Service Request;Resolved-Validation;18/09/2025;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;5;"Retornei de férias no 17/09 e verifiquei que os valores referente as passagens que serão via sistema JAÉ – Município do Rio de Janeiro NÃO FORAM DEPOSITADAS, poderia me auxiliar para resolução breve deste problema ? 
+       
+•CPF: 909.611.537-68 – JallCard 007436C2 / 04/25
+ 
+Grato,
+ 
+At.te
+ 
+CARLOS ALBERTO DOS SANTOS MARQUES
+Controladoria 1207 – Matrícula nº  105.423
+Duque de Caxias – Rio de Janeiro – RJ";•CPF: 909.611.537-68 – JallCard 007436C2 / 04/25
+100-98508;Service Request;Resolved-Validation;17/09/2025;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;6;Perda do cartão de passagem;Colaborador Washington Jones dos Santos, Matrícula 102400169 informou que teve a perda do seu cartão de vale transporte, por gentileza peço o bloqueio do cartão de vale transporte do colaborador, se possível gostaria de solicitar uma nova via do vale transporte para o colaborador.
+100-98711;Service Request;Resolved-Validation;19/09/2025;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;4;Reativação Gympass;"Não estou conseguindo utilziar benefício do Gympass através da folha de pagamento.
+Preciso de auxilio na reativação do meu cadastro como colaborador Copa e pagamento em folha"
+100-98650;Service Request;Resolved-Validation;18/09/2025;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;5;Vale alimentação;Solicito passar 50 por cento do valor do vale restaurante para o vale alimentação
+100-98684;Service Request;Pending;19/09/2025;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;5;Recarga não efetuada do vale transporte para o mês de Setembro do cartão TOP.;"Entrei em contato com a AutoPass( cartão TOP) e ela disse que não recebeu o crédito da Ticket Transporte , referente ao dia 28/08 no valor de R$ 295,20 reais.
+
+A Copa Energia confirmou para mim,por meio de comprovante, o envio de credito para a Ticket Transporte,mas esse credito não foi repassado para o cartao TOP.
+
+Peço,por gentileza,que entrem em contato com a Ticket Transporte para o repasse desse credito.
+
+Desde ja,agradeço !!!"
+100-98552;Service Request;Resolved-Validation;17/09/2025;KINTZEL OTTONI SORIANO,HANNAY;COP-RH-BENEFÍCIOS;6;"solicitação de abertura de cadastro para inclusão do colaborador SERGIO LOURENCO CUPITTI
+Cadastro
+121461";"o colaborador não conseguiu solicitar a inclusão na previdência privada, gostaria de realizar a participação porem apresentou erro no cadastro
+
+
+o email do colaborador é 
+
+sergiocupitti262@gmail.com"
 100-98617;Service Request;Active;18/09/2025;SANTIAGO ALMEIDA,LUCCA;COP-OneID-Suporte;5;solicitamos o monitoramento das movimentações de contas de usuário (inclusão e exclusão) no grupo GG_PROXYWHAPP;Os alertas relacionados a essas movimentações devem ser enviados para o e-mail seg-info@copaenergia.com.br.
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
+100-98675;Service Request;Queued;18/09/2025;DE SOUSA SIMAO,EDILAINE;COP-RH-ADMPESSOAL;5;segunda via do cracha;segunda via do cracha por motivo de danificado e quebrado
+100-97596;Service Request;Active;09/09/2025;GOMES DE ARRUDA,ROSIMARA;COP-RH-ADMPESSOAL;14;Afastamento - CO Paulínia -  Samuel Pereira Pardinho – 118940;"Segue anexo histórico de afastamento do colaborador Samuel Pereira Pardinho – 118940
+
+Perícia agendada para o dia 05/11/2025.
+
+Favor emitir a carta DUT (12/08/2025) e enviar ao colaborador para incluir no meu INSS.
+
+Enviar para o colaborador o termo caso o mesmo queira receber a antecipação e quando receber de volta abrir um novo chamado para que a Jana faça a antecipação."
+100-97306;Service Request;Active;05/09/2025;GOMES DE ARRUDA,ROSIMARA;COP-RH-ADMPESSOAL;18;Afastamento - CO Paulinia -  JUAREZ PINHEIRO DA SILVA - 100500847;"Colaborador JUAREZ PINHEIRO DA SILVA está com perícia agendada para o dia 16/10/2025.
+
+O mesmo se encontra afastado desde 18/11/2022.
+
+Segue anexo o agendamento da perícia."
+100-97722;Service Request;Active;10/09/2025;GOMES DE ARRUDA,ROSIMARA;COP-RH-ADMPESSOAL;13;Afastamento - CO CO PAULINIA – Anderson Almeida Da Costa – 991121;"Segue anexo histórico de afastamento do colaborador   Anderson Almeida Da Costa – 991121
+
+Perícia por análise documental.
+
+Favor emitir a carta DUT e enviar ao colaborador para incluir no meu INSS.
+
+Enviar para o colaborador o termo caso o mesmo queira receber a antecipação e quando receber de volta abrir um novo chamado para que a Jana faça a antecipação."
+100-97724;Service Request;Active;10/09/2025;GOMES DE ARRUDA,ROSIMARA;COP-RH-ADMPESSOAL;13;Afastamento - CO PAULINIA – Cicero Henrique De Lima Neto – 120606;"Segue anexo histórico de afastamento do colaborador  Cicero Henrique De Lima Neto – 120606
+
+O próprio colaborador solicitou perícia e o benefício está em análise e exigência.
+
+Favor emitir a carta DUT e enviar ao colaborador para incluir no meu INSS.
+
+Enviar para o colaborador o termo caso o mesmo queira receber a antecipação e quando receber de volta abrir um novo chamado para que a Jana faça a antecipação."
+100-92214;Service Request;Active;16/07/2025;GOMES DE ARRUDA,ROSIMARA;COP-RH-ADMPESSOAL;69;Afastamento CLAUDIO DE SOUZA ROSA - 30481 - Paulinia;"Pericia INSS agendada 13/06/2025 - negado ligar - 
+vai voltar ao medico e entrar com novo pedido
+
+17 98119-7596"
+100-92204;Service Request;Pending;16/07/2025;GOMES DE ARRUDA,ROSIMARA;COP-RH-ADMPESSOAL;69;Afastamento ANTONIO CARLOS WOLLINGER - 100200731 - Cuiabá;"Não há atestados no sistema.
+
+Não há atualização recente expert sobre o afastamento."
+100-92208;Service Request;Pending;16/07/2025;GOMES DE ARRUDA,ROSIMARA;COP-RH-ADMPESSOAL;69;Afastamento ANTONIO DE ALMEIDA MONTEIRO - 100200321 - Cuiaba;"Não há atestados no sistema.
+
+Não há atualização recente expert sobre o afastamento."
+100-91394;Service Request;Active;10/07/2025;GOMES DE ARRUDA,ROSIMARA;COP-RH-ADMPESSOAL;75;Afastamento Wanderson Willian De Campos – 122009 - Cuiaba;"Afastamento de Wanderson Willian De Campos – 122009. O Dut foi emitido e enviado para expert.
+Gentileza enviar para o colaborador e orientá-lo.
+Em anexo estão os documentos DUT e formulário de antecipação de beneficio de auxio doença, que passa a ser preenchido, assinado e enviado para Janaina uma unica vez."
+100-91962;Service Request;Pending;15/07/2025;GOMES DE ARRUDA,ROSIMARA;COP-RH-ADMPESSOAL;70;Afastamento Laercio Rissatti - 100200802 - Cuiabá;"Acompanhar afastamento.
+
+Conforme ultima atualização da expert:
+Em publicação do INSS verifiquei que a solicitação de benefício B31 - Auxílio por incapacidade temporária do colaborador Laercio Rissatti foi concedido com o início fixado em 20/02/2025 e cessação em 31/10/2025."
+100-92364;Service Request;Pending;17/07/2025;GOMES DE ARRUDA,ROSIMARA;COP-RH-ADMPESSOAL;68;Afastamento WALDOMIRO GONCALO DE ARRUDA - 100200837 - Cuiabá;"Acompanhar Afastamento:
+
+Não há atestados no sistema.
+
+Não há atualização recente expert sobre o afastamento."
+100-92366;Service Request;Pending;17/07/2025;GOMES DE ARRUDA,ROSIMARA;COP-RH-ADMPESSOAL;68;Afastamento WANDERSON DA SILVA SOUZA - 100200808 - Cuiabá;"Acompanhar Afastamento:
+
+Não há atestados no sistema.
+
+Não há atualização recente expert sobre o afastamento."
+100-92369;Service Request;Pending;17/07/2025;GOMES DE ARRUDA,ROSIMARA;COP-RH-ADMPESSOAL;68;Afastamento LEONARDO BISPO DA SILVA - 100200698 - Cuiaba;"Acompanhar Afastamento:
+
+Não há atestados no sistema.
+
+Não há atualização recente expert sobre o afastamento."
+100-92940;Service Request;Active;23/07/2025;GOMES DE ARRUDA,ROSIMARA;COP-RH-ADMPESSOAL;62;Afastamento Marcos Aparecido Matias Dos Santos - Paulinia;"Colaborador aposentado, não afasta inss  - 19 99149-1468 - Afastado somente em sistema.
+
+Acompanhar para exame de retorno - atestado ate 13/09"
+100-92937;Service Request;Active;23/07/2025;GOMES DE ARRUDA,ROSIMARA;COP-RH-ADMPESSOAL;62;Afastamento WELLINGTON SOARES - Paulinia;Enviado DUT - Beneficio ate 12/08/25 - Tel. 19 98311-0185
+100-94400;Service Request;Active;07/08/2025;GOMES DE ARRUDA,ROSIMARA;COP-RH-HUB;47;Afastamento FRANK DE JESUS MESQUITA100501020 - CO Paulinia;Atualizar afastamento
+100-95472;Service Request;Active;18/08/2025;GOMES DE ARRUDA,ROSIMARA;COP-RH-HUB;36;Afastamento auxilio doença CO PAULINIA  Juliana Saibert Kovaleski – 100501081.;"Afastamento auxilio doença da colaboradora 
+
+Juliana Saibert Kovaleski – 100501081.
+
+A colaboradora trabalhou ate dia 18/07 e esteve de férias do dia 21/07 a 30/07."
+100-94339;Service Request;Active;07/08/2025;GOMES DE ARRUDA,ROSIMARA;COP-RH-HUB;47;Afastamento JESUINO RIBEIRO DE SOUZA 120071 - CO Paulinia;"Acompanhar afastamento
+
+Atestado de 180 dias ate 06/09/2025"
+100-93383;Service Request;Pending;29/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;56;Afastamento Roberto Dos Santos Morais – 40690 - CO ARAUCÁRIA;"Acompanhar afastamento:
+
+Fazer DUT e Orientar colaborador
+
+17/07/2025 - 23 dias - I710 (Aneurisma dissecante da aorta)"
+100-93465;Service Request;Pending;29/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;56;Afastamento GILSON LAUREANO - 100098 - DA São José;"Acompanhamento afastamento
+
+Atualizar o afastamento"
+100-93466;Service Request;Pending;29/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;56;Afastamento VILSON ROCHA - 50907 - EC São José;Acompanhar e atualizar o afastamento
+100-93415;Service Request;Resolved-Validation;29/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;56;Afastamento Joao Vitor Alves Vieira – 121852 - SAO JOSE;"Acompanhamento afastamento
+
+Novo atestado ate 09/08 /2025- novo pedido INSS - Em Analise Requerimento: 766749318"
+100-93462;Service Request;Pending;29/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;56;Afastamento ROBERTO SILVA DE ALMEIDA - 112079 - DA São José;"Acompanhar afastamento
+
+encaminhado para acompamento, pois ASO e inserção de atestados na plataforma não ocorreram em 04/2025. Fiz contato por telefone e não me atendeu, deixei mensagem no Whatsapp em 15/05 - Esta com Ação trabalhista contra a empresa"
+100-98758;Service Request;Queued;19/09/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;4;Afastamento - DA ITAJAI -  Alessandra Del Corso Oliveira Portezani – 113900019.;"Segue anexo histórico de afastamento do colaboradora Alessandra Del Corso Oliveira Portezani – 113900019, unidade DA ITAJAI.
+ 
+Favor emitir a carta DUT e enviar ao colaborador para incluir no meu INSS.
+ 
+Enviar para o colaborador o termo caso o mesmo queira receber a antecipação e quando receber de volta abrir um novo chamado para que a Jana faça a antecipação."
+100-95983;Service Request;Pending;22/08/2025;APARECIDA VIEIRA,SUZANA;COP-RH-HUB;32;Afastamento por longo periodo;"Tenho dois casos de afastamento por longo periodo, dois colaboradores: Valdemar Gavleta,
+Daniel Albino.
+
+O rh estava a frente desse trabalho, tem um retorno de como está esse processo."
+100-92268;Service Request;Pending;17/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;68;Afastamento Rodrigo Strapazzon  - 111355 - São José;Inss negou o benefico, mas o colaborador vai recorrer - Atestado ate 06/02/2026
+100-92270;Service Request;Pending;17/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;68;Afastamento  ALEXANDRE JOAO GARGIONI PILLAR -115578 - DA São José;"Acompanhar:
+
+Carta judicial do INSS - Nova pericia em 11/07/25. 
+Novo atestado de 180 dias, ate 07/12/2025.
+
+Cel. 48-93300-2473 - alexandrepillar@yahoo.com"
+100-92272;Service Request;Pending;17/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;68;Afastamento ERIVELTON GONCALVES - 4744 - DA Joeinville;"Acompanhar:
+
+Colaborador com novo atestado na plataforma de 180 dias, ate 20/12/2025"
+100-92371;Service Request;Pending;17/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;68;Afastamento VALDEMAR GAVLETA - 40501 - Araucária;"Acompanhar Afastamento:
+
+Não há atestados no sistema.
+
+Não há atualização recente expert sobre o afastamento."
+100-92378;Service Request;Pending;17/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;68;Afastamento JOAQUIM FAUSTINO - 27973 - Araucaria;"Acompanhar Afastamento:
+
+Não há atestados no sistema.
+
+Não há atualização recente expert sobre o afastamento."
+100-92380;Service Request;Pending;17/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;68;Afastamento JOATAN VIEIRA - 100729 - Itajai;"Acompanhar Afastamento:
+
+Não há atestados no sistema.
+
+Não há atualização recente expert sobre o afastamento."
+100-92396;Service Request;Pending;17/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;68;Afastamento JOSE MIRANDA DE OLIVEIRA JUNIOR - 40298 - Araucaria;"Acompanhar Afastamento:
+
+Não há atestados no sistema.
+
+Não há atualização recente expert sobre o afastamento."
+100-92404;Service Request;Pending;17/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;68;Afastamento JOSIAS RODRIGUES - 100582 - Araucaria;"Acompanhar Afastamento:
+
+Não há atestados no sistema.
+
+Não há atualização recente expert sobre o afastamento."
+100-92420;Service Request;Pending;17/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;68;Afastamento MARCELO GOEBEL - 40500 - DA São Jose;"Acompanhar Afastamento:
+
+Não há atestados no sistema.
+
+Não há atualização recente expert sobre o afastamento."
+100-91970;Service Request;Pending;15/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;70;Afastamento DANIEL ALBINO - 100538 - Araucária;"O Colaborador esta com processo na justiça contra o INSS. Ele informa que vai aguardar. 
+Orientamos o mesmo anexar na plataforma atestado. 41 99625-7033"
+100-92201;Service Request;Pending;16/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;69;Afastamento ADAIR DE SOUZA BUENO - 40399 - Araucária;"Não há atestados no sistema.
+
+Não há atualização recente expert sobre o afastamento."
+100-92010;Service Request;Pending;15/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;70;Afastamento LUIZ ANTONIO REIS -35048 - Itajai;"Colaborador já aposentado especial.
+Aposentado não tem pericia INSS - Afastado ate 31/07/2025.
+Aguardando Janaina/Rafael Eron, funcionario já tem aposentadoria especial."
+100-92012;Service Request;Pending;15/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;70;Afastamento Norberto Rosa -40598 -Itajaí;"Acompanhar afastamento
+
+Ultima atualização:
+No dia 03/07 -  a expert em contato com o INSS verificou que a solicitação de benefício do colaborador está em análise."
+100-92014;Service Request;Pending;15/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;70;Afastamento Paulo Cezar De Carvalho - 40838 - Araucária;"Acompanhar afastamento
+Ultima atualização:
+
+novo atestado de 90 dias ate 08/09/25 - guias aso email - Novo Dut enviado. 41-99959-6901 - email - paulocezardecarvalho9222@gmail.com 
+
+Analise documental"
+100-91997;Service Request;Pending;15/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;70;Afastamento JOSE LUIZ RODRIGUES - 40279 - Araucária;"Acompanhar afastamento.
+
+Fazer DUT, colab. com demência, o irmão que cuida"
+100-92004;Service Request;Pending;15/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;70;Afastamento JOSIVALDO DE SOUZA - 113900023 - Itajai;"Acompanhar o afastamento
+
+Pericia agendada documental O n° do requerimento é: 266761378 em analise documental. Pericia ainda não agendada - atestado ate 05/08/2025
+
+Telefone:  47-98472-3629"
+100-92217;Service Request;Pending;16/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;69;Afastamento DIONETE PAULA DA SILVA - 40624 - Araucaria;"Não há atestados no sistema.
+
+Não há atualização recente expert sobre o afastamento."
+100-92218;Service Request;Pending;16/07/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;69;Afastamento ELBIO CARDOSO DE VARGAS - 32305 - Araucaria;"Não há atestados no sistema.
+
+Não há atualização recente expert sobre o afastamento."
+100-97355;Service Request;Pending;05/09/2025;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;18;Afastamento - CO Araucária - Jean Padilha – 122030;"Segue anexo histórico de afastamento do colaborador  Jean Padilha – 122030
+
+O próprio colaborador solicitou perícia e o benefício foi concedido até o dia 03/10/2025.
+
+Favor emitir a carta DUT.
+
+Enviar para o colaborador o termo caso o mesmo queira receber a antecipação e quando receber de volta abrir um novo chamado para que a Jana faça a antecipação."
+100-97350;Service Request;Pending;05/09/2025;APARECIDA VIEIRA,SUZANA;COP-RH-HUB;18;Afastamento Colaborador Jalisson Francisco de Almeida Santos - DAC ITAJAÍ SC;"Afastamento Colaborador Jalisson Francisco de Almeida Santos - DAC ITAJAÍ SC 
+
+
+Aberto outro chamado anterior que ja foi encerrado 100-91993"
+100-98662;Service Request;Queued;18/09/2025;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;5;Solicito a inclusão de dependente ao beneficio de assistência medica.;Solicito a inclusão de dependente ao beneficio de assistência medica.
+100-98665;Service Request;Resolved-Validation;18/09/2025;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;5;Solicito inclusão de um dependente no meu plano de saúde;Solicito inclusão de um dependente no meu plano de saúde
+100-98692;Service Request;Pending;19/09/2025;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;4;Solicito benefício do auxílio filho excepcional;Segue documentos referente as terapias e avaliação realizadas.
+100-98308;Service Request;Queued;16/09/2025;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;7;Marcações do ponto não migram para o Senior;"Desde o dia 05/08 as marcações do ponto não sobem para o Senior. Suspeita-se que seja o cabo de rede, porém, o relógio é lacrado e não tem como verificar so cabo de rede esta linkando.
+Desde então, as marcações estão sendo lançadas manualmente."
+100-98151;Service Request;Queued;15/09/2025;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;8;Não estou conseguindo registrar o ponto nem no relógio digital da unidade e também no celular, aplicativo Waapi.;Não estão conseguindo me cadastrar no relógio de ponto eletrônico da unidade de Capuava e também estou sem o acesso para o aplicativo Waapi.
+100-97811;Service Request;Queued;11/09/2025;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;12;O funcionário Jean Carlos esta sem acesso ao app do WAAPI;Ele tem o acesso a Plataforma Senior x , porem não possui as funcionalidades do Wappi habilitadas.
 300-130626;Incident;Queued;19/09/2025;DURAN PRADO,MARCELO;COP-SAP CO-3N;4;Habilitar campo na transação KS02,o campo é Área Funcional, pois esse campo precisa ser habilitado para entrar informação.;"Habilitar campo na transação KS02,o campo é Área Funcional, pois esse campo precisa ser habilitado para entrar informação.
 Foi solicita ao criar centro de custo precisamos visualizar (Área Funcional), deste centro de custo."
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
-;;;;;;;;
+100-98381;Service Request;Resolved-Validation;16/09/2025;DE OLIVEIRA ROCHA,VANDERLEIA;COP-RH-FOPAG;7;"Ofício para pagamento de pensão alimentícia.
+Funcionário Luan de Oliveira Lopes.";"Ofício para pagamento de pensão alimentícia.
+Funcionário Luan de Oliveira Lopes. Documento recebido e enviado por e-mail para RH Local"
+100-94338;Service Request;Resolved-Validation;07/08/2025;DE OLIVEIRA ROCHA,VANDERLEIA;COP-RH-FOPAG;47;Assunto: Solicitação de desconto proporcional de pensão alimentícia;"Venho, por meio deste, solicitar a adequação do desconto referente à pensão alimentícia, conforme decisão judicial, tendo em vista que já contribuo mensalmente com pensão alimentícia referente ao meu primeiro filho
+ 
+A presente solicitação visa garantir que os descontos realizados em folha respeitem a proporcionalidade e evitem comprometimento excessivo da minha renda, observando os limites legais estabelecidos.
+ 
+Coloco-me à disposição para apresentar os documentos comprobatórios, como cópias das decisões judiciais ou acordos homologados, bem como quaisquer outras informações necessárias para análise e ajuste do desconto."
+100-97752;Service Request;Active;10/09/2025;DE OLIVEIRA ROCHA,VANDERLEIA;COP-RH-ADMPESSOAL;13;Colaborador RICARDO PEREIRA SILVA matricula 121675 solicita o envio do documento Mandato de Citação referente pagamento de pensão.;Colaborador RICARDO PEREIRA SILVA matricula 121675 solicita o envio do documento Mandato de Citação referente pagamento de pensão para desconto em folha.
+100-97217;Service Request;Active;04/09/2025;DE OLIVEIRA ROCHA,VANDERLEIA;COP-RH-ADMPESSOAL;19;Pensão Alimentícia;"Um funcionário que a ex Esposa diz que não foi depositado a pensão 
+ 
+O funcionário conferiu em seu holerite e houve o desconto 
+ 
+Como podemos fazer a conferencia deste depósido da pensão? 
+ 
+O funcionário é o Jefferson Borges da Silva"
+100-98747;Service Request;Resolved-Validation;19/09/2025;DE OLIVEIRA ROCHA,VANDERLEIA;COP-RH-FOPAG;4;Pensão Alimentícia Fernando Alves de Almeida;"Funcionário Fernando Alves de Almeida atualmente paga duas pensões alimentícias de seus filhos Fernando Alves de Almeida Filho e Heloísa Campos Almeida descontadas diretamente em sua folha de pagamento. São descontados 15% para cada filho.
+Sua ex-esposa entregou pessoalmente no RH local cerca de três meses atrás sentença referente ao processo 1000345-51.2024.8.26.0666 onde a pensão alimentícia de sua filha Heloísa teria aumentado para 33%. Segue processo em anexo (fls 223). Favor dar parecer se os descontos atuais em folha de pagamento estão corretos."
 100-98634;Service Request;Pending;18/09/2025;CARDOSO SILVA,IRENE;COP-IMPRESSORA;5;Impressora  com defeito;"Impressora apresenta um barulho estranho no rolamento, está bem barulhento.
 
 BRBSQBK0SK
@@ -720,4 +1729,6 @@ BRBSQBK0SK
 Laserjet MFPP Q52645
 
 Localidade: Guararapes"
-;;;;;;;;
+100-98518;Service Request;Queued;17/09/2025;SANTOS LIMA,JANETE;COP-RH-ADMPESSOAL;6;"Lançar como suspensão dia 16/09, 17/09 e 18/09 conforme solicitação da integridade
+
+Funcionário Osnei dos Santos Ribeiro 40711";Lançar suspensão e incluir no sistema suspensão Osnei Santos Ribeiro 40711
