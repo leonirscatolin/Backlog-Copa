@@ -96,21 +96,15 @@ def analisar_aging(df_atual):
 
 def get_status(row):
     diferenca = row['Diferença']
-    if diferenca > 0:
-        return "Alta Demanda"
-    elif diferenca == 0:
-        return "Estável / Atenção"
-    else: # diferenca < 0
-        return "Redução de Backlog"
+    if diferenca > 0: return "Alta Demanda"
+    elif diferenca == 0: return "Estável / Atenção"
+    else: return "Redução de Backlog"
 
 # --- INTERFACE DO APLICATIVO ---
 col1, col2, col3 = st.columns([1, 4, 1])
-with col1:
-    st.image("logo_sidebar.png", width=150)
-with col2:
-    st.markdown("<h1 style='text-align: center;'>Backlog Copa Energia + Belago</h1>", unsafe_allow_html=True)
-with col3:
-    st.image("logo_belago.png", width=150)
+with col1: st.image("logo_sidebar.png", width=150)
+with col2: st.markdown("<h1 style='text-align: center;'>Backlog Copa Energia + Belago</h1>", unsafe_allow_html=True)
+with col3: st.image("logo_belago.png", width=150)
 
 # --- LÓGICA DE LOGIN E UPLOAD ---
 st.sidebar.header("Área do Administrador")
@@ -121,11 +115,9 @@ if is_admin:
     st.sidebar.success("Acesso de administrador liberado.")
     st.sidebar.header("Carregar Novos Arquivos")
     
-    # <-- ALTERADO: Uploader e texto fixo para a data atual ---
     uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL (.csv)", type="csv")
     st.sidebar.markdown(f"Data de referência do arquivo ATUAL: **{date.today().strftime('%d/%m/%Y')}**")
     
-    # <-- ALTERADO: Uploader e seletor de data para o arquivo de 15 dias ---
     uploaded_file_15dias = st.sidebar.file_uploader("2. Backlog de 15 DIAS ATRÁS (.csv)", type="csv")
     data_arquivo_15dias = st.sidebar.date_input( "Data de referência do arquivo de 15 DIAS", value=date.today() )
     
@@ -135,7 +127,6 @@ if is_admin:
                 update_github_file(repo, "dados_atuais.csv", uploaded_file_atual.getvalue())
                 update_github_file(repo, "dados_15_dias.csv", uploaded_file_15dias.getvalue())
                 
-                # <-- ALTERADO: Define a data atual como hoje e usa a data selecionada para o outro arquivo ---
                 data_arquivo_atual = date.today()
                 datas_referencia_content = (
                     f"data_atual:{data_arquivo_atual.strftime('%d/%m/%Y')}\n"
@@ -170,7 +161,6 @@ try:
     if df_atual.empty or df_15dias.empty:
         st.warning("Ainda não há dados para exibir. O administrador precisa carregar os arquivos pela primeira vez.")
     else:
-        # O restante do seu código continua aqui sem alterações...
         df_atual_filtrado = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_aging = analisar_aging(df_atual_filtrado)
@@ -178,20 +168,10 @@ try:
         st.markdown("""
         <style>
         #GithubIcon { visibility: hidden; }
-        .metric-box {
-            border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px;
-            text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 10px;
-        }
-        a.metric-box {
-            display: block; color: inherit; text-decoration: none !important;
-        }
-        a.metric-box:hover {
-            background-color: #f0f2f6; text-decoration: none !important;
-        }
-        .metric-box span {
-            display: block; width: 100%; text-decoration: none !important;
-        }
+        .metric-box { border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px; text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1); margin-bottom: 10px; }
+        a.metric-box { display: block; color: inherit; text-decoration: none !important; }
+        a.metric-box:hover { background-color: #f0f2f6; text-decoration: none !important; }
+        .metric-box span { display: block; width: 100%; text-decoration: none !important; }
         .metric-box .value {font-size: 2.5em; font-weight: bold; color: #375623;}
         .metric-box .label {font-size: 1em; color: #666666;}
         </style>
@@ -208,17 +188,11 @@ try:
                 """
             )
             st.subheader("Análise de Antiguidade do Backlog Atual")
-
             if not df_aging.empty:
                 total_chamados = len(df_aging)
                 _, col_total, _ = st.columns([2, 1.5, 2])
-                with col_total:
-                    st.markdown(
-                        f"""<div class="metric-box"><span class="value">{total_chamados}</span><span class="label">Total de Chamados</span></div>""",
-                        unsafe_allow_html=True
-                    )
+                with col_total: st.markdown(f"""<div class="metric-box"><span class="value">{total_chamados}</span><span class="label">Total de Chamados</span></div>""", unsafe_allow_html=True)
                 st.markdown("---")
-
                 aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
                 aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
                 ordem_faixas = ["1-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
@@ -226,27 +200,23 @@ try:
                 aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
                 aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
                 aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
-
-                if 'faixa_selecionada' not in st.session_state:
-                    st.session_state.faixa_selecionada = ordem_faixas[0]
-
+                if 'faixa_selecionada' not in st.session_state: st.session_state.faixa_selecionada = ordem_faixas[0]
                 if st.query_params.get("faixa"):
                     faixa_from_url = st.query_params.get("faixa")
                     if faixa_from_url in ordem_faixas:
                         st.session_state.faixa_selecionada = faixa_from_url
                         st.query_params.clear()
-
                 cols = st.columns(len(ordem_faixas))
                 for i, row in aging_counts.iterrows():
                     with cols[i]:
                         faixa_encoded = quote(row['Faixa de Antiguidade'])
                         card_html = f"""<a href="?faixa={faixa_encoded}" target="_self" class="metric-box"><span class="value">{row['Quantidade']}</span><span class="label">{row['Faixa de Antiguidade']}</span></a>"""
                         st.markdown(card_html, unsafe_allow_html=True)
+            else: st.warning("Nenhum dado válido para a análise de antiguidade.")
 
-            else:
-                st.warning("Nenhum dado válido para a análise de antiguidade.")
-
-            st.subheader("Comparativo de Backlog: Atual vs. 15 Dias Atrás")
+            # <-- TÍTULO ALTERADO
+            st.markdown(f"<h3>Comparativo de Backlog: Atual vs. 15 Dias Atrás <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_15dias_str})</span></h3>", unsafe_allow_html=True)
+            
             df_comparativo = processar_dados_comparativos(df_atual_filtrado.copy(), df_15dias_filtrado.copy())
             df_comparativo['Status'] = df_comparativo.apply(get_status, axis=1)
             df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True)
@@ -257,14 +227,12 @@ try:
                 st.subheader("Detalhar e Buscar Chamados")
                 st.selectbox( "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada' )
                 faixa_atual = st.session_state.faixa_selecionada
-
                 if faixa_atual and not df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].empty:
                     filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].copy()
                     filtered_df['Data de criação'] = filtered_df['Data de criação'].dt.strftime('%d/%m/%Y')
                     colunas_para_exibir = ['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
                     st.dataframe(filtered_df[colunas_para_exibir], use_container_width=True)
-                else:
-                    st.write("Não há chamados nesta categoria.")
+                else: st.write("Não há chamados nesta categoria.")
 
                 st.markdown("---")
                 st.subheader("Buscar Chamados por Grupo")
@@ -283,10 +251,8 @@ try:
             if not df_aging.empty:
                 total_chamados = len(df_aging)
                 _, col_total_tab2, _ = st.columns([2, 1.5, 2])
-                with col_total_tab2:
-                    st.markdown( f"""<div class="metric-box"><span class="value">{total_chamados}</span><span class="label">Total de Chamados</span></div>""", unsafe_allow_html=True )
+                with col_total_tab2: st.markdown( f"""<div class="metric-box"><span class="value">{total_chamados}</span><span class="label">Total de Chamados</span></div>""", unsafe_allow_html=True )
                 st.markdown("---")
-
                 aging_counts_tab2 = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
                 aging_counts_tab2.columns = ['Faixa de Antiguidade', 'Quantidade']
                 ordem_faixas_tab2 = ["1-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
@@ -294,12 +260,9 @@ try:
                 aging_counts_tab2 = pd.merge(todas_as_faixas_tab2, aging_counts_tab2, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
                 aging_counts_tab2['Faixa de Antiguidade'] = pd.Categorical(aging_counts_tab2['Faixa de Antiguidade'], categories=ordem_faixas_tab2, ordered=True)
                 aging_counts_tab2 = aging_counts_tab2.sort_values('Faixa de Antiguidade')
-
                 cols_tab2 = st.columns(len(ordem_faixas_tab2))
                 for i, row in aging_counts_tab2.iterrows():
-                    with cols_tab2[i]:
-                        st.markdown( f"""<div class="metric-box"><span class="value">{row['Quantidade']}</span><span class="label">{row['Faixa de Antiguidade']}</span></div>""", unsafe_allow_html=True )
-
+                    with cols_tab2[i]: st.markdown( f"""<div class="metric-box"><span class="value">{row['Quantidade']}</span><span class="label">{row['Faixa de Antiguidade']}</span></div>""", unsafe_allow_html=True )
                 st.markdown("---")
                 st.subheader("Ofensores (Todos os Grupos)")
                 top_ofensores = df_aging['Atribuir a um grupo'].value_counts().sort_values(ascending=True)
@@ -307,8 +270,7 @@ try:
                 fig_top_ofensores.update_traces(textposition='outside', marker_color='#375623')
                 fig_top_ofensores.update_layout(height=max(400, len(top_ofensores) * 25))
                 st.plotly_chart(fig_top_ofensores, use_container_width=True)
-            else:
-                st.warning("Nenhum dado para gerar o report visual.")
+            else: st.warning("Nenhum dado para gerar o report visual.")
 
 except Exception as e:
     st.error(f"Ocorreu um erro ao carregar os dados: {e}")
