@@ -1,4 +1,3 @@
 data_atual:10/10/2025
 data_15dias:24/09/2025
-hora_atualizacao:10:46
-cache_test:1516
+hora_atualizacao:10:48
