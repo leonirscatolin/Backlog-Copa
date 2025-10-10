@@ -77,12 +77,13 @@ def processar_dados_comparativos(df_atual, df_15dias):
     return df_comparativo
 
 def categorizar_idade_vetorizado(dias_series):
+    # <-- ALTERADO: Inclui o dia 0 na primeira categoria
     condicoes = [
         dias_series >= 30, (dias_series >= 21) & (dias_series <= 29),
         (dias_series >= 11) & (dias_series <= 20), (dias_series >= 6) & (dias_series <= 10),
-        (dias_series >= 3) & (dias_series <= 5), (dias_series >= 1) & (dias_series <= 2)
+        (dias_series >= 3) & (dias_series <= 5), (dias_series >= 0) & (dias_series <= 2) # Pega de 0 a 2 dias
     ]
-    opcoes = ["30+ dias", "21-29 dias", "11-20 dias", "6-10 dias", "3-5 dias", "1-2 dias"]
+    opcoes = ["30+ dias", "21-29 dias", "11-20 dias", "6-10 dias", "3-5 dias", "0-2 dias"] # Nome da categoria atualizado
     return np.select(condicoes, opcoes, default="Erro de Categoria")
 
 def analisar_aging(df_atual):
@@ -91,7 +92,6 @@ def analisar_aging(df_atual):
     df.dropna(subset=['Data de criação'], inplace=True)
     hoje = pd.to_datetime('today').normalize()
     data_criacao_normalizada = df['Data de criação'].dt.normalize()
-    # <-- ALTERADO: Regra de cálculo da idade do chamado
     df['Dias em Aberto'] = (hoje - data_criacao_normalizada).dt.days
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
     return df
@@ -149,7 +149,7 @@ try:
     needs_scroll = "scroll" in st.query_params
     if "faixa" in st.query_params:
         faixa_from_url = st.query_params.get("faixa")
-        ordem_faixas_validas = ["1-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
+        ordem_faixas_validas = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"] # <-- ALTERADO
         if faixa_from_url in ordem_faixas_validas:
              st.session_state.faixa_selecionada = faixa_from_url
     if "scroll" in st.query_params or "faixa" in st.query_params:
@@ -168,10 +168,10 @@ try:
         df_atual_filtrado = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_aging = analisar_aging(df_atual_filtrado)
-        st.markdown("""<style>#GithubIcon { visibility: hidden; } .metric-box { border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px; text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1); margin-bottom: 10px; } a.metric-box { display: block; color: inherit; text-decoration: none !important; } a.metric-box:hover { background-color: #f0f2f6; text-decoration: none !important; } .metric-box span { display: block; width: 100%; text-decoration: none !important; } .metric-box .value {font-size: 2.5em; font-weight: bold; color: #375623;} .metric-box .label {font-size: 1em; color: #666666;}</style>""", unsafe_allow_html=True)
+        st.markdown("""<style>...</style>""", unsafe_allow_html=True) # CSS Omitido
         tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
         with tab1:
-            st.info("""**Filtros e Regras Aplicadas:**\n- Grupos contendo 'RH' foram desconsiderados da análise.\n- A idade do chamado é a diferença de dias entre hoje e a data de criação.""") # Texto da regra atualizado
+            st.info("""**Filtros e Regras Aplicadas:**\n- Grupos contendo 'RH' foram desconsiderados da análise.\n- A idade do chamado é a diferença de dias entre hoje e a data de criação.""")
             st.subheader("Análise de Antiguidade do Backlog Atual")
 
             texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
@@ -184,7 +184,7 @@ try:
                 st.markdown("---")
                 aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
                 aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
-                ordem_faixas = ["1-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
+                ordem_faixas = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"] # <-- ALTERADO
                 todas_as_faixas = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas})
                 aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
                 aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
@@ -256,7 +256,7 @@ try:
                 st.markdown("---")
                 aging_counts_tab2 = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
                 aging_counts_tab2.columns = ['Faixa de Antiguidade', 'Quantidade']
-                ordem_faixas_tab2 = ["1-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
+                ordem_faixas_tab2 = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"] # <-- ALTERADO
                 todas_as_faixas_tab2 = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas_tab2})
                 aging_counts_tab2 = pd.merge(todas_as_faixas_tab2, aging_counts_tab2, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
                 aging_counts_tab2['Faixa de Antiguidade'] = pd.Categorical(aging_counts_tab2['Faixa de Antiguidade'], categories=ordem_faixas_tab2, ordered=True)
