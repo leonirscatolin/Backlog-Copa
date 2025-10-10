@@ -13,7 +13,7 @@ import streamlit.components.v1 as components
 # --- Configuração da Página ---
 st.set_page_config(
     layout="wide",
-    page_title="Backlog Copa Energia + Belago",
+    page_title="Backlog Copa",
     page_icon="minilogo.png",
     initial_sidebar_state="collapsed"
 )
@@ -104,7 +104,7 @@ def get_status(row):
 # --- INTERFACE DO APLICATIVO ---
 col1, col2, col3 = st.columns([1, 4, 1])
 with col1: st.image("logo_sidebar.png", width=150)
-with col2: st.markdown("<h1 style='text-align: center;'>Backlog Copa Energia + Belago</h1>", unsafe_allow_html=True)
+with col2: st.markdown("<h1 style='text-align: center;'>Backlog Copa</h1>", unsafe_allow_html=True)
 with col3: st.image("logo_belago.png", width=150)
 
 # --- LÓGICA DE LOGIN E UPLOAD ---
@@ -135,7 +135,6 @@ if is_admin:
                 )
                 update_github_file(repo, "datas_referencia.txt", datas_referencia_content)
 
-            # Força a limpeza do cache das funções para garantir a releitura
             read_github_text_file.clear()
             read_github_file.clear()
             st.sidebar.success("Dados salvos com sucesso!")
@@ -143,8 +142,6 @@ if is_admin:
             st.sidebar.warning("Carregue os dois arquivos para salvar.")
 elif password:
     st.sidebar.error("Senha incorreta.")
-
-# st.markdown("---") # <-- Linha removida
 
 # --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
 try:
@@ -204,6 +201,10 @@ try:
             df_comparativo = processar_dados_comparativos(df_atual_filtrado.copy(), df_15dias_filtrado.copy())
             df_comparativo['Status'] = df_comparativo.apply(get_status, axis=1)
             df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True)
+            
+            # <-- ALTERADO: Reorganiza a ordem das colunas antes de exibir
+            df_comparativo = df_comparativo[['Grupo', '15 Dias Atrás', 'Atual', 'Diferença', 'Status']]
+
             st.dataframe(df_comparativo.set_index('Grupo').style.map(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
 
             if not df_aging.empty:
