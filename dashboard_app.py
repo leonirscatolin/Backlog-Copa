@@ -201,10 +201,7 @@ try:
             df_comparativo = processar_dados_comparativos(df_atual_filtrado.copy(), df_15dias_filtrado.copy())
             df_comparativo['Status'] = df_comparativo.apply(get_status, axis=1)
             df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True)
-            
-            # <-- ALTERADO: Reorganiza a ordem das colunas antes de exibir
             df_comparativo = df_comparativo[['Grupo', '15 Dias Atrás', 'Atual', 'Diferença', 'Status']]
-
             st.dataframe(df_comparativo.set_index('Grupo').style.map(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
 
             if not df_aging.empty:
@@ -230,7 +227,7 @@ try:
                     filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].copy()
                     filtered_df['Data de criação'] = filtered_df['Data de criação'].dt.strftime('%d/%m/%Y')
                     colunas_para_exibir = ['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
-                    st.dataframe(filtered_df[colunas_para_exibir], use_container_width=True)
+                    st.dataframe(filtered_df[colunas_para_exibir], use_container_width=True, hide_index=True) # <-- ALTERADO
                 else: st.write("Não há chamados nesta categoria.")
 
                 st.markdown("---")
@@ -243,7 +240,7 @@ try:
                     resultados_busca['Data de criação'] = resultados_busca['Data de criação'].dt.strftime('%d/%m/%Y')
                     st.write(f"Encontrados {len(resultados_busca)} chamados para o grupo '{grupo_selecionado}':")
                     colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
-                    st.dataframe(resultados_busca[colunas_para_exibir_busca], use_container_width=True)
+                    st.dataframe(resultados_busca[colunas_para_exibir_busca], use_container_width=True, hide_index=True) # <-- ALTERADO
 
         with tab2:
             st.subheader("Resumo do Backlog Atual")
