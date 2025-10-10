@@ -7,6 +7,7 @@ from datetime import datetime, date
 from github import Github, Auth
 from io import StringIO
 from urllib.parse import quote
+import streamlit.components.v1 as components # <-- PASSO 1: Import adicionado
 
 # --- Configuração da Página ---
 st.set_page_config(
@@ -145,6 +146,18 @@ st.markdown("---")
 
 # --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
 try:
+    # <-- PASSO 3: Lógica para processar os parâmetros de filtro e rolagem
+    needs_scroll = "scroll" in st.query_params
+    
+    if "faixa" in st.query_params:
+        faixa_from_url = st.query_params.get("faixa")
+        ordem_faixas_validas = ["1-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
+        if faixa_from_url in ordem_faixas_validas:
+             st.session_state.faixa_selecionada = faixa_from_url
+
+    if "scroll" in st.query_params or "faixa" in st.query_params:
+        st.query_params.clear()
+
     df_atual = read_github_file(repo, "dados_atuais.csv")
     df_15dias = read_github_file(repo, "dados_15_dias.csv")
     
@@ -201,23 +214,14 @@ try:
                 aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
                 aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
                 aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
-                
-                # Lógica simplificada para lidar com o filtro via URL
-                if 'faixa_selecionada' not in st.session_state:
-                    st.session_state.faixa_selecionada = ordem_faixas[0]
-                
-                if st.query_params.get("faixa"):
-                    faixa_from_url = st.query_params.get("faixa")
-                    if faixa_from_url in ordem_faixas:
-                        st.session_state.faixa_selecionada = faixa_from_url
-                        st.query_params.clear()
+                if 'faixa_selecionada' not in st.session_state: st.session_state.faixa_selecionada = ordem_faixas[0]
 
                 cols = st.columns(len(ordem_faixas))
                 for i, row in aging_counts.iterrows():
                     with cols[i]:
                         faixa_encoded = quote(row['Faixa de Antiguidade'])
-                        # <-- ALTERADO: Link com a âncora # para tentar a rolagem
-                        card_html = f"""<a href="?faixa={faixa_encoded}#detalhar-e-buscar-chamados" target="_self" class="metric-box"><span class="value">{row['Quantidade']}</span><span class="label">{row['Faixa de Antiguidade']}</span></a>"""
+                        # <-- PASSO 2: Link dos cards alterado
+                        card_html = f"""<a href="?faixa={faixa_encoded}&scroll=true" target="_self" class="metric-box"><span class="value">{row['Quantidade']}</span><span class="label">{row['Faixa de Antiguidade']}</span></a>"""
                         st.markdown(card_html, unsafe_allow_html=True)
             else: st.warning("Nenhum dado válido para a análise de antiguidade.")
             
@@ -231,6 +235,20 @@ try:
             if not df_aging.empty:
                 st.markdown("---")
                 st.subheader("Detalhar e Buscar Chamados")
+                
+                # <-- PASSO 4: Injeção do código Javascript para rolagem
+                if needs_scroll:
+                    js_code = f"""
+                        <script>
+                            setTimeout(function() {{
+                                const element = document.getElementById('detalhar-e-buscar-chamados');
+                                if (element) {{
+                                    element.scrollIntoView({{ behavior: 'smooth', block: 'start' }});
+                                }}
+                            }}, 1000); // Espera de 1 segundo (1000 ms)
+                        </script>
+                    """
+                    components.html(js_code, height=0)
 
                 st.selectbox( "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada' )
                 faixa_atual = st.session_state.faixa_selecionada
