@@ -245,34 +245,17 @@ try:
     if df_atual.empty or df_15dias.empty:
         st.warning("Ainda não há dados para exibir.")
     else:
-        # <-- ALTERADO: Lógica de limpeza e comparação de IDs mais robusta
-        closed_ticket_ids = []
-        if not df_fechados.empty:
-            id_column_name = None
-            if 'ID do ticket' in df_fechados.columns:
-                id_column_name = 'ID do ticket'
-            elif 'ID' in df_fechados.columns:
-                id_column_name = 'ID'
-            
-            if id_column_name:
-                df_fechados[id_column_name] = pd.to_numeric(df_fechados[id_column_name], errors='coerce')
-                df_fechados.dropna(subset=[id_column_name], inplace=True)
-                closed_ticket_ids = df_fechados[id_column_name].astype('Int64').astype(str).unique()
+        # A lógica de fechados volta a ser a mais simples: apenas remove os chamados
+        if not df_fechados.empty and 'ID do ticket' in df_fechados.columns:
+            closed_ticket_ids = df_fechados['ID do ticket'].dropna().unique()
+            original_count = len(df_atual)
+            df_atual = df_atual[~df_atual['ID do ticket'].isin(closed_ticket_ids)]
+            num_closed = original_count - len(df_atual)
+            if num_closed > 0:
+                st.info(f"ℹ️ {num_closed} chamados fechados no dia foram deduzidos das contagens.")
 
-        if 'ID do ticket' in df_atual.columns:
-            df_atual['ID do ticket'] = pd.to_numeric(df_atual['ID do ticket'], errors='coerce')
-            df_atual.dropna(subset=['ID do ticket'], inplace=True)
-            df_atual['ID do ticket'] = df_atual['ID do ticket'].astype('Int64').astype(str)
-
-        df_encerrados = df_atual[df_atual['ID do ticket'].isin(closed_ticket_ids)]
-        df_abertos = df_atual[~df_atual['ID do ticket'].isin(closed_ticket_ids)]
-
-        if not df_encerrados.empty:
-            st.info(f"ℹ️ {len(df_encerrados)} chamados fechados no dia foram deduzidos das contagens principais.")
-        
-        df_atual_filtrado = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
+        df_atual_filtrado = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
-        
         df_aging = analisar_aging(df_atual_filtrado)
         
         tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
@@ -313,17 +296,6 @@ try:
             df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True)
             df_comparativo = df_comparativo[['Grupo', '15 Dias Atrás', 'Atual', 'Diferença', 'Status']]
             st.dataframe(df_comparativo.set_index('Grupo').style.map(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
-
-            st.markdown("---")
-            st.subheader("Chamados Encerrados no Dia")
-            if not df_encerrados.empty:
-                df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
-                st.data_editor(
-                    df_encerrados_filtrado[['ID do ticket', 'Descrição', 'Atribuir a um grupo']],
-                    hide_index=True, disabled=True, use_container_width=True
-                )
-            else:
-                st.info("Nenhum chamado da lista de fechados foi encontrado no backlog atual.")
 
             if not df_aging.empty:
                 st.markdown("---")
