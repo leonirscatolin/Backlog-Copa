@@ -4,12 +4,11 @@ import plotly.express as px
 import numpy as np
 import base64
 from datetime import datetime, date
-from zoneinfo import ZoneInfo # <-- Usando a biblioteca padrão e mais moderna
+from zoneinfo import ZoneInfo
 from github import Github, Auth
 from io import StringIO
 from urllib.parse import quote
 import streamlit.components.v1 as components
-import random # Para o teste de cache
 
 # --- Configuração da Página ---
 st.set_page_config(
@@ -19,7 +18,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- FUNÇÕES (Sem alterações) ---
+# --- FUNÇÕES ---
 @st.cache_resource
 def get_github_repo():
     try:
@@ -29,8 +28,9 @@ def get_github_repo():
     except Exception as e:
         st.error("Erro de conexão com o repositório. Verifique o GITHUB_TOKEN.")
         st.stop()
+
 def update_github_file(_repo, file_path, file_content):
-    commit_message = f"Dados atualizados em {datetime.now().strftime('%d/%m/%Y %H:%M')}"
+    commit_message = f"Dados atualizados em {datetime.now(ZoneInfo('America/Sao_Paulo')).strftime('%d/%m/%Y %H:%M')}"
     try:
         contents = _repo.get_contents(file_path)
         _repo.update_file(contents.path, commit_message, file_content, contents.sha)
@@ -38,7 +38,6 @@ def update_github_file(_repo, file_path, file_content):
     except Exception:
         _repo.create_file(file_path, commit_message, file_content)
         st.sidebar.info(f"Arquivo '{file_path}' criado.")
-    # Não vamos mais depender da limpeza de cache global aqui
     
 @st.cache_data(ttl=300)
 def read_github_file(_repo, file_path):
@@ -48,6 +47,7 @@ def read_github_file(_repo, file_path):
         return pd.read_csv(StringIO(content), delimiter=';', encoding='latin1')
     except Exception:
         return pd.DataFrame()
+
 @st.cache_data(ttl=300)
 def read_github_text_file(_repo, file_path):
     try:
@@ -61,11 +61,13 @@ def read_github_text_file(_repo, file_path):
         return dates
     except Exception:
         return {}
+
 def get_base_64_of_bin_file(bin_file):
     try:
         with open(bin_file, 'rb') as f: data = f.read()
         return base64.b64encode(data).decode()
     except FileNotFoundError: return None
+
 def processar_dados_comparativos(df_atual, df_15dias):
     contagem_atual = df_atual.groupby('Atribuir a um grupo').size().reset_index(name='Atual')
     contagem_15dias = df_15dias.groupby('Atribuir a um grupo').size().reset_index(name='15 Dias Atrás')
@@ -73,6 +75,7 @@ def processar_dados_comparativos(df_atual, df_15dias):
     df_comparativo['Diferença'] = df_comparativo['Atual'] - df_comparativo['15 Dias Atrás']
     df_comparativo[['Atual', '15 Dias Atrás', 'Diferença']] = df_comparativo[['Atual', '15 Dias Atrás', 'Diferença']].astype(int)
     return df_comparativo
+
 def categorizar_idade_vetorizado(dias_series):
     condicoes = [
         dias_series >= 30, (dias_series >= 21) & (dias_series <= 29),
@@ -81,6 +84,7 @@ def categorizar_idade_vetorizado(dias_series):
     ]
     opcoes = ["30+ dias", "21-29 dias", "11-20 dias", "6-10 dias", "3-5 dias", "1-2 dias"]
     return np.select(condicoes, opcoes, default="Erro de Categoria")
+
 def analisar_aging(df_atual):
     df = df_atual.copy()
     df['Data de criação'] = pd.to_datetime(df['Data de criação'], errors='coerce', dayfirst=True)
@@ -90,6 +94,7 @@ def analisar_aging(df_atual):
     df['Dias em Aberto'] = (hoje - data_criacao_normalizada).dt.days + 1
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
     return df
+
 def get_status(row):
     diferenca = row['Diferença']
     if diferenca > 0: return "Alta Demanda"
@@ -119,22 +124,20 @@ if is_admin:
                 update_github_file(repo, "dados_atuais.csv", uploaded_file_atual.getvalue())
                 update_github_file(repo, "dados_15_dias.csv", uploaded_file_15dias.getvalue())
                 
-                # <-- ALTERAÇÃO 1: Lógica de data e hora mais robusta e teste de cache ---
                 data_do_upload = date.today()
                 agora_correta = datetime.now(ZoneInfo("America/Sao_Paulo"))
                 hora_atualizacao = agora_correta.strftime('%H:%M')
-                cache_test_num = random.randint(1000, 9999) # Número aleatório para teste
 
                 datas_referencia_content = (
                     f"data_atual:{data_do_upload.strftime('%d/%m/%Y')}\n"
                     f"data_15dias:{data_arquivo_15dias.strftime('%d/%m/%Y')}\n"
-                    f"hora_atualizacao:{hora_atualizacao}\n"
-                    f"cache_test:{cache_test_num}" # Salva o número de teste
+                    f"hora_atualizacao:{hora_atualizacao}"
                 )
                 update_github_file(repo, "datas_referencia.txt", datas_referencia_content)
 
-            # Força a limpeza do cache da função específica
+            # Força a limpeza do cache das funções para garantir a releitura
             read_github_text_file.clear()
+            read_github_file.clear()
             st.sidebar.balloons()
         else:
             st.sidebar.warning("Carregue os dois arquivos para salvar.")
@@ -160,7 +163,6 @@ try:
     data_atual_str = datas_referencia.get('data_atual', 'N/A')
     data_15dias_str = datas_referencia.get('data_15dias', 'N/A')
     hora_atualizacao_str = datas_referencia.get('hora_atualizacao', '')
-    cache_num_str = datas_referencia.get('cache_test', 'N/A') # Pega o número de teste
 
     if df_atual.empty or df_15dias.empty:
         st.warning("Ainda não há dados para exibir.")
@@ -174,12 +176,10 @@ try:
             st.info("""**Filtros e Regras Aplicadas:**\n- Grupos contendo 'RH' foram desconsiderados da análise.\n- A contagem de 'Dias em Aberto' considera o dia da criação como Dia 1.""")
             st.subheader("Análise de Antiguidade do Backlog Atual")
 
-            # <-- ALTERAÇÃO 2: Exibe o texto com o número de teste de cache ---
             texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
-            st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora} [Cache Test: {cache_num_str}]</i></p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
 
             if not df_aging.empty:
-                # Restante do código da interface sem alterações
                 total_chamados = len(df_aging)
                 _, col_total, _ = st.columns([2, 1.5, 2])
                 with col_total: st.markdown(f"""<div class="metric-box"><span class="value">{total_chamados}</span><span class="label">Total de Chamados</span></div>""", unsafe_allow_html=True)
@@ -245,7 +245,6 @@ try:
                     st.dataframe(resultados_busca[colunas_para_exibir_busca], use_container_width=True)
 
         with tab2:
-            # (Código da Tab 2 sem alterações)
             st.subheader("Resumo do Backlog Atual")
             if not df_aging.empty:
                 total_chamados = len(df_aging)
