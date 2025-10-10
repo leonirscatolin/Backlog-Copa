@@ -210,11 +210,11 @@ try:
                 for i, row in aging_counts.iterrows():
                     with cols[i]:
                         faixa_encoded = quote(row['Faixa de Antiguidade'])
-                        card_html = f"""<a href="?faixa={faixa_encoded}" target="_self" class="metric-box"><span class="value">{row['Quantidade']}</span><span class="label">{row['Faixa de Antiguidade']}</span></a>"""
+                        # <-- LINK ALTERADO
+                        card_html = f"""<a href="?faixa={faixa_encoded}#detalhar-e-buscar-chamados" target="_self" class="metric-box"><span class="value">{row['Quantidade']}</span><span class="label">{row['Faixa de Antiguidade']}</span></a>"""
                         st.markdown(card_html, unsafe_allow_html=True)
             else: st.warning("Nenhum dado válido para a análise de antiguidade.")
-
-            # <-- TÍTULO ALTERADO
+            
             st.markdown(f"<h3>Comparativo de Backlog: Atual vs. 15 Dias Atrás <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_15dias_str})</span></h3>", unsafe_allow_html=True)
             
             df_comparativo = processar_dados_comparativos(df_atual_filtrado.copy(), df_15dias_filtrado.copy())
