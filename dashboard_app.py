@@ -124,7 +124,43 @@ def get_status(row):
     else: return "Redução de Backlog"
 
 # --- ESTILIZAÇÃO CSS ---
-st.html("""<style> ... </style>""") # CSS Omitido
+# <-- CSS RESTAURADO
+st.html("""
+    <style>
+        #GithubIcon { visibility: hidden; }
+        .metric-box {
+            border: 1px solid #CCCCCC;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+        a.metric-box {
+            display: block;
+            color: inherit;
+            text-decoration: none !important;
+        }
+        a.metric-box:hover {
+            background-color: #f0f2f6;
+            text-decoration: none !important;
+        }
+        .metric-box span {
+            display: block;
+            width: 100%;
+            text-decoration: none !important;
+        }
+        .metric-box .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #375623;
+        }
+        .metric-box .label {
+            font-size: 1em;
+            color: #666666;
+        }
+    </style>
+""")
 
 # --- INTERFACE DO APLICATIVO ---
 try:
@@ -184,7 +220,6 @@ elif password:
     st.sidebar.error("Senha incorreta.")
 
 # --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
-# <<<<<<< CÓDIGO RESTAURADO A PARTIR DAQUI >>>>>>>
 try:
     needs_scroll = "faixa" in st.query_params
     if "faixa" in st.query_params:
