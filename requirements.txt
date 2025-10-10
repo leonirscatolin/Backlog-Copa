@@ -4,5 +4,3 @@ plotly
 numpy
 openpyxl
 PyGithub
-zoneinfo
-
