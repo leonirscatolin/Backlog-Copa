@@ -13,7 +13,7 @@ import streamlit.components.v1 as components
 # --- Configuração da Página ---
 st.set_page_config(
     layout="wide",
-    page_title="Backlog Copa", # <-- ALTERADO
+    page_title="Backlog Copa Energia + Belago",
     page_icon="minilogo.png",
     initial_sidebar_state="collapsed"
 )
@@ -104,7 +104,7 @@ def get_status(row):
 # --- INTERFACE DO APLICATIVO ---
 col1, col2, col3 = st.columns([1, 4, 1])
 with col1: st.image("logo_sidebar.png", width=150)
-with col2: st.markdown("<h1 style='text-align: center;'>Backlog Copa</h1>", unsafe_allow_html=True) # <-- ALTERADO
+with col2: st.markdown("<h1 style='text-align: center;'>Backlog Copa Energia + Belago</h1>", unsafe_allow_html=True)
 with col3: st.image("logo_belago.png", width=150)
 
 # --- LÓGICA DE LOGIN E UPLOAD ---
@@ -143,6 +143,8 @@ if is_admin:
             st.sidebar.warning("Carregue os dois arquivos para salvar.")
 elif password:
     st.sidebar.error("Senha incorreta.")
+
+# st.markdown("---") # <-- Linha removida
 
 # --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
 try:
