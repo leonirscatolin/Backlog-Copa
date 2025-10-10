@@ -9,7 +9,7 @@ from github import Github, Auth
 from io import StringIO, BytesIO
 import streamlit.components.v1 as components
 from PIL import Image
-from urllib.parse import quote # <-- LINHA ADICIONADA
+from urllib.parse import quote # <-- Correção do erro
 
 # --- Configuração da Página ---
 st.set_page_config(
@@ -121,7 +121,42 @@ def process_uploaded_file(uploaded_file):
         return None
 
 # --- ESTILIZAÇÃO CSS ---
-st.html("""<style> ... </style>""") # Omitido por brevidade
+st.html("""
+    <style>
+        #GithubIcon { visibility: hidden; }
+        .metric-box {
+            border: 1px solid #CCCCCC;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+        a.metric-box {
+            display: block;
+            color: inherit;
+            text-decoration: none !important;
+        }
+        a.metric-box:hover {
+            background-color: #f0f2f6;
+            text-decoration: none !important;
+        }
+        .metric-box span {
+            display: block;
+            width: 100%;
+            text-decoration: none !important;
+        }
+        .metric-box .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #375623;
+        }
+        .metric-box .label {
+            font-size: 1em;
+            color: #666666;
+        }
+    </style>
+""")
 
 # --- INTERFACE DO APLICATIVO ---
 try:
@@ -136,7 +171,6 @@ except FileNotFoundError:
 
 # --- LÓGICA DE LOGIN E UPLOAD ---
 st.sidebar.header("Área do Administrador")
-# ... (código do login omitido por brevidade)
 password = st.sidebar.text_input("Senha para atualizar dados:", type="password")
 is_admin = password == st.secrets.get("ADMIN_PASSWORD", "")
 repo = get_github_repo()
@@ -183,13 +217,14 @@ elif password:
 
 # --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
 try:
-    # O restante do seu código de exibição foi omitido para encurtar a resposta.
-    # Nenhuma alteração foi feita nesta parte.
-    pass
-except Exception as e:
-    st.error(f"Ocorreu um erro ao carregar os dados: {e}")
-
-# (O restante do seu código de exibição foi omitido para encurtar a resposta)
+    needs_scroll = "scroll" in st.query_params
+    if "faixa" in st.query_params:
+        faixa_from_url = st.query_params.get("faixa")
+        ordem_faixas_validas = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
+        if faixa_from_url in ordem_faixas_validas:
+             st.session_state.faixa_selecionada = faixa_from_url
+    if "scroll" in st.query_params or "faixa" in st.query_params:
+        st.query_params.clear()
 
     df_atual = read_github_file(repo, "dados_atuais.csv")
     df_15dias = read_github_file(repo, "dados_15_dias.csv")
@@ -214,11 +249,9 @@ except Exception as e:
         df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_aging = analisar_aging(df_atual_filtrado)
         
-        # A antiga chamada ao st.markdown(<style>) foi removida daqui
-
         tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
         with tab1:
-            st.info("""**Filtros e Regras Aplicadas:**\n- Grupos contendo 'RH' foram desconsiderados da análise.\n- A idade do chamado é a diferença de dias entre hoje e a data de criação.""")
+            st.info("""**Filtros e Regras Aplicadas:**\n- Grupos contendo 'RH' foram desconsiderados da análise.\n- A idade do chamado é o número de dias inteiros desde a criação.""")
             st.subheader("Análise de Antiguidade do Backlog Atual")
 
             texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
@@ -295,8 +328,30 @@ except Exception as e:
                     st.data_editor(resultados_busca[colunas_para_exibir_busca], use_container_width=True, hide_index=True, disabled=True)
 
         with tab2:
-            # O código da Tab 2 foi omitido por brevidade, não há alterações nele
-            pass
+            st.subheader("Resumo do Backlog Atual")
+            if not df_aging.empty:
+                total_chamados = len(df_aging)
+                _, col_total_tab2, _ = st.columns([2, 1.5, 2])
+                with col_total_tab2: st.markdown( f"""<div class="metric-box"><span class="value">{total_chamados}</span><span class="label">Total de Chamados</span></div>""", unsafe_allow_html=True )
+                st.markdown("---")
+                aging_counts_tab2 = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
+                aging_counts_tab2.columns = ['Faixa de Antiguidade', 'Quantidade']
+                ordem_faixas_tab2 = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
+                todas_as_faixas_tab2 = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas_tab2})
+                aging_counts_tab2 = pd.merge(todas_as_faixas_tab2, aging_counts_tab2, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
+                aging_counts_tab2['Faixa de Antiguidade'] = pd.Categorical(aging_counts_tab2['Faixa de Antiguidade'], categories=ordem_faixas_tab2, ordered=True)
+                aging_counts_tab2 = aging_counts_tab2.sort_values('Faixa de Antiguidade')
+                cols_tab2 = st.columns(len(ordem_faixas_tab2))
+                for i, row in aging_counts_tab2.iterrows():
+                    with cols_tab2[i]: st.markdown( f"""<div class="metric-box"><span class="value">{row['Quantidade']}</span><span class="label">{row['Faixa de Antiguidade']}</span></div>""", unsafe_allow_html=True )
+                st.markdown("---")
+                st.subheader("Ofensores (Todos os Grupos)")
+                top_ofensores = df_aging['Atribuir a um grupo'].value_counts().sort_values(ascending=True)
+                fig_top_ofensores = px.bar(top_ofensores, x=top_ofensores.values, y=top_ofensores.index, orientation='h', text=top_ofensores.values, labels={'x': 'Qtd. Chamados', 'y': 'Grupo'})
+                fig_top_ofensores.update_traces(textposition='outside', marker_color='#375623')
+                fig_top_ofensores.update_layout(height=max(400, len(top_ofensores) * 25))
+                st.plotly_chart(fig_top_ofensores, use_container_width=True)
+            else: st.warning("Nenhum dado para gerar o report visual.")
 
 except Exception as e:
     st.error(f"Ocorreu um erro ao carregar os dados: {e}")
