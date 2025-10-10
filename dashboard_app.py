@@ -15,7 +15,7 @@ from urllib.parse import quote
 st.set_page_config(
     layout="wide",
     page_title="Backlog Copa Energia + Belago",
-    page_icon="minilogo.png",a
+    page_icon="minilogo.png",
     initial_sidebar_state="collapsed"
 )
 
