@@ -54,7 +54,7 @@ def read_github_text_file(_repo, file_path):
         for line in content.strip().split('\n'):
             if ':' in line:
                 key, value = line.split(':', 1)
-                dates[key] = value
+                dates[key.strip()] = value.strip()
         return dates
     except Exception:
         return {}
@@ -99,7 +99,7 @@ with col1: st.image("logo_sidebar.png", width=150)
 with col2: st.markdown("<h1 style='text-align: center;'>Backlog Copa Energia + Belago</h1>", unsafe_allow_html=True)
 with col3: st.image("logo_belago.png", width=150)
 
-# --- LÓGICA DE LOGIN E UPLOAD (Sem alterações) ---
+# --- LÓGICA DE LOGIN E UPLOAD ---
 st.sidebar.header("Área do Administrador")
 password = st.sidebar.text_input("Senha para atualizar dados:", type="password")
 is_admin = password == st.secrets.get("ADMIN_PASSWORD", "")
@@ -116,8 +116,15 @@ if is_admin:
             with st.spinner("Salvando arquivos e datas de referência..."):
                 update_github_file(repo, "dados_atuais.csv", uploaded_file_atual.getvalue())
                 update_github_file(repo, "dados_15_dias.csv", uploaded_file_15dias.getvalue())
+                
+                # <-- ALTERAÇÃO 1: Salva a data E a hora atual ---
                 data_arquivo_atual = date.today()
-                datas_referencia_content = ( f"data_atual:{data_arquivo_atual.strftime('%d/%m/%Y')}\n" f"data_15dias:{data_arquivo_15dias.strftime('%d/%m/%Y')}" )
+                hora_atualizacao = datetime.now().strftime('%H:%M')
+                datas_referencia_content = (
+                    f"data_atual:{data_arquivo_atual.strftime('%d/%m/%Y')}\n"
+                    f"data_15dias:{data_arquivo_15dias.strftime('%d/%m/%Y')}\n"
+                    f"hora_atualizacao:{hora_atualizacao}"
+                )
                 update_github_file(repo, "datas_referencia.txt", datas_referencia_content)
             st.sidebar.balloons()
         else:
@@ -130,13 +137,11 @@ st.markdown("---")
 # --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
 try:
     needs_scroll = "scroll" in st.query_params
-    
     if "faixa" in st.query_params:
         faixa_from_url = st.query_params.get("faixa")
         ordem_faixas_validas = ["1-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
         if faixa_from_url in ordem_faixas_validas:
              st.session_state.faixa_selecionada = faixa_from_url
-
     if "scroll" in st.query_params or "faixa" in st.query_params:
         st.query_params.clear()
 
@@ -145,8 +150,7 @@ try:
     datas_referencia = read_github_text_file(repo, "datas_referencia.txt")
     data_atual_str = datas_referencia.get('data_atual', 'N/A')
     data_15dias_str = datas_referencia.get('data_15dias', 'N/A')
-
-    # <-- TEXTO DA DATA FOI REMOVIDO DAQUI
+    hora_atualizacao_str = datas_referencia.get('hora_atualizacao', '')
 
     if df_atual.empty or df_15dias.empty:
         st.warning("Ainda não há dados para exibir.")
@@ -160,8 +164,9 @@ try:
             st.info("""**Filtros e Regras Aplicadas:**\n- Grupos contendo 'RH' foram desconsiderados da análise.\n- A contagem de 'Dias em Aberto' considera o dia da criação como Dia 1.""")
             st.subheader("Análise de Antiguidade do Backlog Atual")
 
-            # <-- TEXTO DA DATA FOI MOVIDO PARA CÁ E AJUSTADO
-            st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str} (dados atuais)</i></p>", unsafe_allow_html=True)
+            # <-- ALTERAÇÃO 2: Exibe a data E a hora da atualização ---
+            texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
+            st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
 
             if not df_aging.empty:
                 total_chamados = len(df_aging)
@@ -229,7 +234,6 @@ try:
                     st.dataframe(resultados_busca[colunas_para_exibir_busca], use_container_width=True)
 
         with tab2:
-            # (Código da Tab 2 sem alterações)
             st.subheader("Resumo do Backlog Atual")
             if not df_aging.empty:
                 total_chamados = len(df_aging)
