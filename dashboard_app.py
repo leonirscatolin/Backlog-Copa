@@ -13,7 +13,7 @@ import streamlit.components.v1 as components
 # --- Configuração da Página ---
 st.set_page_config(
     layout="wide",
-    page_title="Backlog Copa",
+    page_title="Backlog Copa Energia + Belago", # <-- Título da aba alterado
     page_icon="minilogo.png",
     initial_sidebar_state="collapsed"
 )
@@ -104,7 +104,7 @@ def get_status(row):
 # --- INTERFACE DO APLICATIVO ---
 col1, col2, col3 = st.columns([1, 4, 1])
 with col1: st.image("logo_sidebar.png", width=150)
-with col2: st.markdown("<h1 style='text-align: center;'>Backlog Copa</h1>", unsafe_allow_html=True)
+with col2: st.markdown("<h1 style='text-align: center;'>Backlog Copa Energia + Belago</h1>", unsafe_allow_html=True) # <-- Título principal alterado
 with col3: st.image("logo_belago.png", width=150)
 
 # --- LÓGICA DE LOGIN E UPLOAD ---
@@ -227,20 +227,22 @@ try:
                     filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].copy()
                     filtered_df['Data de criação'] = filtered_df['Data de criação'].dt.strftime('%d/%m/%Y')
                     colunas_para_exibir = ['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
-                    st.dataframe(filtered_df[colunas_para_exibir], use_container_width=True, hide_index=True) # <-- ALTERADO
-                else: st.write("Não há chamados nesta categoria.")
+                    st.dataframe(filtered_df[colunas_para_exibir], use_container_width=True, hide_index=True)
 
                 st.markdown("---")
                 st.subheader("Buscar Chamados por Grupo")
+                
+                # <-- ALTERADO: Lógica do filtro de grupo para pré-selecionar o primeiro item
                 lista_grupos = sorted(df_aging['Atribuir a um grupo'].dropna().unique())
-                lista_grupos.insert(0, "Selecione um grupo...")
+                # Não insere mais o "Selecione um grupo..."
                 grupo_selecionado = st.selectbox("Busca de chamados por grupo:", options=lista_grupos)
-                if grupo_selecionado != "Selecione um grupo...":
+                
+                if grupo_selecionado: # Como sempre haverá um grupo selecionado, o if garante a execução
                     resultados_busca = df_aging[df_aging['Atribuir a um grupo'] == grupo_selecionado].copy()
                     resultados_busca['Data de criação'] = resultados_busca['Data de criação'].dt.strftime('%d/%m/%Y')
                     st.write(f"Encontrados {len(resultados_busca)} chamados para o grupo '{grupo_selecionado}':")
                     colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
-                    st.dataframe(resultados_busca[colunas_para_exibir_busca], use_container_width=True, hide_index=True) # <-- ALTERADO
+                    st.dataframe(resultados_busca[colunas_para_exibir_busca], use_container_width=True, hide_index=True)
 
         with tab2:
             st.subheader("Resumo do Backlog Atual")
