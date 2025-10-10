@@ -91,7 +91,8 @@ def analisar_aging(df_atual):
     df.dropna(subset=['Data de criação'], inplace=True)
     hoje = pd.to_datetime('today').normalize()
     data_criacao_normalizada = df['Data de criação'].dt.normalize()
-    df['Dias em Aberto'] = (hoje - data_criacao_normalizada).dt.days + 1
+    # <-- ALTERADO: Regra de cálculo da idade do chamado
+    df['Dias em Aberto'] = (hoje - data_criacao_normalizada).dt.days
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
     return df
 
@@ -170,7 +171,7 @@ try:
         st.markdown("""<style>#GithubIcon { visibility: hidden; } .metric-box { border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px; text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1); margin-bottom: 10px; } a.metric-box { display: block; color: inherit; text-decoration: none !important; } a.metric-box:hover { background-color: #f0f2f6; text-decoration: none !important; } .metric-box span { display: block; width: 100%; text-decoration: none !important; } .metric-box .value {font-size: 2.5em; font-weight: bold; color: #375623;} .metric-box .label {font-size: 1em; color: #666666;}</style>""", unsafe_allow_html=True)
         tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
         with tab1:
-            st.info("""**Filtros e Regras Aplicadas:**\n- Grupos contendo 'RH' foram desconsiderados da análise.\n- A contagem de 'Dias em Aberto' considera o dia da criação como Dia 1.""")
+            st.info("""**Filtros e Regras Aplicadas:**\n- Grupos contendo 'RH' foram desconsiderados da análise.\n- A idade do chamado é a diferença de dias entre hoje e a data de criação.""") # Texto da regra atualizado
             st.subheader("Análise de Antiguidade do Backlog Atual")
 
             texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
@@ -234,7 +235,6 @@ try:
                 else:
                     st.info("Não há chamados nesta categoria.")
 
-                # st.markdown("---") # <-- LINHA REMOVIDA
                 st.subheader("Buscar Chamados por Grupo")
                 
                 lista_grupos = sorted(df_aging['Atribuir a um grupo'].dropna().unique())
