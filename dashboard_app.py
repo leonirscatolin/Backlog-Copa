@@ -203,8 +203,7 @@ try:
             df_comparativo['Status'] = df_comparativo.apply(get_status, axis=1)
             df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True)
             df_comparativo = df_comparativo[['Grupo', '15 Dias Atrás', 'Atual', 'Diferença', 'Status']]
-            # <-- ALTERADO: Parâmetro removido
-            st.dataframe(df_comparativo.set_index('Grupo').style.map(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']))
+            st.dataframe(df_comparativo.set_index('Grupo').style.map(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
 
             if not df_aging.empty:
                 st.markdown("---")
@@ -224,18 +223,18 @@ try:
                     components.html(js_code, height=0)
 
                 st.selectbox( "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada' )
+                
                 faixa_atual = st.session_state.faixa_selecionada
                 filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].copy()
                 
                 if not filtered_df.empty:
                     filtered_df['Data de criação'] = filtered_df['Data de criação'].dt.strftime('%d/%m/%Y')
                     colunas_para_exibir = ['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
-                    # <-- ALTERADO: Parâmetro removido
-                    st.data_editor(filtered_df[colunas_para_exibir], hide_index=True, disabled=True)
+                    st.data_editor(filtered_df[colunas_para_exibir], use_container_width=True, hide_index=True, disabled=True)
                 else:
                     st.info("Não há chamados nesta categoria.")
 
-                st.markdown("---")
+                # st.markdown("---") # <-- LINHA REMOVIDA
                 st.subheader("Buscar Chamados por Grupo")
                 
                 lista_grupos = sorted(df_aging['Atribuir a um grupo'].dropna().unique())
@@ -246,8 +245,7 @@ try:
                     resultados_busca['Data de criação'] = resultados_busca['Data de criação'].dt.strftime('%d/%m/%Y')
                     st.write(f"Encontrados {len(resultados_busca)} chamados para o grupo '{grupo_selecionado}':")
                     colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
-                    # <-- ALTERADO: Parâmetro removido
-                    st.data_editor(resultados_busca[colunas_para_exibir_busca], hide_index=True, disabled=True)
+                    st.data_editor(resultados_busca[colunas_para_exibir_busca], use_container_width=True, hide_index=True, disabled=True)
 
         with tab2:
             st.subheader("Resumo do Backlog Atual")
@@ -272,8 +270,7 @@ try:
                 fig_top_ofensores = px.bar(top_ofensores, x=top_ofensores.values, y=top_ofensores.index, orientation='h', text=top_ofensores.values, labels={'x': 'Qtd. Chamados', 'y': 'Grupo'})
                 fig_top_ofensores.update_traces(textposition='outside', marker_color='#375623')
                 fig_top_ofensores.update_layout(height=max(400, len(top_ofensores) * 25))
-                # <-- ALTERADO: Parâmetro removido
-                st.plotly_chart(fig_top_ofensores)
+                st.plotly_chart(fig_top_ofensores, use_container_width=True)
             else: st.warning("Nenhum dado para gerar o report visual.")
 
 except Exception as e:
