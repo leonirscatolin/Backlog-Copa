@@ -3,12 +3,13 @@ import pandas as pd
 import plotly.express as px
 import numpy as np
 import base64
-from datetime import datetime, date, timedelta # Adiciona timedelta
+from datetime import datetime, date
+from zoneinfo import ZoneInfo # <-- Usando a biblioteca padrão e mais moderna
 from github import Github, Auth
 from io import StringIO
 from urllib.parse import quote
 import streamlit.components.v1 as components
-# A biblioteca pytz não é mais necessária
+import random # Para o teste de cache
 
 # --- Configuração da Página ---
 st.set_page_config(
@@ -37,7 +38,8 @@ def update_github_file(_repo, file_path, file_content):
     except Exception:
         _repo.create_file(file_path, commit_message, file_content)
         st.sidebar.info(f"Arquivo '{file_path}' criado.")
-    st.cache_data.clear()
+    # Não vamos mais depender da limpeza de cache global aqui
+    
 @st.cache_data(ttl=300)
 def read_github_file(_repo, file_path):
     try:
@@ -109,7 +111,6 @@ if is_admin:
     st.sidebar.success("Acesso de administrador liberado.")
     st.sidebar.header("Carregar Novos Arquivos")
     uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL (.csv)", type="csv")
-    # Removido o texto de data daqui para não confundir
     uploaded_file_15dias = st.sidebar.file_uploader("2. Backlog de 15 DIAS ATRÁS (.csv)", type="csv")
     data_arquivo_15dias = st.sidebar.date_input( "Data de referência do arquivo de 15 DIAS", value=date.today() )
     if st.sidebar.button("Salvar Novos Dados no Site"):
@@ -118,18 +119,22 @@ if is_admin:
                 update_github_file(repo, "dados_atuais.csv", uploaded_file_atual.getvalue())
                 update_github_file(repo, "dados_15_dias.csv", uploaded_file_15dias.getvalue())
                 
-                # <-- ALTERAÇÃO 1: Captura a data do upload e a hora corrigida ---
+                # <-- ALTERAÇÃO 1: Lógica de data e hora mais robusta e teste de cache ---
                 data_do_upload = date.today()
-                hora_utc = datetime.utcnow()
-                hora_brt = hora_utc - timedelta(hours=3)
-                hora_atualizacao = hora_brt.strftime('%H:%M')
+                agora_correta = datetime.now(ZoneInfo("America/Sao_Paulo"))
+                hora_atualizacao = agora_correta.strftime('%H:%M')
+                cache_test_num = random.randint(1000, 9999) # Número aleatório para teste
 
                 datas_referencia_content = (
                     f"data_atual:{data_do_upload.strftime('%d/%m/%Y')}\n"
                     f"data_15dias:{data_arquivo_15dias.strftime('%d/%m/%Y')}\n"
-                    f"hora_atualizacao:{hora_atualizacao}"
+                    f"hora_atualizacao:{hora_atualizacao}\n"
+                    f"cache_test:{cache_test_num}" # Salva o número de teste
                 )
                 update_github_file(repo, "datas_referencia.txt", datas_referencia_content)
+
+            # Força a limpeza do cache da função específica
+            read_github_text_file.clear()
             st.sidebar.balloons()
         else:
             st.sidebar.warning("Carregue os dois arquivos para salvar.")
@@ -155,6 +160,7 @@ try:
     data_atual_str = datas_referencia.get('data_atual', 'N/A')
     data_15dias_str = datas_referencia.get('data_15dias', 'N/A')
     hora_atualizacao_str = datas_referencia.get('hora_atualizacao', '')
+    cache_num_str = datas_referencia.get('cache_test', 'N/A') # Pega o número de teste
 
     if df_atual.empty or df_15dias.empty:
         st.warning("Ainda não há dados para exibir.")
@@ -168,11 +174,12 @@ try:
             st.info("""**Filtros e Regras Aplicadas:**\n- Grupos contendo 'RH' foram desconsiderados da análise.\n- A contagem de 'Dias em Aberto' considera o dia da criação como Dia 1.""")
             st.subheader("Análise de Antiguidade do Backlog Atual")
 
-            # <-- ALTERAÇÃO 2: Ajusta o texto para o novo formato solicitado ---
+            # <-- ALTERAÇÃO 2: Exibe o texto com o número de teste de cache ---
             texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
-            st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str} (data da última atualização){texto_hora}</i></p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora} [Cache Test: {cache_num_str}]</i></p>", unsafe_allow_html=True)
 
             if not df_aging.empty:
+                # Restante do código da interface sem alterações
                 total_chamados = len(df_aging)
                 _, col_total, _ = st.columns([2, 1.5, 2])
                 with col_total: st.markdown(f"""<div class="metric-box"><span class="value">{total_chamados}</span><span class="label">Total de Chamados</span></div>""", unsafe_allow_html=True)
@@ -238,6 +245,7 @@ try:
                     st.dataframe(resultados_busca[colunas_para_exibir_busca], use_container_width=True)
 
         with tab2:
+            # (Código da Tab 2 sem alterações)
             st.subheader("Resumo do Backlog Atual")
             if not df_aging.empty:
                 total_chamados = len(df_aging)
