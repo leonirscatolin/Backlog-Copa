@@ -7,7 +7,6 @@ from datetime import datetime, date
 from github import Github, Auth
 from io import StringIO
 from urllib.parse import quote
-import streamlit.components.v1 as components # <-- NOVO: Import necessário
 
 # --- Configuração da Página ---
 st.set_page_config(
@@ -18,7 +17,6 @@ st.set_page_config(
 )
 
 # --- FUNÇÕES ---
-# ... (Nenhuma alteração nas suas funções) ...
 @st.cache_resource
 def get_github_repo():
     try:
@@ -109,7 +107,6 @@ with col2: st.markdown("<h1 style='text-align: center;'>Backlog Copa Energia + B
 with col3: st.image("logo_belago.png", width=150)
 
 # --- LÓGICA DE LOGIN E UPLOAD ---
-# ... (Nenhuma alteração aqui) ...
 st.sidebar.header("Área do Administrador")
 password = st.sidebar.text_input("Senha para atualizar dados:", type="password")
 is_admin = password == st.secrets.get("ADMIN_PASSWORD", "")
@@ -151,20 +148,6 @@ try:
     df_atual = read_github_file(repo, "dados_atuais.csv")
     df_15dias = read_github_file(repo, "dados_15_dias.csv")
     
-    # <-- NOVO: Lógica para processar os parâmetros de filtro e rolagem ---
-    needs_scroll = "scroll" in st.query_params
-    
-    if "faixa" in st.query_params:
-        faixa_from_url = st.query_params.get("faixa")
-        # Define a lista de faixas válidas para evitar erros
-        ordem_faixas_validas = ["1-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
-        if faixa_from_url in ordem_faixas_validas:
-             st.session_state.faixa_selecionada = faixa_from_url
-
-    if "scroll" in st.query_params or "faixa" in st.query_params:
-        st.query_params.clear()
-    # --- Fim da nova lógica ---
-
     datas_referencia = read_github_text_file(repo, "datas_referencia.txt")
     data_atual_str = datas_referencia.get('data_atual', 'N/A')
     data_15dias_str = datas_referencia.get('data_15dias', 'N/A')
@@ -218,14 +201,23 @@ try:
                 aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
                 aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
                 aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
-                if 'faixa_selecionada' not in st.session_state: st.session_state.faixa_selecionada = ordem_faixas[0]
+                
+                # Lógica simplificada para lidar com o filtro via URL
+                if 'faixa_selecionada' not in st.session_state:
+                    st.session_state.faixa_selecionada = ordem_faixas[0]
+                
+                if st.query_params.get("faixa"):
+                    faixa_from_url = st.query_params.get("faixa")
+                    if faixa_from_url in ordem_faixas:
+                        st.session_state.faixa_selecionada = faixa_from_url
+                        st.query_params.clear()
 
                 cols = st.columns(len(ordem_faixas))
                 for i, row in aging_counts.iterrows():
                     with cols[i]:
                         faixa_encoded = quote(row['Faixa de Antiguidade'])
-                        # <-- ALTERADO: Link agora passa o parâmetro 'scroll=true' em vez da âncora #
-                        card_html = f"""<a href="?faixa={faixa_encoded}&scroll=true" target="_self" class="metric-box"><span class="value">{row['Quantidade']}</span><span class="label">{row['Faixa de Antiguidade']}</span></a>"""
+                        # <-- ALTERADO: Link com a âncora # para tentar a rolagem
+                        card_html = f"""<a href="?faixa={faixa_encoded}#detalhar-e-buscar-chamados" target="_self" class="metric-box"><span class="value">{row['Quantidade']}</span><span class="label">{row['Faixa de Antiguidade']}</span></a>"""
                         st.markdown(card_html, unsafe_allow_html=True)
             else: st.warning("Nenhum dado válido para a análise de antiguidade.")
             
@@ -239,21 +231,6 @@ try:
             if not df_aging.empty:
                 st.markdown("---")
                 st.subheader("Detalhar e Buscar Chamados")
-                
-                # <-- NOVO: Injeção do código Javascript para fazer a rolagem ---
-                if needs_scroll:
-                    js_code = """
-                        <script>
-                            setTimeout(function() {
-                                const element = document.getElementById('detalhar-e-buscar-chamados');
-                                if (element) {
-                                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                }
-                            }, 300); // Pequeno atraso para garantir que a página renderizou
-                        </script>
-                    """
-                    components.html(js_code, height=0)
-                # --- Fim da injeção de JS ---
 
                 st.selectbox( "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada' )
                 faixa_atual = st.session_state.faixa_selecionada
@@ -277,7 +254,6 @@ try:
                     st.dataframe(resultados_busca[colunas_para_exibir_busca], use_container_width=True)
 
         with tab2:
-            # ... (Nenhuma alteração na tab2) ...
             st.subheader("Resumo do Backlog Atual")
             if not df_aging.empty:
                 total_chamados = len(df_aging)
