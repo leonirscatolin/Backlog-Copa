@@ -111,7 +111,7 @@ def categorizar_idade_vetorizado(dias_series):
 
 def analisar_aging(df_atual):
     df = df_atual.copy()
-    df['Data de criação'] = pd.to_datetime(df['Data de criação'], errors='coerce', dayfirst=True)
+    df['Data de criação'] = pd.to_datetime(df['Data de criação'], errors='coerce')
     df.dropna(subset=['Data de criação'], inplace=True)
     
     hoje = pd.to_datetime('today')
@@ -126,6 +126,13 @@ def get_status(row):
     if diferenca > 0: return "Alta Demanda"
     elif diferenca == 0: return "Estável / Atenção"
     else: return "Redução de Backlog"
+
+def get_image_as_base64(path):
+    try:
+        with open(path, "rb") as image_file:
+            return base64.b64encode(image_file.read()).decode()
+    except FileNotFoundError:
+        return None
 
 # --- ESTILIZAÇÃO CSS ---
 st.html("""
@@ -155,15 +162,20 @@ st.html("""
 """)
 
 # --- INTERFACE DO APLICATIVO ---
-try:
-    logo_copa = Image.open("logo_sidebar.png")
-    logo_belago = Image.open("logo_belago.png")
-    col1, col2, col3 = st.columns([1, 4, 1])
-    with col1: st.image(logo_copa, width=150)
-    with col2: st.markdown("<h1 style='text-align: center;'>Backlog Copa Energia + Belago</h1>", unsafe_allow_html=True)
-    with col3: st.image(logo_belago, width=150)
-except FileNotFoundError:
-    st.error("Arquivos de logo não encontrados.")
+logo_copa_b64 = get_image_as_base64("logo_sidebar.png")
+logo_belago_b64 = get_image_as_base64("logo_belago.png")
+
+if logo_copa_b64 and logo_belago_b64:
+    st.markdown(f"""
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <img src="data:image/png;base64,{logo_copa_b64}" width="150">
+            <h1 style='text-align: center; margin: 0;'>Backlog Copa Energia + Belago</h1>
+            <img src="data:image/png;base64,{logo_belago_b64}" width="150">
+        </div>
+    """, unsafe_allow_html=True)
+else:
+    st.error("Arquivos de logo não encontrados. Verifique se 'logo_sidebar.png' e 'logo_belago.png' estão no repositório.")
+
 
 # --- LÓGICA DE LOGIN E UPLOAD ---
 st.sidebar.header("Área do Administrador")
@@ -233,7 +245,6 @@ try:
     if df_atual.empty or df_15dias.empty:
         st.warning("Ainda não há dados para exibir.")
     else:
-        # Garante que a coluna de ID no dataframe principal seja do tipo texto
         if 'ID do ticket' in df_atual.columns:
             df_atual['ID do ticket'] = df_atual['ID do ticket'].astype(str)
 
@@ -246,7 +257,6 @@ try:
                 id_column_name = 'ID'
             
             if id_column_name:
-                # Garante que a coluna de ID no dataframe de fechados também seja texto
                 closed_ticket_ids = df_fechados[id_column_name].dropna().astype(str).unique()
 
         df_encerrados = df_atual[df_atual['ID do ticket'].isin(closed_ticket_ids)]
