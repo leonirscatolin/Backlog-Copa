@@ -233,13 +233,21 @@ try:
     if df_atual.empty or df_15dias.empty:
         st.warning("Ainda não há dados para exibir.")
     else:
-        # <-- ALTERADO: Procura por 'ID do Ticket' e depois por 'ID'
+        # Garante que a coluna de ID no dataframe principal seja do tipo texto
+        if 'ID do ticket' in df_atual.columns:
+            df_atual['ID do ticket'] = df_atual['ID do ticket'].astype(str)
+
         closed_ticket_ids = []
         if not df_fechados.empty:
+            id_column_name = None
             if 'ID do ticket' in df_fechados.columns:
-                closed_ticket_ids = df_fechados['ID do ticket'].dropna().unique()
+                id_column_name = 'ID do ticket'
             elif 'ID' in df_fechados.columns:
-                closed_ticket_ids = df_fechados['ID'].dropna().unique()
+                id_column_name = 'ID'
+            
+            if id_column_name:
+                # Garante que a coluna de ID no dataframe de fechados também seja texto
+                closed_ticket_ids = df_fechados[id_column_name].dropna().astype(str).unique()
 
         df_encerrados = df_atual[df_atual['ID do ticket'].isin(closed_ticket_ids)]
         df_abertos = df_atual[~df_atual['ID do ticket'].isin(closed_ticket_ids)]
@@ -307,7 +315,16 @@ try:
                 st.subheader("Detalhar e Buscar Chamados")
                 
                 if needs_scroll:
-                    js_code = """<script> ... </script>""" # Omitido
+                    js_code = f"""
+                        <script>
+                            setTimeout(function() {{
+                                const element = window.parent.document.getElementById('detalhar-e-buscar-chamados');
+                                if (element) {{
+                                    element.scrollIntoView({{ behavior: 'smooth', block: 'start' }});
+                                }}
+                            }}, 500);
+                        </script>
+                    """
                     components.html(js_code, height=0)
 
                 st.selectbox( "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada' )
