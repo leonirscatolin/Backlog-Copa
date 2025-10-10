@@ -3,12 +3,12 @@ import pandas as pd
 import plotly.express as px
 import numpy as np
 import base64
-from datetime import datetime, date
+from datetime import datetime, date, timedelta # Adiciona timedelta
 from github import Github, Auth
 from io import StringIO
 from urllib.parse import quote
 import streamlit.components.v1 as components
-import pytz # Importa a biblioteca para fusos horários
+# A biblioteca pytz não é mais necessária
 
 # --- Configuração da Página ---
 st.set_page_config(
@@ -109,7 +109,7 @@ if is_admin:
     st.sidebar.success("Acesso de administrador liberado.")
     st.sidebar.header("Carregar Novos Arquivos")
     uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL (.csv)", type="csv")
-    st.sidebar.markdown(f"Data de referência do arquivo ATUAL: **{date.today().strftime('%d/%m/%Y')}**")
+    # Removido o texto de data daqui para não confundir
     uploaded_file_15dias = st.sidebar.file_uploader("2. Backlog de 15 DIAS ATRÁS (.csv)", type="csv")
     data_arquivo_15dias = st.sidebar.date_input( "Data de referência do arquivo de 15 DIAS", value=date.today() )
     if st.sidebar.button("Salvar Novos Dados no Site"):
@@ -118,12 +118,14 @@ if is_admin:
                 update_github_file(repo, "dados_atuais.csv", uploaded_file_atual.getvalue())
                 update_github_file(repo, "dados_15_dias.csv", uploaded_file_15dias.getvalue())
                 
-                # <-- ALTERAÇÃO 1: Define o fuso horário de São Paulo e salva a hora correta ---
-                tz_sp = pytz.timezone('America/Sao_Paulo')
-                data_arquivo_atual = date.today()
-                hora_atualizacao = datetime.now(tz_sp).strftime('%H:%M')
+                # <-- ALTERAÇÃO 1: Captura a data do upload e a hora corrigida ---
+                data_do_upload = date.today()
+                hora_utc = datetime.utcnow()
+                hora_brt = hora_utc - timedelta(hours=3)
+                hora_atualizacao = hora_brt.strftime('%H:%M')
+
                 datas_referencia_content = (
-                    f"data_atual:{data_arquivo_atual.strftime('%d/%m/%Y')}\n"
+                    f"data_atual:{data_do_upload.strftime('%d/%m/%Y')}\n"
                     f"data_15dias:{data_arquivo_15dias.strftime('%d/%m/%Y')}\n"
                     f"hora_atualizacao:{hora_atualizacao}"
                 )
