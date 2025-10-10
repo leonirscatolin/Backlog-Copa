@@ -9,6 +9,7 @@ from github import Github, Auth
 from io import StringIO, BytesIO
 import streamlit.components.v1 as components
 from PIL import Image
+from urllib.parse import quote
 
 # --- Configuração da Página ---
 st.set_page_config(
@@ -26,7 +27,7 @@ def get_github_repo():
         g = Github(auth=auth)
         return g.get_repo("leonirscatolin/dashboard-backlog")
     except Exception as e:
-        st.error("Erro de conexão com o repositório. Verifique o GITHUB_TOKEN.")
+        st.error(f"Erro de conexão com o repositório: {e}")
         st.stop()
 
 def update_github_file(_repo, file_path, file_content):
@@ -46,7 +47,9 @@ def read_github_file(_repo, file_path):
         content = content_file.decoded_content.decode("utf-8")
         if not content.strip():
             return pd.DataFrame()
-        return pd.read_csv(StringIO(content), delimiter=';', encoding='latin1')
+        df = pd.read_csv(StringIO(content), delimiter=';', encoding='latin1')
+        df.columns = df.columns.str.strip()
+        return df
     except Exception:
         return pd.DataFrame()
 
@@ -64,6 +67,24 @@ def read_github_text_file(_repo, file_path):
     except Exception:
         return {}
 
+def process_uploaded_file(uploaded_file):
+    if uploaded_file is None:
+        return None
+    try:
+        if uploaded_file.name.endswith('.xlsx'):
+            df = pd.read_excel(uploaded_file)
+        else:
+            content = uploaded_file.getvalue().decode('latin1')
+            df = pd.read_csv(StringIO(content), delimiter=';', encoding='latin1')
+        
+        df.columns = df.columns.str.strip()
+        output = StringIO()
+        df.to_csv(output, index=False, sep=';', encoding='latin1')
+        return output.getvalue().encode('latin1')
+    except Exception as e:
+        st.sidebar.error(f"Erro ao ler o arquivo {uploaded_file.name}: {e}")
+        return None
+
 def processar_dados_comparativos(df_atual, df_15dias):
     contagem_atual = df_atual.groupby('Atribuir a um grupo').size().reset_index(name='Atual')
     contagem_15dias = df_15dias.groupby('Atribuir a um grupo').size().reset_index(name='15 Dias Atrás')
@@ -74,9 +95,12 @@ def processar_dados_comparativos(df_atual, df_15dias):
 
 def categorizar_idade_vetorizado(dias_series):
     condicoes = [
-        dias_series >= 30, (dias_series >= 21) & (dias_series <= 29),
-        (dias_series >= 11) & (dias_series <= 20), (dias_series >= 6) & (dias_series <= 10),
-        (dias_series >= 3) & (dias_series <= 5), (dias_series >= 0) & (dias_series <= 2)
+        dias_series >= 30,
+        (dias_series >= 21) & (dias_series <= 29),
+        (dias_series >= 11) & (dias_series <= 20),
+        (dias_series >= 6) & (dias_series <= 10),
+        (dias_series >= 3) & (dias_series <= 5),
+        (dias_series >= 0) & (dias_series <= 2)
     ]
     opcoes = ["30+ dias", "21-29 dias", "11-20 dias", "6-10 dias", "3-5 dias", "0-2 dias"]
     return np.select(condicoes, opcoes, default="Erro de Categoria")
@@ -85,8 +109,10 @@ def analisar_aging(df_atual):
     df = df_atual.copy()
     df['Data de criação'] = pd.to_datetime(df['Data de criação'], errors='coerce', dayfirst=True)
     df.dropna(subset=['Data de criação'], inplace=True)
-    hoje = pd.to_datetime('today').normalize()
+    
+    hoje = pd.to_datetime('today')
     data_criacao_normalizada = df['Data de criação'].dt.normalize()
+    
     df['Dias em Aberto'] = (hoje - data_criacao_normalizada).dt.days
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
     return df
@@ -97,28 +123,8 @@ def get_status(row):
     elif diferenca == 0: return "Estável / Atenção"
     else: return "Redução de Backlog"
 
-# <-- ALTERADO: Nova função para processar uploads (CSV ou XLSX)
-def process_uploaded_file(uploaded_file):
-    if uploaded_file is None:
-        return None
-    try:
-        if uploaded_file.name.endswith('.xlsx'):
-            df = pd.read_excel(uploaded_file)
-        else:
-            # Para CSV, decodificamos o conteúdo antes de ler
-            content = uploaded_file.getvalue().decode('latin1')
-            df = pd.read_csv(StringIO(content), delimiter=';', encoding='latin1')
-        
-        # Converte o DataFrame para uma string CSV para salvar no GitHub
-        output = StringIO()
-        df.to_csv(output, index=False, sep=';', encoding='latin1')
-        return output.getvalue().encode('latin1')
-    except Exception as e:
-        st.sidebar.error(f"Erro ao ler o arquivo {uploaded_file.name}: {e}")
-        return None
-
 # --- ESTILIZAÇÃO CSS ---
-st.html("""<style> ... </style>""") # CSS Omitido por brevidade
+st.html("""<style> ... </style>""") # CSS Omitido
 
 # --- INTERFACE DO APLICATIVO ---
 try:
@@ -140,7 +146,6 @@ if is_admin:
     st.sidebar.success("Acesso de administrador liberado.")
     st.sidebar.header("Carregar Novos Arquivos")
     
-    # <-- ALTERADO: Aceita CSV e XLSX
     file_types = ["csv", "xlsx"]
     uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL", type=file_types)
     uploaded_file_15dias = st.sidebar.file_uploader("2. Backlog de 15 DIAS ATRÁS", type=file_types)
@@ -151,7 +156,6 @@ if is_admin:
     if st.sidebar.button("Salvar Novos Dados no Site"):
         if uploaded_file_atual and uploaded_file_15dias:
             with st.spinner("Processando e salvando arquivos..."):
-                # <-- ALTERADO: Usa a nova função para processar cada arquivo
                 content_atual = process_uploaded_file(uploaded_file_atual)
                 content_15dias = process_uploaded_file(uploaded_file_15dias)
                 content_fechados = process_uploaded_file(uploaded_file_fechados)
@@ -163,13 +167,13 @@ if is_admin:
                     if content_fechados is not None:
                         update_github_file(repo, "dados_fechados.csv", content_fechados)
                     else:
-                        update_github_file(repo, "dados_fechados.csv", "")
+                        update_github_file(repo, "dados_fechados.csv", b"")
 
                     data_do_upload = date.today()
                     agora_correta = datetime.now(ZoneInfo("America/Sao_Paulo"))
                     hora_atualizacao = agora_correta.strftime('%H:%M')
                     datas_referencia_content = (f"data_atual:{data_do_upload.strftime('%d/%m/%Y')}\n" f"data_15dias:{data_arquivo_15dias.strftime('%d/%m/%Y')}\n" f"hora_atualizacao:{hora_atualizacao}")
-                    update_github_file(repo, "datas_referencia.txt", datas_referencia_content)
+                    update_github_file(repo, "datas_referencia.txt", datas_referencia_content.encode('utf-8'))
 
                     read_github_text_file.clear()
                     read_github_file.clear()
@@ -180,11 +184,143 @@ elif password:
     st.sidebar.error("Senha incorreta.")
 
 # --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
+# <<<<<<< CÓDIGO RESTAURADO A PARTIR DAQUI >>>>>>>
 try:
-    # O restante do código de exibição continua exatamente o mesmo
-    # ...
-    pass 
+    needs_scroll = "faixa" in st.query_params
+    if "faixa" in st.query_params:
+        faixa_from_url = st.query_params.get("faixa")
+        ordem_faixas_validas = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
+        if faixa_from_url in ordem_faixas_validas:
+             st.session_state.faixa_selecionada = faixa_from_url
+    if "scroll" in st.query_params or "faixa" in st.query_params:
+        st.query_params.clear()
+
+    df_atual = read_github_file(repo, "dados_atuais.csv")
+    df_15dias = read_github_file(repo, "dados_15_dias.csv")
+    df_fechados = read_github_file(repo, "dados_fechados.csv")
+    datas_referencia = read_github_text_file(repo, "datas_referencia.txt")
+    data_atual_str = datas_referencia.get('data_atual', 'N/A')
+    data_15dias_str = datas_referencia.get('data_15dias', 'N/A')
+    hora_atualizacao_str = datas_referencia.get('hora_atualizacao', '')
+
+    if df_atual.empty or df_15dias.empty:
+        st.warning("Ainda não há dados para exibir.")
+    else:
+        if not df_fechados.empty and 'ID do ticket' in df_fechados.columns:
+            closed_ticket_ids = df_fechados['ID do ticket'].dropna().unique()
+            original_count = len(df_atual)
+            df_atual = df_atual[~df_atual['ID do ticket'].isin(closed_ticket_ids)]
+            num_closed = original_count - len(df_atual)
+            if num_closed > 0:
+                st.info(f"ℹ️ {num_closed} chamados foram deduzidos da análise com base na lista de fechados do dia.")
+
+        df_atual_filtrado = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
+        df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
+        df_aging = analisar_aging(df_atual_filtrado)
+        
+        tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
+        with tab1:
+            st.info("""**Filtros e Regras Aplicadas:**\n- Grupos contendo 'RH' foram desconsiderados da análise.\n- A idade do chamado é o número de dias inteiros desde a criação.""")
+            st.subheader("Análise de Antiguidade do Backlog Atual")
+
+            texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
+            st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
+
+            if not df_aging.empty:
+                total_chamados = len(df_aging)
+                _, col_total, _ = st.columns([2, 1.5, 2])
+                with col_total: st.markdown(f"""<div class="metric-box"><span class="value">{total_chamados}</span><span class="label">Total de Chamados</span></div>""", unsafe_allow_html=True)
+                st.markdown("---")
+                aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
+                aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
+                ordem_faixas = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
+                todas_as_faixas = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas})
+                aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
+                aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
+                aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
+                if 'faixa_selecionada' not in st.session_state:
+                    st.session_state.faixa_selecionada = "3-5 dias"
+                cols = st.columns(len(ordem_faixas))
+                for i, row in aging_counts.iterrows():
+                    with cols[i]:
+                        faixa_encoded = quote(row['Faixa de Antiguidade'])
+                        card_html = f"""<a href="?faixa={faixa_encoded}&scroll=true" target="_self" class="metric-box"><span class="value">{row['Quantidade']}</span><span class="label">{row['Faixa de Antiguidade']}</span></a>"""
+                        st.markdown(card_html, unsafe_allow_html=True)
+            else: st.warning("Nenhum dado válido para a análise de antiguidade.")
+            
+            st.markdown(f"<h3>Comparativo de Backlog: Atual vs. 15 Dias Atrás <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_15dias_str})</span></h3>", unsafe_allow_html=True)
+            df_comparativo = processar_dados_comparativos(df_atual_filtrado.copy(), df_15dias_filtrado.copy())
+            df_comparativo['Status'] = df_comparativo.apply(get_status, axis=1)
+            df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True)
+            df_comparativo = df_comparativo[['Grupo', '15 Dias Atrás', 'Atual', 'Diferença', 'Status']]
+            st.dataframe(df_comparativo.set_index('Grupo').style.map(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
+
+            if not df_aging.empty:
+                st.markdown("---")
+                st.subheader("Detalhar e Buscar Chamados")
+                
+                if needs_scroll:
+                    js_code = f"""
+                        <script>
+                            setTimeout(function() {{
+                                const element = window.parent.document.getElementById('detalhar-e-buscar-chamados');
+                                if (element) {{
+                                    element.scrollIntoView({{ behavior: 'smooth', block: 'start' }});
+                                }}
+                            }}, 500);
+                        </script>
+                    """
+                    components.html(js_code, height=0)
+
+                st.selectbox( "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada' )
+                
+                faixa_atual = st.session_state.faixa_selecionada
+                filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].copy()
+                
+                if not filtered_df.empty:
+                    filtered_df['Data de criação'] = filtered_df['Data de criação'].dt.strftime('%d/%m/%Y')
+                    colunas_para_exibir = ['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
+                    st.data_editor(filtered_df[colunas_para_exibir], use_container_width=True, hide_index=True, disabled=True)
+                else:
+                    st.info("Não há chamados nesta categoria.")
+
+                st.subheader("Buscar Chamados por Grupo")
+                
+                lista_grupos = sorted(df_aging['Atribuir a um grupo'].dropna().unique())
+                grupo_selecionado = st.selectbox("Busca de chamados por grupo:", options=lista_grupos)
+                
+                if grupo_selecionado:
+                    resultados_busca = df_aging[df_aging['Atribuir a um grupo'] == grupo_selecionado].copy()
+                    resultados_busca['Data de criação'] = resultados_busca['Data de criação'].dt.strftime('%d/%m/%Y')
+                    st.write(f"Encontrados {len(resultados_busca)} chamados para o grupo '{grupo_selecionado}':")
+                    colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
+                    st.data_editor(resultados_busca[colunas_para_exibir_busca], use_container_width=True, hide_index=True, disabled=True)
+
+        with tab2:
+            st.subheader("Resumo do Backlog Atual")
+            if not df_aging.empty:
+                total_chamados = len(df_aging)
+                _, col_total_tab2, _ = st.columns([2, 1.5, 2])
+                with col_total_tab2: st.markdown( f"""<div class="metric-box"><span class="value">{total_chamados}</span><span class="label">Total de Chamados</span></div>""", unsafe_allow_html=True )
+                st.markdown("---")
+                aging_counts_tab2 = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
+                aging_counts_tab2.columns = ['Faixa de Antiguidade', 'Quantidade']
+                ordem_faixas_tab2 = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
+                todas_as_faixas_tab2 = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas_tab2})
+                aging_counts_tab2 = pd.merge(todas_as_faixas_tab2, aging_counts_tab2, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
+                aging_counts_tab2['Faixa de Antiguidade'] = pd.Categorical(aging_counts_tab2['Faixa de Antiguidade'], categories=ordem_faixas_tab2, ordered=True)
+                aging_counts_tab2 = aging_counts_tab2.sort_values('Faixa de Antiguidade')
+                cols_tab2 = st.columns(len(ordem_faixas_tab2))
+                for i, row in aging_counts_tab2.iterrows():
+                    with cols_tab2[i]: st.markdown( f"""<div class="metric-box"><span class="value">{row['Quantidade']}</span><span class="label">{row['Faixa de Antiguidade']}</span></div>""", unsafe_allow_html=True )
+                st.markdown("---")
+                st.subheader("Ofensores (Todos os Grupos)")
+                top_ofensores = df_aging['Atribuir a um grupo'].value_counts().sort_values(ascending=True)
+                fig_top_ofensores = px.bar(top_ofensores, x=top_ofensores.values, y=top_ofensores.index, orientation='h', text=top_ofensores.values, labels={'x': 'Qtd. Chamados', 'y': 'Grupo'})
+                fig_top_ofensores.update_traces(textposition='outside', marker_color='#375623')
+                fig_top_ofensores.update_layout(height=max(400, len(top_ofensores) * 25))
+                st.plotly_chart(fig_top_ofensores, use_container_width=True)
+            else: st.warning("Nenhum dado para gerar o report visual.")
+
 except Exception as e:
     st.error(f"Ocorreu um erro ao carregar os dados: {e}")
-
-# (O restante do seu código de exibição, que não precisa de alterações, foi omitido para encurtar a resposta)
