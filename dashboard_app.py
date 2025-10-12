@@ -265,8 +265,7 @@ try:
         
         tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
         with tab1:
-            st.info("""**Filtros e Regras Aplicadas:**\n- Grupos contendo 'RH' foram desconsiderados da análise.\n- A idade do chamado é o número de dias inteiros desde a criação.""")
-            st.subheader("Análise de Antiguidade do Backlog Atual")
+        st.info("""**Filtros e Regras Aplicadas:**\n- Grupos contendo 'RH' foram desconsiderados da análise.\n- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia).""")            st.subheader("Análise de Antiguidade do Backlog Atual")
 
             texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
             st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
