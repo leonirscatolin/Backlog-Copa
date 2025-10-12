@@ -117,7 +117,6 @@ def analisar_aging(df_atual):
     hoje = pd.to_datetime('today')
     data_criacao_normalizada = df['Data de criação'].dt.normalize()
     
-    # --- AQUI ESTÁ A LÓGICA QUE VOCÊ PEDIU ---
     # CÁLCULO ALTERADO: Subtrai 1 dia do prazo e garante que o mínimo é 0.
     dias_calculados = (hoje - data_criacao_normalizada).dt.days
     df['Dias em Aberto'] = (dias_calculados - 1).clip(lower=0) 
@@ -265,7 +264,10 @@ try:
         
         tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
         with tab1:
-        st.info("""**Filtros e Regras Aplicadas:**\n- Grupos contendo 'RH' foram desconsiderados da análise.\n- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia).""")            st.subheader("Análise de Antiguidade do Backlog Atual")
+            # --- TEXTO ATUALIZADO ---
+            st.info("""**Filtros e Regras Aplicadas:**\n- Grupos contendo 'RH' foram desconsiderados da análise.\n- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia).""")
+            
+            st.subheader("Análise de Antiguidade do Backlog Atual")
 
             texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
             st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
