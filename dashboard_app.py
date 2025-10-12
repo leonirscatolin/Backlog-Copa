@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 import numpy as np
 import base64
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from zoneinfo import ZoneInfo
 from github import Github, Auth
 from io import StringIO, BytesIO
@@ -117,7 +117,11 @@ def analisar_aging(df_atual):
     hoje = pd.to_datetime('today')
     data_criacao_normalizada = df['Data de criação'].dt.normalize()
     
-    df['Dias em Aberto'] = (hoje - data_criacao_normalizada).dt.days
+    # --- AQUI ESTÁ A LÓGICA QUE VOCÊ PEDIU ---
+    # CÁLCULO ALTERADO: Subtrai 1 dia do prazo e garante que o mínimo é 0.
+    dias_calculados = (hoje - data_criacao_normalizada).dt.days
+    df['Dias em Aberto'] = (dias_calculados - 1).clip(lower=0) 
+    
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
     return df
 
@@ -138,26 +142,12 @@ def get_image_as_base64(path):
 st.html("""
     <style>
         #GithubIcon { visibility: hidden; }
-        .metric-box {
-            border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px;
-            text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 10px;
-        }
-        a.metric-box {
-            display: block; color: inherit; text-decoration: none !important;
-        }
-        a.metric-box:hover {
-            background-color: #f0f2f6; text-decoration: none !important;
-        }
-        .metric-box span {
-            display: block; width: 100%; text-decoration: none !important;
-        }
-        .metric-box .value {
-            font-size: 2.5em; font-weight: bold; color: #375623;
-        }
-        .metric-box .label {
-            font-size: 1em; color: #666666;
-        }
+        .metric-box { border: 1px solid #CCCCCC; padding: 10px; border-radius: 5px; text-align: center; box-shadow: 0px 2px 4px rgba(0,0,0,0.1); margin-bottom: 10px; }
+        a.metric-box { display: block; color: inherit; text-decoration: none !important; }
+        a.metric-box:hover { background-color: #f0f2f6; text-decoration: none !important; }
+        .metric-box span { display: block; width: 100%; text-decoration: none !important; }
+        .metric-box .value { font-size: 2.5em; font-weight: bold; color: #375623; }
+        .metric-box .label { font-size: 1em; color: #666666; }
     </style>
 """)
 
@@ -174,8 +164,7 @@ if logo_copa_b64 and logo_belago_b64:
         </div>
     """, unsafe_allow_html=True)
 else:
-    st.error("Arquivos de logo não encontrados. Verifique se 'logo_sidebar.png' e 'logo_belago.png' estão no repositório.")
-
+    st.error("Arquivos de logo não encontrados.")
 
 # --- LÓGICA DE LOGIN E UPLOAD ---
 st.sidebar.header("Área do Administrador")
@@ -190,8 +179,6 @@ if is_admin:
     uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL", type=file_types)
     uploaded_file_15dias = st.sidebar.file_uploader("2. Backlog de 15 DIAS ATRÁS", type=file_types)
     uploaded_file_fechados = st.sidebar.file_uploader("3. Chamados FECHADOS no dia (Opcional)", type=file_types)
-    
-    data_arquivo_15dias = st.sidebar.date_input("Data de referência do arquivo de 15 DIAS", value=date.today())
     
     if st.sidebar.button("Salvar Novos Dados no Site"):
         if uploaded_file_atual and uploaded_file_15dias:
@@ -210,9 +197,15 @@ if is_admin:
                         update_github_file(repo, "dados_fechados.csv", b"")
 
                     data_do_upload = date.today()
+                    data_arquivo_15dias = data_do_upload - timedelta(days=15) 
                     agora_correta = datetime.now(ZoneInfo("America/Sao_Paulo"))
                     hora_atualizacao = agora_correta.strftime('%H:%M')
-                    datas_referencia_content = (f"data_atual:{data_do_upload.strftime('%d/%m/%Y')}\n" f"data_15dias:{data_arquivo_15dias.strftime('%d/%m/%Y')}\n" f"hora_atualizacao:{hora_atualizacao}")
+                    
+                    datas_referencia_content = (
+                        f"data_atual:{data_do_upload.strftime('%d/%m/%Y')}\n" 
+                        f"data_15dias:{data_arquivo_15dias.strftime('%d/%m/%Y')}\n" 
+                        f"hora_atualizacao:{hora_atualizacao}"
+                    )
                     update_github_file(repo, "datas_referencia.txt", datas_referencia_content.encode('utf-8'))
 
                     read_github_text_file.clear()
@@ -245,17 +238,29 @@ try:
     if df_atual.empty or df_15dias.empty:
         st.warning("Ainda não há dados para exibir.")
     else:
-        # A lógica de fechados volta a ser a mais simples: apenas remove os chamados
-        if not df_fechados.empty and 'ID do ticket' in df_fechados.columns:
-            closed_ticket_ids = df_fechados['ID do ticket'].dropna().unique()
-            original_count = len(df_atual)
-            df_atual = df_atual[~df_atual['ID do ticket'].isin(closed_ticket_ids)]
-            num_closed = original_count - len(df_atual)
-            if num_closed > 0:
-                st.info(f"ℹ️ {num_closed} chamados fechados no dia foram deduzidos das contagens.")
+        if 'ID do ticket' in df_atual.columns:
+            df_atual['ID do ticket'] = pd.to_numeric(df_atual['ID do ticket'], errors='coerce').astype('Int64').astype(str)
 
-        df_atual_filtrado = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
+        closed_ticket_ids = []
+        if not df_fechados.empty:
+            id_column_name = None
+            if 'ID do ticket' in df_fechados.columns: id_column_name = 'ID do ticket'
+            elif 'ID' in df_fechados.columns: id_column_name = 'ID'
+            
+            if id_column_name:
+                df_fechados[id_column_name] = pd.to_numeric(df_fechados[id_column_name], errors='coerce')
+                df_fechados.dropna(subset=[id_column_name], inplace=True)
+                closed_ticket_ids = df_fechados[id_column_name].astype('Int64').astype(str).unique()
+
+        df_encerrados = df_atual[df_atual['ID do ticket'].isin(closed_ticket_ids)]
+        df_abertos = df_atual[~df_atual['ID do ticket'].isin(closed_ticket_ids)]
+
+        if not df_encerrados.empty:
+            st.info(f"ℹ️ {len(df_encerrados)} chamados fechados no dia foram deduzidos das contagens principais.")
+        
+        df_atual_filtrado = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
+        
         df_aging = analisar_aging(df_atual_filtrado)
         
         tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
@@ -297,21 +302,23 @@ try:
             df_comparativo = df_comparativo[['Grupo', '15 Dias Atrás', 'Atual', 'Diferença', 'Status']]
             st.dataframe(df_comparativo.set_index('Grupo').style.map(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
 
+            st.markdown("---")
+            st.subheader("Chamados Encerrados no Dia")
+            if not df_encerrados.empty:
+                df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
+                st.data_editor(
+                    df_encerrados_filtrado[['ID do ticket', 'Descrição', 'Atribuir a um grupo']],
+                    hide_index=True, disabled=True, use_container_width=True
+                )
+            else:
+                st.info("Nenhum chamado da lista de fechados foi encontrado no backlog atual.")
+
             if not df_aging.empty:
                 st.markdown("---")
                 st.subheader("Detalhar e Buscar Chamados")
                 
                 if needs_scroll:
-                    js_code = f"""
-                        <script>
-                            setTimeout(function() {{
-                                const element = window.parent.document.getElementById('detalhar-e-buscar-chamados');
-                                if (element) {{
-                                    element.scrollIntoView({{ behavior: 'smooth', block: 'start' }});
-                                }}
-                            }}, 500);
-                        </script>
-                    """
+                    js_code = f"""<script> ... </script>"""
                     components.html(js_code, height=0)
 
                 st.selectbox( "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada' )
