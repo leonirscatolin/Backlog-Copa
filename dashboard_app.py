@@ -237,8 +237,10 @@ try:
     if df_atual.empty or df_15dias.empty:
         st.warning("Ainda não há dados para exibir.")
     else:
+        # ######################## 1ª ALTERAÇÃO AQUI ########################
         if 'ID do ticket' in df_atual.columns:
-            df_atual['ID do ticket'] = pd.to_numeric(df_atual['ID do ticket'], errors='coerce').astype('Int64').astype(str)
+            # Garante que a coluna é do tipo texto (string) para evitar erros de conversão
+            df_atual['ID do ticket'] = df_atual['ID do ticket'].astype(str).str.replace(r'\.0$', '', regex=True)
 
         closed_ticket_ids = []
         if not df_fechados.empty:
@@ -246,10 +248,12 @@ try:
             if 'ID do ticket' in df_fechados.columns: id_column_name = 'ID do ticket'
             elif 'ID' in df_fechados.columns: id_column_name = 'ID'
             
+            # ######################## 2ª ALTERAÇÃO AQUI ########################
             if id_column_name:
-                df_fechados[id_column_name] = pd.to_numeric(df_fechados[id_column_name], errors='coerce')
+                # Garante que a coluna de IDs no arquivo de fechados também é texto
+                df_fechados[id_column_name] = df_fechados[id_column_name].astype(str).str.replace(r'\.0$', '', regex=True)
                 df_fechados.dropna(subset=[id_column_name], inplace=True)
-                closed_ticket_ids = df_fechados[id_column_name].astype('Int64').astype(str).unique()
+                closed_ticket_ids = df_fechados[id_column_name].unique()
 
         df_encerrados = df_atual[df_atual['ID do ticket'].isin(closed_ticket_ids)]
         df_abertos = df_atual[~df_atual['ID do ticket'].isin(closed_ticket_ids)]
@@ -264,7 +268,6 @@ try:
         
         tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
         with tab1:
-            # --- TEXTO ATUALIZADO ---
             st.info("""**Filtros e Regras Aplicadas:**\n- Grupos contendo 'RH' foram desconsiderados da análise.\n- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia).""")
             
             st.subheader("Análise de Antiguidade do Backlog Atual")
@@ -295,9 +298,7 @@ try:
             else:
                 st.warning("Nenhum dado válido para a análise de antiguidade.")
             
-            # ######################## LINHA CORRIGIDA ########################
             st.markdown(f"<h3>Comparativo de Backlog: Atual vs. 15 Dias Atrás <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_15dias_str})</span></h3>", unsafe_allow_html=True)
-            # #################################################################
             
             df_comparativo = processar_dados_comparativos(df_atual_filtrado.copy(), df_15dias_filtrado.copy())
             df_comparativo['Status'] = df_comparativo.apply(get_status, axis=1)
