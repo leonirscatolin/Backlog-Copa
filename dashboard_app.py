@@ -255,8 +255,11 @@ try:
         df_encerrados = df_atual[df_atual['ID do ticket'].isin(closed_ticket_ids)]
         df_abertos = df_atual[~df_atual['ID do ticket'].isin(closed_ticket_ids)]
 
+        # ######################## 1ª ALTERAÇÃO AQUI ########################
+        # Prepara a mensagem dos chamados fechados para ser usada depois
+        mensagem_fechados = ""
         if not df_encerrados.empty:
-            st.info(f"ℹ️ {len(df_encerrados)} chamados fechados no dia foram deduzidos das contagens principais.")
+            mensagem_fechados = f"\n- **{len(df_encerrados)} chamados fechados no dia** foram deduzidos das contagens principais."
         
         df_atual_filtrado = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
         df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
@@ -265,7 +268,14 @@ try:
         
         tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
         with tab1:
-            st.info("""**Filtros e Regras Aplicadas:**\n- Grupos contendo 'RH' foram desconsiderados da análise.\n- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia).""")
+            # Junta o texto dos filtros com a mensagem de chamados fechados
+            texto_info_completo = f"""
+            **Filtros e Regras Aplicadas:**
+            - Grupos contendo 'RH' foram desconsiderados da análise.
+            - A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia).{mensagem_fechados}
+            """
+            st.info(texto_info_completo)
+
             st.subheader("Análise de Antiguidade do Backlog Atual")
             texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
             st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
@@ -304,8 +314,9 @@ try:
             st.dataframe(df_comparativo.set_index('Grupo').style.map(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
 
             st.markdown("---")
-            # ######################## TÍTULO ATUALIZADO AQUI ########################
-            st.markdown(f"<h3>Chamados Encerrados no Dia <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_atual_str}{texto_hora})</span></h3>", unsafe_allow_html=True)
+            # ######################## 2ª ALTERAÇÃO AQUI ########################
+            # Título agora exibe apenas a data, sem a hora
+            st.markdown(f"<h3>Chamados Encerrados no Dia <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_atual_str})</span></h3>", unsafe_allow_html=True)
             if not df_encerrados.empty:
                 df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
                 st.data_editor(
