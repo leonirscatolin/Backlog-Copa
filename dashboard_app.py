@@ -243,49 +243,14 @@ try:
         closed_ticket_ids = []
         if not df_fechados.empty:
             id_column_name = None
-            # ######################## LINHA ADICIONADA AQUI ########################
             if 'ID do ticket' in df_fechados.columns: id_column_name = 'ID do ticket'
-            elif 'ID do Ticket' in df_fechados.columns: id_column_name = 'ID do Ticket' # Verifica a versão com "T" maiúsculo
+            elif 'ID do Ticket' in df_fechados.columns: id_column_name = 'ID do Ticket'
             elif 'ID' in df_fechados.columns: id_column_name = 'ID'
             
             if id_column_name:
                 df_fechados[id_column_name] = df_fechados[id_column_name].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
                 df_fechados.dropna(subset=[id_column_name], inplace=True)
                 closed_ticket_ids = df_fechados[id_column_name].unique()
-        
-        with st.expander("Informações de Diagnóstico (Chamados Encerrados)"):
-            st.write("**Análise do Arquivo de Chamados Encerrados:**")
-            if not df_fechados.empty:
-                st.write("Colunas encontradas no arquivo de Fechados:", df_fechados.columns.tolist())
-                
-                id_col_diag = None
-                # ######################## LÓGICA DE DIAGNÓSTICO ATUALIZADA ########################
-                if 'ID do ticket' in df_fechados.columns: id_col_diag = 'ID do ticket'
-                elif 'ID do Ticket' in df_fechados.columns: id_col_diag = 'ID do Ticket'
-                elif 'ID' in df_fechados.columns: id_col_diag = 'ID'
-
-                if id_col_diag:
-                    st.success(f"Coluna de ID ('{id_col_diag}') encontrada.")
-                    st.write(f"Total de IDs únicos lidos do arquivo de Fechados: {len(closed_ticket_ids)}")
-                    st.write("Amostra de 5 IDs do arquivo de Fechados:", closed_ticket_ids[:5])
-                else:
-                    st.error("ERRO: Nenhuma coluna com nome 'ID do ticket', 'ID do Ticket' ou 'ID' foi encontrada no arquivo de encerrados.")
-            else:
-                st.warning("O arquivo de chamados encerrados está vazio ou não foi carregado.")
-
-            st.write("---")
-            st.write("**Análise de Correspondência:**")
-            if 'ID do ticket' in df_atual.columns and len(closed_ticket_ids) > 0:
-                amostra_atual = df_atual['ID do ticket'].unique()[:5]
-                st.write("Amostra de 5 IDs do arquivo de Backlog Atual:", amostra_atual)
-                
-                tickets_correspondentes = df_atual[df_atual['ID do ticket'].isin(closed_ticket_ids)]
-                st.write(f"**Total de chamados correspondentes encontrados:** {len(tickets_correspondentes)}")
-
-                if len(tickets_correspondentes) == 0:
-                    st.warning("AVISO: Nenhum ID do arquivo de encerrados foi encontrado no arquivo de backlog atual. Verifique se os formatos dos IDs são idênticos (sem espaços extras, zeros à esquerda, etc.).")
-            else:
-                 st.info("Não foi possível comparar os IDs (backlog ou lista de fechados não disponíveis).")
 
         df_encerrados = df_atual[df_atual['ID do ticket'].isin(closed_ticket_ids)]
         df_abertos = df_atual[~df_atual['ID do ticket'].isin(closed_ticket_ids)]
@@ -339,7 +304,8 @@ try:
             st.dataframe(df_comparativo.set_index('Grupo').style.map(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
 
             st.markdown("---")
-            st.subheader("Chamados Encerrados no Dia")
+            # ######################## TÍTULO ATUALIZADO AQUI ########################
+            st.markdown(f"<h3>Chamados Encerrados no Dia <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_atual_str}{texto_hora})</span></h3>", unsafe_allow_html=True)
             if not df_encerrados.empty:
                 df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
                 st.data_editor(
@@ -347,7 +313,7 @@ try:
                     hide_index=True, disabled=True, use_container_width=True
                 )
             else:
-                st.info("Nenhum chamado da lista de fechados foi encontrado no backlog atual.")
+                st.info("Nenhum chamado da lista de fechados foi encontrado no backlog atual ou o arquivo de encerrados não foi carregado.")
 
             if not df_aging.empty:
                 st.markdown("---")
