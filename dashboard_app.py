@@ -238,7 +238,7 @@ try:
         st.warning("Ainda não há dados para exibir.")
     else:
         if 'ID do ticket' in df_atual.columns:
-            df_atual['ID do ticket'] = df_atual['ID do ticket'].astype(str).str.replace(r'\.0$', '', regex=True)
+            df_atual['ID do ticket'] = df_atual['ID do ticket'].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
 
         closed_ticket_ids = []
         if not df_fechados.empty:
@@ -247,9 +247,43 @@ try:
             elif 'ID' in df_fechados.columns: id_column_name = 'ID'
             
             if id_column_name:
-                df_fechados[id_column_name] = df_fechados[id_column_name].astype(str).str.replace(r'\.0$', '', regex=True)
+                df_fechados[id_column_name] = df_fechados[id_column_name].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
                 df_fechados.dropna(subset=[id_column_name], inplace=True)
                 closed_ticket_ids = df_fechados[id_column_name].unique()
+        
+        # ######################## NOVO BLOCO DE DIAGNÓSTICO ########################
+        with st.expander("Informações de Diagnóstico (Chamados Encerrados)"):
+            st.write("**Análise do Arquivo de Chamados Encerrados:**")
+            if not df_fechados.empty:
+                st.write("Colunas encontradas no arquivo de Fechados:", df_fechados.columns.tolist())
+                
+                id_col_diag = None
+                if 'ID do ticket' in df_fechados.columns: id_col_diag = 'ID do ticket'
+                elif 'ID' in df_fechados.columns: id_col_diag = 'ID'
+
+                if id_col_diag:
+                    st.success(f"Coluna de ID ('{id_col_diag}') encontrada.")
+                    st.write(f"Total de IDs únicos lidos do arquivo de Fechados: {len(closed_ticket_ids)}")
+                    st.write("Amostra de 5 IDs do arquivo de Fechados:", closed_ticket_ids[:5])
+                else:
+                    st.error("ERRO: Nenhuma coluna com nome 'ID do ticket' ou 'ID' foi encontrada no arquivo de encerrados.")
+            else:
+                st.warning("O arquivo de chamados encerrados está vazio ou não foi carregado.")
+
+            st.write("---")
+            st.write("**Análise de Correspondência:**")
+            if 'ID do ticket' in df_atual.columns and len(closed_ticket_ids) > 0:
+                amostra_atual = df_atual['ID do ticket'].unique()[:5]
+                st.write("Amostra de 5 IDs do arquivo de Backlog Atual:", amostra_atual)
+                
+                tickets_correspondentes = df_atual[df_atual['ID do ticket'].isin(closed_ticket_ids)]
+                st.write(f"**Total de chamados correspondentes encontrados:** {len(tickets_correspondentes)}")
+
+                if len(tickets_correspondentes) == 0:
+                    st.warning("AVISO: Nenhum ID do arquivo de encerrados foi encontrado no arquivo de backlog atual. Verifique se os formatos dos IDs são idênticos (sem espaços extras, zeros à esquerda, etc.).")
+            else:
+                 st.info("Não foi possível comparar os IDs (backlog ou lista de fechados não disponíveis).")
+        # #######################################################################
 
         df_encerrados = df_atual[df_atual['ID do ticket'].isin(closed_ticket_ids)]
         df_abertos = df_atual[~df_atual['ID do ticket'].isin(closed_ticket_ids)]
@@ -265,9 +299,8 @@ try:
         tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
         with tab1:
             st.info("""**Filtros e Regras Aplicadas:**\n- Grupos contendo 'RH' foram desconsiderados da análise.\n- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia).""")
-            
             st.subheader("Análise de Antiguidade do Backlog Atual")
-
+            # ... (O restante do código continua igual) ...
             texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
             st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
 
@@ -319,7 +352,6 @@ try:
                 st.markdown("---")
                 st.subheader("Detalhar e Buscar Chamados")
                 
-                # ######################## CÓDIGO RESTAURADO ########################
                 if needs_scroll:
                     js_code = """
                         <script>
@@ -332,7 +364,6 @@ try:
                         </script>
                     """
                     components.html(js_code, height=0)
-                # #####################################################################
 
                 st.selectbox( "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada' )
                 
