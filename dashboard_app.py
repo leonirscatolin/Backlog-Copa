@@ -47,7 +47,8 @@ def read_github_file(_repo, file_path):
         content = content_file.decoded_content.decode("utf-8")
         if not content.strip():
             return pd.DataFrame()
-        df = pd.read_csv(StringIO(content), delimiter=';', encoding='utf-8')
+        # Garante que a coluna 'ID do ticket' seja lida como texto
+        df = pd.read_csv(StringIO(content), delimiter=';', encoding='utf-8', dtype={'ID do ticket': str})
         df.columns = df.columns.str.strip()
         return df
     except Exception as e:
@@ -72,14 +73,16 @@ def process_uploaded_file(uploaded_file):
     if uploaded_file is None:
         return None
     try:
+        # Lê a coluna 'ID do ticket' como texto para evitar conversão automática
+        dtype_spec = {'ID do ticket': str, 'ID': str}
         if uploaded_file.name.endswith('.xlsx'):
-            df = pd.read_excel(uploaded_file)
+            df = pd.read_excel(uploaded_file, dtype=dtype_spec)
         else:
             try:
                 content = uploaded_file.getvalue().decode('utf-8')
             except UnicodeDecodeError:
                 content = uploaded_file.getvalue().decode('latin1')
-            df = pd.read_csv(StringIO(content), delimiter=';')
+            df = pd.read_csv(StringIO(content), delimiter=';', dtype=dtype_spec)
         
         df.columns = df.columns.str.strip()
         output = StringIO()
@@ -117,7 +120,6 @@ def analisar_aging(df_atual):
     hoje = pd.to_datetime('today')
     data_criacao_normalizada = df['Data de criação'].dt.normalize()
     
-    # CÁLCULO ALTERADO: Subtrai 1 dia do prazo e garante que o mínimo é 0.
     dias_calculados = (hoje - data_criacao_normalizada).dt.days
     df['Dias em Aberto'] = (dias_calculados - 1).clip(lower=0) 
     
@@ -237,9 +239,7 @@ try:
     if df_atual.empty or df_15dias.empty:
         st.warning("Ainda não há dados para exibir.")
     else:
-        # ######################## 1ª ALTERAÇÃO AQUI ########################
         if 'ID do ticket' in df_atual.columns:
-            # Garante que a coluna é do tipo texto (string) para evitar erros de conversão
             df_atual['ID do ticket'] = df_atual['ID do ticket'].astype(str).str.replace(r'\.0$', '', regex=True)
 
         closed_ticket_ids = []
@@ -248,9 +248,7 @@ try:
             if 'ID do ticket' in df_fechados.columns: id_column_name = 'ID do ticket'
             elif 'ID' in df_fechados.columns: id_column_name = 'ID'
             
-            # ######################## 2ª ALTERAÇÃO AQUI ########################
             if id_column_name:
-                # Garante que a coluna de IDs no arquivo de fechados também é texto
                 df_fechados[id_column_name] = df_fechados[id_column_name].astype(str).str.replace(r'\.0$', '', regex=True)
                 df_fechados.dropna(subset=[id_column_name], inplace=True)
                 closed_ticket_ids = df_fechados[id_column_name].unique()
@@ -287,8 +285,12 @@ try:
                 aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
                 aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
                 aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
+
+                # ######################## LINHA ALTERADA ########################
                 if 'faixa_selecionada' not in st.session_state:
-                    st.session_state.faixa_selecionada = "3-5 dias"
+                    st.session_state.faixa_selecionada = "0-2 dias" # Define o valor inicial
+                # ################################################################
+
                 cols = st.columns(len(ordem_faixas))
                 for i, row in aging_counts.iterrows():
                     with cols[i]:
@@ -322,7 +324,7 @@ try:
                 st.subheader("Detalhar e Buscar Chamados")
                 
                 if needs_scroll:
-                    js_code = f"""<script> ... </script>"""
+                    js_code = f"""<script> ... </script>""" # O código JS foi omitido por brevidade
                     components.html(js_code, height=0)
 
                 st.selectbox( "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada' )
