@@ -47,7 +47,6 @@ def read_github_file(_repo, file_path):
         content = content_file.decoded_content.decode("utf-8")
         if not content.strip():
             return pd.DataFrame()
-        # Garante que a coluna 'ID do ticket' seja lida como texto
         df = pd.read_csv(StringIO(content), delimiter=';', encoding='utf-8', dtype={'ID do ticket': str})
         df.columns = df.columns.str.strip()
         return df
@@ -73,7 +72,6 @@ def process_uploaded_file(uploaded_file):
     if uploaded_file is None:
         return None
     try:
-        # Lê a coluna 'ID do ticket' como texto para evitar conversão automática
         dtype_spec = {'ID do ticket': str, 'ID': str}
         if uploaded_file.name.endswith('.xlsx'):
             df = pd.read_excel(uploaded_file, dtype=dtype_spec)
@@ -219,7 +217,7 @@ elif password:
 
 # --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
 try:
-    needs_scroll = "faixa" in st.query_params
+    needs_scroll = "scroll" in st.query_params
     if "faixa" in st.query_params:
         faixa_from_url = st.query_params.get("faixa")
         ordem_faixas_validas = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
@@ -286,10 +284,8 @@ try:
                 aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
                 aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
 
-                # ######################## LINHA ALTERADA ########################
                 if 'faixa_selecionada' not in st.session_state:
-                    st.session_state.faixa_selecionada = "0-2 dias" # Define o valor inicial
-                # ################################################################
+                    st.session_state.faixa_selecionada = "0-2 dias"
 
                 cols = st.columns(len(ordem_faixas))
                 for i, row in aging_counts.iterrows():
@@ -323,9 +319,20 @@ try:
                 st.markdown("---")
                 st.subheader("Detalhar e Buscar Chamados")
                 
+                # ######################## CÓDIGO RESTAURADO ########################
                 if needs_scroll:
-                    js_code = f"""<script> ... </script>""" # O código JS foi omitido por brevidade
+                    js_code = """
+                        <script>
+                            setTimeout(() => {
+                                const element = window.parent.document.getElementById('detalhar-e-buscar-chamados');
+                                if (element) {
+                                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }
+                            }, 200);
+                        </script>
+                    """
                     components.html(js_code, height=0)
+                # #####################################################################
 
                 st.selectbox( "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada' )
                 
