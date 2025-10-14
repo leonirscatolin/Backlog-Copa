@@ -295,13 +295,9 @@ try:
             else:
                 st.warning("Nenhum dado válido para a análise de antiguidade.")
             
-            # ######################## LINHA ALTERADA ########################
-            # Linha Original:
-            # st.markdown(f"<h3>Comparativo de Backlog: Atual vs. 15 Dias Atrás <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_15dias_str})</span></h3>", unsafe_allow_html=True)
-            #
-            # Nova Linha:
-            st.markdown(f"<h3>Comparativo de Backlog: Atual vs. 15 Dias Atrás <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_atual_str})</span></h3>", unsafe_allow_html=True)
-            # ################################################################
+            # ######################## LINHA CORRIGIDA ########################
+            st.markdown(f"<h3>Comparativo de Backlog: Atual vs. 15 Dias Atrás <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_15dias_str})</span></h3>", unsafe_allow_html=True)
+            # #################################################################
             
             df_comparativo = processar_dados_comparativos(df_atual_filtrado.copy(), df_15dias_filtrado.copy())
             df_comparativo['Status'] = df_comparativo.apply(get_status, axis=1)
