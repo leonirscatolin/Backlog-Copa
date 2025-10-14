@@ -47,7 +47,7 @@ def read_github_file(_repo, file_path):
         content = content_file.decoded_content.decode("utf-8")
         if not content.strip():
             return pd.DataFrame()
-        df = pd.read_csv(StringIO(content), delimiter=';', encoding='utf-8', dtype={'ID do ticket': str})
+        df = pd.read_csv(StringIO(content), delimiter=';', encoding='utf-8', dtype={'ID do ticket': str, 'ID do Ticket': str})
         df.columns = df.columns.str.strip()
         return df
     except Exception as e:
@@ -72,7 +72,7 @@ def process_uploaded_file(uploaded_file):
     if uploaded_file is None:
         return None
     try:
-        dtype_spec = {'ID do ticket': str, 'ID': str}
+        dtype_spec = {'ID do ticket': str, 'ID do Ticket': str, 'ID': str}
         if uploaded_file.name.endswith('.xlsx'):
             df = pd.read_excel(uploaded_file, dtype=dtype_spec)
         else:
@@ -243,7 +243,9 @@ try:
         closed_ticket_ids = []
         if not df_fechados.empty:
             id_column_name = None
+            # ######################## LINHA ADICIONADA AQUI ########################
             if 'ID do ticket' in df_fechados.columns: id_column_name = 'ID do ticket'
+            elif 'ID do Ticket' in df_fechados.columns: id_column_name = 'ID do Ticket' # Verifica a versão com "T" maiúsculo
             elif 'ID' in df_fechados.columns: id_column_name = 'ID'
             
             if id_column_name:
@@ -251,14 +253,15 @@ try:
                 df_fechados.dropna(subset=[id_column_name], inplace=True)
                 closed_ticket_ids = df_fechados[id_column_name].unique()
         
-        # ######################## NOVO BLOCO DE DIAGNÓSTICO ########################
         with st.expander("Informações de Diagnóstico (Chamados Encerrados)"):
             st.write("**Análise do Arquivo de Chamados Encerrados:**")
             if not df_fechados.empty:
                 st.write("Colunas encontradas no arquivo de Fechados:", df_fechados.columns.tolist())
                 
                 id_col_diag = None
+                # ######################## LÓGICA DE DIAGNÓSTICO ATUALIZADA ########################
                 if 'ID do ticket' in df_fechados.columns: id_col_diag = 'ID do ticket'
+                elif 'ID do Ticket' in df_fechados.columns: id_col_diag = 'ID do Ticket'
                 elif 'ID' in df_fechados.columns: id_col_diag = 'ID'
 
                 if id_col_diag:
@@ -266,7 +269,7 @@ try:
                     st.write(f"Total de IDs únicos lidos do arquivo de Fechados: {len(closed_ticket_ids)}")
                     st.write("Amostra de 5 IDs do arquivo de Fechados:", closed_ticket_ids[:5])
                 else:
-                    st.error("ERRO: Nenhuma coluna com nome 'ID do ticket' ou 'ID' foi encontrada no arquivo de encerrados.")
+                    st.error("ERRO: Nenhuma coluna com nome 'ID do ticket', 'ID do Ticket' ou 'ID' foi encontrada no arquivo de encerrados.")
             else:
                 st.warning("O arquivo de chamados encerrados está vazio ou não foi carregado.")
 
@@ -283,7 +286,6 @@ try:
                     st.warning("AVISO: Nenhum ID do arquivo de encerrados foi encontrado no arquivo de backlog atual. Verifique se os formatos dos IDs são idênticos (sem espaços extras, zeros à esquerda, etc.).")
             else:
                  st.info("Não foi possível comparar os IDs (backlog ou lista de fechados não disponíveis).")
-        # #######################################################################
 
         df_encerrados = df_atual[df_atual['ID do ticket'].isin(closed_ticket_ids)]
         df_abertos = df_atual[~df_atual['ID do ticket'].isin(closed_ticket_ids)]
@@ -300,7 +302,6 @@ try:
         with tab1:
             st.info("""**Filtros e Regras Aplicadas:**\n- Grupos contendo 'RH' foram desconsiderados da análise.\n- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia).""")
             st.subheader("Análise de Antiguidade do Backlog Atual")
-            # ... (O restante do código continua igual) ...
             texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
             st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
 
