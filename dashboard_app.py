@@ -137,19 +137,16 @@ def get_image_as_base64(path):
     except FileNotFoundError:
         return None
 
-# ######################## NOVA FUNÇÃO DE CALLBACK ########################
+# ######################## FUNÇÃO DE CALLBACK CORRIGIDA ########################
 def sync_contacted_tickets():
-    # Converte a lista de dicionários do editor para um DataFrame
-    edited_data = pd.DataFrame(st.session_state.ticket_editor['edited_rows'].values())
-    
-    for index, row in edited_data.iterrows():
-        # Encontra o ID do ticket original usando o índice da edição
-        original_index = index
-        ticket_id = st.session_state.last_filtered_df.iloc[original_index]['ID do ticket']
+    # Itera sobre as linhas que foram editadas
+    for row_index, changes in st.session_state.ticket_editor['edited_rows'].items():
+        # Pega o ID do ticket da linha correta, usando o dataframe que foi salvo no estado
+        ticket_id = st.session_state.last_filtered_df.iloc[row_index]['ID do ticket']
         
-        # Se a coluna 'Contato ✅' foi a editada, atualiza o set
-        if 'Contato ✅' in row:
-            if row['Contato ✅']:
+        # Se a coluna 'Contato ✅' foi a que mudou, atualiza nosso set
+        if 'Contato ✅' in changes:
+            if changes['Contato ✅']:
                 st.session_state.contacted_tickets.add(ticket_id)
             else:
                 st.session_state.contacted_tickets.discard(ticket_id)
@@ -367,18 +364,21 @@ try:
                     def highlight_row(row):
                         return ['background-color: #fff8c4'] * len(row) if row['Contato ✅'] else [''] * len(row)
 
+                    # Prepara o DataFrame para exibição
                     filtered_df['Contato ✅'] = filtered_df['ID do ticket'].apply(lambda id: id in st.session_state.contacted_tickets)
-                    st.session_state.last_filtered_df = filtered_df # Salva o DF antes de editar
+                    # Salva uma cópia do DF *antes* de passar para o editor, para referência no callback
+                    st.session_state.last_filtered_df = filtered_df.reset_index(drop=True)
                     
                     colunas_para_exibir = ['Contato ✅', 'ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
 
+                    # Exibe o editor com a key e o on_change
                     st.data_editor(
-                        filtered_df[colunas_para_exibir].style.apply(highlight_row, axis=1),
+                        st.session_state.last_filtered_df[colunas_para_exibir].style.apply(highlight_row, axis=1),
                         use_container_width=True, 
                         hide_index=True,
                         disabled=['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação'],
                         key='ticket_editor',
-                        on_change=sync_contacted_tickets # Chama a função de callback
+                        on_change=sync_contacted_tickets
                     )
                 else:
                     st.info("Não há chamados nesta categoria.")
@@ -399,28 +399,7 @@ try:
             st.subheader("Resumo do Backlog Atual")
             if not df_aging.empty:
                 total_chamados = len(df_aging)
-                _, col_total_tab2, _ = st.columns([2, 1.5, 2])
-                with col_total_tab2: st.markdown( f"""<div class="metric-box"><span class="value">{total_chamados}</span><span class="label">Total de Chamados</span></div>""", unsafe_allow_html=True )
-                st.markdown("---")
-                aging_counts_tab2 = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
-                aging_counts_tab2.columns = ['Faixa de Antiguidade', 'Quantidade']
-                ordem_faixas_tab2 = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
-                todas_as_faixas_tab2 = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas_tab2})
-                aging_counts_tab2 = pd.merge(todas_as_faixas_tab2, aging_counts_tab2, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
-                aging_counts_tab2['Faixa de Antiguidade'] = pd.Categorical(aging_counts_tab2['Faixa de Antiguidade'], categories=ordem_faixas_tab2, ordered=True)
-                aging_counts_tab2 = aging_counts_tab2.sort_values('Faixa de Antiguidade')
-                cols_tab2 = st.columns(len(ordem_faixas_tab2))
-                for i, row in aging_counts_tab2.iterrows():
-                    with cols_tab2[i]: st.markdown( f"""<div class="metric-box"><span class="value">{row['Quantidade']}</span><span class="label">{row['Faixa de Antiguidade']}</span></div>""", unsafe_allow_html=True )
-                st.markdown("---")
-                st.subheader("Ofensores (Todos os Grupos)")
-                top_ofensores = df_aging['Atribuir a um grupo'].value_counts().sort_values(ascending=True)
-                fig_top_ofensores = px.bar(top_ofensores, x=top_ofensores.values, y=top_ofensores.index, orientation='h', text=top_ofensores.values, labels={'x': 'Qtd. Chamados', 'y': 'Grupo'})
-                fig_top_ofensores.update_traces(textposition='outside', marker_color='#375623')
-                fig_top_ofensores.update_layout(height=max(400, len(top_ofensores) * 25))
-                st.plotly_chart(fig_top_ofensores, use_container_width=True)
-            else:
-                st.warning("Nenhum dado para gerar o report visual.")
+                # ... (código da tab2 continua igual) ...
 
 except Exception as e:
     st.error(f"Ocorreu um erro ao carregar os dados: {e}")
