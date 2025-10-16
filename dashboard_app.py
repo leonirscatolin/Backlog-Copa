@@ -217,6 +217,10 @@ elif password:
 
 # --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
 try:
+    # Inicializa o session_state para guardar os tickets contatados
+    if 'contacted_tickets' not in st.session_state:
+        st.session_state.contacted_tickets = set()
+
     needs_scroll = "scroll" in st.query_params
     if "faixa" in st.query_params:
         faixa_from_url = st.query_params.get("faixa")
@@ -262,8 +266,6 @@ try:
         
         tab1, tab2 = st.tabs(["Dashboard Completo", "Report Visual"])
         with tab1:
-            # ######################## FORMATAÇÃO CORRIGIDA AQUI ########################
-            # Constrói a lista de mensagens para o box de informações
             info_messages = [
                 "**Filtros e Regras Aplicadas:**",
                 "- Grupos contendo 'RH' foram desconsiderados da análise.",
@@ -271,8 +273,6 @@ try:
             ]
             if not df_encerrados.empty:
                 info_messages.append(f"- **{len(df_encerrados)} chamados fechados no dia** foram deduzidos das contagens principais.")
-            
-            # Junta as mensagens com quebras de linha e exibe
             st.info("\n".join(info_messages))
 
             st.subheader("Análise de Antiguidade do Backlog Atual")
@@ -327,6 +327,9 @@ try:
                 st.markdown("---")
                 st.subheader("Detalhar e Buscar Chamados")
                 
+                # ######################## NOVA FUNCIONALIDADE AQUI ########################
+                st.warning("ℹ️ Marcar a caixa 'Contato ✅' sinaliza que o contato com o usuário foi feito e a pendência foi confirmada.")
+
                 if needs_scroll:
                     js_code = """
                         <script>
@@ -340,15 +343,37 @@ try:
                     """
                     components.html(js_code, height=0)
 
-                st.selectbox( "Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada' )
+                st.selectbox("Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada')
                 
                 faixa_atual = st.session_state.faixa_selecionada
                 filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].copy()
                 
                 if not filtered_df.empty:
-                    filtered_df['Data de criação'] = filtered_df['Data de criação'].dt.strftime('%d/%m/%Y')
-                    colunas_para_exibir = ['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
-                    st.data_editor(filtered_df[colunas_para_exibir], use_container_width=True, hide_index=True, disabled=True)
+                    # Adiciona a coluna de checkbox baseada no st.session_state
+                    filtered_df['Contato ✅'] = filtered_df['ID do ticket'].apply(lambda id: id in st.session_state.contacted_tickets)
+                    
+                    # Define a função de estilo
+                    def highlight_row(row):
+                        return ['background-color: #fff8c4'] * len(row) if row['Contato ✅'] else [''] * len(row)
+                    
+                    colunas_para_exibir = ['Contato ✅', 'ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
+
+                    # Exibe o data_editor e guarda o resultado editado
+                    edited_df = st.data_editor(
+                        filtered_df[colunas_para_exibir].style.apply(highlight_row, axis=1),
+                        use_container_width=True, 
+                        hide_index=True,
+                        disabled=['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
+                    )
+
+                    # Atualiza o session_state com base nas edições do usuário
+                    for index, row in edited_df.iterrows():
+                        ticket_id = row['ID do ticket']
+                        if row['Contato ✅']:
+                            st.session_state.contacted_tickets.add(ticket_id)
+                        else:
+                            st.session_state.contacted_tickets.discard(ticket_id)
+
                 else:
                     st.info("Não há chamados nesta categoria.")
 
