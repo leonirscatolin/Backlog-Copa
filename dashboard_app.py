@@ -149,8 +149,8 @@ def sync_contacted_tickets():
 
     for row_index, changes in st.session_state.ticket_editor['edited_rows'].items():
         ticket_id = st.session_state.last_filtered_df.iloc[row_index]['ID do ticket']
-        if 'Contato ✅' in changes:
-            if changes['Contato ✅']:
+        if 'Contato' in changes: # <-- ALTERADO AQUI
+            if changes['Contato']: # <-- ALTERADO AQUI
                 st.session_state.contacted_tickets.add(ticket_id)
             else:
                 st.session_state.contacted_tickets.discard(ticket_id)
@@ -384,12 +384,12 @@ try:
                 
                 if not filtered_df.empty:
                     def highlight_row(row):
-                        return ['background-color: #fff8c4'] * len(row) if row['Contato ✅'] else [''] * len(row)
+                        return ['background-color: #fff8c4'] * len(row) if row['Contato'] else [''] * len(row) # <-- ALTERADO AQUI
 
-                    filtered_df['Contato ✅'] = filtered_df['ID do ticket'].apply(lambda id: id in st.session_state.contacted_tickets)
+                    filtered_df['Contato'] = filtered_df['ID do ticket'].apply(lambda id: id in st.session_state.contacted_tickets) # <-- ALTERADO AQUI
                     st.session_state.last_filtered_df = filtered_df.reset_index(drop=True)
                     
-                    colunas_para_exibir = ['Contato ✅', 'ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
+                    colunas_para_exibir = ['Contato', 'ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação'] # <-- ALTERADO AQUI
 
                     st.data_editor(
                         st.session_state.last_filtered_df[colunas_para_exibir].style.apply(highlight_row, axis=1),
@@ -414,7 +414,6 @@ try:
                     colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
                     st.data_editor(resultados_busca[colunas_para_exibir_busca], use_container_width=True, hide_index=True, disabled=True)
 
-        # ######################## CÓDIGO DA TAB 2 RESTAURADO ########################
         with tab2:
             st.subheader("Resumo do Backlog Atual")
             if not df_aging.empty:
