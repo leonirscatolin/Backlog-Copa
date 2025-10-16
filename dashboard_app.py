@@ -116,7 +116,6 @@ def categorizar_idade_vetorizado(dias_series):
     opcoes = ["30+ dias", "21-29 dias", "11-20 dias", "6-10 dias", "3-5 dias", "0-2 dias"]
     return np.select(condicoes, opcoes, default="Erro de Categoria")
 
-# ######################## OTIMIZAÇÃO ADICIONADA AQUI ########################
 @st.cache_data
 def analisar_aging(_df_atual):
     df = _df_atual.copy()
@@ -415,11 +414,33 @@ try:
                     colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
                     st.data_editor(resultados_busca[colunas_para_exibir_busca], use_container_width=True, hide_index=True, disabled=True)
 
+        # ######################## CÓDIGO DA TAB 2 RESTAURADO ########################
         with tab2:
             st.subheader("Resumo do Backlog Atual")
             if not df_aging.empty:
                 total_chamados = len(df_aging)
-                # ... (código da tab2 continua igual) ...
+                _, col_total_tab2, _ = st.columns([2, 1.5, 2])
+                with col_total_tab2: st.markdown( f"""<div class="metric-box"><span class="value">{total_chamados}</span><span class="label">Total de Chamados</span></div>""", unsafe_allow_html=True )
+                st.markdown("---")
+                aging_counts_tab2 = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
+                aging_counts_tab2.columns = ['Faixa de Antiguidade', 'Quantidade']
+                ordem_faixas_tab2 = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
+                todas_as_faixas_tab2 = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas_tab2})
+                aging_counts_tab2 = pd.merge(todas_as_faixas_tab2, aging_counts_tab2, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
+                aging_counts_tab2['Faixa de Antiguidade'] = pd.Categorical(aging_counts_tab2['Faixa de Antiguidade'], categories=ordem_faixas_tab2, ordered=True)
+                aging_counts_tab2 = aging_counts_tab2.sort_values('Faixa de Antiguidade')
+                cols_tab2 = st.columns(len(ordem_faixas_tab2))
+                for i, row in aging_counts_tab2.iterrows():
+                    with cols_tab2[i]: st.markdown( f"""<div class="metric-box"><span class="value">{row['Quantidade']}</span><span class="label">{row['Faixa de Antiguidade']}</span></div>""", unsafe_allow_html=True )
+                st.markdown("---")
+                st.subheader("Ofensores (Todos os Grupos)")
+                top_ofensores = df_aging['Atribuir a um grupo'].value_counts().sort_values(ascending=True)
+                fig_top_ofensores = px.bar(top_ofensores, x=top_ofensores.values, y=top_ofensores.index, orientation='h', text=top_ofensores.values, labels={'x': 'Qtd. Chamados', 'y': 'Grupo'})
+                fig_top_ofensores.update_traces(textposition='outside', marker_color='#375623')
+                fig_top_ofensores.update_layout(height=max(400, len(top_ofensores) * 25))
+                st.plotly_chart(fig_top_ofensores, use_container_width=True)
+            else:
+                st.warning("Nenhum dado para gerar o report visual.")
 
 except Exception as e:
     st.error(f"Ocorreu um erro ao carregar os dados: {e}")
