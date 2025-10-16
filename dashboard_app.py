@@ -217,7 +217,6 @@ elif password:
 
 # --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
 try:
-    # Inicializa o session_state para guardar os tickets contatados
     if 'contacted_tickets' not in st.session_state:
         st.session_state.contacted_tickets = set()
 
@@ -327,8 +326,8 @@ try:
                 st.markdown("---")
                 st.subheader("Detalhar e Buscar Chamados")
                 
-                # ######################## NOVA FUNCIONALIDADE AQUI ########################
-                st.warning("ℹ️ Marcar a caixa 'Contato ✅' sinaliza que o contato com o usuário foi feito e a pendência foi confirmada.")
+                # ######################## TEXTO ALTERADO AQUI ########################
+                st.info('A caixa "Contato" sinaliza que o contato com o usuário foi realizado e a solicitação continua pendente.')
 
                 if needs_scroll:
                     js_code = """
@@ -349,16 +348,13 @@ try:
                 filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].copy()
                 
                 if not filtered_df.empty:
-                    # Adiciona a coluna de checkbox baseada no st.session_state
                     filtered_df['Contato ✅'] = filtered_df['ID do ticket'].apply(lambda id: id in st.session_state.contacted_tickets)
                     
-                    # Define a função de estilo
                     def highlight_row(row):
                         return ['background-color: #fff8c4'] * len(row) if row['Contato ✅'] else [''] * len(row)
                     
                     colunas_para_exibir = ['Contato ✅', 'ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
 
-                    # Exibe o data_editor e guarda o resultado editado
                     edited_df = st.data_editor(
                         filtered_df[colunas_para_exibir].style.apply(highlight_row, axis=1),
                         use_container_width=True, 
@@ -366,7 +362,6 @@ try:
                         disabled=['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
                     )
 
-                    # Atualiza o session_state com base nas edições do usuário
                     for index, row in edited_df.iterrows():
                         ticket_id = row['ID do ticket']
                         if row['Contato ✅']:
