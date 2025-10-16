@@ -35,10 +35,10 @@ def update_github_file(_repo, file_path, file_content, commit_message):
     try:
         contents = _repo.get_contents(file_path)
         _repo.update_file(contents.path, commit_message, file_content, contents.sha)
-        if file_path != "contacted_tickets.json": # Evita mensagens repetitivas
+        if file_path != "contacted_tickets.json":
             st.sidebar.info(f"Arquivo '{file_path}' atualizado.")
     except GithubException as e:
-        if e.status == 404: # Arquivo não encontrado, então cria
+        if e.status == 404:
             _repo.create_file(file_path, commit_message, file_content)
             if file_path != "contacted_tickets.json":
                 st.sidebar.info(f"Arquivo '{file_path}' criado.")
@@ -103,6 +103,7 @@ def processar_dados_comparativos(df_atual, df_15dias):
     df_comparativo[['Atual', '15 Dias Atrás', 'Diferença']] = df_comparativo[['Atual', '15 Dias Atrás', 'Diferença']].astype(int)
     return df_comparativo
 
+@st.cache_data
 def categorizar_idade_vetorizado(dias_series):
     condicoes = [
         dias_series >= 30,
@@ -115,8 +116,10 @@ def categorizar_idade_vetorizado(dias_series):
     opcoes = ["30+ dias", "21-29 dias", "11-20 dias", "6-10 dias", "3-5 dias", "0-2 dias"]
     return np.select(condicoes, opcoes, default="Erro de Categoria")
 
-def analisar_aging(df_atual):
-    df = df_atual.copy()
+# ######################## OTIMIZAÇÃO ADICIONADA AQUI ########################
+@st.cache_data
+def analisar_aging(_df_atual):
+    df = _df_atual.copy()
     df['Data de criação'] = pd.to_datetime(df['Data de criação'], errors='coerce')
     df.dropna(subset=['Data de criação'], inplace=True)
     
@@ -142,9 +145,7 @@ def get_image_as_base64(path):
     except FileNotFoundError:
         return None
 
-# ######################## FUNÇÃO DE CALLBACK ATUALIZADA ########################
 def sync_contacted_tickets():
-    # Salva o estado atual antes de processar as mudanças
     previous_state = set(st.session_state.contacted_tickets)
 
     for row_index, changes in st.session_state.ticket_editor['edited_rows'].items():
@@ -155,14 +156,11 @@ def sync_contacted_tickets():
             else:
                 st.session_state.contacted_tickets.discard(ticket_id)
 
-    # Verifica se houve alguma mudança real para evitar escritas desnecessárias
     if previous_state != st.session_state.contacted_tickets:
-        # Converte o set para lista para poder salvar em JSON
         data_to_save = list(st.session_state.contacted_tickets)
         json_content = json.dumps(data_to_save, indent=4)
         commit_msg = f"Atualizando tickets contatados em {datetime.now(ZoneInfo('America/Sao_Paulo')).strftime('%d/%m/%Y %H:%M')}"
         
-        # Usa a função principal para criar ou atualizar o arquivo
         update_github_file(st.session_state.repo, "contacted_tickets.json", json_content.encode('utf-8'), commit_msg)
 
 # --- ESTILIZAÇÃO CSS ---
@@ -198,7 +196,7 @@ st.sidebar.header("Área do Administrador")
 password = st.sidebar.text_input("Senha para atualizar dados:", type="password")
 is_admin = password == st.secrets.get("ADMIN_PASSWORD", "")
 repo = get_github_repo()
-st.session_state.repo = repo # Salva o objeto do repo na sessão para ser acessível pelo callback
+st.session_state.repo = repo 
 
 if is_admin:
     st.sidebar.success("Acesso de administrador liberado.")
@@ -250,11 +248,10 @@ elif password:
 try:
     if 'contacted_tickets' not in st.session_state:
         try:
-            # Tenta ler o arquivo de estado do GitHub na primeira vez
             file_content = repo.get_contents("contacted_tickets.json").decoded_content.decode("utf-8")
             st.session_state.contacted_tickets = set(json.loads(file_content))
         except GithubException as e:
-            if e.status == 404: # Se o arquivo não existe, começa com um set vazio
+            if e.status == 404:
                 st.session_state.contacted_tickets = set()
             else:
                 st.error(f"Erro ao carregar o estado dos tickets: {e}")
