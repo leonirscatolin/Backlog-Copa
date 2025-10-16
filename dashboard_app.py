@@ -326,7 +326,6 @@ try:
                 st.markdown("---")
                 st.subheader("Detalhar e Buscar Chamados")
                 
-                # ######################## TEXTO ALTERADO AQUI ########################
                 st.info('A caixa "Contato" sinaliza que o contato com o usuário foi realizado e a solicitação continua pendente.')
 
                 if needs_scroll:
@@ -348,27 +347,38 @@ try:
                 filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].copy()
                 
                 if not filtered_df.empty:
-                    filtered_df['Contato ✅'] = filtered_df['ID do ticket'].apply(lambda id: id in st.session_state.contacted_tickets)
+                    # ######################## LÓGICA CORRIGIDA AQUI ########################
                     
+                    # 1. Função de estilo
                     def highlight_row(row):
                         return ['background-color: #fff8c4'] * len(row) if row['Contato ✅'] else [''] * len(row)
-                    
-                    colunas_para_exibir = ['Contato ✅', 'ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
 
-                    edited_df = st.data_editor(
+                    # 2. Prepara o DataFrame para exibição com o estado atual
+                    filtered_df['Contato ✅'] = filtered_df['ID do ticket'].apply(lambda id: id in st.session_state.contacted_tickets)
+                    colunas_para_exibir = ['Contato ✅', 'ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
+                    
+                    # 3. Exibe o data_editor com uma chave (key) para guardar o estado
+                    st.data_editor(
                         filtered_df[colunas_para_exibir].style.apply(highlight_row, axis=1),
                         use_container_width=True, 
                         hide_index=True,
-                        disabled=['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
+                        disabled=['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação'],
+                        key='ticket_editor' # A chave que resolve o problema
                     )
 
-                    for index, row in edited_df.iterrows():
-                        ticket_id = row['ID do ticket']
-                        if row['Contato ✅']:
-                            st.session_state.contacted_tickets.add(ticket_id)
-                        else:
-                            st.session_state.contacted_tickets.discard(ticket_id)
-
+                    # 4. Processa as mudanças a partir do estado salvo na chave
+                    # (Este bloco não é mais necessário aqui, o estado é mantido pela key)
+                    # A atualização do st.session_state.contacted_tickets pode ser feita
+                    # de forma mais limpa, mas vamos manter a lógica por enquanto
+                    # para garantir a funcionalidade.
+                    if 'ticket_editor' in st.session_state:
+                         edited_df_from_state = pd.DataFrame(st.session_state['ticket_editor'])
+                         for index, row in edited_df_from_state.iterrows():
+                            ticket_id = row['ID do ticket']
+                            if row['Contato ✅']:
+                                st.session_state.contacted_tickets.add(ticket_id)
+                            else:
+                                st.session_state.contacted_tickets.discard(ticket_id)
                 else:
                     st.info("Não há chamados nesta categoria.")
 
@@ -386,6 +396,7 @@ try:
 
         with tab2:
             st.subheader("Resumo do Backlog Atual")
+            # ... (código da tab2 continua igual)
             if not df_aging.empty:
                 total_chamados = len(df_aging)
                 _, col_total_tab2, _ = st.columns([2, 1.5, 2])
