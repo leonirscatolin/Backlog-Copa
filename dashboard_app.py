@@ -5,11 +5,12 @@ import numpy as np
 import base64
 from datetime import datetime, date, timedelta
 from zoneinfo import ZoneInfo
-from github import Github, Auth
+from github import Github, Auth, GithubException
 from io import StringIO, BytesIO
 import streamlit.components.v1 as components
 from PIL import Image
 from urllib.parse import quote
+import json
 
 # --- Configuração da Página ---
 st.set_page_config(
@@ -30,16 +31,20 @@ def get_github_repo():
         st.error(f"Erro de conexão com o repositório: {e}")
         st.stop()
 
-def update_github_file(_repo, file_path, file_content):
-    commit_message = f"Dados atualizados em {datetime.now(ZoneInfo('America/Sao_Paulo')).strftime('%d/%m/%Y %H:%M')}"
+def update_github_file(_repo, file_path, file_content, commit_message):
     try:
         contents = _repo.get_contents(file_path)
         _repo.update_file(contents.path, commit_message, file_content, contents.sha)
-        st.sidebar.info(f"Arquivo '{file_path}' atualizado.")
-    except Exception:
-        _repo.create_file(file_path, commit_message, file_content)
-        st.sidebar.info(f"Arquivo '{file_path}' criado.")
-    
+        if file_path != "contacted_tickets.json": # Evita mensagens repetitivas
+            st.sidebar.info(f"Arquivo '{file_path}' atualizado.")
+    except GithubException as e:
+        if e.status == 404: # Arquivo não encontrado, então cria
+            _repo.create_file(file_path, commit_message, file_content)
+            if file_path != "contacted_tickets.json":
+                st.sidebar.info(f"Arquivo '{file_path}' criado.")
+        else:
+            st.error(f"Erro ao atualizar o arquivo '{file_path}' no GitHub: {e}")
+
 @st.cache_data(ttl=300)
 def read_github_file(_repo, file_path):
     try:
@@ -137,19 +142,28 @@ def get_image_as_base64(path):
     except FileNotFoundError:
         return None
 
-# ######################## FUNÇÃO DE CALLBACK CORRIGIDA ########################
+# ######################## FUNÇÃO DE CALLBACK ATUALIZADA ########################
 def sync_contacted_tickets():
-    # Itera sobre as linhas que foram editadas
+    # Salva o estado atual antes de processar as mudanças
+    previous_state = set(st.session_state.contacted_tickets)
+
     for row_index, changes in st.session_state.ticket_editor['edited_rows'].items():
-        # Pega o ID do ticket da linha correta, usando o dataframe que foi salvo no estado
         ticket_id = st.session_state.last_filtered_df.iloc[row_index]['ID do ticket']
-        
-        # Se a coluna 'Contato ✅' foi a que mudou, atualiza nosso set
         if 'Contato ✅' in changes:
             if changes['Contato ✅']:
                 st.session_state.contacted_tickets.add(ticket_id)
             else:
                 st.session_state.contacted_tickets.discard(ticket_id)
+
+    # Verifica se houve alguma mudança real para evitar escritas desnecessárias
+    if previous_state != st.session_state.contacted_tickets:
+        # Converte o set para lista para poder salvar em JSON
+        data_to_save = list(st.session_state.contacted_tickets)
+        json_content = json.dumps(data_to_save, indent=4)
+        commit_msg = f"Atualizando tickets contatados em {datetime.now(ZoneInfo('America/Sao_Paulo')).strftime('%d/%m/%Y %H:%M')}"
+        
+        # Usa a função principal para criar ou atualizar o arquivo
+        update_github_file(st.session_state.repo, "contacted_tickets.json", json_content.encode('utf-8'), commit_msg)
 
 # --- ESTILIZAÇÃO CSS ---
 st.html("""
@@ -184,6 +198,8 @@ st.sidebar.header("Área do Administrador")
 password = st.sidebar.text_input("Senha para atualizar dados:", type="password")
 is_admin = password == st.secrets.get("ADMIN_PASSWORD", "")
 repo = get_github_repo()
+st.session_state.repo = repo # Salva o objeto do repo na sessão para ser acessível pelo callback
+
 if is_admin:
     st.sidebar.success("Acesso de administrador liberado.")
     st.sidebar.header("Carregar Novos Arquivos")
@@ -196,18 +212,19 @@ if is_admin:
     if st.sidebar.button("Salvar Novos Dados no Site"):
         if uploaded_file_atual and uploaded_file_15dias:
             with st.spinner("Processando e salvando arquivos..."):
+                commit_msg = f"Dados atualizados em {datetime.now(ZoneInfo('America/Sao_Paulo')).strftime('%d/%m/%Y %H:%M')}"
                 content_atual = process_uploaded_file(uploaded_file_atual)
                 content_15dias = process_uploaded_file(uploaded_file_15dias)
                 content_fechados = process_uploaded_file(uploaded_file_fechados)
 
                 if content_atual is not None and content_15dias is not None:
-                    update_github_file(repo, "dados_atuais.csv", content_atual)
-                    update_github_file(repo, "dados_15_dias.csv", content_15dias)
+                    update_github_file(repo, "dados_atuais.csv", content_atual, commit_msg)
+                    update_github_file(repo, "dados_15_dias.csv", content_15dias, commit_msg)
                     
                     if content_fechados is not None:
-                        update_github_file(repo, "dados_fechados.csv", content_fechados)
+                        update_github_file(repo, "dados_fechados.csv", content_fechados, commit_msg)
                     else:
-                        update_github_file(repo, "dados_fechados.csv", b"")
+                        update_github_file(repo, "dados_fechados.csv", b"", commit_msg)
 
                     data_do_upload = date.today()
                     data_arquivo_15dias = data_do_upload - timedelta(days=15) 
@@ -219,7 +236,7 @@ if is_admin:
                         f"data_15dias:{data_arquivo_15dias.strftime('%d/%m/%Y')}\n" 
                         f"hora_atualizacao:{hora_atualizacao}"
                     )
-                    update_github_file(repo, "datas_referencia.txt", datas_referencia_content.encode('utf-8'))
+                    update_github_file(repo, "datas_referencia.txt", datas_referencia_content.encode('utf-8'), commit_msg)
 
                     read_github_text_file.clear()
                     read_github_file.clear()
@@ -232,7 +249,16 @@ elif password:
 # --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
 try:
     if 'contacted_tickets' not in st.session_state:
-        st.session_state.contacted_tickets = set()
+        try:
+            # Tenta ler o arquivo de estado do GitHub na primeira vez
+            file_content = repo.get_contents("contacted_tickets.json").decoded_content.decode("utf-8")
+            st.session_state.contacted_tickets = set(json.loads(file_content))
+        except GithubException as e:
+            if e.status == 404: # Se o arquivo não existe, começa com um set vazio
+                st.session_state.contacted_tickets = set()
+            else:
+                st.error(f"Erro ao carregar o estado dos tickets: {e}")
+                st.session_state.contacted_tickets = set()
 
     needs_scroll = "scroll" in st.query_params
     if "faixa" in st.query_params:
@@ -364,14 +390,11 @@ try:
                     def highlight_row(row):
                         return ['background-color: #fff8c4'] * len(row) if row['Contato ✅'] else [''] * len(row)
 
-                    # Prepara o DataFrame para exibição
                     filtered_df['Contato ✅'] = filtered_df['ID do ticket'].apply(lambda id: id in st.session_state.contacted_tickets)
-                    # Salva uma cópia do DF *antes* de passar para o editor, para referência no callback
                     st.session_state.last_filtered_df = filtered_df.reset_index(drop=True)
                     
                     colunas_para_exibir = ['Contato ✅', 'ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
 
-                    # Exibe o editor com a key e o on_change
                     st.data_editor(
                         st.session_state.last_filtered_df[colunas_para_exibir].style.apply(highlight_row, axis=1),
                         use_container_width=True, 
