@@ -131,11 +131,11 @@ def analisar_aging(_df_atual):
         st.error("Nenhuma coluna de data ('Data de criação' ou 'Data de Criacao') foi encontrada no arquivo.")
         return pd.DataFrame()
 
-    # Etapa 1: Extrai apenas a parte da data (antes do espaço)
+    # Etapa 1: Garante que é texto, remove espaços e extrai apenas a parte da data
     df[date_col_name] = df[date_col_name].astype(str).str.split(' ').str[0]
 
-    # Etapa 2: Converte a string da data para o formato de data
-    df[date_col_name] = pd.to_datetime(df[date_col_name], format='%d/%m/%Y', errors='coerce')
+    # Etapa 2: Converte a data usando o modo flexível que aceita qualquer separador
+    df[date_col_name] = pd.to_datetime(df[date_col_name], dayfirst=True, errors='coerce')
     
     linhas_invalidas = df[df[date_col_name].isna()]
     if not linhas_invalidas.empty:
@@ -185,7 +185,7 @@ def sync_contacted_tickets():
         
         update_github_file(st.session_state.repo, "contacted_tickets.json", json_content.encode('utf-8'), commit_msg)
 
-# --- O resto do código permanece igual ---
+# --- O resto do código permanece o mesmo ---
 st.html("""
     <style>
         #GithubIcon { visibility: hidden; }
