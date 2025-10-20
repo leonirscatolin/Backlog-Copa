@@ -116,25 +116,19 @@ def categorizar_idade_vetorizado(dias_series):
     opcoes = ["30+ dias", "21-29 dias", "11-20 dias", "6-10 dias", "3-5 dias", "0-2 dias"]
     return np.select(condicoes, opcoes, default="Erro de Categoria")
 
-# ######################## FUNÇÃO ATUALIZADA AQUI ########################
 @st.cache_data
 def analisar_aging(_df_atual):
     df = _df_atual.copy()
-
     date_col_name = None
-    if 'Data de criação' in df.columns:
-        date_col_name = 'Data de criação'
-    elif 'Data de Criacao' in df.columns:
-        date_col_name = 'Data de Criacao'
+    if 'Data de criação' in df.columns: date_col_name = 'Data de criação'
+    elif 'Data de Criacao' in df.columns: date_col_name = 'Data de Criacao'
 
     if not date_col_name:
         st.error("Nenhuma coluna de data ('Data de criação' ou 'Data de Criacao') foi encontrada no arquivo.")
         return pd.DataFrame()
 
-    # Deixa o Pandas fazer a conversão de forma automática e flexível
     df[date_col_name] = pd.to_datetime(df[date_col_name], errors='coerce')
     
-    # O bloco de diagnóstico continua aqui para nos avisar se algo ainda falhar
     linhas_invalidas = df[df[date_col_name].isna()]
     if not linhas_invalidas.empty:
         with st.expander(f"⚠️ Atenção: {len(linhas_invalidas)} chamados foram descartados por data inválida ou vazia. Clique para ver exemplos:"):
@@ -165,6 +159,7 @@ def get_image_as_base64(path):
     except FileNotFoundError:
         return None
 
+# ######################## 1ª ALTERAÇÃO AQUI ########################
 def sync_contacted_tickets():
     previous_state = set(st.session_state.contacted_tickets)
 
@@ -182,8 +177,11 @@ def sync_contacted_tickets():
         commit_msg = f"Atualizando tickets contatados em {datetime.now(ZoneInfo('America/Sao_Paulo')).strftime('%d/%m/%Y %H:%M')}"
         
         update_github_file(st.session_state.repo, "contacted_tickets.json", json_content.encode('utf-8'), commit_msg)
+    
+    # "Avisa" a página que ela precisa rolar para baixo no próximo recarregamento
+    st.session_state.scroll_to_details = True
 
-# --- O resto do código permanece o mesmo ---
+# --- ESTILIZAÇÃO CSS ---
 st.html("""
     <style>
         #GithubIcon { visibility: hidden; }
@@ -196,6 +194,7 @@ st.html("""
     </style>
 """)
 
+# --- INTERFACE DO APLICATIVO ---
 logo_copa_b64 = get_image_as_base64("logo_sidebar.png")
 logo_belago_b64 = get_image_as_base64("logo_belago.png")
 
@@ -210,6 +209,7 @@ if logo_copa_b64 and logo_belago_b64:
 else:
     st.error("Arquivos de logo não encontrados.")
 
+# --- LÓGICA DE LOGIN E UPLOAD ---
 st.sidebar.header("Área do Administrador")
 password = st.sidebar.text_input("Senha para atualizar dados:", type="password")
 is_admin = password == st.secrets.get("ADMIN_PASSWORD", "")
@@ -262,6 +262,7 @@ if is_admin:
 elif password:
     st.sidebar.error("Senha incorreta.")
 
+# --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
 try:
     if 'contacted_tickets' not in st.session_state:
         try:
@@ -382,7 +383,9 @@ try:
                 
                 st.info('A caixa "Contato" sinaliza que o contato com o usuário foi realizado e a solicitação continua pendente.')
 
-                if needs_scroll:
+                # ######################## 2ª ALTERAÇÃO AQUI ########################
+                # Verifica se a rolagem é necessária (por clique no card ou na checkbox)
+                if needs_scroll or st.session_state.get('scroll_to_details', False):
                     js_code = """
                         <script>
                             setTimeout(() => {
@@ -390,10 +393,13 @@ try:
                                 if (element) {
                                     element.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                 }
-                            }, 200);
+                            }, 250);
                         </script>
                     """
                     components.html(js_code, height=0)
+                    # Reseta a flag da checkbox para não rolar em interações futuras
+                    if 'scroll_to_details' in st.session_state:
+                        st.session_state.scroll_to_details = False
 
                 st.selectbox("Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada')
                 
