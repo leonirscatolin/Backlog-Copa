@@ -116,26 +116,37 @@ def categorizar_idade_vetorizado(dias_series):
     opcoes = ["30+ dias", "21-29 dias", "11-20 dias", "6-10 dias", "3-5 dias", "0-2 dias"]
     return np.select(condicoes, opcoes, default="Erro de Categoria")
 
-# ######################## FUNÇÃO ATUALIZADA AQUI ########################
+# ######################## FUNÇÃO CORRIGIDA AQUI ########################
 @st.cache_data
 def analisar_aging(_df_atual):
     df = _df_atual.copy()
-    
+
+    # Identifica o nome correto da coluna de data
+    date_col_name = None
+    if 'Data de criação' in df.columns:
+        date_col_name = 'Data de criação'
+    elif 'Data de Criacao' in df.columns:
+        date_col_name = 'Data de Criacao'
+
+    # Se nenhuma coluna de data for encontrada, retorna um aviso
+    if not date_col_name:
+        st.error("Nenhuma coluna de data ('Data de criação' ou 'Data de Criacao') foi encontrada no arquivo.")
+        return pd.DataFrame()
+
     # Converte a data de forma mais robusta, priorizando o formato Dia/Mês/Ano
-    df['Data de criação'] = pd.to_datetime(df['Data de criação'], errors='coerce', dayfirst=True)
+    df[date_col_name] = pd.to_datetime(df[date_col_name], errors='coerce', dayfirst=True)
     
     # Bloco de Diagnóstico: verifica se alguma linha será descartada
-    linhas_invalidas = df[df['Data de criação'].isna()]
+    linhas_invalidas = df[df[date_col_name].isna()]
     if not linhas_invalidas.empty:
-        with st.expander(f"⚠️ Atenção: {len(linhas_invalidas)} chamados foram descartados por data de criação inválida ou vazia. Clique para ver exemplos:"):
+        with st.expander(f"⚠️ Atenção: {len(linhas_invalidas)} chamados foram descartados por data inválida ou vazia. Clique para ver exemplos:"):
             st.write("Estas são algumas das linhas com datas que não puderam ser reconhecidas e foram removidas da análise:")
             st.dataframe(linhas_invalidas.head())
     
-    # Remove as linhas com datas inválidas
-    df.dropna(subset=['Data de criação'], inplace=True)
+    df.dropna(subset=[date_col_name], inplace=True)
     
     hoje = pd.to_datetime('today')
-    data_criacao_normalizada = df['Data de criação'].dt.normalize()
+    data_criacao_normalizada = df[date_col_name].dt.normalize()
     
     dias_calculados = (hoje - data_criacao_normalizada).dt.days
     df['Dias em Aberto'] = (dias_calculados - 1).clip(lower=0) 
