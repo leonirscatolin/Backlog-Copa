@@ -116,10 +116,22 @@ def categorizar_idade_vetorizado(dias_series):
     opcoes = ["30+ dias", "21-29 dias", "11-20 dias", "6-10 dias", "3-5 dias", "0-2 dias"]
     return np.select(condicoes, opcoes, default="Erro de Categoria")
 
+# ######################## FUNÇÃO ATUALIZADA AQUI ########################
 @st.cache_data
 def analisar_aging(_df_atual):
     df = _df_atual.copy()
-    df['Data de criação'] = pd.to_datetime(df['Data de criação'], errors='coerce')
+    
+    # Converte a data de forma mais robusta, priorizando o formato Dia/Mês/Ano
+    df['Data de criação'] = pd.to_datetime(df['Data de criação'], errors='coerce', dayfirst=True)
+    
+    # Bloco de Diagnóstico: verifica se alguma linha será descartada
+    linhas_invalidas = df[df['Data de criação'].isna()]
+    if not linhas_invalidas.empty:
+        with st.expander(f"⚠️ Atenção: {len(linhas_invalidas)} chamados foram descartados por data de criação inválida ou vazia. Clique para ver exemplos:"):
+            st.write("Estas são algumas das linhas com datas que não puderam ser reconhecidas e foram removidas da análise:")
+            st.dataframe(linhas_invalidas.head())
+    
+    # Remove as linhas com datas inválidas
     df.dropna(subset=['Data de criação'], inplace=True)
     
     hoje = pd.to_datetime('today')
@@ -149,8 +161,8 @@ def sync_contacted_tickets():
 
     for row_index, changes in st.session_state.ticket_editor['edited_rows'].items():
         ticket_id = st.session_state.last_filtered_df.iloc[row_index]['ID do ticket']
-        if 'Contato' in changes: # <-- ALTERADO AQUI
-            if changes['Contato']: # <-- ALTERADO AQUI
+        if 'Contato' in changes:
+            if changes['Contato']:
                 st.session_state.contacted_tickets.add(ticket_id)
             else:
                 st.session_state.contacted_tickets.discard(ticket_id)
@@ -384,12 +396,12 @@ try:
                 
                 if not filtered_df.empty:
                     def highlight_row(row):
-                        return ['background-color: #fff8c4'] * len(row) if row['Contato'] else [''] * len(row) # <-- ALTERADO AQUI
+                        return ['background-color: #fff8c4'] * len(row) if row['Contato'] else [''] * len(row)
 
-                    filtered_df['Contato'] = filtered_df['ID do ticket'].apply(lambda id: id in st.session_state.contacted_tickets) # <-- ALTERADO AQUI
+                    filtered_df['Contato'] = filtered_df['ID do ticket'].apply(lambda id: id in st.session_state.contacted_tickets)
                     st.session_state.last_filtered_df = filtered_df.reset_index(drop=True)
                     
-                    colunas_para_exibir = ['Contato', 'ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação'] # <-- ALTERADO AQUI
+                    colunas_para_exibir = ['Contato', 'ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
 
                     st.data_editor(
                         st.session_state.last_filtered_df[colunas_para_exibir].style.apply(highlight_row, axis=1),
