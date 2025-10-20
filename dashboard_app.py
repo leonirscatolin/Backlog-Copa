@@ -131,12 +131,10 @@ def analisar_aging(_df_atual):
         st.error("Nenhuma coluna de data ('Data de criação' ou 'Data de Criacao') foi encontrada no arquivo.")
         return pd.DataFrame()
 
-    # Etapa 1: Garante que é texto, remove espaços e extrai apenas a parte da data
-    df[date_col_name] = df[date_col_name].astype(str).str.split(' ').str[0]
-
-    # Etapa 2: Converte a data usando o modo flexível que aceita qualquer separador
-    df[date_col_name] = pd.to_datetime(df[date_col_name], dayfirst=True, errors='coerce')
+    # Deixa o Pandas fazer a conversão de forma automática e flexível
+    df[date_col_name] = pd.to_datetime(df[date_col_name], errors='coerce')
     
+    # O bloco de diagnóstico continua aqui para nos avisar se algo ainda falhar
     linhas_invalidas = df[df[date_col_name].isna()]
     if not linhas_invalidas.empty:
         with st.expander(f"⚠️ Atenção: {len(linhas_invalidas)} chamados foram descartados por data inválida ou vazia. Clique para ver exemplos:"):
