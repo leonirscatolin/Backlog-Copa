@@ -116,27 +116,27 @@ def categorizar_idade_vetorizado(dias_series):
     opcoes = ["30+ dias", "21-29 dias", "11-20 dias", "6-10 dias", "3-5 dias", "0-2 dias"]
     return np.select(condicoes, opcoes, default="Erro de Categoria")
 
-# ######################## FUNÇÃO CORRIGIDA AQUI ########################
+# ######################## FUNÇÃO ATUALIZADA AQUI ########################
 @st.cache_data
 def analisar_aging(_df_atual):
     df = _df_atual.copy()
 
-    # Identifica o nome correto da coluna de data
     date_col_name = None
     if 'Data de criação' in df.columns:
         date_col_name = 'Data de criação'
     elif 'Data de Criacao' in df.columns:
         date_col_name = 'Data de Criacao'
 
-    # Se nenhuma coluna de data for encontrada, retorna um aviso
     if not date_col_name:
         st.error("Nenhuma coluna de data ('Data de criação' ou 'Data de Criacao') foi encontrada no arquivo.")
         return pd.DataFrame()
 
-    # Converte a data de forma mais robusta, priorizando o formato Dia/Mês/Ano
-    df[date_col_name] = pd.to_datetime(df[date_col_name], errors='coerce', dayfirst=True)
+    # Etapa 1: Extrai apenas a parte da data (antes do espaço)
+    df[date_col_name] = df[date_col_name].astype(str).str.split(' ').str[0]
+
+    # Etapa 2: Converte a string da data para o formato de data
+    df[date_col_name] = pd.to_datetime(df[date_col_name], format='%d/%m/%Y', errors='coerce')
     
-    # Bloco de Diagnóstico: verifica se alguma linha será descartada
     linhas_invalidas = df[df[date_col_name].isna()]
     if not linhas_invalidas.empty:
         with st.expander(f"⚠️ Atenção: {len(linhas_invalidas)} chamados foram descartados por data inválida ou vazia. Clique para ver exemplos:"):
@@ -185,7 +185,7 @@ def sync_contacted_tickets():
         
         update_github_file(st.session_state.repo, "contacted_tickets.json", json_content.encode('utf-8'), commit_msg)
 
-# --- ESTILIZAÇÃO CSS ---
+# --- O resto do código permanece igual ---
 st.html("""
     <style>
         #GithubIcon { visibility: hidden; }
@@ -198,7 +198,6 @@ st.html("""
     </style>
 """)
 
-# --- INTERFACE DO APLICATIVO ---
 logo_copa_b64 = get_image_as_base64("logo_sidebar.png")
 logo_belago_b64 = get_image_as_base64("logo_belago.png")
 
@@ -213,7 +212,6 @@ if logo_copa_b64 and logo_belago_b64:
 else:
     st.error("Arquivos de logo não encontrados.")
 
-# --- LÓGICA DE LOGIN E UPLOAD ---
 st.sidebar.header("Área do Administrador")
 password = st.sidebar.text_input("Senha para atualizar dados:", type="password")
 is_admin = password == st.secrets.get("ADMIN_PASSWORD", "")
@@ -266,7 +264,6 @@ if is_admin:
 elif password:
     st.sidebar.error("Senha incorreta.")
 
-# --- LÓGICA DE EXIBIÇÃO PARA TODOS ---
 try:
     if 'contacted_tickets' not in st.session_state:
         try:
