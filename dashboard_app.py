@@ -92,6 +92,15 @@ def process_uploaded_file(uploaded_file):
         st.sidebar.error(f"Erro ao processar o arquivo {uploaded_file.name}: {e}")
         return None, 0
 
+# ######################## FUNÇÃO RESTAURADA ########################
+def processar_dados_comparativos(df_atual, df_15dias):
+    contagem_atual = df_atual.groupby('Atribuir a um grupo').size().reset_index(name='Atual')
+    contagem_15dias = df_15dias.groupby('Atribuir a um grupo').size().reset_index(name='15 Dias Atrás')
+    df_comparativo = pd.merge(contagem_atual, contagem_15dias, on='Atribuir a um grupo', how='outer').fillna(0)
+    df_comparativo['Diferença'] = df_comparativo['Atual'] - df_comparativo['15 Dias Atrás']
+    df_comparativo[['Atual', '15 Dias Atrás', 'Diferença']] = df_comparativo[['Atual', '15 Dias Atrás', 'Diferença']].astype(int)
+    return df_comparativo
+
 @st.cache_data
 def categorizar_idade_vetorizado(dias_series):
     condicoes = [
@@ -162,10 +171,6 @@ def sync_contacted_tickets():
 
 # --- INÍCIO DA EXECUÇÃO DO SCRIPT ---
 
-# Define a configuração da página primeiro
-st.set_page_config(layout="wide", page_title="Backlog Copa Energia + Belago", page_icon="minilogo.png", initial_sidebar_state="collapsed")
-
-# Injeta o CSS
 st.html("""
     <style>
         #GithubIcon { visibility: hidden; }
@@ -178,7 +183,6 @@ st.html("""
     </style>
 """)
 
-# Exibe o cabeçalho
 logo_copa_b64 = get_image_as_base64("logo_sidebar.png")
 logo_belago_b64 = get_image_as_base64("logo_belago.png")
 if logo_copa_b64 and logo_belago_b64:
@@ -192,7 +196,6 @@ if logo_copa_b64 and logo_belago_b64:
 else:
     st.error("Arquivos de logo não encontrados.")
 
-# Lógica da barra lateral (Admin)
 st.sidebar.header("Área do Administrador")
 password = st.sidebar.text_input("Senha para atualizar dados:", type="password")
 is_admin = password == st.secrets.get("ADMIN_PASSWORD", "")
@@ -210,13 +213,12 @@ if is_admin:
     
     if st.sidebar.button("Salvar Novos Dados no Site"):
         if uploaded_file_atual and uploaded_file_15dias:
-            _, num_rows_atual = process_uploaded_file(uploaded_file_atual)
+            content_atual, num_rows_atual = process_uploaded_file(uploaded_file_atual)
             st.sidebar.info(f"Diagnóstico: O arquivo '{uploaded_file_atual.name}' selecionado tem {num_rows_atual} linhas de dados.")
 
             with st.spinner("Processando e salvando arquivos..."):
                 commit_msg = f"Dados atualizados em {datetime.now(ZoneInfo('America/Sao_Paulo')).strftime('%d/%m/%Y %H:%M')}"
                 
-                content_atual, _ = process_uploaded_file(uploaded_file_atual)
                 content_15dias, _ = process_uploaded_file(uploaded_file_15dias)
                 content_fechados, _ = process_uploaded_file(uploaded_file_fechados)
 
@@ -250,7 +252,6 @@ if is_admin:
 elif password:
     st.sidebar.error("Senha incorreta.")
 
-# Bloco principal de exibição, envolto em um try...except
 try:
     try:
         last_commit = repo.get_commits(path="dados_atuais.csv")[0]
