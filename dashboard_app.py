@@ -11,8 +11,8 @@ import streamlit.components.v1 as components
 from PIL import Image
 from urllib.parse import quote
 import json
+import colorsys
 
-# --- Configuração da Página ---
 st.set_page_config(
     layout="wide",
     page_title="Backlog Copa Energia + Belago",
@@ -20,7 +20,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- FUNÇÕES ---
 @st.cache_resource
 def get_github_repo():
     try:
@@ -77,18 +76,22 @@ def process_uploaded_file(uploaded_file):
     if uploaded_file is None:
         return None
     try:
-        file_buffer = BytesIO(uploaded_file.getvalue())
+        dtype_spec = {'ID do ticket': str, 'ID do Ticket': str, 'ID': str}
         if uploaded_file.name.endswith('.xlsx'):
-            df = pd.read_excel(file_buffer)
+            df = pd.read_excel(uploaded_file, dtype=dtype_spec)
         else:
-            try: df = pd.read_csv(file_buffer, delimiter=';')
-            except Exception: file_buffer.seek(0); df = pd.read_csv(file_buffer, delimiter=',')
+            try:
+                content = uploaded_file.getvalue().decode('utf-8')
+            except UnicodeDecodeError:
+                content = uploaded_file.getvalue().decode('latin1')
+            df = pd.read_csv(StringIO(content), delimiter=';', dtype=dtype_spec)
         
+        df.columns = df.columns.str.strip()
         output = StringIO()
         df.to_csv(output, index=False, sep=';', encoding='utf-8')
         return output.getvalue().encode('utf-8')
     except Exception as e:
-        st.sidebar.error(f"Erro ao processar o arquivo {uploaded_file.name}: {e}")
+        st.sidebar.error(f"Erro ao ler o arquivo {uploaded_file.name}: {e}")
         return None
 
 def processar_dados_comparativos(df_atual, df_15dias):
@@ -117,7 +120,6 @@ def analisar_aging(_df_atual):
     elif 'Data de Criacao' in df.columns: date_col_name = 'Data de Criacao'
 
     if not date_col_name:
-        st.error("Nenhuma coluna de data ('Data de criação' ou 'Data de Criacao') foi encontrada no arquivo.")
         return pd.DataFrame()
 
     df[date_col_name] = pd.to_datetime(df[date_col_name], errors='coerce')
@@ -125,7 +127,7 @@ def analisar_aging(_df_atual):
     linhas_invalidas = df[df[date_col_name].isna()]
     if not linhas_invalidas.empty:
         with st.expander(f"⚠️ Atenção: {len(linhas_invalidas)} chamados foram descartados por data inválida ou vazia. Clique para ver exemplos:"):
-            st.write("Estas são algumas das linhas com datas que não puderam ser reconhecidas e foram removidas da análise:")
+            st.write("Estas são algumas das linhas com datas que não puderam ser reconhecidas:")
             st.dataframe(linhas_invalidas.head())
     
     df.dropna(subset=[date_col_name], inplace=True)
@@ -166,8 +168,6 @@ def sync_contacted_tickets():
         commit_msg = f"Atualizando tickets contatados em {datetime.now(ZoneInfo('America/Sao_Paulo')).strftime('%d/%m/%Y %H:%M')}"
         update_github_file(st.session_state.repo, "contacted_tickets.json", json_content.encode('utf-8'), commit_msg)
     st.session_state.scroll_to_details = True
-
-# --- INÍCIO DA EXECUÇÃO DO SCRIPT ---
 
 st.html("""
     <style>
@@ -310,11 +310,9 @@ try:
             if not df_encerrados.empty:
                 info_messages.append(f"- **{len(df_encerrados)} chamados fechados no dia** foram deduzidos das contagens principais.")
             st.info("\n".join(info_messages))
-
             st.subheader("Análise de Antiguidade do Backlog Atual")
             texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
             st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
-
             if not df_aging.empty:
                 total_chamados = len(df_aging)
                 _, col_total, _ = st.columns([2, 1.5, 2])
@@ -327,10 +325,8 @@ try:
                 aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
                 aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
                 aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
-
                 if 'faixa_selecionada' not in st.session_state:
                     st.session_state.faixa_selecionada = "0-2 dias"
-
                 cols = st.columns(len(ordem_faixas))
                 for i, row in aging_counts.iterrows():
                     with cols[i]:
@@ -339,79 +335,44 @@ try:
                         st.markdown(card_html, unsafe_allow_html=True)
             else:
                 st.warning("Nenhum dado válido para a análise de antiguidade.")
-            
             st.markdown(f"<h3>Comparativo de Backlog: Atual vs. 15 Dias Atrás <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_15dias_str})</span></h3>", unsafe_allow_html=True)
-            
             df_comparativo = processar_dados_comparativos(df_atual_filtrado.copy(), df_15dias_filtrado.copy())
             df_comparativo['Status'] = df_comparativo.apply(get_status, axis=1)
             df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True)
             df_comparativo = df_comparativo[['Grupo', '15 Dias Atrás', 'Atual', 'Diferença', 'Status']]
             st.dataframe(df_comparativo.set_index('Grupo').style.map(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
-
             st.markdown("---")
             st.markdown(f"<h3>Chamados Encerrados no Dia <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_atual_str})</span></h3>", unsafe_allow_html=True)
             if not df_encerrados.empty:
                 df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
-                st.data_editor(
-                    df_encerrados_filtrado[['ID do ticket', 'Descrição', 'Atribuir a um grupo']],
-                    hide_index=True, disabled=True, use_container_width=True
-                )
+                st.data_editor(df_encerrados_filtrado[['ID do ticket', 'Descrição', 'Atribuir a um grupo']], hide_index=True, disabled=True, use_container_width=True)
             else:
                 st.info("Nenhum chamado da lista de fechados foi encontrado no backlog atual ou o arquivo de encerrados não foi carregado.")
-
             if not df_aging.empty:
                 st.markdown("---")
                 st.subheader("Detalhar e Buscar Chamados")
-                
                 st.info('A caixa "Contato" sinaliza que o contato com o usuário foi realizado e a solicitação continua pendente.')
-
                 if 'scroll_to_details' not in st.session_state:
                     st.session_state.scroll_to_details = False
-
                 if needs_scroll or st.session_state.get('scroll_to_details', False):
-                    js_code = """
-                        <script>
-                            setTimeout(() => {
-                                const element = window.parent.document.getElementById('detalhar-e-buscar-chamados');
-                                if (element) {
-                                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                }
-                            }, 250);
-                        </script>
-                    """
+                    js_code = """<script> setTimeout(() => { const element = window.parent.document.getElementById('detalhar-e-buscar-chamados'); if (element) { element.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 250); </script>"""
                     components.html(js_code, height=0)
                     st.session_state.scroll_to_details = False
-
                 st.selectbox("Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada')
-                
                 faixa_atual = st.session_state.faixa_selecionada
                 filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].copy()
-                
                 if not filtered_df.empty:
                     def highlight_row(row):
                         return ['background-color: #fff8c4'] * len(row) if row['Contato'] else [''] * len(row)
-
                     filtered_df['Contato'] = filtered_df['ID do ticket'].apply(lambda id: id in st.session_state.contacted_tickets)
                     st.session_state.last_filtered_df = filtered_df.reset_index(drop=True)
-                    
                     colunas_para_exibir = ['Contato', 'ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação']
-
-                    st.data_editor(
-                        st.session_state.last_filtered_df[colunas_para_exibir].style.apply(highlight_row, axis=1),
-                        use_container_width=True, 
-                        hide_index=True,
-                        disabled=['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação'],
-                        key='ticket_editor',
-                        on_change=sync_contacted_tickets
-                    )
+                    st.data_editor(st.session_state.last_filtered_df[colunas_para_exibir].style.apply(highlight_row, axis=1), use_container_width=True, hide_index=True, disabled=['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto', 'Data de criação'], key='ticket_editor', on_change=sync_contacted_tickets)
                 else:
                     st.info("Não há chamados nesta categoria.")
-
                 st.subheader("Buscar Chamados por Grupo")
-                
                 lista_grupos = sorted(df_aging['Atribuir a um grupo'].dropna().unique())
                 grupo_selecionado = st.selectbox("Busca de chamados por grupo:", options=lista_grupos)
-                
                 if grupo_selecionado:
                     resultados_busca = df_aging[df_aging['Atribuir a um grupo'] == grupo_selecionado].copy()
                     resultados_busca['Data de criação'] = resultados_busca['Data de criação'].dt.strftime('%d/%m/%Y')
@@ -428,21 +389,74 @@ try:
                 st.markdown("---")
                 aging_counts_tab2 = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
                 aging_counts_tab2.columns = ['Faixa de Antiguidade', 'Quantidade']
-                ordem_faixas_tab2 = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
-                todas_as_faixas_tab2 = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas_tab2})
+                ordem_faixas = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
+                todas_as_faixas_tab2 = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas})
                 aging_counts_tab2 = pd.merge(todas_as_faixas_tab2, aging_counts_tab2, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
-                aging_counts_tab2['Faixa de Antiguidade'] = pd.Categorical(aging_counts_tab2['Faixa de Antiguidade'], categories=ordem_faixas_tab2, ordered=True)
+                aging_counts_tab2['Faixa de Antiguidade'] = pd.Categorical(aging_counts_tab2['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
                 aging_counts_tab2 = aging_counts_tab2.sort_values('Faixa de Antiguidade')
-                cols_tab2 = st.columns(len(ordem_faixas_tab2))
+                cols_tab2 = st.columns(len(ordem_faixas))
                 for i, row in aging_counts_tab2.iterrows():
                     with cols_tab2[i]: st.markdown( f"""<div class="metric-box"><span class="value">{row['Quantidade']}</span><span class="label">{row['Faixa de Antiguidade']}</span></div>""", unsafe_allow_html=True )
+                
                 st.markdown("---")
-                st.subheader("Ofensores (Todos os Grupos)")
-                top_ofensores = df_aging['Atribuir a um grupo'].value_counts().sort_values(ascending=True)
-                fig_top_ofensores = px.bar(top_ofensores, x=top_ofensores.values, y=top_ofensores.index, orientation='h', text=top_ofensores.values, labels={'x': 'Qtd. Chamados', 'y': 'Grupo'})
-                fig_top_ofensores.update_traces(textposition='outside', marker_color='#375623')
-                fig_top_ofensores.update_layout(height=max(400, len(top_ofensores) * 25))
-                st.plotly_chart(fig_top_ofensores, use_container_width=True)
+                st.subheader("Distribuição do Backlog por Grupo")
+                
+                orientation_choice = st.radio(
+                    "Orientação do Gráfico:", ["Vertical", "Horizontal"], 
+                    index=0,
+                    horizontal=True
+                )
+
+                chart_data = df_aging.groupby(['Atribuir a um grupo', 'Faixa de Antiguidade']).size().reset_index(name='Quantidade')
+                group_totals = chart_data.groupby('Atribuir a um grupo')['Quantidade'].sum().sort_values(ascending=False)
+                
+                new_labels_map = {group: f"{group} ({total})" for group, total in group_totals.items()}
+                chart_data['Atribuir a um grupo'] = chart_data['Atribuir a um grupo'].map(new_labels_map)
+                sorted_new_labels = [new_labels_map[group] for group in group_totals.index]
+
+                def lighten_color(hex_color, amount=0.2):
+                    try:
+                        hex_color = hex_color.lstrip('#')
+                        h, l, s = colorsys.rgb_to_hls(*[int(hex_color[i:i+2], 16)/255.0 for i in (0, 2, 4)])
+                        new_l = l + (1 - l) * amount
+                        r, g, b = colorsys.hls_to_rgb(h, new_l, s)
+                        return f"#{int(r*255):02x}{int(g*255):02x}{int(b*255):02x}"
+                    except Exception: return hex_color
+
+                base_color = "#375623"
+                palette = [
+                    lighten_color(base_color, 0.85), lighten_color(base_color, 0.70),
+                    lighten_color(base_color, 0.55), lighten_color(base_color, 0.40),
+                    lighten_color(base_color, 0.20), base_color
+                ]
+                color_map = {faixa: color for faixa, color in zip(ordem_faixas, palette)}
+
+                if orientation_choice == 'Horizontal':
+                    num_groups = len(group_totals)
+                    dynamic_height = max(500, num_groups * 30)
+
+                    fig_stacked_bar = px.bar(
+                        chart_data, x='Quantidade', y='Atribuir a um grupo', orientation='h',
+                        color='Faixa de Antiguidade', title="Composição da Idade do Backlog por Grupo",
+                        labels={'Quantidade': 'Qtd. de Chamados', 'Atribuir a um grupo': ''},
+                        category_orders={'Atribuir a um grupo': sorted_new_labels, 'Faixa de Antiguidade': ordem_faixas},
+                        color_discrete_map=color_map, text_auto=True
+                    )
+                    fig_stacked_bar.update_traces(textangle=0, textfont_size=12)
+                    fig_stacked_bar.update_layout(height=dynamic_height, legend_title_text='Antiguidade')
+                
+                else:
+                    fig_stacked_bar = px.bar(
+                        chart_data, x='Atribuir a um grupo', y='Quantidade',
+                        color='Faixa de Antiguidade', title="Composição da Idade do Backlog por Grupo",
+                        labels={'Quantidade': 'Qtd. de Chamados', 'Atribuir a um grupo': 'Grupo'},
+                        category_orders={'Atribuir a um grupo': sorted_new_labels, 'Faixa de Antiguidade': ordem_faixas},
+                        color_discrete_map=color_map, text_auto=True
+                    )
+                    fig_stacked_bar.update_traces(textangle=0, textfont_size=12)
+                    fig_stacked_bar.update_layout(height=600, xaxis_title=None, xaxis_tickangle=-45, legend_title_text='Antiguidade')
+
+                st.plotly_chart(fig_stacked_bar, use_container_width=True)
             else:
                 st.warning("Nenhum dado para gerar o report visual.")
 
