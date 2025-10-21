@@ -1,5 +1,4 @@
 ID do Ticket;FCR;Data de Criação;Data de Resolução;Data de Fechamento;Tipo do Ticket;Grupo Atribuído;Resolvido pelo Grupo;Analista atribuído;Analista da Resolução;Status do Ticket;Categorização;Data de modificação;sla_compliance_status_indicator;TICKET_REASON_CODE;ticket_source
-300-132995;;2025-10-21 15:02:31;;2025-10-21 15:19:14;Incident;COP-SAP-NFE;;TAMILIS  DE OLIVEIRA MANCO;null  null;Closed;TI >> SAP >> NFE - EMPURRA NOTA >> FALHA;2025-10-21 15:19:14;Within SLA;Resolvido;Walk-In
 300-132997;;2025-10-21 15:09:09;;2025-10-21 15:19:32;Incident;COP-SAP-NFE;;TAMILIS  DE OLIVEIRA MANCO;null  null;Closed;TI >> SAP >> NFE - EMPURRA NOTA >> FALHA;2025-10-21 15:19:32;Within SLA;Resolvido;Walk-In
 300-132962;;2025-10-21 12:07:16;;2025-10-21 15:01:56;Incident;COP-SAP MOBILE;;ALINE  ALVARENGA RANGEL LIANG;null  null;Closed;TI >> SAP >> ENCERRAMENTO VIAGEM >> FALHA;2025-10-21 15:01:56;Breached SLA;Resolvido;Phone
 100-100997;Não;2025-10-15 13:57:03;;2025-10-21 15:26:34;Service Request;APOIO-COP-SEDE;;JOAO  VICTOR PEREIRA SOARES;null  null;Closed;TI >> CONTAS E ACESSOS >> SERVICEAIDE >> ACESSO;2025-10-21 15:26:34;Within SLA;Resolvido;Walk-In
