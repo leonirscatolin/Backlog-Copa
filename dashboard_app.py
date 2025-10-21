@@ -75,7 +75,7 @@ def read_github_text_file(_repo, file_path):
 
 def process_uploaded_file(uploaded_file):
     if uploaded_file is None:
-        return None, 0
+        return None
     try:
         file_buffer = BytesIO(uploaded_file.getvalue())
         if uploaded_file.name.endswith('.xlsx'):
@@ -84,22 +84,12 @@ def process_uploaded_file(uploaded_file):
             try: df = pd.read_csv(file_buffer, delimiter=';')
             except Exception: file_buffer.seek(0); df = pd.read_csv(file_buffer, delimiter=',')
         
-        num_rows = len(df)
         output = StringIO()
         df.to_csv(output, index=False, sep=';', encoding='utf-8')
-        return output.getvalue().encode('utf-8'), num_rows
+        return output.getvalue().encode('utf-8')
     except Exception as e:
         st.sidebar.error(f"Erro ao processar o arquivo {uploaded_file.name}: {e}")
-        return None, 0
-
-# ######################## FUNÇÃO RESTAURADA ########################
-def processar_dados_comparativos(df_atual, df_15dias):
-    contagem_atual = df_atual.groupby('Atribuir a um grupo').size().reset_index(name='Atual')
-    contagem_15dias = df_15dias.groupby('Atribuir a um grupo').size().reset_index(name='15 Dias Atrás')
-    df_comparativo = pd.merge(contagem_atual, contagem_15dias, on='Atribuir a um grupo', how='outer').fillna(0)
-    df_comparativo['Diferença'] = df_comparativo['Atual'] - df_comparativo['15 Dias Atrás']
-    df_comparativo[['Atual', '15 Dias Atrás', 'Diferença']] = df_comparativo[['Atual', '15 Dias Atrás', 'Diferença']].astype(int)
-    return df_comparativo
+        return None
 
 @st.cache_data
 def categorizar_idade_vetorizado(dias_series):
@@ -168,6 +158,14 @@ def sync_contacted_tickets():
         commit_msg = f"Atualizando tickets contatados em {datetime.now(ZoneInfo('America/Sao_Paulo')).strftime('%d/%m/%Y %H:%M')}"
         update_github_file(st.session_state.repo, "contacted_tickets.json", json_content.encode('utf-8'), commit_msg)
     st.session_state.scroll_to_details = True
+    
+def processar_dados_comparativos(df_atual, df_15dias):
+    contagem_atual = df_atual.groupby('Atribuir a um grupo').size().reset_index(name='Atual')
+    contagem_15dias = df_15dias.groupby('Atribuir a um grupo').size().reset_index(name='15 Dias Atrás')
+    df_comparativo = pd.merge(contagem_atual, contagem_15dias, on='Atribuir a um grupo', how='outer').fillna(0)
+    df_comparativo['Diferença'] = df_comparativo['Atual'] - df_comparativo['15 Dias Atrás']
+    df_comparativo[['Atual', '15 Dias Atrás', 'Diferença']] = df_comparativo[['Atual', '15 Dias Atrás', 'Diferença']].astype(int)
+    return df_comparativo
 
 # --- INÍCIO DA EXECUÇÃO DO SCRIPT ---
 
@@ -213,14 +211,12 @@ if is_admin:
     
     if st.sidebar.button("Salvar Novos Dados no Site"):
         if uploaded_file_atual and uploaded_file_15dias:
-            content_atual, num_rows_atual = process_uploaded_file(uploaded_file_atual)
-            st.sidebar.info(f"Diagnóstico: O arquivo '{uploaded_file_atual.name}' selecionado tem {num_rows_atual} linhas de dados.")
-
             with st.spinner("Processando e salvando arquivos..."):
                 commit_msg = f"Dados atualizados em {datetime.now(ZoneInfo('America/Sao_Paulo')).strftime('%d/%m/%Y %H:%M')}"
                 
-                content_15dias, _ = process_uploaded_file(uploaded_file_15dias)
-                content_fechados, _ = process_uploaded_file(uploaded_file_fechados)
+                content_atual = process_uploaded_file(uploaded_file_atual)
+                content_15dias = process_uploaded_file(uploaded_file_15dias)
+                content_fechados = process_uploaded_file(uploaded_file_fechados)
 
                 if content_atual is not None and content_15dias is not None:
                     update_github_file(repo, "dados_atuais.csv", content_atual, commit_msg)
@@ -253,14 +249,6 @@ elif password:
     st.sidebar.error("Senha incorreta.")
 
 try:
-    try:
-        last_commit = repo.get_commits(path="dados_atuais.csv")[0]
-        last_commit_date = last_commit.commit.author.date
-        last_commit_date_br = last_commit_date.astimezone(ZoneInfo("America/Sao_Paulo"))
-        st.info(f"ℹ️ Exibindo dados do arquivo 'dados_atuais.csv' salvo no GitHub em: **{last_commit_date_br.strftime('%d/%m/%Y às %H:%M:%S')}**")
-    except Exception:
-        st.warning("Não foi possível verificar a data da última atualização do arquivo de dados.")
-
     if 'contacted_tickets' not in st.session_state:
         try:
             file_content = repo.get_contents("contacted_tickets.json").decoded_content.decode("utf-8")
