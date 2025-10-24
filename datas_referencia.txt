@@ -1,3 +1,3 @@
-data_atual:23/10/2025
-data_15dias:08/10/2025
-hora_atualizacao:13:33
+data_atual:24/10/2025
+data_15dias:09/10/2025
+hora_atualizacao:08:04
