@@ -70,11 +70,7 @@ FORNECEDOR: MSTECNOLOGIA"
 ;;;;;;;;
 ;;;;;;;;
 100-101860;Service Request;Queued;2025-10-24 10:24:19;;COP-ORIENTAÇÃO-GRC;2.0;Sem acesso ao cadastro de frota da trava PBT no centro 1244. transação IE31;Não tenho acesso ao cadastro PBT dos veículos que precisam ser cadastrados no centro que sou o gestor 1244. A transição seria IE31 na aba Localização, no centro de manutenção era para liberar acesso ao 1244 ( cfe. anexo).Solicito gentilmente essa liberação para cadastro dos veículos novos dos clientes que forem carregar na base de Juazeiro.
-100-101865;Service Request;Queued;2025-10-24 10:43:27;BERTHOLATO SCURSONI,RAPHAEL;Aprovadores GGM;2.0;Acesso ao SIVA+;"Coordenador de controladoria do centro operativo de Brasília, não está conseguindo logar no SIVA+
-C.O.:1232
-CHAVE.:LGO0
-
-Edilson Pereira de Alencar"
+;;;;;;;;
 ;;;;;;;;
 300-133258;Incident;Queued;2025-10-24 10:51:22;;COP-ORIENTAÇÃO-GRC;2.0;Bom dia, tiraram novamente meu acesso a transação de Notas fiscais ZSD0054, podem liberar por favor? é de extrema urgencia pois preciso verificar o faturamento dos clientes;Bom dia, tiraram novamente meu acesso a transação de Notas fiscais ZSD0054, podem liberar por favor? é de extrema urgencia pois preciso verificar o faturamento dos clientes
 ;;;;;;;;
@@ -130,7 +126,7 @@ UNIDADE : 1207
 
 Acesso ao sap IDM tanto para envasados quando para granel"
 ;;;;;;;;
-100-101819;Service Request;Queued;2025-10-23 14:58:50;BERTHOLATO SCURSONI,RAPHAEL;Aprovadores GGM;3.0;SOLICITO ACESSO AO SIVA PLUS, PARA CONFERENCIA DE DANFINHOS.;SOLICITO ACESSO AO SIVA PLUS, PARA CONFERENCIA DE DANFINHOS.
+;;;;;;;;
 ;;;;;;;;
 300-133154;Incident;Queued;2025-10-23 09:40:37;CARDOSO SOUZA DA SILVA,RONALD;COP-SAP LES-3N;3.0;"Bom dia!
 Problema no faturamento de notas fiscais. Apresentando o ERRO MARA sobre a placa do veiculo HVL 0367/MG.";"Bom dia!
