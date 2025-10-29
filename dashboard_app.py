@@ -1,4 +1,4 @@
-# VERSÃO v0.9.33-743 (Corrigida)
+# VERSÃO v0.9.34-744 (Corrigida)
 
 import streamlit as st
 import pandas as pd
@@ -326,6 +326,10 @@ def carregar_dados_evolucao(_repo, closed_ticket_ids_list, dias_para_analisar=7)
         start_date = end_date - timedelta(days=max(dias_para_analisar, 10))
 
         closed_ids_set = set(closed_ticket_ids_list)
+        
+        # --- MODIFICADO v0.9.34 ---
+        grupos_para_excluir = 'RH|Aprovadores GGM'
+        # --- FIM DA MODIFICAÇÃO ---
 
         processed_dates = []
         for file_name in all_files:
@@ -347,12 +351,16 @@ def carregar_dados_evolucao(_repo, closed_ticket_ids_list, dias_para_analisar=7)
                     file_date = datetime.strptime(date_str, "%Y-%m-%d").date()
                     df_snapshot = read_github_file(_repo, file_name)
                     if not df_snapshot.empty and 'Atribuir a um grupo' in df_snapshot.columns:
-                        df_snapshot_filtrado_rh = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
-                        id_col_snapshot = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_snapshot_filtrado_rh.columns), None)
-                        df_snapshot_final = df_snapshot_filtrado_rh
+                        
+                        # --- MODIFICADO v0.9.34 ---
+                        df_snapshot_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False)]
+                        id_col_snapshot = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_snapshot_filtrado.columns), None)
+                        df_snapshot_final = df_snapshot_filtrado
                         if id_col_snapshot and closed_ids_set:
-                            ids_limpos_snapshot = df_snapshot_filtrado_rh[id_col_snapshot].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-                            df_snapshot_final = df_snapshot_filtrado_rh[~ids_limpos_snapshot.isin(closed_ids_set)]
+                            ids_limpos_snapshot = df_snapshot_filtrado[id_col_snapshot].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
+                            df_snapshot_final = df_snapshot_filtrado[~ids_limpos_snapshot.isin(closed_ids_set)]
+                        # --- FIM DA MODIFICAÇÃO ---
+                        
                         contagem_diaria = df_snapshot_final.groupby('Atribuir a um grupo').size().reset_index(name='Total Chamados')
                         contagem_diaria['Data'] = pd.to_datetime(file_date)
                         df_evolucao_list.append(contagem_diaria)
@@ -405,6 +413,10 @@ def carregar_evolucao_aging(_repo, closed_ticket_ids_list, dias_para_analisar=90
         start_date = end_date - timedelta(days=max(dias_para_analisar, 60))
 
         closed_ids_set = set(closed_ticket_ids_list)
+        
+        # --- MODIFICADO v0.9.34 ---
+        grupos_para_excluir = 'RH|Aprovadores GGM'
+        # --- FIM DA MODIFICAÇÃO ---
 
         processed_files = []
         for file_name in all_files:
@@ -425,7 +437,9 @@ def carregar_evolucao_aging(_repo, closed_ticket_ids_list, dias_para_analisar=90
                 if df_snapshot.empty:
                     continue
 
-                df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
+                # --- MODIFICADO v0.9.34 ---
+                df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False)]
+                # --- FIM DA MODIFICAÇÃO ---
 
                 id_col_snapshot = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_filtrado.columns), None)
                 if id_col_snapshot and closed_ids_set:
@@ -684,19 +698,28 @@ try:
 
     df_encerrados = df_atual[df_atual['ID do ticket'].isin(closed_ticket_ids)]
     df_abertos = df_atual[~df_atual['ID do ticket'].isin(closed_ticket_ids)]
-    df_atual_filtrado = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
-    df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
+    
+    # --- MODIFICADO v0.9.34 ---
+    grupos_para_excluir = 'RH|Aprovadores GGM'
+    df_atual_filtrado = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False)]
+    df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False)]
     df_aging = analisar_aging(df_atual_filtrado)
-
-    df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
+    df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False)]
+    # --- FIM DA MODIFICAÇÃO ---
 
     tab1, tab2, tab3, tab4 = st.tabs(["Dashboard Completo", "Report Visual", "Evolução Semanal", "Evolução Aging"])
 
     with tab1:
-        info_messages = ["**Filtros e Regras Aplicadas:**", "- Grupos contendo 'RH' foram desconsiderados da análise.", "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
+        # --- MODIFICADO v0.9.34 ---
+        info_messages = ["**Filtros e Regras Aplicadas:**", 
+                         "- Grupos contendo 'RH' ou 'Aprovadores GGM' foram desconsiderados da análise.", 
+                         "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
+        # --- FIM DA MODIFICAÇÃO ---
+        
         if not df_encerrados.empty:
-            info_messages.append(f"- **{len(df_encerrados_filtrado)} chamados fechados no dia** (exceto RH) foram deduzidos das contagens principais.")
+            info_messages.append(f"- **{len(df_encerrados_filtrado)} chamados fechados no dia** (exceto RH e Aprovadores GGM) foram deduzidos das contagens principais.")
         st.info("\n".join(info_messages))
+        
         st.subheader("Análise de Antiguidade do Backlog Atual")
         texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
         st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
@@ -943,7 +966,7 @@ try:
 
                 fig_evolucao_grupo = px.line(
                     df_filtrado_display,
-                    x='Data (Eixo)', # <-- CORREÇÃO APLICADA AQUI
+                    x='Data (Eixo)', # <-- CORREÇÃO APLICADA (v0.9.33)
                     y='Total Chamados',
                     color='Grupo Atribuído',
                     title='Evolução por Grupo (Apenas Dias de Semana)',
@@ -1152,6 +1175,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.33-743 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.34-744 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
