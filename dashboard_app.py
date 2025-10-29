@@ -965,11 +965,11 @@ try:
                  else: st.info("Nenhum grupo encontrado.")
             else: st.warning("Coluna 'Atribuir a um grupo' ausente.")
 
-    # --- Tab 2 ---
+# --- Conteúdo da Tab 2 ---
     with tab2:
-        # ... (Código Tab 2 - Sem alterações lógicas) ...
         st.subheader("Resumo do Backlog Atual")
         if not df_aging.empty:
+            # ... (código dos cards de resumo - sem alterações) ...
             total_chamados = len(df_aging)
             _, col_total_tab2, _ = st.columns([2, 1.5, 2])
             with col_total_tab2: st.markdown( f"""<div class="metric-box"><span class="label">Total de Chamados</span><span class="value">{total_chamados}</span></div>""", unsafe_allow_html=True )
@@ -985,6 +985,7 @@ try:
             for i, row in aging_counts_tab2.iterrows():
                 with cols_tab2[i]: st.markdown( f"""<div class="metric-box"><span class="label">{row['Faixa de Antiguidade']}</span><span class="value">{row['Quantidade']}</span></div>""", unsafe_allow_html=True )
             st.markdown("---")
+            
             st.subheader("Distribuição do Backlog por Grupo")
             orientation_choice = st.radio( "Orientação:", ["Vertical", "Horizontal"], index=0, horizontal=True, key="orient_tab2" )
             
@@ -996,6 +997,8 @@ try:
                       new_labels_map = {group: f"{group} ({total})" for group, total in group_totals.items()}
                       chart_data['Atribuir a um grupo'] = chart_data['Atribuir a um grupo'].map(new_labels_map)
                       sorted_new_labels = [new_labels_map[group] for group in group_totals.index]
+                      
+                      # Função lighten_color (sem alterações)
                       def lighten_color(hex_color, amount=0.2):
                           try:
                               hex_color = hex_color.lstrip('#')
@@ -1005,22 +1008,40 @@ try:
                           except Exception: return hex_color
                       base_color = "#375623"; palette = [lighten_color(base_color, v) for v in [0.85, 0.70, 0.55, 0.40, 0.20, 0]]; color_map = dict(zip(ordem_faixas, palette))
                       
-                      plot_args = dict(data_frame=chart_data, color='Faixa de Antiguidade', title="Composição da Idade do Backlog por Grupo",
-                                       category_orders={'Faixa de Antiguidade': ordem_faixas}, color_discrete_map=color_map, text_auto=True)
-                      
+                      # ==========================================================
+                      # ||           CORREÇÃO DO TypeError AQUI                ||
+                      # ==========================================================
+                      plot_args = dict(
+                          data_frame=chart_data, 
+                          color='Faixa de Antiguidade', 
+                          title="Composição da Idade do Backlog por Grupo",
+                          # Define a ordem para AMBAS as categorias AQUI
+                          category_orders={ 
+                              'Faixa de Antiguidade': ordem_faixas,
+                              'Atribuir a um grupo': sorted_new_labels 
+                          }, 
+                          color_discrete_map=color_map, 
+                          text_auto=True
+                      )
+                      # ==========================================================
+
                       if orientation_choice == 'Horizontal':
                           dynamic_height = max(500, len(group_totals) * 30) 
-                          fig = px.bar( **plot_args, x='Quantidade', y='Atribuir a um grupo', orientation='h', labels={'Quantidade': 'Qtd.', 'Atribuir a um grupo': ''}, category_orders={'Atribuir a um grupo': sorted_new_labels})
+                          # Remove category_orders daqui
+                          fig = px.bar( **plot_args, x='Quantidade', y='Atribuir a um grupo', orientation='h', labels={'Quantidade': 'Qtd.', 'Atribuir a um grupo': ''}) 
                           fig.update_layout(height=dynamic_height, yaxis={'categoryorder':'array', 'categoryarray':sorted_new_labels[::-1]}) 
-                      else: 
-                          fig = px.bar( **plot_args, x='Atribuir a um grupo', y='Quantidade', labels={'Quantidade': 'Qtd.', 'Atribuir a um grupo': 'Grupo'}, category_orders={'Atribuir a um grupo': sorted_new_labels})
+                      else: # Vertical
+                          # Remove category_orders daqui
+                          fig = px.bar( **plot_args, x='Atribuir a um grupo', y='Quantidade', labels={'Quantidade': 'Qtd.', 'Atribuir a um grupo': 'Grupo'}) 
                           fig.update_layout(height=600, xaxis_title=None, xaxis_tickangle=-45)
                       
                       fig.update_traces(textangle=0, textfont_size=12); fig.update_layout(legend_title_text='Antiguidade')
                       st.plotly_chart(fig, use_container_width=True)
                  else: st.info("Nenhum grupo encontrado.")
-            else: st.warning("Colunas 'Atribuir a um grupo' ou 'Faixa de Antiguidade' ausentes.")
+            else: st.warning("Colunas necessárias ausentes.")
         else: st.warning("Dados de aging indisponíveis.")
+
+    # ... (Restante do código das tabs 3 e 4) ...
 
 
     # --- Tab 3 ---
