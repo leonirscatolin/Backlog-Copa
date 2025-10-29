@@ -267,6 +267,10 @@ def get_status(row):
     elif diferenca == 0: return "Estável / Atenção"
     else: return "Redução de Backlog"
 
+# ==========================================================
+# ||           CORREÇÃO ADICIONADA AQUI (CACHE)           ||
+# ==========================================================
+@st.cache_data
 def get_image_as_base64(path):
     try:
         with open(path, "rb") as image_file:
@@ -1041,7 +1045,7 @@ try:
                 else:
                     fig_aging_all = px.area(
                         df_grafico,
-                        x='Data (Eixo)',
+                        x='Data (ESixo)',
                         y='total',
                         color='Faixa de Antiguidade',
                         title='Composição da Evolução por Antiguidade',
