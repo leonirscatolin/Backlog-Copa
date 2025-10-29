@@ -1,4 +1,4 @@
-# VERSÃO v0.9.30-740
+# VERSÃO v0.9.30-740 (Corrigida)
 
 import streamlit as st
 import pandas as pd
@@ -134,15 +134,15 @@ def read_github_file(_repo, file_path):
             return pd.DataFrame()
 
         try:
-              df = pd.read_csv(StringIO(content), delimiter=';', encoding='utf-8',
-                                 dtype={'ID do ticket': str, 'ID do Ticket': str}, low_memory=False,
-                                 on_bad_lines='warn')
+                df = pd.read_csv(StringIO(content), delimiter=';', encoding='utf-8',
+                                    dtype={'ID do ticket': str, 'ID do Ticket': str}, low_memory=False,
+                                    on_bad_lines='warn')
         except pd.errors.ParserError as parse_err:
-              st.error(f"Erro ao parsear o CSV '{file_path}': {parse_err}. Verifique o delimitador (;) e a estrutura do arquivo.")
-              return pd.DataFrame()
+                st.error(f"Erro ao parsear o CSV '{file_path}': {parse_err}. Verifique o delimitador (;) e a estrutura do arquivo.")
+                return pd.DataFrame()
         except Exception as read_err:
-              st.error(f"Erro inesperado ao ler o conteúdo CSV de '{file_path}': {read_err}")
-              return pd.DataFrame()
+                st.error(f"Erro inesperado ao ler o conteúdo CSV de '{file_path}': {read_err}")
+                return pd.DataFrame()
 
         df.columns = df.columns.str.strip()
         df.dropna(how='all', inplace=True)
@@ -250,7 +250,10 @@ def analisar_aging(_df_atual):
     if not linhas_invalidas.empty:
         with st.expander(f"⚠️ Atenção: {len(linhas_invalidas)} chamados foram descartados por data inválida ou vazia."):
             st.dataframe(linhas_invalidas.head())
-    df.dropna(subset=[date_col_name], inplace=True)
+    
+    # df.dropna(subset=[date_col_name], inplace=True) # <-- LINHA ANTIGA
+    df = df.dropna(subset=[date_col_name]) # <-- CORREÇÃO APLICADA
+    
     hoje = pd.to_datetime('today').normalize()
     data_criacao_normalizada = df[date_col_name].dt.normalize()
     dias_calculados = (hoje - data_criacao_normalizada).dt.days
@@ -339,7 +342,7 @@ def carregar_dados_evolucao(_repo, closed_ticket_ids_list, dias_para_analisar=7)
         files_to_process = [f[1] for f in processed_dates[:dias_para_analisar]]
 
         for file_name in files_to_process:
-              try:
+                try:
                     date_str = file_name.replace("snapshots/backlog_", "").replace(".csv", "")
                     file_date = datetime.strptime(date_str, "%Y-%m-%d").date()
                     df_snapshot = read_github_file(_repo, file_name)
@@ -353,7 +356,7 @@ def carregar_dados_evolucao(_repo, closed_ticket_ids_list, dias_para_analisar=7)
                         contagem_diaria = df_snapshot_final.groupby('Atribuir a um grupo').size().reset_index(name='Total Chamados')
                         contagem_diaria['Data'] = pd.to_datetime(file_date)
                         df_evolucao_list.append(contagem_diaria)
-              except Exception: continue
+                except Exception: continue
 
         if not df_evolucao_list: return pd.DataFrame()
 
@@ -431,12 +434,15 @@ def carregar_evolucao_aging(_repo, closed_ticket_ids_list, dias_para_analisar=90
                 else:
                     df_final = df_filtrado
 
+                df_final = df_final.copy() # <-- CORREÇÃO APLICADA
+
                 date_col_name = next((col for col in ['Data de criação', 'Data de Criacao'] if col in df_final.columns), None)
                 if not date_col_name:
                     continue
 
                 df_final[date_col_name] = pd.to_datetime(df_final[date_col_name], errors='coerce')
-                df_final.dropna(subset=[date_col_name], inplace=True)
+                # df_final.dropna(subset=[date_col_name], inplace=True) # <-- LINHA ANTIGA
+                df_final = df_final.dropna(subset=[date_col_name]) # <-- CORREÇÃO APLICADA
 
                 snapshot_date_dt = pd.to_datetime(file_date)
                 data_criacao_normalizada = df_final[date_col_name].dt.normalize()
@@ -483,7 +489,7 @@ def formatar_delta_card(delta_abs, delta_perc, valor_comparacao, data_comparacao
     elif valor_comparacao == 0 and delta_abs > 0:
         delta_text = f"+{delta_abs} (Novo) vs. {data_comparacao_str}"
     elif valor_comparacao == 0 and delta_abs < 0:
-         delta_text = f"{delta_abs} vs. {data_comparacao_str}"
+        delta_text = f"{delta_abs} vs. {data_comparacao_str}"
     else:
         delta_text = f"{delta_abs} (0.0%) vs. {data_comparacao_str}"
 
@@ -534,8 +540,8 @@ if is_admin:
                         data_arquivo_15dias = data_do_upload - timedelta(days=15)
                         hora_atualizacao = now_sao_paulo.strftime('%H:%M')
                         datas_referencia_content = (f"data_atual:{data_do_upload.strftime('%d/%m/%Y')}\n"
-                                                   f"data_15dias:{data_arquivo_15dias.strftime('%d/%m/%Y')}\n"
-                                                   f"hora_atualizacao:{hora_atualizacao}")
+                                                    f"data_15dias:{data_arquivo_15dias.strftime('%d/%m/%Y')}\n"
+                                                    f"hora_atualizacao:{hora_atualizacao}")
                         update_github_file(repo, "datas_referencia.txt", datas_referencia_content.encode('utf-8'), commit_msg)
                         st.cache_data.clear()
                         st.cache_resource.clear()
@@ -578,7 +584,7 @@ if is_admin:
                         st.sidebar.success("Arquivo de fechados salvo e hora atualizada! Recarregando...")
                         st.rerun()
                     except Exception as e:
-                         st.sidebar.error(f"Erro durante a atualização rápida: {e}")
+                        st.sidebar.error(f"Erro durante a atualização rápida: {e}")
         else:
             st.sidebar.warning("Por favor, carregue o arquivo de chamados fechados para salvar.")
 elif password:
@@ -675,7 +681,10 @@ try:
         st.markdown(f"<h3>Comparativo de Backlog: Atual vs. 15 Dias Atrás <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_15dias_str})</span></h3>", unsafe_allow_html=True)
         df_comparativo = processar_dados_comparativos(df_atual_filtrado.copy(), df_15dias_filtrado.copy())
         df_comparativo['Status'] = df_comparativo.apply(get_status, axis=1)
-        df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True)
+        
+        # df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True) # <-- LINHA ANTIGA
+        df_comparativo = df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}) # <-- CORREÇÃO APLICADA
+        
         df_comparativo = df_comparativo[['Grupo', '15 Dias Atrás', 'Atual', 'Diferença', 'Status']]
         st.dataframe(df_comparativo.set_index('Grupo').style.map(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
         st.markdown("---")
@@ -851,7 +860,7 @@ try:
                 st.plotly_chart(fig_evolucao_grupo, use_container_width=True)
 
             else:
-                 st.info("Ainda não há dados históricos suficientes (considerando apenas dias de semana).")
+                st.info("Ainda não há dados históricos suficientes (considerando apenas dias de semana).")
 
         else:
             st.info("Ainda não há dados históricos suficientes.")
@@ -881,19 +890,19 @@ try:
                     hoje_counts_df['total'] = hoje_counts_df['total'].astype(int)
                     hoje_counts_df['data'] = hoje_data
                 except ValueError:
-                     st.warning("Data atual inválida. Não foi possível carregar dados de 'hoje'.")
-                     hoje_data = None
+                    st.warning("Data atual inválida. Não foi possível carregar dados de 'hoje'.")
+                    hoje_data = None
             else:
-                 st.warning("Não foi possível carregar dados de 'hoje'.")
+                st.warning("Não foi possível carregar dados de 'hoje'.")
 
 
             if not df_hist.empty and not hoje_counts_df.empty:
                 df_combinado = pd.concat([df_hist, hoje_counts_df], ignore_index=True)
                 df_combinado = df_combinado.drop_duplicates(subset=['data', 'Faixa de Antiguidade'], keep='last')
             elif not df_hist.empty:
-                 df_combinado = df_hist.copy()
+                df_combinado = df_hist.copy()
             elif not hoje_counts_df.empty:
-                 df_combinado = hoje_counts_df.copy()
+                df_combinado = hoje_counts_df.copy()
             else:
                 st.error("Não há dados históricos nem dados de hoje para a análise de aging.")
                 st.stop()
@@ -921,42 +930,42 @@ try:
             data_comparacao_str = "N/A"
 
             if hoje_data:
-                 target_comp_date = hoje_data.date() - timedelta(days=periodo_comp_opts[periodo_comp_selecionado])
-                 data_comparacao_encontrada, _ = find_closest_snapshot_before(repo, hoje_data.date(), target_comp_date)
+                target_comp_date = hoje_data.date() - timedelta(days=periodo_comp_opts[periodo_comp_selecionado])
+                data_comparacao_encontrada, _ = find_closest_snapshot_before(repo, hoje_data.date(), target_comp_date)
 
-                 if data_comparacao_encontrada:
-                      data_comparacao_final = pd.to_datetime(data_comparacao_encontrada)
-                      data_comparacao_str = data_comparacao_final.strftime('%d/%m')
-                      df_comparacao_dados = df_combinado[df_combinado['data'] == data_comparacao_final].copy()
-                 else:
-                     st.warning(f"Não foi encontrado snapshot próximo a {periodo_comp_selecionado} ({target_comp_date.strftime('%d/%m')}). A comparação pode não ser precisa.")
+                if data_comparacao_encontrada:
+                    data_comparacao_final = pd.to_datetime(data_comparacao_encontrada)
+                    data_comparacao_str = data_comparacao_final.strftime('%d/%m')
+                    df_comparacao_dados = df_combinado[df_combinado['data'] == data_comparacao_final].copy()
+                else:
+                    st.warning(f"Não foi encontrado snapshot próximo a {periodo_comp_selecionado} ({target_comp_date.strftime('%d/%m')}). A comparação pode não ser precisa.")
 
 
             cols_linha1 = st.columns(3)
             cols_linha2 = st.columns(3)
             cols_map = {0: cols_linha1[0], 1: cols_linha1[1], 2: cols_linha1[2],
-                          3: cols_linha2[0], 4: cols_linha2[1], 5: cols_linha2[2]}
+                        3: cols_linha2[0], 4: cols_linha2[1], 5: cols_linha2[2]}
 
             for i, faixa in enumerate(ordem_faixas_scaffold):
-                 with cols_map[i]:
+                with cols_map[i]:
                     valor_hoje = 'N/A'
                     if not hoje_counts_df.empty:
-                         valor_hoje_series = hoje_counts_df.loc[hoje_counts_df['Faixa de Antiguidade'] == faixa, 'total']
-                         if not valor_hoje_series.empty:
-                              valor_hoje = int(valor_hoje_series.iloc[0])
+                        valor_hoje_series = hoje_counts_df.loc[hoje_counts_df['Faixa de Antiguidade'] == faixa, 'total']
+                        if not valor_hoje_series.empty:
+                            valor_hoje = int(valor_hoje_series.iloc[0])
 
                     valor_comparacao = 0
                     delta_text = "N/A"
                     delta_class = "delta-neutral"
 
                     if data_comparacao_final and not df_comparacao_dados.empty and isinstance(valor_hoje, int):
-                         valor_comp_series = df_comparacao_dados.loc[df_comparacao_dados['Faixa de Antiguidade'] == faixa, 'total']
-                         if not valor_comp_series.empty:
-                              valor_comparacao = int(valor_comp_series.iloc[0])
+                        valor_comp_series = df_comparacao_dados.loc[df_comparacao_dados['Faixa de Antiguidade'] == faixa, 'total']
+                        if not valor_comp_series.empty:
+                            valor_comparacao = int(valor_comp_series.iloc[0])
 
-                         delta_abs = valor_hoje - valor_comparacao
-                         delta_perc = (delta_abs / valor_comparacao) if valor_comparacao > 0 else 0
-                         delta_text, delta_class = formatar_delta_card(delta_abs, delta_perc, valor_comparacao, data_comparacao_str)
+                        delta_abs = valor_hoje - valor_comparacao
+                        delta_perc = (delta_abs / valor_comparacao) if valor_comparacao > 0 else 0
+                        delta_text, delta_class = formatar_delta_card(delta_abs, delta_perc, valor_comparacao, data_comparacao_str)
                     elif isinstance(valor_hoje, int):
                         delta_text = "Sem dados para comparar"
 
