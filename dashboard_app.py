@@ -1,4 +1,4 @@
-# VERSÃO v0.9.30-740 (Corrigida)
+# VERSÃO v0.9.31-741 (Corrigida)
 
 import streamlit as st
 import pandas as pd
@@ -693,7 +693,51 @@ try:
         if df_fechados.empty:
             st.info("O arquivo de chamados encerrados ainda não foi carregado.")
         elif not df_encerrados_filtrado.empty:
-            st.data_editor(df_encerrados_filtrado[['ID do ticket', 'Descrição', 'Atribuir a um grupo']], hide_index=True, disabled=True, use_container_width=True)
+            
+            # --- INÍCIO DA MODIFICAÇÃO (Adicionar 'Dias em Aberto' aos fechados) ---
+            
+            # Copiamos o dataframe para evitar SettingWithCopyWarning
+            df_encerrados_para_exibir = df_encerrados_filtrado.copy()
+            
+            # Tenta encontrar a coluna de data de criação
+            date_col_name = next((col for col in ['Data de criação', 'Data de Criacao'] if col in df_encerrados_para_exibir.columns), None)
+            
+            # Define as colunas básicas para exibir
+            colunas_para_exibir_fechados = ['ID do ticket', 'Descrição', 'Atribuir a um grupo']
+            
+            if date_col_name:
+                try:
+                    # Converte a data de criação, tratando erros
+                    df_encerrados_para_exibir[date_col_name] = pd.to_datetime(df_encerrados_para_exibir[date_col_name], errors='coerce')
+                    
+                    # Pega a data de "hoje" (data do relatório)
+                    hoje = pd.to_datetime('today').normalize()
+                    
+                    # Normaliza a data de criação
+                    data_criacao_normalizada = df_encerrados_para_exibir[date_col_name].dt.normalize()
+                    
+                    # Calcula os dias (igual à lógica do aging dos abertos)
+                    dias_calculados = (hoje - data_criacao_normalizada).dt.days
+                    
+                    # Adiciona a coluna. Usamos .clip(lower=0) para garantir que não haja dias negativos.
+                    df_encerrados_para_exibir['Dias em Aberto'] = (dias_calculados - 1).clip(lower=0)
+                    
+                    # Adiciona a nova coluna à lista de exibição
+                    colunas_para_exibir_fechados.append('Dias em Aberto')
+                    
+                except Exception as e:
+                    # Se algo der errado no cálculo, apenas exibe um aviso e segue sem a coluna
+                    st.warning(f"Não foi possível calcular os 'Dias em Aberto' para os chamados fechados: {e}")
+            
+            # Exibe o data_editor com as colunas definidas (com ou sem 'Dias em Aberto')
+            st.data_editor(
+                df_encerrados_para_exibir[colunas_para_exibir_fechados], 
+                hide_index=True, 
+                disabled=True, 
+                use_container_width=True
+            )
+            # --- FIM DA MODIFICAÇÃO ---
+            
         else:
             st.info("O arquivo de chamados encerrados do dia ainda não foi carregado.")
 
@@ -1057,6 +1101,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.28-738 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.31-741 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
