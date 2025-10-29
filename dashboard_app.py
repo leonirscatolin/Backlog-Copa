@@ -624,12 +624,14 @@ try:
         st.stop()
 
     # ==========================================================
-    # ||           REGRA OCULTA (Aprovadores GGM)             ||
+    # ||           REGRAS OCULTAS DE GRUPOS                   ||
     # ==========================================================
+    grupos_excluidos = ['Aprovadores GGM', 'liq liq-sutel', 'liq-sutel']
+    
     if 'Atribuir a um grupo' in df_atual.columns:
-         df_atual = df_atual[df_atual['Atribuir a um grupo'] != 'Aprovadores GGM'].copy()
+         df_atual = df_atual[~df_atual['Atribuir a um grupo'].isin(grupos_excluidos)].copy()
     if 'Atribuir a um grupo' in df_15dias.columns:
-         df_15dias = df_15dias[df_15dias['Atribuir a um grupo'] != 'Aprovadores GGM'].copy()
+         df_15dias = df_15dias[~df_15dias['Atribuir a um grupo'].isin(grupos_excluidos)].copy()
     # ==========================================================
 
     if 'ID do ticket' in df_atual.columns:
@@ -646,7 +648,7 @@ try:
     # ||           MODIFICAÇÃO PARA AGING EM FECHADOS                  ||
     # ===================================================================
     
-    # 1. Filtra RH (e GGM já foi filtrado) de df_atual e df_15dias PRIMEIRO
+    # 1. Filtra RH (e GGM/Liq já foram filtrados) de df_atual e df_15dias PRIMEIRO
     df_atual_filtrado_rh = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
     df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
 
