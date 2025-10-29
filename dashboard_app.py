@@ -267,9 +267,6 @@ def get_status(row):
     elif diferenca == 0: return "Estável / Atenção"
     else: return "Redução de Backlog"
 
-# ==========================================================
-# ||           CORREÇÃO ADICIONADA AQUI (CACHE)           ||
-# ==========================================================
 @st.cache_data
 def get_image_as_base64(path):
     try:
@@ -645,19 +642,32 @@ try:
             df_fechados[id_col_name] = df_fechados[id_col_name].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
             closed_ticket_ids = df_fechados[id_col_name].dropna().unique()
 
-    df_encerrados = df_atual[df_atual['ID do ticket'].isin(closed_ticket_ids)]
-    df_abertos = df_atual[~df_atual['ID do ticket'].isin(closed_ticket_ids)]
-    df_atual_filtrado = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
+    # ===================================================================
+    # ||           MODIFICAÇÃO PARA AGING EM FECHADOS                  ||
+    # ===================================================================
+    
+    # 1. Filtra RH (e GGM já foi filtrado) de df_atual e df_15dias PRIMEIRO
+    df_atual_filtrado_rh = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
     df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
-    df_aging = analisar_aging(df_atual_filtrado)
 
-    df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
+    # 2. Roda o aging no dataframe COMPLETO (abertos + fechados) já filtrado
+    # Este dataframe agora tem 'Dias em Aberto' para TODOS os tickets
+    df_todos_com_aging = analisar_aging(df_atual_filtrado_rh.copy()) # Usar .copy() para evitar SettingWithCopyWarning
+
+    # 3. AGORA sim, separa em abertos e fechados
+    df_encerrados_filtrado = df_todos_com_aging[df_todos_com_aging['ID do ticket'].isin(closed_ticket_ids)]
+    df_aging = df_todos_com_aging[~df_todos_com_aging['ID do ticket'].isin(closed_ticket_ids)]
+    
+    # ===================================================================
+    # ||           FIM DA MODIFICAÇÃO                                  ||
+    # ===================================================================
+
 
     tab1, tab2, tab3, tab4 = st.tabs(["Dashboard Completo", "Report Visual", "Evolução Semanal", "Evolução Aging"])
 
     with tab1:
         info_messages = ["**Filtros e Regras Aplicadas:**", "- Grupos contendo 'RH' foram desconsiderados da análise.", "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
-        if not df_encerrados.empty:
+        if not df_encerrados_filtrado.empty: # Modificado para usar a nova variável
             info_messages.append(f"- **{len(df_encerrados_filtrado)} chamados fechados no dia** (exceto RH) foram deduzidos das contagens principais.")
         st.info("\n".join(info_messages))
         st.subheader("Análise de Antiguidade do Backlog Atual")
@@ -693,7 +703,7 @@ try:
         else:
             st.warning("Nenhum dado válido para a análise de antiguidade.")
         st.markdown(f"<h3>Comparativo de Backlog: Atual vs. 15 Dias Atrás <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_15dias_str})</span></h3>", unsafe_allow_html=True)
-        df_comparativo = processar_dados_comparativos(df_atual_filtrado.copy(), df_15dias_filtrado.copy())
+        df_comparativo = processar_dados_comparativos(df_aging.copy(), df_15dias_filtrado.copy()) # Modificado para usar df_aging (abertos)
         df_comparativo['Status'] = df_comparativo.apply(get_status, axis=1)
         
         # df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True) # <-- LINHA ANTIGA
@@ -707,7 +717,17 @@ try:
         if df_fechados.empty:
             st.info("O arquivo de chamados encerrados ainda não foi carregado.")
         elif not df_encerrados_filtrado.empty:
-            st.data_editor(df_encerrados_filtrado[['ID do ticket', 'Descrição', 'Atribuir a um grupo']], hide_index=True, disabled=True, use_container_width=True)
+            # ==========================================================
+            # ||           MODIFICAÇÃO PARA EXIBIR COLUNA             ||
+            # ==========================================================
+            colunas_fechados = ['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto']
+            st.data_editor(
+                df_encerrados_filtrado[colunas_fechados], 
+                hide_index=True, 
+                disabled=True, 
+                use_container_width=True
+            )
+            # ==========================================================
         else:
             st.info("O arquivo de chamados encerrados do dia ainda não foi carregado.")
 
@@ -1045,7 +1065,7 @@ try:
                 else:
                     fig_aging_all = px.area(
                         df_grafico,
-                        x='Data (ESixo)',
+                        x='Data (Eixo)',
                         y='total',
                         color='Faixa de Antiguidade',
                         title='Composição da Evolução por Antiguidade',
