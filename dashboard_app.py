@@ -351,9 +351,12 @@ def carregar_dados_evolucao(_repo, closed_ticket_ids_list, dias_para_analisar=7)
                         df_snapshot_filtrado_rh = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
                         id_col_snapshot = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_snapshot_filtrado_rh.columns), None)
                         df_snapshot_final = df_snapshot_filtrado_rh
+                        
+                        # A LÓGICA DE FILTRO SÓ RODA SE A LISTA DE IDs FECHADOS NÃO ESTIVER VAZIA
                         if id_col_snapshot and closed_ids_set:
                             ids_limpos_snapshot = df_snapshot_filtrado_rh[id_col_snapshot].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
                             df_snapshot_final = df_snapshot_filtrado_rh[~ids_limpos_snapshot.isin(closed_ids_set)]
+                        
                         contagem_diaria = df_snapshot_final.groupby('Atribuir a um grupo').size().reset_index(name='Total Chamados')
                         contagem_diaria['Data'] = pd.to_datetime(file_date)
                         df_evolucao_list.append(contagem_diaria)
@@ -429,6 +432,8 @@ def carregar_evolucao_aging(_repo, closed_ticket_ids_list, dias_para_analisar=90
                 df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
 
                 id_col_snapshot = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_filtrado.columns), None)
+                
+                # A LÓGICA DE FILTRO SÓ RODA SE A LISTA DE IDs FECHADOS NÃO ESTIVER VAZIA
                 if id_col_snapshot and closed_ids_set:
                     ids_limpos_snapshot = df_filtrado[id_col_snapshot].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
                     df_final = df_filtrado[~ids_limpos_snapshot.isin(closed_ids_set)]
@@ -842,7 +847,11 @@ try:
         st.subheader("Evolução do Backlog")
         dias_evolucao = st.slider("Ver evolução dos últimos dias:", min_value=7, max_value=30, value=7, key="slider_evolucao")
 
-        df_evolucao_tab3 = carregar_dados_evolucao(repo, closed_ticket_ids_list=closed_ticket_ids, dias_para_analisar=dias_evolucao)
+        # ==========================================================
+        # ||           CORREÇÃO DO BUG HISTÓRICO AQUI             ||
+        # ==========================================================
+        # Passa uma lista vazia para não filtrar os snapshots
+        df_evolucao_tab3 = carregar_dados_evolucao(repo, closed_ticket_ids_list=[], dias_para_analisar=dias_evolucao)
 
         if not df_evolucao_tab3.empty:
 
@@ -905,7 +914,11 @@ try:
         st.subheader("Evolução do Aging do Backlog")
 
         try:
-            df_hist = carregar_evolucao_aging(repo, closed_ticket_ids_list=closed_ticket_ids, dias_para_analisar=90)
+            # ==========================================================
+            # ||           CORREÇÃO DO BUG HISTÓRICO AQUI             ||
+            # ==========================================================
+            # Passa uma lista vazia para não filtrar os snapshots
+            df_hist = carregar_evolucao_aging(repo, closed_ticket_ids_list=[], dias_para_analisar=90)
 
             ordem_faixas_scaffold = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
             hoje_data = None
