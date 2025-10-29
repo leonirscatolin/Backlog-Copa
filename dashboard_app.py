@@ -1,705 +1,149 @@
-# VERSÃO v0.9.30-740 (Corrigida - Depuração Adicional)
+# ... (código anterior) ...
 
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-import numpy as np
-import base64
-from datetime import datetime, date, timedelta
-from zoneinfo import ZoneInfo
-from github import Github, Auth, GithubException
-from io import StringIO, BytesIO
-import streamlit.components.v1 as components
-# from PIL import Image # PIL não está sendo usado, pode remover se quiser
-from urllib.parse import quote
-import json
-import colorsys
-import re
+logo_copa_b64 = get_image_as_base64("logo_sidebar.png")
+logo_belago_b64 = get_image_as_base64("logo_belago.png")
+if logo_copa_b64 and logo_belago_b64:
+    st.markdown(f"""<div style="display: flex; justify-content: space-between; align-items: center;"><img src="data:image/png;base64,{logo_copa_b64}" width="150"><h1 style='text-align: center; margin: 0;'>Backlog Copa Energia + Belago</h1><img src="data:image/png;base64,{logo_belago_b64}" width="150"></div>""", unsafe_allow_html=True)
+else:
+    # Se os logos não forem encontrados, continua mas avisa
+    st.warning("Arquivos de logo ('logo_sidebar.png', 'logo_belago.png') não encontrados.")
+    st.markdown("<h1 style='text-align: center; margin: 0;'>Backlog Copa Energia + Belago</h1>", unsafe_allow_html=True)
 
-st.set_page_config(
-    layout="wide",
-    page_title="Backlog Copa Energia + Belago",
-    page_icon="minilogo.png",
-    initial_sidebar_state="collapsed"
-)
 
 # ==========================================================
-# ||           LISTA DE GRUPOS OCULTOS - GLOBAL           ||
+# ||           INICIALIZAÇÃO DO REPOSITÓRIO GITHUB        ||
 # ==========================================================
-grupos_excluidos = ['Aprovadores GGM', 'liq liq-sutel', 'liq-sutel']
-# ==========================================================
-
-
-st.html("""
-<style>
-#GithubIcon { visibility: hidden; }
-/* ... (estilos CSS permanecem os mesmos) ... */
-.metric-box {
-    border: 1px solid #CCCCCC;
-    padding: 10px;
-    border-radius: 5px;
-    text-align: center;
-    box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
-    margin-bottom: 10px;
-    height: 120px; /* Altura fixa para alinhar */
-    display: flex; /* Para centralizar verticalmente */
-    flex-direction: column; /* Organiza os spans verticalmente */
-    justify-content: center; /* Centraliza verticalmente */
-}
-a.metric-box { /* Estilo para os cards clicáveis da Tab1 */
-    display: block;
-    color: inherit;
-    text-decoration: none !important;
-}
-a.metric-box:hover {
-    background-color: #f0f2f6;
-    text-decoration: none !important;
-}
-.metric-box span { /* Aplica a todos os spans dentro de metric-box */
-    display: block;
-    width: 100%;
-    text-decoration: none !important;
-}
-.metric-box .label { /* Label (Nome da faixa) */
-    font-size: 1em;
-    color: #666666;
-    margin-bottom: 5px; /* Espaço entre label e value */
-}
-.metric-box .value { /* Número principal */
-    font-size: 2.5em;
-    font-weight: bold;
-    color: #375623;
-}
-.metric-box .delta { /* Texto de comparação (delta) */
-    font-size: 0.9em;
-    margin-top: 5px; /* Espaço entre value e delta */
-}
-/* Classes para colorir o delta */
-.delta-positive { color: #d9534f; } /* Vermelho para aumento */
-.delta-negative { color: #5cb85c; } /* Verde para redução */
-.delta-neutral { color: #666666; } /* Cinza para sem mudança ou N/A */
-</style>
-""")
-
-
-@st.cache_resource
-def get_github_repo():
-    try:
-        expected_repo_name = st.secrets.get("EXPECTED_REPO")
-        if not expected_repo_name:
-            st.error("Configuração de segurança incompleta: Segredo EXPECTED_REPO não encontrado.")
-            st.stop()
-        github_token = st.secrets.get("GITHUB_TOKEN")
-        if not github_token:
-             st.error("Configuração de segurança incompleta: Segredo GITHUB_TOKEN não encontrado.")
-             st.stop()
-        auth = Auth.Token(github_token)
-        g = Github(auth=auth)
-        # Verifica se o token tem acesso ANTES de tentar pegar o repo
-        try:
-             _ = g.get_user().login # Operação simples para validar token
-        except GithubException as auth_err:
-             if auth_err.status == 401:
-                  st.error("Erro de Autenticação no GitHub: Token inválido ou expirado.")
-                  st.stop()
-             raise # Re-levanta outros erros de autenticação
-        
-        return g.get_repo(expected_repo_name)
-    except GithubException as e:
-        if e.status == 404:
-            st.error(f"Erro de Acesso: O repositório '{expected_repo_name}' não foi encontrado ou o token não tem permissão.")
-        elif e.status == 401:
-             st.error("Erro de Autenticação no GitHub: Token inválido ou expirado.")
-        else:
-            st.error(f"Erro de conexão com o repositório GitHub ({e.status}): {e.data.get('message', 'Erro desconhecido')}")
-        st.stop()
-    except Exception as e:
-        st.error(f"Erro inesperado ao conectar ao repositório: {e}")
-        st.stop()
-
-def update_github_file(_repo, file_path, file_content, commit_message):
-    try:
-        contents = _repo.get_contents(file_path)
-        sha = contents.sha
-        # Garante que o conteúdo seja bytes
-        if isinstance(file_content, str):
-            file_content_bytes = file_content.encode('utf-8')
-        else:
-            file_content_bytes = file_content # Assume que já são bytes
-        
-        # Compara o conteúdo para evitar commits desnecessários (opcional, mas bom)
-        if contents.decoded_content == file_content_bytes:
-             if file_path not in ["contacted_tickets.json", "ticket_observations.json", "datas_referencia.txt"]:
-                  st.sidebar.info(f"Arquivo '{file_path}' já está atualizado. Nenhum commit necessário.")
-             return # Sai da função se não houver mudanças
-
-        _repo.update_file(contents.path, commit_message, file_content_bytes, sha)
-        if file_path not in ["contacted_tickets.json", "ticket_observations.json", "datas_referencia.txt"]: 
-            st.sidebar.info(f"Arquivo '{file_path}' atualizado com sucesso.")
-            
-    except GithubException as e:
-        if e.status == 404: # Arquivo não existe, precisa criar
-            if isinstance(file_content, str):
-                file_content_bytes = file_content.encode('utf-8')
-            else:
-                file_content_bytes = file_content
-            _repo.create_file(file_path, commit_message, file_content_bytes)
-            if file_path not in ["contacted_tickets.json", "ticket_observations.json", "datas_referencia.txt"]: 
-                st.sidebar.info(f"Arquivo '{file_path}' criado com sucesso.")
-        elif e.status == 409: # Conflito - SHA mismatch
-             st.sidebar.error(f"Conflito ao salvar '{file_path}': O arquivo foi modificado no GitHub desde a última leitura. Tente recarregar a página e refazer a alteração.")
-             # Não levanta a exceção aqui, permite que o app continue, mas o usuário precisa agir
-        else:
-            st.sidebar.error(f"Falha ao salvar '{file_path}' no GitHub ({e.status}): {e.data.get('message', 'Erro desconhecido')}")
-            raise # Re-levanta outros erros para serem tratados onde a função foi chamada
-
-@st.cache_data(ttl=300)
-def read_github_file(_repo, file_path):
-    # ... (código read_github_file permanece o mesmo) ...
-    try:
-        content_file = _repo.get_contents(file_path)
-        content_bytes = content_file.decoded_content
-
-        try:
-            content = content_bytes.decode("utf-8")
-        except UnicodeDecodeError:
-            try:
-                content = content_bytes.decode("latin-1")
-                # Avisa apenas para fechados, pois outros podem ser latin1 normalmente
-                if file_path == "dados_fechados.csv": 
-                    st.sidebar.warning(f"Arquivo '{file_path}' lido com encoding 'latin-1'. Verifique se foi salvo corretamente.")
-            except Exception as decode_err:
-                    st.error(f"Não foi possível decodificar o arquivo '{file_path}' com utf-8 ou latin-1: {decode_err}")
-                    return pd.DataFrame() # Retorna vazio em caso de erro de decode
-
-        if not content.strip():
-             # st.warning(f"Arquivo '{file_path}' está vazio.") # Opcional
-             return pd.DataFrame()
-
-        try:
-                # Tenta inferir dtype_backend para evitar warnings futuros do pandas
-                df = pd.read_csv(StringIO(content), delimiter=';', encoding='utf-8',
-                                     # Dtypes explícitos são mais seguros
-                                     dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str}, 
-                                     low_memory=False,
-                                     on_bad_lines='warn') 
-        except pd.errors.ParserError as parse_err:
-                st.error(f"Erro ao parsear o CSV '{file_path}': {parse_err}. Verifique o delimitador (;) e a estrutura do arquivo.")
-                return pd.DataFrame()
-        except Exception as read_err:
-                st.error(f"Erro inesperado ao ler o conteúdo CSV de '{file_path}': {read_err}")
-                return pd.DataFrame()
-
-        df.columns = df.columns.str.strip() # Limpa espaços nos nomes das colunas
-        df.dropna(how='all', inplace=True) # Remove linhas TOTALMENTE vazias
-        return df
-
-    except GithubException as e:
-        if e.status == 404:
-             # Silencioso se arquivo não existe (pode ser a primeira execução)
-             return pd.DataFrame()
-        st.error(f"Erro ao acessar o arquivo do GitHub '{file_path}' ({e.status}): {e.data.get('message', 'Erro desconhecido')}")
-        return pd.DataFrame()
-    except Exception as e:
-        st.error(f"Erro inesperado ao ler o arquivo '{file_path}': {e}")
-        return pd.DataFrame()
-
-
-@st.cache_data(ttl=300)
-def read_github_text_file(_repo, file_path):
-    # ... (código read_github_text_file permanece o mesmo) ...
-    try:
-        content_file = _repo.get_contents(file_path)
-        content = content_file.decoded_content.decode("utf-8")
-        dates = {}
-        for line in content.strip().split('\n'):
-            # Checa se tem ':' e se não é linha vazia
-            if ':' in line and line.strip(): 
-                key, value = line.split(':', 1)
-                dates[key.strip()] = value.strip()
-        return dates
-    except GithubException as e:
-        if e.status == 404: 
-            return {} # Arquivo não existe
-        else:
-            st.warning(f"Erro no GitHub ao ler {file_path} ({e.status}): {e.data.get('message', 'Erro desconhecido')}")
-            return {}
-    except Exception as e:
-        st.warning(f"Erro inesperado ao ler {file_path}: {e}")
-        return {}
-
-
-@st.cache_data(ttl=300)
-def read_github_json_dict(_repo, file_path):
-    # ... (código read_github_json_dict permanece o mesmo) ...
-    try:
-        file_content_obj = _repo.get_contents(file_path)
-        file_content_str = file_content_obj.decoded_content.decode("utf-8")
-        # Retorna {} se o conteúdo estiver vazio APÓS o decode
-        return json.loads(file_content_str) if file_content_str.strip() else {} 
-    except GithubException as e:
-        if e.status == 404: return {} 
-        st.error(f"Erro no GitHub ao carregar JSON '{file_path}' ({e.status}): {e.data.get('message', 'Erro desconhecido')}")
-        return {}
-    except json.JSONDecodeError:
-        st.warning(f"Arquivo JSON '{file_path}' vazio ou com formato inválido. Iniciando com dicionário vazio.")
-        return {}
-    except Exception as e:
-        st.error(f"Erro inesperado ao ler JSON '{file_path}': {e}")
-        return {}
-
-
-def process_uploaded_file(uploaded_file):
-    # ... (código process_uploaded_file permanece o mesmo) ...
-    if uploaded_file is None:
-        return None
-    try:
-        dtype_spec = {'ID do ticket': str, 'ID do Ticket': str, 'ID': str} 
-        
-        if uploaded_file.name.endswith('.xlsx'):
-            # Tenta ler a primeira aba por padrão
-            df = pd.read_excel(uploaded_file, dtype=dtype_spec, sheet_name=0) 
-        else: 
-            try:
-                content = uploaded_file.getvalue().decode('utf-8')
-                df = pd.read_csv(StringIO(content), delimiter=';', dtype=dtype_spec) 
-            except UnicodeDecodeError:
-                content = uploaded_file.getvalue().decode('latin1')
-                # Avisa se precisar usar Latin1, pois pode indicar problema na origem
-                st.sidebar.warning(f"Arquivo {uploaded_file.name} lido com encoding 'latin-1'.")
-                df = pd.read_csv(StringIO(content), delimiter=';', dtype=dtype_spec) 
-            except Exception as read_err: # Pega outros erros de leitura CSV
-                 st.sidebar.error(f"Erro ao ler CSV {uploaded_file.name}: {read_err}")
-                 return None
-
-        df.columns = df.columns.str.strip()
-        df.dropna(how='all', inplace=True) 
-
-        output = StringIO()
-        df.to_csv(output, index=False, sep=';', encoding='utf-8')
-        return output.getvalue().encode('utf-8')
-        
-    except Exception as e: # Pega erros gerais do processo (ex: parsing Excel)
-        st.sidebar.error(f"Erro ao processar o arquivo {uploaded_file.name}: {e}")
-        return None
-
-
-def processar_dados_comparativos(df_atual, df_15dias):
-    # ... (código processar_dados_comparativos permanece o mesmo) ...
-    if 'Atribuir a um grupo' not in df_atual.columns or df_atual.empty:
-         st.warning("Dados atuais inválidos para comparação (sem grupo ou vazios).")
-         return pd.DataFrame(columns=['Grupo', '15 Dias Atrás', 'Atual', 'Diferença', 'Status'])
-    if 'Atribuir a um grupo' not in df_15dias.columns or df_15dias.empty:
-         st.warning("Dados de 15 dias atrás inválidos para comparação (sem grupo ou vazios).")
-         # Retorna apenas a contagem atual se os dados antigos falharem
-         contagem_atual = df_atual.groupby('Atribuir a um grupo').size().reset_index(name='Atual')
-         contagem_atual['15 Dias Atrás'] = 0
-         contagem_atual['Diferença'] = contagem_atual['Atual']
-         contagem_atual['Status'] = contagem_atual.apply(get_status, axis=1) # Calcula status baseado em diff=atual
-         return contagem_atual.rename(columns={'Atribuir a um grupo': 'Grupo'})[['Grupo', '15 Dias Atrás', 'Atual', 'Diferença', 'Status']]
-
-
-    contagem_atual = df_atual.groupby('Atribuir a um grupo').size().reset_index(name='Atual')
-    contagem_15dias = df_15dias.groupby('Atribuir a um grupo').size().reset_index(name='15 Dias Atrás')
-    df_comparativo = pd.merge(contagem_atual, contagem_15dias, on='Atribuir a um grupo', how='outer').fillna(0)
-    df_comparativo['Diferença'] = df_comparativo['Atual'] - df_comparativo['15 Dias Atrás']
-    df_comparativo[['Atual', '15 Dias Atrás', 'Diferença']] = df_comparativo[['Atual', '15 Dias Atrás', 'Diferença']].astype(int)
-    return df_comparativo
-
-
-@st.cache_data
-def categorizar_idade_vetorizado(dias_series):
-    # ... (código categorizar_idade_vetorizado permanece o mesmo) ...
-    condicoes = [
-        dias_series >= 30, (dias_series >= 21) & (dias_series <= 29),
-        (dias_series >= 11) & (dias_series <= 20), (dias_series >= 6) & (dias_series <= 10),
-        (dias_series >= 3) & (dias_series <= 5), (dias_series >= 0) & (dias_series <= 2)
-    ]
-    opcoes = ["30+ dias", "21-29 dias", "11-20 dias", "6-10 dias", "3-5 dias", "0-2 dias"]
-    return np.select(condicoes, opcoes, default="Inválido") 
-
-
-@st.cache_data
-def analisar_aging(_df_atual):
-    """Calcula 'Dias em Aberto' e 'Faixa de Antiguidade' em relação a HOJE."""
-    if _df_atual is None or _df_atual.empty:
-         # Aviso mais informativo
-         st.warning("analisar_aging recebeu um DataFrame vazio ou None.") 
-         return pd.DataFrame()
-         
-    df = _df_atual.copy()
-    date_col_name = None
-    if 'Data de criação' in df.columns: date_col_name = 'Data de criação'
-    elif 'Data de Criacao' in df.columns: date_col_name = 'Data de Criacao'
-    
-    if not date_col_name:
-        st.warning(f"Nenhuma coluna de data ('Data de criação' ou 'Data de Criacao') encontrada em analisar_aging. Colunas: {df.columns.tolist()}")
-        # Retorna DF vazio com colunas esperadas para evitar erros posteriores
-        return pd.DataFrame(columns=list(df.columns) + ['Dias em Aberto', 'Faixa de Antiguidade']) 
-    
-    original_dtype = df[date_col_name].dtype
-    # Tenta converter a coluna de data para datetime
-    df[date_col_name] = pd.to_datetime(df[date_col_name], errors='coerce')
-    
-    # Identifica linhas onde a conversão falhou (era não-nulo antes, agora é NaT)
-    linhas_invalidas = df[df[date_col_name].isna() & _df_atual[date_col_name].notna()]
-    if not linhas_invalidas.empty:
-        # Mostra um expander com mais detalhes
-        with st.expander(f"⚠️ Atenção (analisar_aging): {len(linhas_invalidas)} chamados descartados por formato de data inválido na coluna '{date_col_name}' (tipo original: {original_dtype})."):
-             colunas_debug = [col for col in ['ID do ticket', date_col_name, 'Atribuir a um grupo'] if col in linhas_invalidas.columns]
-             # Mostra os valores ORIGINAIS da coluna de data que falharam
-             st.dataframe(linhas_invalidas[colunas_debug].head().assign(**{date_col_name:_df_atual.loc[linhas_invalidas.index, date_col_name].head()}))
-
-    # Remove linhas com NaT na coluna de data
-    df = df.dropna(subset=[date_col_name]) 
-    if df.empty:
-        st.warning(f"Nenhum chamado com data válida na coluna '{date_col_name}' após limpeza em analisar_aging.")
-        return pd.DataFrame(columns=list(df.columns) + ['Dias em Aberto', 'Faixa de Antiguidade'])
-
-    hoje = pd.to_datetime('today').normalize()
-    data_criacao_normalizada = df[date_col_name].dt.normalize() 
-    # Calcula a diferença em dias
-    dias_calculados = (hoje - data_criacao_normalizada).dt.days
-    
-    # Aplica regra de negócio (-1 dia, mínimo 0)
-    df['Dias em Aberto'] = (dias_calculados - 1).clip(lower=0) 
-    
-    # Categoriza
-    df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
-    
-    # Verifica se alguma categoria ficou 'Inválido'
-    invalid_categories = df[df['Faixa de Antiguidade'] == 'Inválido']
-    if not invalid_categories.empty:
-         st.warning(f"{len(invalid_categories)} chamados resultaram em 'Dias em Aberto' < 0 ou inválidos (categoria 'Inválido').")
-         # Opcional: Mostrar expander com os inválidos
-         # with st.expander("Detalhes dos chamados com idade inválida"):
-         #      st.dataframe(invalid_categories[['ID do ticket', date_col_name, 'Dias em Aberto']].head())
-         
-    # Retorna apenas as colunas originais + as duas novas
-    return df[list(_df_atual.columns) + ['Dias em Aberto', 'Faixa de Antiguidade']]
-
-
-def get_status(row):
-    # ... (código get_status permanece o mesmo) ...
-    diferenca = row.get('Diferença', 0) # Usa .get com default 0
-    if diferenca > 0: return "Alta Demanda"
-    elif diferenca == 0: return "Estável / Atenção"
-    else: return "Redução de Backlog"
-
-
-@st.cache_data
-def get_image_as_base64(path):
-    # ... (código get_image_as_base64 permanece o mesmo) ...
-    try:
-        with open(path, "rb") as image_file:
-            return base64.b64encode(image_file.read()).decode()
-    except FileNotFoundError:
-        st.warning(f"Arquivo de imagem não encontrado: {path}") 
-        return None
-
-# ... (código sync_ticket_data permanece o mesmo) ...
-def sync_ticket_data():
-    if 'ticket_editor' not in st.session_state or not st.session_state.ticket_editor.get('edited_rows'):
-        return
-    edited_rows = st.session_state.ticket_editor['edited_rows']
-    contact_changed = False
-    observation_changed = False
-    original_contacts = st.session_state.contacted_tickets.copy()
-    original_observations = st.session_state.observations.copy()
-
-    try:
-        for row_index, changes in edited_rows.items():
-            try:
-                # Usa .get('ID do ticket') para segurança
-                ticket_id = str(st.session_state.last_filtered_df.iloc[row_index].get('ID do ticket', None))
-                if ticket_id is None: 
-                     st.warning(f"Não foi possível obter 'ID do ticket' para a linha editada {row_index}. Pulando.")
-                     continue 
-
-                if 'Contato' in changes:
-                    current_contact_status = ticket_id in st.session_state.contacted_tickets
-                    new_contact_status = changes['Contato']
-                    if current_contact_status != new_contact_status:
-                        if new_contact_status: st.session_state.contacted_tickets.add(ticket_id)
-                        else: st.session_state.contacted_tickets.discard(ticket_id)
-                        contact_changed = True
-                if 'Observações' in changes:
-                    current_observation = st.session_state.observations.get(ticket_id, '')
-                    # Garante que a nova observação é string
-                    new_observation = str(changes['Observações']) if changes['Observações'] is not None else '' 
-                    if current_observation != new_observation:
-                        st.session_state.observations[ticket_id] = new_observation
-                        observation_changed = True
-            except IndexError:
-                st.warning(f"Erro de índice ao processar linha editada {row_index}. Mudanças nesta linha podem não ser salvas.")
-                continue 
-            except Exception as e:
-                 st.warning(f"Erro inesperado ao processar edições na linha {row_index}: {e}. Mudanças nesta linha podem não ser salvas.")
-                 continue 
-
-        if contact_changed or observation_changed:
-            now_str = datetime.now(ZoneInfo('America/Sao_Paulo')).strftime('%d/%m/%Y %H:%M')
-            if contact_changed:
-                data_to_save = list(st.session_state.contacted_tickets)
-                json_content = json.dumps(data_to_save, indent=4)
-                commit_msg = f"Atualizando contatos em {now_str}"
-                # A função update_github_file agora lida com conflitos 409
-                update_github_file(st.session_state.repo, "contacted_tickets.json", json_content.encode('utf-8'), commit_msg)
-            if observation_changed:
-                json_content = json.dumps(st.session_state.observations, indent=4, ensure_ascii=False)
-                commit_msg = f"Atualizando observações em {now_str}"
-                update_github_file(st.session_state.repo, "ticket_observations.json", json_content.encode('utf-8'), commit_msg)
-        
-        # Limpa edições pendentes APENAS se não houve erro no update_github_file
-        # (Erros 409 são tratados dentro da função e não levantam exceção aqui)
-        st.session_state.ticket_editor['edited_rows'] = {}
-
-    except Exception as e: # Pega erros levantados por update_github_file (exceto 409)
-         st.error(f"Falha CRÍTICA ao salvar alterações no GitHub: {e}")
-         st.warning("Revertendo alterações locais. Suas últimas edições NÃO foram salvas.")
-         st.session_state.contacted_tickets = original_contacts
-         st.session_state.observations = original_observations
-         # Mantém as edited_rows para o usuário ver o que falhou? Melhor limpar.
-         st.session_state.ticket_editor['edited_rows'] = {} 
-
-    st.session_state.scroll_to_details = True
-    # Rerun é importante para atualizar a UI após salvar ou reverter
-    st.rerun() 
-
-
-# ... (código carregar_dados_evolucao permanece o mesmo) ...
-@st.cache_data(ttl=3600)
-def carregar_dados_evolucao(_repo, dias_para_analisar=7):
-    global grupos_excluidos
-    try:
-        all_files_content = _repo.get_contents("snapshots")
-        all_files = [f.path for f in all_files_content]
-        df_evolucao_list = []
-        end_date = date.today()
-        start_date = end_date - timedelta(days=max(dias_para_analisar + 5, 10)) 
-
-        processed_dates = []
-        for file_name in all_files:
-            if file_name.startswith("snapshots/backlog_") and file_name.endswith(".csv"):
-                try:
-                    date_str = file_name.replace("snapshots/backlog_", "").replace(".csv", "")
-                    file_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-                    if start_date <= file_date <= end_date:
-                        processed_dates.append((file_date, file_name))
-                except ValueError: continue
-                except Exception as e: 
-                     st.warning(f"Erro processando nome de arquivo snapshot {file_name}: {e}")
-                     continue
-
-        processed_dates.sort(key=lambda x: x[0])
-        files_to_process = processed_dates[-dias_para_analisar:] 
-
-        for file_date, file_name in files_to_process:
-                try:
-                    df_snapshot = read_github_file(_repo, file_name)
-                    if df_snapshot.empty or 'Atribuir a um grupo' not in df_snapshot.columns:
-                        st.warning(f"Snapshot {file_name} vazio ou sem coluna 'Atribuir a um grupo'. Pulando.")
-                        continue
-                    
-                    df_snapshot_final = df_snapshot[~df_snapshot['Atribuir a um grupo'].isin(grupos_excluidos)]
-                    df_snapshot_final = df_snapshot_final[~df_snapshot_final['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
-                    
-                    if df_snapshot_final.empty:
-                         st.info(f"Nenhum chamado válido encontrado em {file_name} após filtros.")
-                         continue 
-
-                    contagem_diaria = df_snapshot_final.groupby('Atribuir a um grupo').size().reset_index(name='Total Chamados')
-                    contagem_diaria['Data'] = pd.to_datetime(file_date)
-                    df_evolucao_list.append(contagem_diaria)
-                except Exception as e:
-                     st.warning(f"Erro ao processar snapshot {file_name}: {e}")
-                     continue
-
-        if not df_evolucao_list: 
-             st.warning("Nenhum dado de evolução pôde ser carregado após processar snapshots.")
-             return pd.DataFrame()
-
-        df_consolidado = pd.concat(df_evolucao_list, ignore_index=True)
-        return df_consolidado.sort_values(by=['Data', 'Atribuir a um grupo'])
-
-    except GithubException as e:
-        if e.status == 404: 
-             st.warning("Pasta 'snapshots' não encontrada no repositório.")
-             return pd.DataFrame()
-        st.warning(f"Erro no GitHub ao carregar snapshots: {e}")
-        return pd.DataFrame()
-    except Exception as e:
-        st.error(f"Erro inesperado ao carregar evolução: {e}")
-        return pd.DataFrame()
-
-
-# ... (código find_closest_snapshot_before permanece o mesmo) ...
-@st.cache_data(ttl=300)
-def find_closest_snapshot_before(_repo, current_report_date, target_date):
-    try:
-        all_files_content = _repo.get_contents("snapshots")
-        snapshots = []
-        search_start_date = target_date - timedelta(days=10) 
-
-        for file in all_files_content:
-            match = re.search(r"backlog_(\d{4}-\d{2}-\d{2})\.csv", file.path)
-            if match:
-                try:
-                    snapshot_date = datetime.strptime(match.group(1), "%Y-%m-%d").date()
-                    if search_start_date <= snapshot_date <= target_date: 
-                        snapshots.append((snapshot_date, file.path))
-                except ValueError:
-                    continue 
-
-        if not snapshots:
-            # Aviso mais claro
-            st.warning(f"Nenhum snapshot encontrado entre {search_start_date.strftime('%d/%m/%Y')} e {target_date.strftime('%d/%m/%Y')}.")
-            return None, None
-
-        snapshots.sort(key=lambda x: x[0], reverse=True) 
-        return snapshots[0] 
-
-    except GithubException as e:
-         if e.status == 404:
-              st.warning("Pasta 'snapshots' não encontrada para buscar data comparativa.")
-         else:
-              st.warning(f"Erro no GitHub ao buscar snapshots ({e.status}): {e.data.get('message', 'Erro desconhecido')}")
-         return None, None
-    except Exception as e:
-        st.error(f"Erro inesperado ao buscar snapshots: {e}")
-        return None, None
-
-
-# ... (código carregar_evolucao_aging permanece o mesmo) ...
-@st.cache_data(ttl=3600)
-def carregar_evolucao_aging(_repo, dias_para_analisar=90):
-    global grupos_excluidos
-    try:
-        all_files_content = _repo.get_contents("snapshots")
-        all_files = [f.path for f in all_files_content]
-        lista_historico = []
-        end_date = date.today() - timedelta(days=1) 
-        start_date = end_date - timedelta(days=max(dias_para_analisar + 10, 60)) 
-
-        processed_files = []
-        for file_name in all_files:
-            if file_name.startswith("snapshots/backlog_") and file_name.endswith(".csv"):
-                try:
-                    date_str = file_name.replace("snapshots/backlog_", "").replace(".csv", "")
-                    file_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-                    if start_date <= file_date <= end_date: 
-                        processed_files.append((file_date, file_name))
-                except Exception as e:
-                    st.warning(f"Erro processando nome de arquivo snapshot {file_name} para aging: {e}")
-                    continue
-
-        processed_files.sort(key=lambda x: x[0]) 
-
-        for file_date, file_name in processed_files:
-            try:
-                df_snapshot = read_github_file(_repo, file_name)
-                if df_snapshot.empty or 'Atribuir a um grupo' not in df_snapshot.columns:
-                    st.warning(f"Snapshot {file_name} para aging vazio ou sem coluna 'Atribuir a um grupo'. Pulando.")
-                    continue
-
-                df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].isin(grupos_excluidos)]
-                df_filtrado = df_filtrado[~df_filtrado['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
-
-                if df_filtrado.empty:
-                    st.info(f"Nenhum chamado válido em {file_name} para aging após filtros.")
-                    continue 
-
-                # Usa analisar_aging (que calcula em relação a HOJE)
-                df_com_aging = analisar_aging(df_filtrado.copy())
-
-                if df_com_aging.empty or 'Faixa de Antiguidade' not in df_com_aging.columns:
-                     st.warning(f"analisar_aging retornou dataframe vazio ou inválido para snapshot {file_name}.")
-                     continue 
-
-                contagem_faixas = df_com_aging['Faixa de Antiguidade'].value_counts().reset_index()
-                contagem_faixas.columns = ['Faixa de Antiguidade', 'total']
-
-                ordem_faixas_scaffold = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
-                df_todas_faixas = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas_scaffold})
-
-                contagem_completa = pd.merge(
-                    df_todas_faixas, contagem_faixas,
-                    on='Faixa de Antiguidade', how='left'
-                ).fillna(0)
-
-                contagem_completa['total'] = contagem_completa['total'].astype(int)
-                contagem_completa['data'] = pd.to_datetime(file_date) # Data do snapshot
-
-                lista_historico.append(contagem_completa)
-
-            except Exception as e:
-                 # Captura erro específico do processamento deste snapshot
-                 st.warning(f"Erro ao processar aging do snapshot {file_name}: {e}") 
-                 continue # Pula para o próximo snapshot
-
-        if not lista_historico:
-            st.warning("Nenhum dado histórico de aging pôde ser carregado após processar todos os snapshots.")
-            return pd.DataFrame()
-
-        return pd.concat(lista_historico, ignore_index=True)
-
-    except GithubException as e:
-         if e.status == 404:
-              st.warning("Pasta 'snapshots' não encontrada para carregar evolução aging.")
-         else:
-              st.warning(f"Erro no GitHub ao carregar evolução aging ({e.status}): {e.data.get('message', 'Erro desconhecido')}")
-         return pd.DataFrame()
-    except Exception as e:
-        # Captura erros gerais da função (ex: falha ao listar 'snapshots')
-        st.error(f"Erro inesperado ao carregar evolução de aging: {e}") 
-        return pd.DataFrame()
-
-
-# ... (código formatar_delta_card permanece o mesmo) ...
-def formatar_delta_card(delta_abs, delta_perc, valor_comparacao, data_comparacao_str):
-    delta_abs = int(delta_abs)
-    # Lógica aprimorada para clareza
-    if valor_comparacao > 0:
-        delta_perc_str = f"({delta_perc * 100:+.1f}%)" # Inclui sinal +/-
-        delta_text = f"{delta_abs:+} {delta_perc_str} vs. {data_comparacao_str}"
-    elif valor_comparacao == 0 and delta_abs > 0:
-        delta_text = f"+{delta_abs} (Novo) vs. {data_comparacao_str}" 
-    # Não deve acontecer delta_abs < 0 se valor_comparacao é 0, mas mantém por segurança
-    elif valor_comparacao == 0 and delta_abs < 0: 
-        delta_text = f"{delta_abs} vs. {data_comparacao_str}" 
-    else: # valor_comparacao == 0 e delta_abs == 0
-         delta_text = f"0 (=) vs. {data_comparacao_str}" # Mais claro que 0.0%
-
-    if delta_abs > 0: delta_class = "delta-positive"
-    elif delta_abs < 0: delta_class = "delta-negative"
-    else: delta_class = "delta-neutral"
-    return delta_text, delta_class
-
-
-# ... (Restante do código, incluindo bloco try principal e abas, permanece o mesmo) ...
-# --- Bloco Principal ---
 try:
-    # Carrega estado inicial (contatos, observações)
+    repo = get_github_repo()
+    # Verifica se a função retornou um objeto válido
+    if repo is None:
+         st.error("Falha ao obter o objeto do repositório do GitHub. A função get_github_repo retornou None.")
+         st.stop()
+    st.session_state.repo = repo # Armazena no session_state logo após definir
+except Exception as e:
+     st.error(f"Erro CRÍTICO durante a inicialização do repositório GitHub: {e}")
+     st.stop()
+# ==========================================================
+
+
+st.sidebar.header("Área do Administrador")
+password = st.sidebar.text_input("Senha para atualizar dados:", type="password")
+is_admin = password == st.secrets.get("ADMIN_PASSWORD", "")
+
+if is_admin:
+    # ... (código da sidebar do admin permanece o mesmo) ...
+    st.sidebar.success("Acesso de administrador liberado.")
+    st.sidebar.subheader("Atualização Completa")
+    uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL", type=["csv", "xlsx"], key="uploader_atual")
+    uploaded_file_15dias = st.sidebar.file_uploader("2. Backlog de 15 DIAS ATRÁS", type=["csv", "xlsx"], key="uploader_15dias")
+    if st.sidebar.button("Salvar Novos Dados no Site"):
+        if uploaded_file_atual and uploaded_file_15dias:
+            with st.spinner("Processando e salvando atualização completa..."):
+                now_sao_paulo = datetime.now(ZoneInfo('America/Sao_Paulo'))
+                commit_msg = f"Dados atualizados em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
+                content_atual = process_uploaded_file(uploaded_file_atual)
+                content_15dias = process_uploaded_file(uploaded_file_15dias)
+                if content_atual is not None and content_15dias is not None:
+                    try:
+                        # Usa st.session_state.repo para consistência
+                        update_github_file(st.session_state.repo, "dados_atuais.csv", content_atual, commit_msg)
+                        update_github_file(st.session_state.repo, "dados_15_dias.csv", content_15dias, commit_msg)
+                        today_str = now_sao_paulo.strftime('%Y-%m-%d')
+                        snapshot_path = f"snapshots/backlog_{today_str}.csv"
+                        update_github_file(st.session_state.repo, snapshot_path, content_atual, f"Snapshot de {today_str}")
+                        data_do_upload = now_sao_paulo.date()
+                        data_arquivo_15dias = data_do_upload - timedelta(days=15)
+                        hora_atualizacao = now_sao_paulo.strftime('%H:%M')
+                        datas_referencia_content = (f"data_atual:{data_do_upload.strftime('%d/%m/%Y')}\n"
+                                                    f"data_15dias:{data_arquivo_15dias.strftime('%d/%m/%Y')}\n"
+                                                    f"hora_atualizacao:{hora_atualizacao}")
+                        update_github_file(st.session_state.repo, "datas_referencia.txt", datas_referencia_content.encode('utf-8'), commit_msg)
+                        
+                        st.cache_data.clear()
+                        st.cache_resource.clear()
+                        st.sidebar.success("Arquivos salvos! Forçando recarregamento...")
+                        st.rerun()
+                    # Captura exceções específicas do update_github_file ou gerais
+                    except GithubException as ghe:
+                         st.sidebar.error(f"Erro GitHub durante a atualização completa ({ghe.status}): {ghe.data.get('message', 'Erro desconhecido')}")
+                    except Exception as e:
+                        st.sidebar.error(f"Erro durante a atualização completa: {e}")
+
+        else:
+            st.sidebar.warning("Para a atualização completa, carregue os arquivos ATUAL e de 15 DIAS.")
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("Atualização Rápida")
+    uploaded_file_fechados = st.sidebar.file_uploader("Apenas Chamados FECHADOS no dia", type=["csv", "xlsx"], key="uploader_fechados")
+    if st.sidebar.button("Salvar Apenas Chamados Fechados"):
+        if uploaded_file_fechados:
+            with st.spinner("Salvando arquivo de chamados fechados..."):
+                now_sao_paulo = datetime.now(ZoneInfo('America/Sao_Paulo'))
+                commit_msg = f"Atualizando chamados fechados em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
+                content_fechados = process_uploaded_file(uploaded_file_fechados)
+                if content_fechados is not None:
+                    try:
+                        # Usa st.session_state.repo
+                        update_github_file(st.session_state.repo, "dados_fechados.csv", content_fechados, commit_msg)
+
+                        # Usa st.session_state.repo aqui também
+                        datas_existentes = read_github_text_file(st.session_state.repo, "datas_referencia.txt")
+                        data_atual_existente = datas_existentes.get('data_atual', 'N/A')
+                        data_15dias_existente = datas_existentes.get('data_15dias', 'N/A')
+                        hora_atualizacao_nova = now_sao_paulo.strftime('%H:%M')
+
+                        datas_referencia_content_novo = (f"data_atual:{data_atual_existente}\n"
+                                                       f"data_15dias:{data_15dias_existente}\n"
+                                                       f"hora_atualizacao:{hora_atualizacao_nova}")
+                        update_github_file(st.session_state.repo, "datas_referencia.txt", datas_referencia_content_novo.encode('utf-8'), commit_msg)
+
+                        st.cache_data.clear()
+                        st.cache_resource.clear()
+                        st.sidebar.success("Arquivo de fechados salvo e hora atualizada! Recarregando...")
+                        st.rerun()
+                    # Captura exceções específicas do update_github_file ou gerais
+                    except GithubException as ghe:
+                         st.sidebar.error(f"Erro GitHub durante a atualização rápida ({ghe.status}): {ghe.data.get('message', 'Erro desconhecido')}")
+                    except Exception as e:
+                        st.sidebar.error(f"Erro durante a atualização rápida: {e}")
+        else:
+            st.sidebar.warning("Por favor, carregue o arquivo de chamados fechados para salvar.")
+elif password:
+    st.sidebar.error("Senha incorreta.")
+
+
+# --- Bloco Principal ---
+# Agora usa st.session_state.repo, que foi garantido na inicialização
+# Usa um bloco try/except abrangente para pegar erros gerais de processamento
+try:
+    # Garante que repo existe no session_state antes de prosseguir
+    if 'repo' not in st.session_state or st.session_state.repo is None:
+         st.error("Objeto do repositório GitHub não encontrado no estado da sessão. A inicialização falhou.")
+         st.stop()
+         
+    # Usa st.session_state.repo daqui em diante
+    _repo = st.session_state.repo
+
+    # Carrega estado inicial (contatos, observações) usando _repo
     if 'contacted_tickets' not in st.session_state:
-        # ... (código para carregar contacted_tickets) ...
+        # ... (código para carregar contacted_tickets usando _repo) ...
         try:
-            file_content = repo.get_contents("contacted_tickets.json").decoded_content.decode("utf-8")
-            st.session_state.contacted_tickets = set(json.loads(file_content))
+            file_content_obj = _repo.get_contents("contacted_tickets.json")
+            file_content_str = file_content_obj.decoded_content.decode("utf-8")
+            st.session_state.contacted_tickets = set(json.loads(file_content_str)) if file_content_str.strip() else set()
         except GithubException as e:
             if e.status == 404: st.session_state.contacted_tickets = set()
-            else: st.error(f"Erro ao carregar o estado dos tickets: {e}"); st.session_state.contacted_tickets = set()
+            else: st.error(f"Erro GitHub ao carregar 'contacted_tickets.json' ({e.status}): {e.data.get('message', 'Erro desconhecido')}"); st.session_state.contacted_tickets = set()
         except json.JSONDecodeError:
-             st.warning("Arquivo 'contacted_tickets.json' corrompido ou vazio. Iniciando com lista vazia.")
+             st.warning("Arquivo 'contacted_tickets.json' corrompido ou vazio. Iniciando lista vazia.")
              st.session_state.contacted_tickets = set()
 
-
     if 'observations' not in st.session_state:
-        st.session_state.observations = read_github_json_dict(repo, "ticket_observations.json")
+        # Passa _repo para a função
+        st.session_state.observations = read_github_json_dict(_repo, "ticket_observations.json")
 
-    # Trata parâmetros da URL (para scroll e seleção de faixa)
+    # ... (Trata parâmetros da URL - sem alterações) ...
     needs_scroll = "scroll" in st.query_params
     if "faixa" in st.query_params:
-        # ... (código para tratar faixa_from_url) ...
         faixa_from_url = st.query_params.get("faixa")
         ordem_faixas_validas = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
         if faixa_from_url in ordem_faixas_validas:
@@ -707,17 +151,29 @@ try:
     if "scroll" in st.query_params or "faixa" in st.query_params:
         st.query_params.clear() 
 
-    # --- Carregamento e Pré-processamento dos Dados ---
-    df_atual = read_github_file(repo, "dados_atuais.csv")
-    df_15dias = read_github_file(repo, "dados_15_dias.csv")
-    df_fechados_raw = read_github_file(repo, "dados_fechados.csv") 
-    datas_referencia = read_github_text_file(repo, "datas_referencia.txt")
+    # --- Carregamento e Pré-processamento dos Dados (usando _repo) ---
+    df_atual = read_github_file(_repo, "dados_atuais.csv")
+    df_15dias = read_github_file(_repo, "dados_15_dias.csv")
+    df_fechados_raw = read_github_file(_repo, "dados_fechados.csv")
+    datas_referencia = read_github_text_file(_repo, "datas_referencia.txt")
     data_atual_str = datas_referencia.get('data_atual', 'N/A')
     data_15dias_str = datas_referencia.get('data_15dias', 'N/A')
     hora_atualizacao_str = datas_referencia.get('hora_atualizacao', '')
-    
+
+    # ... (Restante do pré-processamento e lógica das abas permanece o mesmo,
+    #      mas garanta que todas as chamadas de função que precisam do repo
+    #      recebam `_repo` ou usem `st.session_state.repo`) ...
+
+    # Exemplo: Dentro das abas, ao chamar funções cacheadas que usam o repo
+    # with tab3:
+    #    df_evolucao_tab3 = carregar_dados_evolucao(_repo, ...)
+    # with tab4:
+    #    df_hist = carregar_evolucao_aging(_repo, ...)
+    #    data_comparacao_encontrada, _ = find_closest_snapshot_before(_repo, ...)
+
+    # --- Aplica filtros e processa dados ---
     if df_atual.empty:
-        st.warning("Arquivo 'dados_atuais.csv' não encontrado ou vazio. Carregue os dados na área do administrador.")
+        st.warning("Arquivo 'dados_atuais.csv' não encontrado ou vazio.")
         st.stop()
 
     if 'Atribuir a um grupo' in df_atual.columns:
@@ -769,10 +225,10 @@ try:
     # --- Fim do Pré-processamento ---
 
     tab1, tab2, tab3, tab4 = st.tabs(["Dashboard Completo", "Report Visual", "Evolução Semanal", "Evolução Aging"])
-
-    # --- Conteúdo da Tab 1 ---
+    
+    # --- Tab 1 ---
     with tab1:
-        # ... (código da Tab 1 permanece o mesmo) ...
+        # ... (código da tab 1) ...
         info_messages = ["**Filtros e Regras Aplicadas:**", 
                          f"- Grupos ocultos ({', '.join(grupos_excluidos)}) e grupos contendo 'RH' foram desconsiderados da análise.", 
                          "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
@@ -882,6 +338,7 @@ try:
                 colunas_editaveis = ['Contato', 'Observações'] 
                 colunas_desabilitadas = [colunas_para_exibir_renomeadas[c] for c in colunas_existentes if c not in colunas_editaveis]
 
+
                 st.data_editor(
                     st.session_state.last_filtered_df.rename(columns=colunas_para_exibir_renomeadas)[colunas_renomeadas_existentes].style.apply(highlight_row, axis=1),
                     use_container_width=True, hide_index=True, disabled=colunas_desabilitadas, 
@@ -918,9 +375,9 @@ try:
                  st.warning("Coluna 'Atribuir a um grupo' não encontrada para busca.")
 
 
-    # --- Conteúdo da Tab 2 ---
+    # --- Tab 2 ---
     with tab2:
-        # ... (código da Tab 2 permanece o mesmo) ...
+        # ... (código da tab 2) ...
         st.subheader("Resumo do Backlog Atual")
         if not df_aging.empty:
             total_chamados = len(df_aging)
@@ -981,13 +438,14 @@ try:
             st.warning("Nenhum dado de aging disponível para gerar o report visual.")
 
 
-    # --- Conteúdo da Tab 3 ---
+    # --- Tab 3 ---
     with tab3:
-        # ... (código da Tab 3 permanece o mesmo) ...
+        # ... (código da tab 3) ...
         st.subheader("Evolução do Backlog")
         dias_evolucao = st.slider("Ver evolução dos últimos dias:", min_value=7, max_value=30, value=7, key="slider_evolucao")
 
-        df_evolucao_tab3 = carregar_dados_evolucao(repo, dias_para_analisar=dias_evolucao)
+        # Passa _repo
+        df_evolucao_tab3 = carregar_dados_evolucao(_repo, dias_para_analisar=dias_evolucao)
 
         if not df_evolucao_tab3.empty:
             df_evolucao_tab3['Data'] = pd.to_datetime(df_evolucao_tab3['Data'])
@@ -1033,14 +491,15 @@ try:
             st.info("Não foi possível carregar dados históricos para a evolução.")
 
 
-    # --- Conteúdo da Tab 4 ---
+    # --- Tab 4 ---
     with tab4:
-        # ... (código da Tab 4 permanece o mesmo) ...
+        # ... (código da tab 4) ...
         st.subheader("Evolução do Aging do Backlog")
         st.info("Esta aba compara a 'foto' do aging de hoje com a 'foto' de dias anteriores, usando a mesma data de referência (hoje) para calcular a idade em ambos os momentos.")
 
         try:
-            df_hist = carregar_evolucao_aging(repo, dias_para_analisar=90)
+            # Passa _repo
+            df_hist = carregar_evolucao_aging(_repo, dias_para_analisar=90)
 
             ordem_faixas_scaffold = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
             hoje_data = None
@@ -1095,19 +554,18 @@ try:
 
             if hoje_data:
                 target_comp_date = hoje_data.date() - timedelta(days=periodo_comp_opts[periodo_comp_selecionado])
-                data_comparacao_encontrada, _ = find_closest_snapshot_before(repo, hoje_data.date(), target_comp_date)
+                # Passa _repo
+                data_comparacao_encontrada, _ = find_closest_snapshot_before(_repo, hoje_data.date(), target_comp_date)
 
                 if data_comparacao_encontrada:
                     data_comparacao_final = pd.to_datetime(data_comparacao_encontrada)
                     data_comparacao_str = data_comparacao_final.strftime('%d/%m')
-                    # Pega do df_combinado que já tem o aging calculado corretamente
                     df_comparacao_dados = df_combinado[df_combinado['data'] == data_comparacao_final].copy() 
                     if df_comparacao_dados.empty:
                          st.warning(f"Snapshot de {data_comparacao_str} encontrado, mas sem dados válidos após processamento.")
                          data_comparacao_final = None 
                 else:
-                    # O aviso já é dado por find_closest_snapshot_before
-                    pass # data_comparacao_final continua None
+                    pass 
 
             cols_linha1 = st.columns(3)
             cols_linha2 = st.columns(3)
@@ -1170,7 +628,6 @@ try:
 
                 # ... (código da paleta de cores e tipo de gráfico) ...
                 def lighten_color(hex_color, amount=0.2):
-                    # ... (função lighten_color) ...
                     try:
                         hex_color = hex_color.lstrip('#')
                         h, l, s = colorsys.rgb_to_hls(*[int(hex_color[i:i+2], 16)/255.0 for i in (0, 2, 4)])
@@ -1213,12 +670,17 @@ try:
             st.exception(e) 
 
 except Exception as e:
-    st.error(f"Ocorreu um erro GERAL ao carregar ou processar os dados: {e}")
+    # Mostra o erro na tela principal
+    st.error(f"Ocorreu um erro GERAL ao carregar ou processar os dados: {e}") 
+    # Loga o traceback completo para depuração (visível nos logs do Streamlit Cloud/Servidor)
+    import traceback
     st.exception(e) 
+    # Opcional: Parar a execução se for um erro crítico
+    # st.stop() 
 
 st.markdown("---")
 # Atualiza versão no rodapé
 st.markdown(""" 
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.33 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.34 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
