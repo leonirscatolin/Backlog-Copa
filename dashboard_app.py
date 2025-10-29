@@ -1,4 +1,4 @@
-# VERSÃO v0.9.31-741 (Corrigida)
+# VERSÃO v0.9.32-742 (Corrigida)
 
 import streamlit as st
 import pandas as pd
@@ -552,39 +552,90 @@ if is_admin:
 
         else:
             st.sidebar.warning("Para a atualização completa, carregue os arquivos ATUAL e de 15 DIAS.")
+            
     st.sidebar.markdown("---")
     st.sidebar.subheader("Atualização Rápida")
     uploaded_file_fechados = st.sidebar.file_uploader("Apenas Chamados FECHADOS no dia", type=["csv", "xlsx"], key="uploader_fechados")
     if st.sidebar.button("Salvar Apenas Chamados Fechados"):
         if uploaded_file_fechados:
-            with st.spinner("Salvando arquivo de chamados fechados..."):
+            # --- INÍCIO DA MODIFICAÇÃO (OPÇÃO 2) ---
+            with st.spinner("Salvando arquivo de fechados e atualizando snapshot diário..."):
                 now_sao_paulo = datetime.now(ZoneInfo('America/Sao_Paulo'))
                 commit_msg = f"Atualizando chamados fechados em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
+                
+                # 1. Processa e salva o arquivo de fechados
                 content_fechados = process_uploaded_file(uploaded_file_fechados)
-                if content_fechados is not None:
-                    try:
-                        # Salva o arquivo de fechados
-                        update_github_file(repo, "dados_fechados.csv", content_fechados, commit_msg)
+                if content_fechados is None:
+                    st.sidebar.error("Falha ao processar o arquivo de fechados.")
+                    st.stop() # Para a execução se o arquivo for inválido
 
-                        # --- INÍCIO DA MODIFICAÇÃO v0.9.30 ---
-                        # Atualiza a hora em datas_referencia.txt
-                        datas_existentes = read_github_text_file(repo, "datas_referencia.txt")
-                        data_atual_existente = datas_existentes.get('data_atual', 'N/A')
-                        data_15dias_existente = datas_existentes.get('data_15dias', 'N/A')
-                        hora_atualizacao_nova = now_sao_paulo.strftime('%H:%M')
+                try:
+                    # Salva o arquivo de fechados (como antes)
+                    update_github_file(repo, "dados_fechados.csv", content_fechados, commit_msg)
 
-                        datas_referencia_content_novo = (f"data_atual:{data_atual_existente}\n"
-                                                        f"data_15dias:{data_15dias_existente}\n"
-                                                        f"hora_atualizacao:{hora_atualizacao_nova}")
-                        update_github_file(repo, "datas_referencia.txt", datas_referencia_content_novo.encode('utf-8'), commit_msg)
-                        # --- FIM DA MODIFICAÇÃO v0.9.30 ---
+                    # 2. Atualiza a hora em datas_referencia.txt (como antes)
+                    datas_existentes = read_github_text_file(repo, "datas_referencia.txt")
+                    data_atual_existente = datas_existentes.get('data_atual', 'N/A')
+                    data_15dias_existente = datas_existentes.get('data_15dias', 'N/A')
+                    hora_atualizacao_nova = now_sao_paulo.strftime('%H:%M')
 
-                        st.cache_data.clear()
-                        st.cache_resource.clear()
-                        st.sidebar.success("Arquivo de fechados salvo e hora atualizada! Recarregando...")
-                        st.rerun()
-                    except Exception as e:
-                        st.sidebar.error(f"Erro durante a atualização rápida: {e}")
+                    datas_referencia_content_novo = (f"data_atual:{data_atual_existente}\n"
+                                                    f"data_15dias:{data_15dias_existente}\n"
+                                                    f"hora_atualizacao:{hora_atualizacao_nova}")
+                    update_github_file(repo, "datas_referencia.txt", datas_referencia_content_novo.encode('utf-8'), commit_msg)
+                    
+                    # 3. Ler o dados_atuais.csv base (o da manhã)
+                    df_atual_base = read_github_file(repo, "dados_atuais.csv")
+                    if df_atual_base.empty:
+                        st.sidebar.warning("Não foi possível ler o 'dados_atuais.csv' base para atualizar o snapshot.")
+                        raise Exception("Arquivo 'dados_atuais.csv' base não encontrado.")
+
+                    # 4. Ler os IDs do arquivo de fechados que acabou de ser salvo
+                    # Usamos BytesIO para ler os bytes do arquivo recém-processado
+                    df_fechados_novo = pd.read_csv(BytesIO(content_fechados), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
+                    
+                    id_col_fechados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_novo.columns), None)
+                    if not id_col_fechados:
+                         st.sidebar.warning("Não foi possível encontrar coluna de ID no arquivo de fechados.")
+                         raise Exception("Coluna de ID não encontrada nos fechados.")
+
+                    closed_ids_set = set(df_fechados_novo[id_col_fechados].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
+
+                    # 5. Encontrar ID no df_atual_base e filtrar
+                    id_col_atual = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_atual_base.columns), None)
+                    if not id_col_atual:
+                         st.sidebar.warning("Não foi possível encontrar coluna de ID no 'dados_atuais.csv' base.")
+                         raise Exception("Coluna de ID não encontrada no 'dados_atuais.csv' base.")
+                    
+                    # Garantir que a coluna de ID no df_atual_base seja string limpa para comparação
+                    df_atual_base[id_col_atual] = df_atual_base[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
+                    
+                    # Filtrar o dataframe
+                    df_atualizado_filtrado = df_atual_base[~df_atual_base[id_col_atual].isin(closed_ids_set)]
+
+                    # 6. Preparar o novo snapshot para salvar
+                    output = StringIO()
+                    df_atualizado_filtrado.to_csv(output, index=False, sep=';', encoding='utf-8')
+                    content_snapshot_novo = output.getvalue().encode('utf-8')
+
+                    # 7. Salvar/Sobrescrever o snapshot do dia
+                    today_str = now_sao_paulo.strftime('%Y-%m-%d')
+                    snapshot_path = f"snapshots/backlog_{today_str}.csv"
+                    commit_msg_snapshot = f"Atualizando snapshot (rápido) em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
+                    
+                    update_github_file(repo, snapshot_path, content_snapshot_novo, commit_msg_snapshot)
+                    
+                    # --- FIM DA MODIFICAÇÃO (OPÇÃO 2) ---
+
+                    # 8. Limpar cache e recarregar
+                    st.cache_data.clear()
+                    st.cache_resource.clear()
+                    st.sidebar.success("Arquivo de fechados salvo e snapshot diário atualizado! Recarregando...")
+                    st.rerun()
+
+                except Exception as e:
+                    st.sidebar.error(f"Erro durante a atualização rápida: {e}")
+            # --- FIM DO BLOCO DE MODIFICAÇÃO ---
         else:
             st.sidebar.warning("Por favor, carregue o arquivo de chamados fechados para salvar.")
 elif password:
@@ -892,7 +943,7 @@ try:
 
                 fig_evolucao_grupo = px.line(
                     df_filtrado_display,
-                    x='Data (Eixo)',
+                    x='Data (EMixo)',
                     y='Total Chamados',
                     color='Grupo Atribuído',
                     title='Evolução por Grupo (Apenas Dias de Semana)',
@@ -1101,6 +1152,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.31-741 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.32-742 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
