@@ -135,8 +135,8 @@ def read_github_file(_repo, file_path):
 
         try:
                 df = pd.read_csv(StringIO(content), delimiter=';', encoding='utf-8',
-                                    dtype={'ID do ticket': str, 'ID do Ticket': str}, low_memory=False,
-                                    on_bad_lines='warn')
+                                     dtype={'ID do ticket': str, 'ID do Ticket': str}, low_memory=False,
+                                     on_bad_lines='warn')
         except pd.errors.ParserError as parse_err:
                 st.error(f"Erro ao parsear o CSV '{file_path}': {parse_err}. Verifique o delimitador (;) e a estrutura do arquivo.")
                 return pd.DataFrame()
@@ -574,8 +574,8 @@ if is_admin:
                         hora_atualizacao_nova = now_sao_paulo.strftime('%H:%M')
 
                         datas_referencia_content_novo = (f"data_atual:{data_atual_existente}\n"
-                                                        f"data_15dias:{data_15dias_existente}\n"
-                                                        f"hora_atualizacao:{hora_atualizacao_nova}")
+                                                       f"data_15dias:{data_15dias_existente}\n"
+                                                       f"hora_atualizacao:{hora_atualizacao_nova}")
                         update_github_file(repo, "datas_referencia.txt", datas_referencia_content_novo.encode('utf-8'), commit_msg)
                         # --- FIM DA MODIFICAÇÃO v0.9.30 ---
 
@@ -621,6 +621,16 @@ try:
     if df_atual.empty or df_15dias.empty:
         st.warning("Ainda não há dados para exibir. Por favor, carregue os arquivos na área do administrador.")
         st.stop()
+
+    # ==========================================================
+    # ||           REGRA OCULTA (Aprovadores GGM)             ||
+    # ==========================================================
+    if 'Atribuir a um grupo' in df_atual.columns:
+         df_atual = df_atual[df_atual['Atribuir a um grupo'] != 'Aprovadores GGM'].copy()
+    if 'Atribuir a um grupo' in df_15dias.columns:
+         df_15dias = df_15dias[df_15dias['Atribuir a um grupo'] != 'Aprovadores GGM'].copy()
+    # ==========================================================
+
     if 'ID do ticket' in df_atual.columns:
         df_atual['ID do ticket'] = df_atual['ID do ticket'].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
 
