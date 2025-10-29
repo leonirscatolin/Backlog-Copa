@@ -1,4 +1,4 @@
-# VERSÃO v0.9.32-742 (Corrigida)
+# VERSÃO v0.9.33-743 (Corrigida)
 
 import streamlit as st
 import pandas as pd
@@ -943,7 +943,7 @@ try:
 
                 fig_evolucao_grupo = px.line(
                     df_filtrado_display,
-                    x='Data (EMixo)',
+                    x='Data (Eixo)', # <-- CORREÇÃO APLICADA AQUI
                     y='Total Chamados',
                     color='Grupo Atribuído',
                     title='Evolução por Grupo (Apenas Dias de Semana)',
@@ -1152,6 +1152,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.32-742 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.33-743 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
