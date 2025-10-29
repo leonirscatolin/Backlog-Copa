@@ -1,4 +1,4 @@
-# VERSÃO v0.9.30-740 (Corrigida)
+# VERSÃO v0.9.30-740 (Corrigida - Filtro Histórico + Cálculo Aging Histórico)
 
 import streamlit as st
 import pandas as pd
@@ -22,6 +22,14 @@ st.set_page_config(
     page_icon="minilogo.png",
     initial_sidebar_state="collapsed"
 )
+
+# ==========================================================
+# ||           LISTA DE GRUPOS OCULTOS - GLOBAL           ||
+# ==========================================================
+# Definida aqui para ser acessível pelas funções cacheadas
+grupos_excluidos = ['Aprovadores GGM', 'liq liq-sutel', 'liq-sutel']
+# ==========================================================
+
 
 st.html("""
 <style>
@@ -239,21 +247,30 @@ def categorizar_idade_vetorizado(dias_series):
 
 @st.cache_data
 def analisar_aging(_df_atual):
+    """Calcula 'Dias em Aberto' e 'Faixa de Antiguidade' em relação a HOJE."""
     df = _df_atual.copy()
     date_col_name = None
     if 'Data de criação' in df.columns: date_col_name = 'Data de criação'
     elif 'Data de Criacao' in df.columns: date_col_name = 'Data de Criacao'
     if not date_col_name:
-        return pd.DataFrame()
+        st.warning("Coluna de data de criação não encontrada no dataframe para analisar_aging.")
+        return pd.DataFrame() # Retorna DF vazio se não achar coluna de data
+    
+    # Garante que a coluna de data é datetime
     df[date_col_name] = pd.to_datetime(df[date_col_name], errors='coerce')
+    
+    # Remove linhas onde a data não pôde ser convertida
     linhas_invalidas = df[df[date_col_name].isna()]
     if not linhas_invalidas.empty:
-        with st.expander(f"⚠️ Atenção: {len(linhas_invalidas)} chamados foram descartados por data inválida ou vazia."):
-            st.dataframe(linhas_invalidas.head())
-    
-    # df.dropna(subset=[date_col_name], inplace=True) # <-- LINHA ANTIGA
-    df = df.dropna(subset=[date_col_name]) # <-- CORREÇÃO APLICADA
-    
+        # Mostra o expander apenas se houver linhas inválidas
+        with st.expander(f"⚠️ Atenção (analisar_aging): {len(linhas_invalidas)} chamados foram descartados por data inválida ou vazia."):
+             st.dataframe(linhas_invalidas[[col for col in ['ID do ticket', date_col_name, 'Atribuir a um grupo'] if col in linhas_invalidas.columns]].head())
+
+    df = df.dropna(subset=[date_col_name]) 
+    if df.empty:
+        st.warning("Nenhum chamado com data válida encontrado após a limpeza em analisar_aging.")
+        return pd.DataFrame() # Retorna DF vazio se não sobrou nada
+
     hoje = pd.to_datetime('today').normalize()
     data_criacao_normalizada = df[date_col_name].dt.normalize()
     dias_calculados = (hoje - data_criacao_normalizada).dt.days
@@ -283,7 +300,10 @@ def sync_ticket_data():
     observation_changed = False
     for row_index, changes in edited_rows.items():
         try:
-            ticket_id = str(st.session_state.last_filtered_df.iloc[row_index]['ID do ticket'])
+            # Usa .get para evitar KeyError se a coluna não existir (embora deva existir)
+            ticket_id = str(st.session_state.last_filtered_df.iloc[row_index].get('ID do ticket', None))
+            if ticket_id is None: continue # Pula se não conseguiu ID
+
             if 'Contato' in changes:
                 current_contact_status = ticket_id in st.session_state.contacted_tickets
                 new_contact_status = changes['Contato']
@@ -298,35 +318,44 @@ def sync_ticket_data():
                     st.session_state.observations[ticket_id] = new_observation
                     observation_changed = True
         except IndexError:
-            st.warning(f"Erro ao processar linha {row_index}.")
+            st.warning(f"Erro ao processar linha {row_index} (Índice fora do range).")
             continue
+        except Exception as e:
+             st.warning(f"Erro inesperado ao processar edições na linha {row_index}: {e}")
+             continue
 
     if contact_changed or observation_changed:
         now_str = datetime.now(ZoneInfo('America/Sao_Paulo')).strftime('%d/%m/%Y %H:%M')
-        if contact_changed:
-            data_to_save = list(st.session_state.contacted_tickets)
-            json_content = json.dumps(data_to_save, indent=4)
-            commit_msg = f"Atualizando contatos em {now_str}"
-            update_github_file(st.session_state.repo, "contacted_tickets.json", json_content.encode('utf-8'), commit_msg)
-        if observation_changed:
-            json_content = json.dumps(st.session_state.observations, indent=4, ensure_ascii=False)
-            commit_msg = f"Atualizando observações em {now_str}"
-            update_github_file(st.session_state.repo, "ticket_observations.json", json_content.encode('utf-8'), commit_msg)
+        try:
+            if contact_changed:
+                data_to_save = list(st.session_state.contacted_tickets)
+                json_content = json.dumps(data_to_save, indent=4)
+                commit_msg = f"Atualizando contatos em {now_str}"
+                update_github_file(st.session_state.repo, "contacted_tickets.json", json_content.encode('utf-8'), commit_msg)
+            if observation_changed:
+                json_content = json.dumps(st.session_state.observations, indent=4, ensure_ascii=False)
+                commit_msg = f"Atualizando observações em {now_str}"
+                update_github_file(st.session_state.repo, "ticket_observations.json", json_content.encode('utf-8'), commit_msg)
+        except Exception as e:
+             st.error(f"Falha ao salvar alterações no GitHub: {e}")
+             # Considerar reverter as alterações no session_state ou notificar o usuário
 
+    # Limpa as edições pendentes SOMENTE se a gravação foi bem sucedida (ou não houve alterações)
     st.session_state.ticket_editor['edited_rows'] = {}
     st.session_state.scroll_to_details = True
 
 
 @st.cache_data(ttl=3600)
-def carregar_dados_evolucao(_repo, closed_ticket_ids_list, dias_para_analisar=7):
+def carregar_dados_evolucao(_repo, dias_para_analisar=7):
+    # Usa a variável global 'grupos_excluidos' definida no topo
+    global grupos_excluidos
     try:
         all_files_content = _repo.get_contents("snapshots")
         all_files = [f.path for f in all_files_content]
         df_evolucao_list = []
         end_date = date.today()
-        start_date = end_date - timedelta(days=max(dias_para_analisar, 10))
-
-        closed_ids_set = set(closed_ticket_ids_list)
+        # Busca um pouco mais para garantir que temos os dias pedidos
+        start_date = end_date - timedelta(days=max(dias_para_analisar + 5, 10)) 
 
         processed_dates = []
         for file_name in all_files:
@@ -337,78 +366,104 @@ def carregar_dados_evolucao(_repo, closed_ticket_ids_list, dias_para_analisar=7)
                     if start_date <= file_date <= end_date:
                         processed_dates.append((file_date, file_name))
                 except ValueError: continue
-                except Exception: continue
+                except Exception as e: 
+                     st.warning(f"Erro processando nome de arquivo snapshot {file_name}: {e}")
+                     continue
 
-        processed_dates.sort(key=lambda x: x[0], reverse=True)
-        files_to_process = [f[1] for f in processed_dates[:dias_para_analisar]]
+        # Ordena do mais antigo para o mais novo, depois pega os X mais recentes
+        processed_dates.sort(key=lambda x: x[0])
+        files_to_process = processed_dates[-dias_para_analisar:] # Pega os últimos X dias
 
-        for file_name in files_to_process:
+        for file_date, file_name in files_to_process:
                 try:
-                    date_str = file_name.replace("snapshots/backlog_", "").replace(".csv", "")
-                    file_date = datetime.strptime(date_str, "%Y-%m-%d").date()
                     df_snapshot = read_github_file(_repo, file_name)
-                    if not df_snapshot.empty and 'Atribuir a um grupo' in df_snapshot.columns:
-                        df_snapshot_filtrado_rh = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
-                        id_col_snapshot = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_snapshot_filtrado_rh.columns), None)
-                        df_snapshot_final = df_snapshot_filtrado_rh
-                        
-                        # A LÓGICA DE FILTRO SÓ RODA SE A LISTA DE IDs FECHADOS NÃO ESTIVER VAZIA
-                        if id_col_snapshot and closed_ids_set:
-                            ids_limpos_snapshot = df_snapshot_filtrado_rh[id_col_snapshot].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-                            df_snapshot_final = df_snapshot_filtrado_rh[~ids_limpos_snapshot.isin(closed_ids_set)]
-                        
-                        contagem_diaria = df_snapshot_final.groupby('Atribuir a um grupo').size().reset_index(name='Total Chamados')
-                        contagem_diaria['Data'] = pd.to_datetime(file_date)
-                        df_evolucao_list.append(contagem_diaria)
-                except Exception: continue
+                    if df_snapshot.empty or 'Atribuir a um grupo' not in df_snapshot.columns:
+                        st.warning(f"Snapshot {file_name} vazio ou sem coluna 'Atribuir a um grupo'. Pulando.")
+                        continue
+                    
+                    # Aplica filtros de grupos ocultos e RH
+                    df_snapshot_final = df_snapshot[~df_snapshot['Atribuir a um grupo'].isin(grupos_excluidos)]
+                    df_snapshot_final = df_snapshot_final[~df_snapshot_final['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
+                    
+                    if df_snapshot_final.empty:
+                         st.info(f"Nenhum chamado válido encontrado em {file_name} após filtros.")
+                         continue # Pula se não sobrou nada após filtrar
 
-        if not df_evolucao_list: return pd.DataFrame()
+                    contagem_diaria = df_snapshot_final.groupby('Atribuir a um grupo').size().reset_index(name='Total Chamados')
+                    contagem_diaria['Data'] = pd.to_datetime(file_date)
+                    df_evolucao_list.append(contagem_diaria)
+                except Exception as e:
+                     st.warning(f"Erro ao processar snapshot {file_name}: {e}")
+                     continue
+
+        if not df_evolucao_list: 
+             st.warning("Nenhum dado de evolução pôde ser carregado após processar snapshots.")
+             return pd.DataFrame()
 
         df_consolidado = pd.concat(df_evolucao_list, ignore_index=True)
         return df_consolidado.sort_values(by=['Data', 'Atribuir a um grupo'])
+
     except GithubException as e:
-        if e.status == 404: return pd.DataFrame()
-        st.warning(f"Não foi possível carregar snapshots: {e}")
+        if e.status == 404: 
+             st.warning("Pasta 'snapshots' não encontrada no repositório.")
+             return pd.DataFrame()
+        st.warning(f"Erro no GitHub ao carregar snapshots: {e}")
         return pd.DataFrame()
     except Exception as e:
-        st.error(f"Erro ao carregar evolução: {e}")
+        st.error(f"Erro inesperado ao carregar evolução: {e}")
         return pd.DataFrame()
 
 @st.cache_data(ttl=300)
 def find_closest_snapshot_before(_repo, current_report_date, target_date):
+    """Encontra o snapshot mais próximo ANTES ou IGUAL à target_date."""
     try:
         all_files_content = _repo.get_contents("snapshots")
         snapshots = []
-        search_start_date = target_date - timedelta(days=10)
+        # Amplia um pouco a busca para garantir que pegamos algo próximo
+        search_start_date = target_date - timedelta(days=10) 
 
         for file in all_files_content:
             match = re.search(r"backlog_(\d{4}-\d{2}-\d{2})\.csv", file.path)
             if match:
-                snapshot_date = datetime.strptime(match.group(1), "%Y-%m-%d").date()
-                if search_start_date <= snapshot_date <= target_date:
-                    snapshots.append((snapshot_date, file.path))
+                try:
+                    snapshot_date = datetime.strptime(match.group(1), "%Y-%m-%d").date()
+                    # Inclui snapshots até a data alvo (inclusive)
+                    if search_start_date <= snapshot_date <= target_date: 
+                        snapshots.append((snapshot_date, file.path))
+                except ValueError:
+                    continue # Ignora arquivos com nome mal formatado
 
         if not snapshots:
+            st.warning(f"Nenhum snapshot encontrado entre {search_start_date.strftime('%d/%m')} e {target_date.strftime('%d/%m')}.")
             return None, None
 
-        snapshots.sort(key=lambda x: x[0], reverse=True)
-        return snapshots[0]
+        # Ordena por data, mais recente primeiro
+        snapshots.sort(key=lambda x: x[0], reverse=True) 
+        # Retorna o snapshot mais recente DENTRO do período (<= target_date)
+        return snapshots[0] 
 
+    except GithubException as e:
+         if e.status == 404:
+              st.warning("Pasta 'snapshots' não encontrada para buscar data comparativa.")
+         else:
+              st.warning(f"Erro no GitHub ao buscar snapshots: {e}")
+         return None, None
     except Exception as e:
-        st.warning(f"Erro ao buscar snapshots: {e}")
+        st.error(f"Erro inesperado ao buscar snapshots: {e}")
         return None, None
 
 @st.cache_data(ttl=3600)
-def carregar_evolucao_aging(_repo, closed_ticket_ids_list, dias_para_analisar=90):
+def carregar_evolucao_aging(_repo, dias_para_analisar=90):
+    # Usa a variável global 'grupos_excluidos' definida no topo
+    global grupos_excluidos
     try:
         all_files_content = _repo.get_contents("snapshots")
         all_files = [f.path for f in all_files_content]
         lista_historico = []
 
-        end_date = date.today() - timedelta(days=1)
-        start_date = end_date - timedelta(days=max(dias_para_analisar, 60))
-
-        closed_ids_set = set(closed_ticket_ids_list)
+        end_date = date.today() - timedelta(days=1) # Exclui hoje dos snapshots
+        # Busca um período maior para garantir que temos dados suficientes
+        start_date = end_date - timedelta(days=max(dias_para_analisar + 10, 60)) 
 
         processed_files = []
         for file_name in all_files:
@@ -416,48 +471,46 @@ def carregar_evolucao_aging(_repo, closed_ticket_ids_list, dias_para_analisar=90
                 try:
                     date_str = file_name.replace("snapshots/backlog_", "").replace(".csv", "")
                     file_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-                    if start_date <= file_date <= end_date:
+                    # Considera apenas snapshots até ontem
+                    if start_date <= file_date <= end_date: 
                         processed_files.append((file_date, file_name))
-                except Exception:
+                except Exception as e:
+                    st.warning(f"Erro processando nome de arquivo snapshot {file_name} para aging: {e}")
                     continue
 
-        processed_files.sort(key=lambda x: x[0])
+        # Ordena do mais antigo para o mais novo para processar
+        processed_files.sort(key=lambda x: x[0]) 
 
         for file_date, file_name in processed_files:
             try:
                 df_snapshot = read_github_file(_repo, file_name)
-                if df_snapshot.empty:
+                if df_snapshot.empty or 'Atribuir a um grupo' not in df_snapshot.columns:
+                    st.warning(f"Snapshot {file_name} para aging vazio ou sem coluna 'Atribuir a um grupo'. Pulando.")
                     continue
 
-                df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
+                # ==========================================================
+                # ||           FILTRO GRUPOS OCULTOS + RH HISTÓRICO       ||
+                # ==========================================================
+                df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].isin(grupos_excluidos)]
+                df_filtrado = df_filtrado[~df_filtrado['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
+                # ==========================================================
 
-                id_col_snapshot = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_filtrado.columns), None)
-                
-                # A LÓGICA DE FILTRO SÓ RODA SE A LISTA DE IDs FECHADOS NÃO ESTIVER VAZIA
-                if id_col_snapshot and closed_ids_set:
-                    ids_limpos_snapshot = df_filtrado[id_col_snapshot].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-                    df_final = df_filtrado[~ids_limpos_snapshot.isin(closed_ids_set)]
-                else:
-                    df_final = df_filtrado
+                if df_filtrado.empty:
+                    st.info(f"Nenhum chamado válido em {file_name} para aging após filtros.")
+                    continue # Pula se não sobrou nada
 
-                df_final = df_final.copy() # <-- CORREÇÃO APLICADA
+                # ==========================================================
+                # ||           USA analisar_aging PARA CONSISTÊNCIA       ||
+                # ==========================================================
+                # Calcula a idade do snapshot como se fosse hoje
+                df_com_aging = analisar_aging(df_filtrado.copy())
+                # ==========================================================
 
-                date_col_name = next((col for col in ['Data de criação', 'Data de Criacao'] if col in df_final.columns), None)
-                if not date_col_name:
-                    continue
+                if df_com_aging.empty or 'Faixa de Antiguidade' not in df_com_aging.columns:
+                     st.warning(f"analisar_aging retornou dataframe vazio para snapshot {file_name}.")
+                     continue # Pula se o aging falhou
 
-                df_final[date_col_name] = pd.to_datetime(df_final[date_col_name], errors='coerce')
-                # df_final.dropna(subset=[date_col_name], inplace=True) # <-- LINHA ANTIGA
-                df_final = df_final.dropna(subset=[date_col_name]) # <-- CORREÇÃO APLICADA
-
-                snapshot_date_dt = pd.to_datetime(file_date)
-                data_criacao_normalizada = df_final[date_col_name].dt.normalize()
-                dias_calculados = (snapshot_date_dt - data_criacao_normalizada).dt.days
-                dias_em_aberto_corrigido = (dias_calculados - 1).clip(lower=0)
-
-                faixas_antiguidade = categorizar_idade_vetorizado(dias_em_aberto_corrigido)
-
-                contagem_faixas = pd.Series(faixas_antiguidade).value_counts().reset_index()
+                contagem_faixas = df_com_aging['Faixa de Antiguidade'].value_counts().reset_index()
                 contagem_faixas.columns = ['Faixa de Antiguidade', 'total']
 
                 ordem_faixas_scaffold = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
@@ -471,20 +524,28 @@ def carregar_evolucao_aging(_repo, closed_ticket_ids_list, dias_para_analisar=90
                 ).fillna(0)
 
                 contagem_completa['total'] = contagem_completa['total'].astype(int)
-                contagem_completa['data'] = snapshot_date_dt
+                contagem_completa['data'] = pd.to_datetime(file_date) # Usa a data do snapshot
 
                 lista_historico.append(contagem_completa)
 
-            except Exception:
-                continue
+            except Exception as e:
+                 st.warning(f"Erro ao processar aging do snapshot {file_name}: {e}")
+                 continue
 
         if not lista_historico:
+            st.warning("Nenhum dado histórico de aging pôde ser carregado.")
             return pd.DataFrame()
 
         return pd.concat(lista_historico, ignore_index=True)
 
+    except GithubException as e:
+         if e.status == 404:
+              st.warning("Pasta 'snapshots' não encontrada para carregar evolução aging.")
+         else:
+              st.warning(f"Erro no GitHub ao carregar evolução aging: {e}")
+         return pd.DataFrame()
     except Exception as e:
-        st.error(f"Erro ao carregar evolução de aging: {e}")
+        st.error(f"Erro inesperado ao carregar evolução de aging: {e}")
         return pd.DataFrame()
 
 def formatar_delta_card(delta_abs, delta_perc, valor_comparacao, data_comparacao_str):
@@ -493,11 +554,16 @@ def formatar_delta_card(delta_abs, delta_perc, valor_comparacao, data_comparacao
         delta_perc_str = f"{delta_perc * 100:.1f}%"
         delta_text = f"{delta_abs:+} ({delta_perc_str}) vs. {data_comparacao_str}"
     elif valor_comparacao == 0 and delta_abs > 0:
-        delta_text = f"+{delta_abs} (Novo) vs. {data_comparacao_str}"
+        # Se era 0 e agora é > 0, indica "Novo"
+        delta_text = f"+{delta_abs} (Novo) vs. {data_comparacao_str}" 
     elif valor_comparacao == 0 and delta_abs < 0:
-        delta_text = f"{delta_abs} vs. {data_comparacao_str}"
-    else:
-        delta_text = f"{delta_abs} (0.0%) vs. {data_comparacao_str}"
+        # Tecnicamente impossível ter menos que 0, mas mantém por segurança
+        delta_text = f"{delta_abs} vs. {data_comparacao_str}" 
+    elif valor_comparacao > 0 and delta_abs == 0:
+        # Se não houve mudança, mas o valor anterior era > 0
+        delta_text = f"0 (0.0%) vs. {data_comparacao_str}"
+    else: # Caso valor_comparacao == 0 e delta_abs == 0
+         delta_text = f"0 (0.0%) vs. {data_comparacao_str}"
 
     if delta_abs > 0:
         delta_class = "delta-positive"
@@ -572,7 +638,6 @@ if is_admin:
                         # Salva o arquivo de fechados
                         update_github_file(repo, "dados_fechados.csv", content_fechados, commit_msg)
 
-                        # --- INÍCIO DA MODIFICAÇÃO v0.9.30 ---
                         # Atualiza a hora em datas_referencia.txt
                         datas_existentes = read_github_text_file(repo, "datas_referencia.txt")
                         data_atual_existente = datas_existentes.get('data_atual', 'N/A')
@@ -583,7 +648,6 @@ if is_admin:
                                                        f"data_15dias:{data_15dias_existente}\n"
                                                        f"hora_atualizacao:{hora_atualizacao_nova}")
                         update_github_file(repo, "datas_referencia.txt", datas_referencia_content_novo.encode('utf-8'), commit_msg)
-                        # --- FIM DA MODIFICAÇÃO v0.9.30 ---
 
                         st.cache_data.clear()
                         st.cache_resource.clear()
@@ -604,6 +668,10 @@ try:
         except GithubException as e:
             if e.status == 404: st.session_state.contacted_tickets = set()
             else: st.error(f"Erro ao carregar o estado dos tickets: {e}"); st.session_state.contacted_tickets = set()
+        except json.JSONDecodeError:
+             st.warning("Arquivo 'contacted_tickets.json' corrompido ou vazio. Iniciando com lista vazia.")
+             st.session_state.contacted_tickets = set()
+
 
     if 'observations' not in st.session_state:
         st.session_state.observations = read_github_json_dict(repo, "ticket_observations.json")
@@ -624,72 +692,90 @@ try:
     data_atual_str = datas_referencia.get('data_atual', 'N/A')
     data_15dias_str = datas_referencia.get('data_15dias', 'N/A')
     hora_atualizacao_str = datas_referencia.get('hora_atualizacao', '')
-    if df_atual.empty or df_15dias.empty:
-        st.warning("Ainda não há dados para exibir. Por favor, carregue os arquivos na área do administrador.")
+    if df_atual.empty: # Não precisa mais checar df_15dias aqui se ele só é usado para comparação
+        st.warning("Arquivo 'dados_atuais.csv' não encontrado ou vazio. Carregue os dados na área do administrador.")
         st.stop()
 
-    # ==========================================================
-    # ||           REGRAS OCULTAS DE GRUPOS                   ||
-    # ==========================================================
-    grupos_excluidos = ['Aprovadores GGM', 'liq liq-sutel', 'liq-sutel']
-    
+    # Aplica filtros ocultos nos dataframes principais logo após carregar
     if 'Atribuir a um grupo' in df_atual.columns:
          df_atual = df_atual[~df_atual['Atribuir a um grupo'].isin(grupos_excluidos)].copy()
+    else:
+         st.error("Coluna 'Atribuir a um grupo' não encontrada em dados_atuais.csv. Verifique o arquivo.")
+         st.stop()
+
     if 'Atribuir a um grupo' in df_15dias.columns:
-         df_15dias = df_15dias[~df_15dias['Atribuir a um grupo'].isin(grupos_excluidos)].copy()
-    # ==========================================================
+         df_15dias_filtrado_ocultos = df_15dias[~df_15dias['Atribuir a um grupo'].isin(grupos_excluidos)].copy()
+    else:
+         st.warning("Coluna 'Atribuir a um grupo' não encontrada em dados_15_dias.csv. Comparativo pode falhar.")
+         df_15dias_filtrado_ocultos = pd.DataFrame() # Cria DF vazio para evitar erro
+
 
     if 'ID do ticket' in df_atual.columns:
         df_atual['ID do ticket'] = df_atual['ID do ticket'].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
+    else:
+        st.error("Coluna 'ID do ticket' não encontrada em dados_atuais.csv. Funcionalidades de detalhe e fechados não funcionarão.")
+        st.stop() # Essencial para o resto do script
+
 
     closed_ticket_ids = []
     if not df_fechados.empty:
         id_col_name = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados.columns), None)
         if id_col_name:
             df_fechados[id_col_name] = df_fechados[id_col_name].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-            closed_ticket_ids = df_fechados[id_col_name].dropna().unique()
+            # Garante que não há NaNs ou valores vazios antes de pegar unique
+            closed_ticket_ids = df_fechados[id_col_name].dropna().unique() 
+        else:
+             st.warning("Arquivo 'dados_fechados.csv' carregado, mas coluna de ID ('ID do ticket', 'ID do Ticket', 'ID') não encontrada. Chamados fechados não serão filtrados.")
 
-    # ===================================================================
-    # ||           MODIFICAÇÃO PARA AGING EM FECHADOS                  ||
-    # ===================================================================
+
+    # --- Lógica Principal de Processamento ---
     
-    # 1. Filtra RH (e GGM/Liq já foram filtrados) de df_atual e df_15dias PRIMEIRO
+    # 1. Filtra RH do dataframe atual (já filtrado por grupos ocultos)
     df_atual_filtrado_rh = df_atual[~df_atual['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
-    df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
+    
+    # 2. Filtra RH do dataframe de 15 dias (já filtrado por grupos ocultos)
+    if not df_15dias_filtrado_ocultos.empty:
+        df_15dias_filtrado = df_15dias_filtrado_ocultos[~df_15dias_filtrado_ocultos['Atribuir a um grupo'].str.contains('RH', case=False, na=False)]
+    else:
+        df_15dias_filtrado = pd.DataFrame() # Mantém vazio se o original já era
 
-    # 2. Roda o aging no dataframe COMPLETO (abertos + fechados) já filtrado
-    # Este dataframe agora tem 'Dias em Aberto' para TODOS os tickets
-    df_todos_com_aging = analisar_aging(df_atual_filtrado_rh.copy()) # Usar .copy() para evitar SettingWithCopyWarning
+    # 3. Roda o aging no dataframe ATUAL COMPLETO (filtrado RH e ocultos)
+    df_todos_com_aging = analisar_aging(df_atual_filtrado_rh.copy()) 
 
-    # 3. AGORA sim, separa em abertos e fechados
+    if df_todos_com_aging.empty:
+         st.error("A análise de aging não retornou nenhum dado válido. Verifique os dados de entrada e as datas.")
+         st.stop() # Impede a continuação se o aging falhar
+
+    # 4. Separa em abertos (df_aging) e fechados (df_encerrados_filtrado)
     df_encerrados_filtrado = df_todos_com_aging[df_todos_com_aging['ID do ticket'].isin(closed_ticket_ids)]
     df_aging = df_todos_com_aging[~df_todos_com_aging['ID do ticket'].isin(closed_ticket_ids)]
     
-    # ===================================================================
-    # ||           FIM DA MODIFICAÇÃO                                  ||
-    # ===================================================================
+    # --- Fim da Lógica Principal ---
 
 
     tab1, tab2, tab3, tab4 = st.tabs(["Dashboard Completo", "Report Visual", "Evolução Semanal", "Evolução Aging"])
 
     with tab1:
-        info_messages = ["**Filtros e Regras Aplicadas:**", "- Grupos contendo 'RH' foram desconsiderados da análise.", "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
-        if not df_encerrados_filtrado.empty: # Modificado para usar a nova variável
-            info_messages.append(f"- **{len(df_encerrados_filtrado)} chamados fechados no dia** (exceto RH) foram deduzidos das contagens principais.")
+        info_messages = ["**Filtros e Regras Aplicadas:**", 
+                         f"- Grupos ocultos ({', '.join(grupos_excluidos)}) e grupos contendo 'RH' foram desconsiderados da análise.", 
+                         "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
+        if closed_ticket_ids.size > 0: # Checa se a lista não está vazia
+            info_messages.append(f"- **{len(df_encerrados_filtrado)} chamados fechados no dia** (exceto RH e ocultos) foram deduzidos das contagens principais e movidos para a tabela de encerrados.")
         st.info("\n".join(info_messages))
+        
         st.subheader("Análise de Antiguidade do Backlog Atual")
         texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
         st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
+        
         if not df_aging.empty:
-
             total_chamados = len(df_aging)
             total_fechados = len(df_encerrados_filtrado)
             col_spacer1, col_total, col_fechados, col_spacer2 = st.columns([1, 1.5, 1.5, 1])
             with col_total:
                 st.markdown(f"""<div class="metric-box"><span class="label">Total de Chamados Abertos</span><span class="value">{total_chamados}</span></div>""", unsafe_allow_html=True)
             with col_fechados:
-                valor_fechados = total_fechados if total_fechados > 0 else "N/A"
-                st.markdown(f"""<div class="metric-box"><span class="label">Chamados Fechados no Dia</span><span class="value">{valor_fechados}</span></div>""", unsafe_allow_html=True)
+                # Mostra 0 se for 0, em vez de N/A
+                st.markdown(f"""<div class="metric-box"><span class="label">Chamados Fechados no Dia</span><span class="value">{total_fechados}</span></div>""", unsafe_allow_html=True)
 
             st.markdown("---")
             aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
@@ -700,7 +786,12 @@ try:
             aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
             aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
             if 'faixa_selecionada' not in st.session_state:
-                st.session_state.faixa_selecionada = "0-2 dias"
+                st.session_state.faixa_selecionada = "0-2 dias" # Padrão
+            
+            # Garante que a faixa selecionada na URL ou estado seja válida
+            if st.session_state.faixa_selecionada not in ordem_faixas:
+                 st.session_state.faixa_selecionada = "0-2 dias" # Reseta se inválida
+
             cols = st.columns(len(ordem_faixas))
             for i, row in aging_counts.iterrows():
                 with cols[i]:
@@ -708,59 +799,73 @@ try:
                     card_html = f"""<a href="?faixa={faixa_encoded}&scroll=true" target="_self" class="metric-box"><span class="label">{row['Faixa de Antiguidade']}</span><span class="value">{row['Quantidade']}</span></a>"""
                     st.markdown(card_html, unsafe_allow_html=True)
         else:
-            st.warning("Nenhum dado válido para a análise de antiguidade.")
-        st.markdown(f"<h3>Comparativo de Backlog: Atual vs. 15 Dias Atrás <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_15dias_str})</span></h3>", unsafe_allow_html=True)
-        df_comparativo = processar_dados_comparativos(df_aging.copy(), df_15dias_filtrado.copy()) # Modificado para usar df_aging (abertos)
-        df_comparativo['Status'] = df_comparativo.apply(get_status, axis=1)
-        
-        # df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True) # <-- LINHA ANTIGA
-        df_comparativo = df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}) # <-- CORREÇÃO APLICADA
-        
-        df_comparativo = df_comparativo[['Grupo', '15 Dias Atrás', 'Atual', 'Diferença', 'Status']]
-        st.dataframe(df_comparativo.set_index('Grupo').style.map(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
-        st.markdown("---")
-        st.markdown(f"<h3>Chamados Encerrados no Dia <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_atual_str})</span></h3>", unsafe_allow_html=True)
+            st.warning("Nenhum chamado aberto encontrado após aplicar os filtros.")
 
-        if df_fechados.empty:
-            st.info("O arquivo de chamados encerrados ainda não foi carregado.")
+        # --- Comparativo ---
+        st.markdown(f"<h3>Comparativo de Backlog: Atual vs. 15 Dias Atrás <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_15dias_str if not df_15dias_filtrado.empty else 'Dados Indisponíveis'})</span></h3>", unsafe_allow_html=True)
+        if not df_15dias_filtrado.empty:
+            # Usa df_aging (abertos atuais) vs df_15dias_filtrado
+            df_comparativo = processar_dados_comparativos(df_aging.copy(), df_15dias_filtrado.copy()) 
+            df_comparativo['Status'] = df_comparativo.apply(get_status, axis=1)
+            df_comparativo = df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}) 
+            df_comparativo = df_comparativo[['Grupo', '15 Dias Atrás', 'Atual', 'Diferença', 'Status']]
+            st.dataframe(df_comparativo.set_index('Grupo').style.map(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
+        else:
+             st.warning("Não foi possível carregar ou processar os dados de 15 dias atrás para comparação.")
+        
+        st.markdown("---")
+
+        # --- Chamados Encerrados ---
+        st.markdown(f"<h3>Chamados Encerrados no Dia <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_atual_str})</span></h3>", unsafe_allow_html=True)
+        if not closed_ticket_ids.size > 0: # Se não carregou arquivo de fechados
+             st.info("O arquivo de chamados encerrados do dia ('dados_fechados.csv') ainda não foi carregado.")
         elif not df_encerrados_filtrado.empty:
-            # ==========================================================
-            # ||           MODIFICAÇÃO PARA EXIBIR COLUNA             ||
-            # ==========================================================
             colunas_fechados = ['ID do ticket', 'Descrição', 'Atribuir a um grupo', 'Dias em Aberto']
             st.data_editor(
                 df_encerrados_filtrado[colunas_fechados], 
                 hide_index=True, 
                 disabled=True, 
-                use_container_width=True
+                use_container_width=True,
+                # Chave para diferenciar do editor de abertos
+                key="editor_fechados" 
             )
-            # ==========================================================
         else:
-            st.info("O arquivo de chamados encerrados do dia ainda não foi carregado.")
+             # Carregou fechados, mas todos eram de grupos filtrados (RH/ocultos)
+             st.info("Nenhum chamado encerrado hoje pertence aos grupos analisados.") 
 
+        # --- Detalhar e Buscar Chamados (Abertos) ---
         if not df_aging.empty:
             st.markdown("---")
-            st.subheader("Detalhar e Buscar Chamados")
+            st.subheader("Detalhar e Buscar Chamados Abertos")
             st.info('Marque "Contato" se já falou com o usuário e a solicitação continua pendente. Use "Observações" para anotações.')
 
+            # Scroll JS
             if 'scroll_to_details' not in st.session_state:
                 st.session_state.scroll_to_details = False
             if needs_scroll or st.session_state.get('scroll_to_details', False):
-                js_code = """<script> setTimeout(() => { const element = window.parent.document.getElementById('detalhar-e-buscar-chamados'); if (element) { element.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 250); </script>"""
+                js_code = """<script> setTimeout(() => { const element = window.parent.document.getElementById('detalhar-e-buscar-chamados-abertos'); if (element) { element.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 250); </script>"""
                 components.html(js_code, height=0)
-                st.session_state.scroll_to_details = False
+                st.session_state.scroll_to_details = False # Reseta o estado do scroll
 
-            st.selectbox("Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada')
+            # Selectbox da Faixa
+            st.selectbox("Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", 
+                         options=ordem_faixas, 
+                         key='faixa_selecionada') # Usa a key definida antes
+            
             faixa_atual = st.session_state.faixa_selecionada
             filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].copy()
+            
             if not filtered_df.empty:
                 def highlight_row(row):
-                    return ['background-color: #fff8c4'] * len(row) if row['Contato'] else [''] * len(row)
+                    # Checa se a coluna 'Contato' existe antes de acessá-la
+                    return ['background-color: #fff8c4'] * len(row) if row.get('Contato', False) else [''] * len(row)
 
+                # Adiciona colunas de Contato e Observações
                 filtered_df['Contato'] = filtered_df['ID do ticket'].apply(lambda id: str(id) in st.session_state.contacted_tickets)
                 filtered_df['Observações'] = filtered_df['ID do ticket'].apply(lambda id: st.session_state.observations.get(str(id), ''))
 
-                st.session_state.last_filtered_df = filtered_df.reset_index(drop=True)
+                # Salva o DF filtrado atual para referência no callback on_change
+                st.session_state.last_filtered_df = filtered_df.reset_index(drop=True) 
 
                 colunas_para_exibir_renomeadas = {
                     'Contato': 'Contato',
@@ -771,27 +876,57 @@ try:
                     'Data de criação': 'Data de criação',
                     'Observações': 'Observações'
                 }
+                # Garante que só tentamos renomear/exibir colunas que existem
+                colunas_existentes = [col for col in colunas_para_exibir_renomeadas if col in filtered_df.columns]
+                colunas_renomeadas_existentes = [colunas_para_exibir_renomeadas[col] for col in colunas_existentes]
 
                 st.data_editor(
-                    st.session_state.last_filtered_df.rename(columns=colunas_para_exibir_renomeadas)[list(colunas_para_exibir_renomeadas.values())].style.apply(highlight_row, axis=1),
+                    st.session_state.last_filtered_df.rename(columns=colunas_para_exibir_renomeadas)[colunas_renomeadas_existentes].style.apply(highlight_row, axis=1),
                     use_container_width=True,
                     hide_index=True,
-                    disabled=['ID do ticket', 'Descrição', 'Grupo Atribuído', 'Dias em Aberto', 'Data de criação'],
-                    key='ticket_editor',
+                    # Desabilita colunas que não devem ser editadas
+                    disabled=[colunas_para_exibir_renomeadas[c] for c in colunas_existentes if c not in ['Contato', 'Observações']],
+                    key='ticket_editor', # Chave principal do editor
                     on_change=sync_ticket_data
                 )
             else:
-                st.info("Não há chamados nesta categoria.")
-            st.subheader("Buscar Chamados por Grupo")
-            lista_grupos = sorted(df_aging['Atribuir a um grupo'].dropna().unique())
-            grupo_selecionado = st.selectbox("Busca de chamados por grupo:", options=lista_grupos)
-            if grupo_selecionado:
-                resultados_busca = df_aging[df_aging['Atribuir a um grupo'] == grupo_selecionado].copy()
-                if 'Data de criação' in resultados_busca.columns:
-                    resultados_busca['Data de criação'] = resultados_busca['Data de criação'].dt.strftime('%d/%m/%Y')
-                st.write(f"Encontrados {len(resultados_busca)} chamados para o grupo '{grupo_selecionado}':")
-                colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
-                st.data_editor(resultados_busca[[col for col in colunas_para_exibir_busca if col in resultados_busca.columns]], use_container_width=True, hide_index=True, disabled=True)
+                st.info(f"Não há chamados abertos na faixa '{faixa_atual}'.")
+            
+            # --- Busca por Grupo (Abertos) ---
+            st.subheader("Buscar Chamados Abertos por Grupo")
+            # Garante que a coluna existe e remove NaNs antes de unique/sort
+            if 'Atribuir a um grupo' in df_aging.columns:
+                 lista_grupos = sorted(df_aging['Atribuir a um grupo'].dropna().unique())
+                 if lista_grupos:
+                      grupo_selecionado = st.selectbox("Selecione um grupo:", options=lista_grupos, key="busca_grupo")
+                      if grupo_selecionado:
+                           resultados_busca = df_aging[df_aging['Atribuir a um grupo'] == grupo_selecionado].copy()
+                           
+                           # Formata data se a coluna existir
+                           date_col_name_busca = next((col for col in ['Data de criação', 'Data de Criacao'] if col in resultados_busca.columns), None)
+                           if date_col_name_busca:
+                                resultados_busca[date_col_name_busca] = pd.to_datetime(resultados_busca[date_col_name_busca]).dt.strftime('%d/%m/%Y')
+
+                           st.write(f"Encontrados {len(resultados_busca)} chamados abertos para o grupo '{grupo_selecionado}':")
+                           
+                           colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', date_col_name_busca]
+                           colunas_existentes_busca = [col for col in colunas_para_exibir_busca if col in resultados_busca.columns]
+                           
+                           st.data_editor(
+                                resultados_busca[colunas_existentes_busca], 
+                                use_container_width=True, 
+                                hide_index=True, 
+                                disabled=True,
+                                key="editor_busca" # Chave diferente
+                           )
+                 else:
+                      st.info("Nenhum grupo encontrado nos chamados abertos para seleção.")
+            else:
+                 st.warning("Coluna 'Atribuir a um grupo' não encontrada nos dados de aging para permitir busca.")
+
+    # ... (Restante do código para tab2, tab3, tab4 permanece o mesmo, 
+    #      pois as chamadas para carregar_dados_evolucao e carregar_evolucao_aging 
+    #      agora filtram corretamente dentro das funções) ...
 
     with tab2:
         st.subheader("Resumo do Backlog Atual")
@@ -813,68 +948,72 @@ try:
             st.markdown("---")
             st.subheader("Distribuição do Backlog por Grupo")
             orientation_choice = st.radio( "Orientação do Gráfico:", ["Vertical", "Horizontal"], index=0, horizontal=True )
-            chart_data = df_aging.groupby(['Atribuir a um grupo', 'Faixa de Antiguidade']).size().reset_index(name='Quantidade')
-            group_totals = chart_data.groupby('Atribuir a um grupo')['Quantidade'].sum().sort_values(ascending=False)
-            new_labels_map = {group: f"{group} ({total})" for group, total in group_totals.items()}
-            chart_data['Atribuir a um grupo'] = chart_data['Atribuir a um grupo'].map(new_labels_map)
-            sorted_new_labels = [new_labels_map[group] for group in group_totals.index]
-            def lighten_color(hex_color, amount=0.2):
-                try:
-                    hex_color = hex_color.lstrip('#')
-                    h, l, s = colorsys.rgb_to_hls(*[int(hex_color[i:i+2], 16)/255.0 for i in (0, 2, 4)])
-                    new_l = l + (1 - l) * amount
-                    r, g, b = colorsys.hls_to_rgb(h, new_l, s)
-                    return f"#{int(r*255):02x}{int(g*255):02x}{int(b*255):02x}"
-                except Exception: return hex_color
-            base_color = "#375623"
-            palette = [ lighten_color(base_color, 0.85), lighten_color(base_color, 0.70), lighten_color(base_color, 0.55), lighten_color(base_color, 0.40), lighten_color(base_color, 0.20), base_color ]
-            color_map = {faixa: color for faixa, color in zip(ordem_faixas, palette)}
-            if orientation_choice == 'Horizontal':
-                num_groups = len(group_totals)
-                dynamic_height = max(500, num_groups * 30)
-                fig_stacked_bar = px.bar( chart_data, x='Quantidade', y='Atribuir a um grupo', orientation='h', color='Faixa de Antiguidade', title="Composição da Idade do Backlog por Grupo", labels={'Quantidade': 'Qtd. de Chamados', 'Atribuir a um grupo': ''}, category_orders={'Atribuir a um grupo': sorted_new_labels, 'Faixa de Antiguidade': ordem_faixas}, color_discrete_map=color_map, text_auto=True )
-                fig_stacked_bar.update_traces(textangle=0, textfont_size=12)
-                fig_stacked_bar.update_layout(height=dynamic_height, legend_title_text='Antiguidade')
+            
+            if 'Atribuir a um grupo' in df_aging.columns and 'Faixa de Antiguidade' in df_aging.columns:
+                 chart_data = df_aging.groupby(['Atribuir a um grupo', 'Faixa de Antiguidade']).size().reset_index(name='Quantidade')
+                 group_totals = chart_data.groupby('Atribuir a um grupo')['Quantidade'].sum().sort_values(ascending=False)
+                 
+                 if not group_totals.empty:
+                      new_labels_map = {group: f"{group} ({total})" for group, total in group_totals.items()}
+                      chart_data['Atribuir a um grupo'] = chart_data['Atribuir a um grupo'].map(new_labels_map)
+                      sorted_new_labels = [new_labels_map[group] for group in group_totals.index]
+                      def lighten_color(hex_color, amount=0.2):
+                          try:
+                              hex_color = hex_color.lstrip('#')
+                              h, l, s = colorsys.rgb_to_hls(*[int(hex_color[i:i+2], 16)/255.0 for i in (0, 2, 4)])
+                              new_l = l + (1 - l) * amount
+                              r, g, b = colorsys.hls_to_rgb(h, new_l, s)
+                              return f"#{int(r*255):02x}{int(g*255):02x}{int(b*255):02x}"
+                          except Exception: return hex_color
+                      base_color = "#375623"
+                      palette = [ lighten_color(base_color, 0.85), lighten_color(base_color, 0.70), lighten_color(base_color, 0.55), lighten_color(base_color, 0.40), lighten_color(base_color, 0.20), base_color ]
+                      color_map = {faixa: color for faixa, color in zip(ordem_faixas, palette)}
+                      
+                      if orientation_choice == 'Horizontal':
+                          num_groups = len(group_totals)
+                          dynamic_height = max(500, num_groups * 30) # Ajusta altura dinamicamente
+                          fig_stacked_bar = px.bar( chart_data, x='Quantidade', y='Atribuir a um grupo', orientation='h', color='Faixa de Antiguidade', title="Composição da Idade do Backlog por Grupo", labels={'Quantidade': 'Qtd. de Chamados', 'Atribuir a um grupo': ''}, category_orders={'Atribuir a um grupo': sorted_new_labels, 'Faixa de Antiguidade': ordem_faixas}, color_discrete_map=color_map, text_auto=True )
+                          fig_stacked_bar.update_traces(textangle=0, textfont_size=12)
+                          fig_stacked_bar.update_layout(height=dynamic_height, legend_title_text='Antiguidade', yaxis={'categoryorder':'array', 'categoryarray':sorted_new_labels[::-1]}) # Ordena corretamente no eixo Y
+                      else: # Vertical
+                          fig_stacked_bar = px.bar( chart_data, x='Atribuir a um grupo', y='Quantidade', color='Faixa de Antiguidade', title="Composição da Idade do Backlog por Grupo", labels={'Quantidade': 'Qtd. de Chamados', 'Atribuir a um grupo': 'Grupo'}, category_orders={'Atribuir a um grupo': sorted_new_labels, 'Faixa de Antiguidade': ordem_faixas}, color_discrete_map=color_map, text_auto=True )
+                          fig_stacked_bar.update_traces(textangle=0, textfont_size=12)
+                          fig_stacked_bar.update_layout(height=600, xaxis_title=None, xaxis_tickangle=-45, legend_title_text='Antiguidade')
+                      
+                      st.plotly_chart(fig_stacked_bar, use_container_width=True)
+                 else:
+                      st.info("Nenhum grupo encontrado para gerar o gráfico de distribuição.")
             else:
-                fig_stacked_bar = px.bar( chart_data, x='Atribuir a um grupo', y='Quantidade', color='Faixa de Antiguidade', title="Composição da Idade do Backlog por Grupo", labels={'Quantidade': 'Qtd. de Chamados', 'Atribuir a um grupo': 'Grupo'}, category_orders={'Atribuir a um grupo': sorted_new_labels, 'Faixa de Antiguidade': ordem_faixas}, color_discrete_map=color_map, text_auto=True )
-                fig_stacked_bar.update_traces(textangle=0, textfont_size=12)
-                fig_stacked_bar.update_layout(height=600, xaxis_title=None, xaxis_tickangle=-45, legend_title_text='Antiguidade')
-            st.plotly_chart(fig_stacked_bar, use_container_width=True)
+                 st.warning("Colunas necessárias ('Atribuir a um grupo', 'Faixa de Antiguidade') não encontradas para gerar o gráfico.")
         else:
-            st.warning("Nenhum dado para gerar o report visual.")
+            st.warning("Nenhum dado de aging disponível para gerar o report visual.")
+
 
     with tab3:
         st.subheader("Evolução do Backlog")
         dias_evolucao = st.slider("Ver evolução dos últimos dias:", min_value=7, max_value=30, value=7, key="slider_evolucao")
 
-        # ==========================================================
-        # ||           CORREÇÃO DO BUG HISTÓRICO AQUI             ||
-        # ==========================================================
-        # Passa uma lista vazia para não filtrar os snapshots
-        df_evolucao_tab3 = carregar_dados_evolucao(repo, closed_ticket_ids_list=[], dias_para_analisar=dias_evolucao)
+        # Chama a função SEM passar IDs fechados (a função agora filtra grupos ocultos)
+        df_evolucao_tab3 = carregar_dados_evolucao(repo, dias_para_analisar=dias_evolucao)
 
         if not df_evolucao_tab3.empty:
-
             df_evolucao_tab3['Data'] = pd.to_datetime(df_evolucao_tab3['Data'])
-            df_evolucao_tab3 = df_evolucao_tab3[df_evolucao_tab3['Data'].dt.dayofweek < 5].copy()
+            # Filtra apenas dias de semana (segunda=0, domingo=6)
+            df_evolucao_semana = df_evolucao_tab3[df_evolucao_tab3['Data'].dt.dayofweek < 5].copy()
 
-            if not df_evolucao_tab3.empty:
+            if not df_evolucao_semana.empty:
+                st.info("Esta visualização considera apenas os dados de snapshots de dias de semana e já aplica os filtros de grupos ocultos e RH.")
 
-                st.info("Esta visualização ainda está coletando dados históricos. Utilize as outras abas como referência principal por enquanto.")
-
-                df_total_diario = df_evolucao_tab3.groupby('Data')['Total Chamados'].sum().reset_index()
+                # Gráfico Total Geral
+                df_total_diario = df_evolucao_semana.groupby('Data')['Total Chamados'].sum().reset_index()
                 df_total_diario = df_total_diario.sort_values('Data')
-
                 df_total_diario['Data (Eixo)'] = df_total_diario['Data'].dt.strftime('%d/%m')
                 ordem_datas_total = df_total_diario['Data (Eixo)'].tolist()
 
                 fig_total_evolucao = px.area(
-                    df_total_diario,
-                    x='Data (Eixo)',
-                    y='Total Chamados',
+                    df_total_diario, x='Data (Eixo)', y='Total Chamados',
                     title='Evolução do Total Geral de Chamados Abertos (Apenas Dias de Semana)',
-                    markers=True,
-                    labels={"Data (Eixo)": "Data", "Total Chamados": "Total Geral de Chamados"},
+                    markers=True, labels={"Data (Eixo)": "Data", "Total Chamados": "Total Geral de Chamados"},
                     category_orders={'Data (Eixo)': ordem_datas_total}
                 )
                 fig_total_evolucao.update_layout(height=400)
@@ -882,22 +1021,16 @@ try:
 
                 st.markdown("---")
 
-                st.info("Esta visualização já filtra os chamados fechados e permite filtrar grupos clicando 2x na legenda.")
-
-                df_evolucao_tab3_sorted = df_evolucao_tab3.sort_values('Data')
-                df_evolucao_tab3_sorted['Data (Eixo)'] = df_evolucao_tab3_sorted['Data'].dt.strftime('%d/%m')
-
-                ordem_datas_grupo = df_evolucao_tab3_sorted['Data (Eixo)'].unique().tolist()
-
-                df_filtrado_display = df_evolucao_tab3_sorted.rename(columns={'Atribuir a um grupo': 'Grupo Atribuído'})
+                # Gráfico por Grupo
+                st.info("Clique na legenda para filtrar grupos. Clique duplo para isolar um grupo.")
+                df_evolucao_semana_sorted = df_evolucao_semana.sort_values('Data')
+                df_evolucao_semana_sorted['Data (Eixo)'] = df_evolucao_semana_sorted['Data'].dt.strftime('%d/%m')
+                ordem_datas_grupo = df_evolucao_semana_sorted['Data (Eixo)'].unique().tolist()
+                df_filtrado_display = df_evolucao_semana_sorted.rename(columns={'Atribuir a um grupo': 'Grupo Atribuído'})
 
                 fig_evolucao_grupo = px.line(
-                    df_filtrado_display,
-                    x='Data (Eixo)',
-                    y='Total Chamados',
-                    color='Grupo Atribuído',
-                    title='Evolução por Grupo (Apenas Dias de Semana)',
-                    markers=True,
+                    df_filtrado_display, x='Data (Eixo)', y='Total Chamados', color='Grupo Atribuído',
+                    title='Evolução por Grupo (Apenas Dias de Semana)', markers=True,
                     labels={ "Data (Eixo)": "Data", "Total Chamados": "Nº de Chamados", "Grupo Atribuído": "Grupo" },
                     category_orders={'Data (Eixo)': ordem_datas_grupo}
                 )
@@ -905,91 +1038,98 @@ try:
                 st.plotly_chart(fig_evolucao_grupo, use_container_width=True)
 
             else:
-                st.info("Ainda não há dados históricos suficientes (considerando apenas dias de semana).")
-
+                st.info("Não há dados históricos suficientes considerando apenas dias de semana.")
         else:
-            st.info("Ainda não há dados históricos suficientes.")
+            st.info("Não foi possível carregar dados históricos para a evolução.")
+
 
     with tab4:
         st.subheader("Evolução do Aging do Backlog")
+        st.info("Esta aba compara a 'foto' do aging de hoje com a 'foto' de dias anteriores, usando a mesma data de referência (hoje) para calcular a idade em ambos os momentos.")
 
         try:
-            # ==========================================================
-            # ||           CORREÇÃO DO BUG HISTÓRICO AQUI             ||
-            # ==========================================================
-            # Passa uma lista vazia para não filtrar os snapshots
-            df_hist = carregar_evolucao_aging(repo, closed_ticket_ids_list=[], dias_para_analisar=90)
+            # Chama a função SEM passar IDs fechados (a função agora filtra grupos ocultos e usa analisar_aging)
+            df_hist = carregar_evolucao_aging(repo, dias_para_analisar=90)
 
             ordem_faixas_scaffold = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
             hoje_data = None
-            hoje_counts_df = pd.DataFrame()
+            hoje_counts_df = pd.DataFrame() # DataFrame para os dados de HOJE
 
+            # Calcula contagem de HOJE a partir de df_aging (que já está filtrado e calculado corretamente)
             if 'df_aging' in locals() and not df_aging.empty and data_atual_str != 'N/A':
                 try:
                     hoje_data = pd.to_datetime(datetime.strptime(data_atual_str, "%d/%m/%Y").date())
+                    # Agrupa df_aging por faixa para obter a contagem de HOJE
                     hoje_counts_raw = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
                     hoje_counts_raw.columns = ['Faixa de Antiguidade', 'total']
                     df_todas_faixas_hoje = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas_scaffold})
+                    # Garante que todas as faixas estão presentes
                     hoje_counts_df = pd.merge(
-                        df_todas_faixas_hoje,
-                        hoje_counts_raw,
-                        on='Faixa de Antiguidade',
-                        how='left'
+                        df_todas_faixas_hoje, hoje_counts_raw,
+                        on='Faixa de Antiguidade', how='left'
                     ).fillna(0)
                     hoje_counts_df['total'] = hoje_counts_df['total'].astype(int)
-                    hoje_counts_df['data'] = hoje_data
+                    hoje_counts_df['data'] = hoje_data # Adiciona a data de hoje
                 except ValueError:
-                    st.warning("Data atual inválida. Não foi possível carregar dados de 'hoje'.")
-                    hoje_data = None
+                    st.warning("Data atual ('datas_referencia.txt') inválida. Não foi possível processar dados de 'hoje' para comparação.")
+                    hoje_data = None # Invalida se data errada
             else:
-                st.warning("Não foi possível carregar dados de 'hoje'.")
+                st.warning("Não foi possível carregar ou processar dados de 'hoje' (df_aging).")
 
 
+            # Combina histórico (df_hist) com hoje (hoje_counts_df) se ambos existirem
             if not df_hist.empty and not hoje_counts_df.empty:
-                df_combinado = pd.concat([df_hist, hoje_counts_df], ignore_index=True)
-                df_combinado = df_combinado.drop_duplicates(subset=['data', 'Faixa de Antiguidade'], keep='last')
+                 # Adiciona 'hoje' ao histórico ANTES de buscar data de comparação
+                 df_combinado = pd.concat([df_hist, hoje_counts_df], ignore_index=True)
+                 # Remove duplicatas caso o snapshot de hoje já esteja no histórico
+                 df_combinado = df_combinado.drop_duplicates(subset=['data', 'Faixa de Antiguidade'], keep='last') 
             elif not df_hist.empty:
-                df_combinado = df_hist.copy()
+                 df_combinado = df_hist.copy()
+                 st.warning("Dados de 'hoje' não disponíveis para comparação.")
             elif not hoje_counts_df.empty:
-                df_combinado = hoje_counts_df.copy()
+                 df_combinado = hoje_counts_df.copy()
+                 st.warning("Dados históricos não disponíveis para comparação.")
             else:
-                st.error("Não há dados históricos nem dados de hoje para a análise de aging.")
-                st.stop()
+                 st.error("Não há dados históricos nem dados de hoje para a análise de aging.")
+                 st.stop() # Para se não houver NADA
 
+            # Garante que 'data' é datetime e ordena
             df_combinado['data'] = pd.to_datetime(df_combinado['data'])
             df_combinado = df_combinado.sort_values(by=['data', 'Faixa de Antiguidade'])
 
 
+            # --- Comparativo de Cards ---
             st.markdown("##### Comparativo")
-            periodo_comp_opts = {
-                "Ontem": 1,
-                "7 dias atrás": 7,
-                "15 dias atrás": 15,
-                "30 dias atrás": 30
-            }
+            periodo_comp_opts = { "Ontem": 1, "7 dias atrás": 7, "15 dias atrás": 15, "30 dias atrás": 30 }
             periodo_comp_selecionado = st.radio(
-                "Comparar 'Hoje' com:",
-                options=periodo_comp_opts.keys(),
-                horizontal=True,
-                key="radio_comp_periodo"
+                "Comparar 'Hoje' com:", options=periodo_comp_opts.keys(),
+                horizontal=True, key="radio_comp_periodo"
             )
 
             data_comparacao_final = None
             df_comparacao_dados = pd.DataFrame()
             data_comparacao_str = "N/A"
 
+            # Só busca comparação se temos dados de HOJE
             if hoje_data:
+                # Calcula a data alvo para buscar o snapshot
                 target_comp_date = hoje_data.date() - timedelta(days=periodo_comp_opts[periodo_comp_selecionado])
+                
+                # Busca o snapshot mais próximo ANTES ou IGUAL à data alvo
                 data_comparacao_encontrada, _ = find_closest_snapshot_before(repo, hoje_data.date(), target_comp_date)
 
                 if data_comparacao_encontrada:
                     data_comparacao_final = pd.to_datetime(data_comparacao_encontrada)
                     data_comparacao_str = data_comparacao_final.strftime('%d/%m')
+                    # Pega os dados JÁ PROCESSADOS (com aging calculado via analisar_aging) do df_combinado
                     df_comparacao_dados = df_combinado[df_combinado['data'] == data_comparacao_final].copy()
+                    if df_comparacao_dados.empty:
+                         st.warning(f"Snapshot de {data_comparacao_str} encontrado, mas sem dados válidos após processamento.")
+                         data_comparacao_final = None # Invalida se não achou dados processados
                 else:
-                    st.warning(f"Não foi encontrado snapshot próximo a {periodo_comp_selecionado} ({target_comp_date.strftime('%d/%m')}). A comparação pode não ser precisa.")
+                    st.warning(f"Não foi encontrado snapshot próximo a {periodo_comp_selecionado} ({target_comp_date.strftime('%d/%m')}). A comparação pode não ser exibida.")
 
-
+            # Exibe os cards
             cols_linha1 = st.columns(3)
             cols_linha2 = st.columns(3)
             cols_map = {0: cols_linha1[0], 1: cols_linha1[1], 2: cols_linha1[2],
@@ -998,25 +1138,37 @@ try:
             for i, faixa in enumerate(ordem_faixas_scaffold):
                 with cols_map[i]:
                     valor_hoje = 'N/A'
+                    delta_text = "N/A"
+                    delta_class = "delta-neutral"
+
+                    # Pega valor de HOJE
                     if not hoje_counts_df.empty:
                         valor_hoje_series = hoje_counts_df.loc[hoje_counts_df['Faixa de Antiguidade'] == faixa, 'total']
                         if not valor_hoje_series.empty:
                             valor_hoje = int(valor_hoje_series.iloc[0])
 
-                    valor_comparacao = 0
-                    delta_text = "N/A"
-                    delta_class = "delta-neutral"
+                            # Calcula DELTA somente se temos valor de HOJE e dados de COMPARAÇÃO
+                            if data_comparacao_final and not df_comparacao_dados.empty:
+                                valor_comp_series = df_comparacao_dados.loc[df_comparacao_dados['Faixa de Antiguidade'] == faixa, 'total']
+                                if not valor_comp_series.empty:
+                                    valor_comparacao = int(valor_comp_series.iloc[0])
+                                    delta_abs = valor_hoje - valor_comparacao
+                                    delta_perc = (delta_abs / valor_comparacao) if valor_comparacao > 0 else 0
+                                    delta_text, delta_class = formatar_delta_card(delta_abs, delta_perc, valor_comparacao, data_comparacao_str)
+                                else:
+                                     # Achou data de comparação, mas não essa faixa específica nela
+                                     delta_text = f"+{valor_hoje} (Novo) vs. {data_comparacao_str}" 
+                                     delta_class = "delta-positive"
+                            elif hoje_data: # Temos hoje, mas não data de comparação válida
+                                 delta_text = "Sem dados para comparar"
+                        else: # Caso raro: faixa não encontrada nos dados de hoje
+                             valor_hoje = 0 
+                             delta_text = "N/A"
+                    
+                    # Se não temos nem dados de hoje
+                    elif not hoje_data:
+                         delta_text = "Dados de hoje indisponíveis"
 
-                    if data_comparacao_final and not df_comparacao_dados.empty and isinstance(valor_hoje, int):
-                        valor_comp_series = df_comparacao_dados.loc[df_comparacao_dados['Faixa de Antiguidade'] == faixa, 'total']
-                        if not valor_comp_series.empty:
-                            valor_comparacao = int(valor_comp_series.iloc[0])
-
-                        delta_abs = valor_hoje - valor_comparacao
-                        delta_perc = (delta_abs / valor_comparacao) if valor_comparacao > 0 else 0
-                        delta_text, delta_class = formatar_delta_card(delta_abs, delta_perc, valor_comparacao, data_comparacao_str)
-                    elif isinstance(valor_hoje, int):
-                        delta_text = "Sem dados para comparar"
 
                     st.markdown(f"""
                     <div class="metric-box">
@@ -1028,21 +1180,22 @@ try:
 
             st.divider()
 
+            # --- Gráfico de Evolução ---
             st.markdown(f"##### Gráfico de Evolução (Últimos 7 dias)")
-
-            periodo_grafico = "Últimos 7 dias"
+            
+            # Filtra df_combinado para os últimos 7 dias (incluindo hoje)
             hoje_filtro_grafico = datetime.now().date()
-            data_inicio_filtro_grafico = hoje_filtro_grafico - timedelta(days=7)
+            data_inicio_filtro_grafico = hoje_filtro_grafico - timedelta(days=6) # 7 dias contando hoje
             df_filtrado_grafico = df_combinado[df_combinado['data'].dt.date >= data_inicio_filtro_grafico].copy()
 
-
             if df_filtrado_grafico.empty:
-                st.warning("Não há dados para o período selecionado.")
+                st.warning("Não há dados de aging para os últimos 7 dias.")
             else:
                 df_grafico = df_filtrado_grafico.sort_values(by='data')
                 df_grafico['Data (Eixo)'] = df_grafico['data'].dt.strftime('%d/%m')
-                ordem_datas_grafico = df_grafico['Data (Eixo)'].unique().tolist()
+                ordem_datas_grafico = df_grafico['Data (Eixo)'].unique().tolist() # Ordem cronológica
 
+                # Paleta de cores (mesma da Tab 2)
                 def lighten_color(hex_color, amount=0.2):
                     try:
                         hex_color = hex_color.lstrip('#')
@@ -1055,57 +1208,44 @@ try:
                 palette = [ lighten_color(base_color, 0.85), lighten_color(base_color, 0.70), lighten_color(base_color, 0.55), lighten_color(base_color, 0.40), lighten_color(base_color, 0.20), base_color ]
                 color_map = {faixa: color for faixa, color in zip(ordem_faixas_scaffold, palette)}
 
+                # Seleção do tipo de gráfico
                 tipo_grafico = st.radio(
                     "Selecione o tipo de gráfico:",
                     ("Gráfico de Linha (Comparativo)", "Gráfico de Área (Composição)"),
-                    horizontal=True,
-                    key="radio_tipo_grafico_aging"
+                    horizontal=True, key="radio_tipo_grafico_aging"
                 )
 
                 if tipo_grafico == "Gráfico de Linha (Comparativo)":
                     fig_aging_all = px.line(
-                        df_grafico,
-                        x='Data (Eixo)',
-                        y='total',
-                        color='Faixa de Antiguidade',
-                        title='Evolução por Faixa de Antiguidade',
-                        markers=True,
+                        df_grafico, x='Data (Eixo)', y='total', color='Faixa de Antiguidade',
+                        title='Evolução por Faixa de Antiguidade (Últimos 7 dias)', markers=True,
                         labels={"Data (Eixo)": "Data", "total": "Total Chamados", "Faixa de Antiguidade": "Faixa"},
-                        category_orders={
-                            'Data (Eixo)': ordem_datas_grafico,
-                            'Faixa de Antiguidade': ordem_faixas_scaffold
-                        },
+                        category_orders={'Data (Eixo)': ordem_datas_grafico, 'Faixa de Antiguidade': ordem_faixas_scaffold},
                         color_discrete_map=color_map
                     )
-                else:
+                else: # Gráfico de Área
                     fig_aging_all = px.area(
-                        df_grafico,
-                        x='Data (Eixo)',
-                        y='total',
-                        color='Faixa de Antiguidade',
-                        title='Composição da Evolução por Antiguidade',
-                        markers=True,
+                        df_grafico, x='Data (Eixo)', y='total', color='Faixa de Antiguidade',
+                        title='Composição da Evolução por Antiguidade (Últimos 7 dias)', markers=True,
                         labels={"Data (Eixo)": "Data", "total": "Total Chamados", "Faixa de Antiguidade": "Faixa"},
-                        category_orders={
-                            'Data (Eixo)': ordem_datas_grafico,
-                            'Faixa de Antiguidade': ordem_faixas_scaffold
-                        },
+                        category_orders={'Data (Eixo)': ordem_datas_grafico, 'Faixa de Antiguidade': ordem_faixas_scaffold},
                         color_discrete_map=color_map
                     )
 
-                fig_aging_all.update_layout(height=500)
+                fig_aging_all.update_layout(height=500, legend_title_text='Faixa')
                 st.plotly_chart(fig_aging_all, use_container_width=True)
 
         except Exception as e:
             st.error(f"Ocorreu um erro ao gerar a aba de Evolução Aging: {e}")
-            st.exception(e)
+            st.exception(e) # Mostra o traceback para depuração
 
 except Exception as e:
-    st.error(f"Ocorreu um erro ao carregar os dados: {e}")
-    st.exception(e)
+    st.error(f"Ocorreu um erro GERAL ao carregar ou processar os dados: {e}")
+    st.exception(e) # Mostra o traceback para depuração
 
 st.markdown("---")
-st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.28-738 | Este dashboard está em desenvolvimento.</p>
+# Atualiza versão no rodapé se desejar
+st.markdown(""" 
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.31 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
