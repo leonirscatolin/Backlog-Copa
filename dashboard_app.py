@@ -1,4 +1,4 @@
-# VERSÃO v0.9.39-749 (Corrigida)
+# VERSÃO v0.9.40-750 (Corrigida)
 
 import streamlit as st
 import pandas as pd
@@ -316,8 +316,10 @@ def sync_ticket_data():
     st.session_state.scroll_to_details = True
 
 
+# --- MODIFICADO v0.9.40 ---
+# Removido o parâmetro 'closed_ticket_ids_list'
 @st.cache_data(ttl=3600)
-def carregar_dados_evolucao(_repo, closed_ticket_ids_list, dias_para_analisar=7):
+def carregar_dados_evolucao(_repo, dias_para_analisar=7):
     try:
         all_files_content = _repo.get_contents("snapshots")
         all_files = [f.path for f in all_files_content]
@@ -325,11 +327,9 @@ def carregar_dados_evolucao(_repo, closed_ticket_ids_list, dias_para_analisar=7)
         end_date = date.today()
         start_date = end_date - timedelta(days=max(dias_para_analisar, 10))
 
-        closed_ids_set = set(closed_ticket_ids_list)
+        # Removido: closed_ids_set = set(closed_ticket_ids_list)
         
-        # --- MODIFICADO v0.9.39 ---
         grupos_para_excluir = r'RH|Aprovadores GGM|RDM-GTR'
-        # --- FIM DA MODIFICAÇÃO ---
 
         processed_dates = []
         for file_name in all_files:
@@ -352,14 +352,11 @@ def carregar_dados_evolucao(_repo, closed_ticket_ids_list, dias_para_analisar=7)
                     df_snapshot = read_github_file(_repo, file_name)
                     if not df_snapshot.empty and 'Atribuir a um grupo' in df_snapshot.columns:
                         
-                        # --- MODIFICADO v0.9.39 ---
                         df_snapshot_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False, regex=True)]
-                        id_col_snapshot = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_snapshot_filtrado.columns), None)
+                        
+                        # --- Bloco de filtragem por 'closed_ids_set' REMOVIDO ---
+                        # O snapshot já está correto e não deve ser filtrado novamente.
                         df_snapshot_final = df_snapshot_filtrado
-                        if id_col_snapshot and closed_ids_set:
-                            ids_limpos_snapshot = df_snapshot_filtrado[id_col_snapshot].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-                            df_snapshot_final = df_snapshot_filtrado[~ids_limpos_snapshot.isin(closed_ids_set)]
-                        # --- FIM DA MODIFICAÇÃO ---
                         
                         contagem_diaria = df_snapshot_final.groupby('Atribuir a um grupo').size().reset_index(name='Total Chamados')
                         contagem_diaria['Data'] = pd.to_datetime(file_date)
@@ -377,6 +374,7 @@ def carregar_dados_evolucao(_repo, closed_ticket_ids_list, dias_para_analisar=7)
     except Exception as e:
         st.error(f"Erro ao carregar evolução: {e}")
         return pd.DataFrame()
+# --- FIM DA MODIFICAÇÃO ---
 
 @st.cache_data(ttl=300)
 def find_closest_snapshot_before(_repo, current_report_date, target_date):
@@ -402,8 +400,10 @@ def find_closest_snapshot_before(_repo, current_report_date, target_date):
         st.warning(f"Erro ao buscar snapshots: {e}")
         return None, None
 
+# --- MODIFICADO v0.9.40 ---
+# Removido o parâmetro 'closed_ticket_ids_list'
 @st.cache_data(ttl=3600)
-def carregar_evolucao_aging(_repo, closed_ticket_ids_list, dias_para_analisar=90):
+def carregar_evolucao_aging(_repo, dias_para_analisar=90):
     try:
         all_files_content = _repo.get_contents("snapshots")
         all_files = [f.path for f in all_files_content]
@@ -412,11 +412,9 @@ def carregar_evolucao_aging(_repo, closed_ticket_ids_list, dias_para_analisar=90
         end_date = date.today() - timedelta(days=1)
         start_date = end_date - timedelta(days=max(dias_para_analisar, 60))
 
-        closed_ids_set = set(closed_ticket_ids_list)
+        # Removido: closed_ids_set = set(closed_ticket_ids_list)
         
-        # --- MODIFICADO v0.9.39 ---
         grupos_para_excluir = r'RH|Aprovadores GGM|RDM-GTR'
-        # --- FIM DA MODIFICAÇÃO ---
 
         processed_files = []
         for file_name in all_files:
@@ -437,16 +435,11 @@ def carregar_evolucao_aging(_repo, closed_ticket_ids_list, dias_para_analisar=90
                 if df_snapshot.empty:
                     continue
 
-                # --- MODIFICADO v0.9.39 ---
                 df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False, regex=True)]
-                # --- FIM DA MODIFICAÇÃO ---
 
-                id_col_snapshot = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_filtrado.columns), None)
-                if id_col_snapshot and closed_ids_set:
-                    ids_limpos_snapshot = df_filtrado[id_col_snapshot].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-                    df_final = df_filtrado[~ids_limpos_snapshot.isin(closed_ids_set)]
-                else:
-                    df_final = df_filtrado
+                # --- Bloco de filtragem por 'closed_ids_set' REMOVIDO ---
+                # O snapshot já está correto.
+                df_final = df_filtrado
 
                 df_final = df_final.copy() # <-- CORREÇÃO APLICADA
 
@@ -494,6 +487,8 @@ def carregar_evolucao_aging(_repo, closed_ticket_ids_list, dias_para_analisar=90
     except Exception as e:
         st.error(f"Erro ao carregar evolução de aging: {e}")
         return pd.DataFrame()
+# --- FIM DA MODIFICAÇÃO ---
+
 
 def formatar_delta_card(delta_abs, delta_perc, valor_comparacao, data_comparacao_str):
     delta_abs = int(delta_abs)
@@ -946,7 +941,10 @@ try:
         st.subheader("Evolução do Backlog")
         dias_evolucao = st.slider("Ver evolução dos últimos dias:", min_value=7, max_value=30, value=7, key="slider_evolucao")
 
-        df_evolucao_tab3 = carregar_dados_evolucao(repo, closed_ticket_ids_list=closed_ticket_ids, dias_para_analisar=dias_evolucao)
+        # --- MODIFICADO v0.9.40 ---
+        # Removida a passagem de 'closed_ticket_ids_list'
+        df_evolucao_tab3 = carregar_dados_evolucao(repo, dias_para_analisar=dias_evolucao)
+        # --- FIM DA MODIFICAÇÃO ---
 
         if not df_evolucao_tab3.empty:
 
@@ -1013,7 +1011,10 @@ try:
         # --- FIM DA MODIFICAÇÃO ---
 
         try:
-            df_hist = carregar_evolucao_aging(repo, closed_ticket_ids_list=closed_ticket_ids, dias_para_analisar=90)
+            # --- MODIFICADO v0.9.40 ---
+            # Removida a passagem de 'closed_ticket_ids_list'
+            df_hist = carregar_evolucao_aging(repo, dias_para_analisar=90)
+            # --- FIM DA MODIFICAÇÃO ---
 
             ordem_faixas_scaffold = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
             hoje_data = None
@@ -1201,6 +1202,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.39-749 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.40-750 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
