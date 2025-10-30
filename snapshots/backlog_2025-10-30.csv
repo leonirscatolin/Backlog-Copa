@@ -260,9 +260,6 @@ Daniel Albino.
 O rh estava a frente desse trabalho, tem um retorno de como está esse processo."
 100-96316;Service Request;Active;2025-08-27 09:07:44;DE BARROS FERREIRA AMADOR,JANAINA;COP-RH-ADMPESSOAL;63;"AFASTAMENTO - 104950
 LILIAN CASSIANO - MATRIZ";Afastamento desde 06/2025. Perícia em 05/09/2025 - INSS reagendou pericia para o dia 24/10/2025 às 13:30.
-100-97193;Service Request;Active;2025-09-04 13:46:41;DURAN PRADO,MARCELO;COP-SAP CO-3N;55;SAP-CO -criação de relatório - visão na transação GR55;"Prezados,
-Por favor, poderia me dar apoio na criação de um  relatório (não sei qual transação que cria) para ter a visão na transação GR55, semelhante ao grupo de relatório ZC01, grupo de centro de custo KSS2_PROD e grupo de classe de centro de custo FECH_CUSTO.
-Segue arquivo com o arquivo que consulto hoje e, quero desenvolver um semelhante, com grupos de contas e centros diferentes."
 100-97305;Service Request;Active;2025-09-05 11:20:13;PISCIOTTANO LEITAO,LEONARDO;COP-RH-TREINAMENTO&AV.DESEMPENHO;54;Solicitação de curso de curta duração;"Curso IT Business Partner (12h, online).             FIAP – Analista de Negócios Online
 Link do curso: https://www.fiap.com.br/shift/curso/business/analista-de-negocios-online/
 
@@ -305,8 +302,6 @@ Enviar para o colaborador o termo caso o mesmo queira receber a antecipação e 
 100-99086;Service Request;Active;2025-09-24 10:26:14;SOUZA DA SILVA,KELLY;COP-RH-FOPAG;35;Afastamento - CO Capuava - ISAIAS DE CARVALHO AMORIM - 121744;"Segue anexo histórico de e-mail referente ao afastamento de ISAIAS DE CARVALHO AMORIM - 121744
 
 DUT: 03/09/2025"
-100-99545;Service Request;Active;2025-09-30 11:25:15;SANTIAGO ALMEIDA,LUCCA;COP-OneID-Suporte;29;É possível criar um processo no troca senha, que retorne um erro caso a senha não seja aceita no SAP?;"Atualmente muitos usuários não conseguem acessar o SAP por definir uma senha não aceita na troca de senha central. Porém no momento da troca o sistema não avisa se a troca foi efetiva por sistema. É possível criar um processo para fazer a validação?
-Também solicito evidência dos últimos usuários que realizaram a troca de senha e não conseguiram logar no SAP, devido a política de senha."
 300-131549;Incident;Active;2025-10-02 15:19:20;LOPES MEDEIROS,JEFFERSON;COP-SAP SD-3N;27;SAP-Transação VFX3-erro no campo data de faturamento em set.25 gerou lançamento de CPV em no relatórios de C0_PA de margem por cliente;"Prezados,
 Peço verificar e corrigir urgente pois está impactando nos relatórios de margem por cliente. Por qual motivo uma nota que deu erro na transação VFX3 em set25:-0107980755 000000 Período 007/2025 não foi aberto para tipo conta D no Razão 1121010010; e 0107936060 000000 Período 008/2025 não foi aberto para tipo conta D no Razão 1121010010. As datas foram alteradas na transação VF02 e bandeirada na transação VFX3, gerando lançamento de estorno de venda. Foi identificado que gerou lançamento de CPV nos relatórios de CO_PA. Anexo tem telas de erros.
 Por gentileza, encaminhar para a equipe de SD."
@@ -404,11 +399,6 @@ Solicito que verifique e corrige o erro  mais breve possível pois está gerand
 O fluxo somente prossegue mediante aprovação. Caso a solicitação seja reprovada, ela retorna à etapa inicial e não é possível dar sequência sem que uma nova aprovação seja realizada.
 
 Ex.: 01913723"
-300-132635;Incident;Active;2025-10-16 11:53:52;LUCAS MENDES DOS SANTOS,LEVI;COP-SENIOR;13;FALHA NA CRIAÇÃO DE EVENTO TOTALIZADOR NO SÊNIOR.;"No ambiente de homologação, efetuei a criação do evento 4555 - Saldo em aberto de Antecipações Previdenciárias, informativo,  com objetivo  somar o evento 3202 deduzindo o evento 3368.
-
-O evento está realizando a  contabilização corretamente dentro do mês, porem não está acumulando  para o mês seguinte.
-
-Peço analisarem o evento e verificarem qual a regra especial correta para que o evento passe a acumular os valores para os meses seguintes."
 100-101144;Service Request;Active;2025-10-16 14:17:16;SOUZA DA SILVA,KELLY;COP-RH-FOPAG;13;Retorno ao trabalho;Segue anexo o ASO de retorno ao trabalho do colaborador Anderson Almeida da Costa, matr. 991121, informando que está apto para o retorno ao trabalho.
 100-101146;Service Request;Active;2025-10-16 14:20:31;SOUZA DA SILVA,KELLY;COP-RH-FOPAG;13;Solicitação de completo salarial conforme CCT devido a afastamento de 01/09 a 15/10;Solicitação de completo salarial conforme CCT devido a afastamento de 01/09 a 15/10
 100-101147;Service Request;Active;2025-10-16 14:24:02;SOUZA DA SILVA,KELLY;COP-RH-FOPAG;13;Solicitação de complemento salarial para o colaborador Anderson Almeida da Costa matricula 991121, conforme CCT devido afastamento de 01/09/2025 a 15/10/2025.;Solicitação de complemento salarial para o colaborador Anderson Almeida da Costa matricula 991121, conforme CCT devido afastamento de 01/09/2025 a 15/10/2025.
@@ -463,13 +453,6 @@ Centro: 1221"
 100-101619;Service Request;Active;2025-10-21 15:58:20;SOUZA DA SILVA,KELLY;COP-RH-ADMPESSOAL;8;ASO RETORNO AO TRABALHO - FERNANDO DE OLIVEIRA DA ROCHA - CO CAPUAVA;"Prezada,
 Segue anexo o ASO de retorno ao trabalho do colaborador FERNANDO DE OLIVEIRA DA ROCHA, mat. 117034."
 100-101651;Service Request;Active;2025-10-22 08:26:38;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;7;Solicito a liberação de ponto por app para o colaborador Fabio Cardoso, matricula 122246;Solicito a liberação de ponto por app para o colaborador Fabio Cardoso, matricula 122246 . Colaborador recém contratado , não esta conseguindo cadastrar no relógio de ponto , desta forma solicito liberação dos registros no app .
-300-133035;Incident;Active;2025-10-22 08:41:56;VIEIRA FERREIRA,GUSTAVO;COP-GESTAO;7;Erro na transação;"Estou com erro na transação: \IDM\TR  Integrated
-Dispatch management
-Erro de execução em outro servidor. Aperp 33
-Erro está em anexo.
-
-Centro: 1212
-Barueri"
 100-101690;Service Request;Active;2025-10-22 11:59:19;JOSE BRITO VIEIRA,JAILSON;COP-RH-HUB;7;Funcionário solicita cancelamento de seu vale transporte.;"Funcionário solicita cancelamento de seu vale transporte.
 
 O cancelamento deve acontecer já para o próximo período.
@@ -564,9 +547,6 @@ _______________________________________________
 * 07/11/2025: Mudança da escala atual 132 (0700 1100 1200 1520 SEG a SaB) para a escala 731 (0300 0700 0800 1120 segunda a sábado)."
 100-100957;Service Request;New;2025-10-15 10:49:30;;PROD-AUTOMAÇÃO;14;Aprovação automática de ordens de nota de crédito D2C.;"Atualmente, o time de Pricing utiliza um RPA que gera ordens de nota de crédito sem que essas ordens sejam encaminhadas para aprovação via Workflow. Gostaríamos que esse mesmo modelo de automação fosse desenvolvido para o time de Suporte a Vendas Financeiro. O objetivo é garantir que, ao gerarem ordens de D2C por meio do robô, essas também não sejam submetidas à aprovação do time de Pricing. Como já existe esse modelo ""pronto"", acredito que não seja tão complexa essa solicitação."
 300-132865;Incident;New;2025-10-20 13:23:59;;APOIO-COP-CELULAR;9;Sobre envio de mensagem através do wathassap;Não estou conseguindo enviar lista de transmissão para os cliente, para captação de pedidos através do wathasSap.
-300-133193;Incident;New;2025-10-23 12:13:55;;APOIO-COP-CELULAR;6;Meu aparelho de celular esta apresentando recorrentes desligamentos mesmo após o carregamento da bateria.;meu celular desliga e só volta a funcionar após conectado a fonte de energia para carregamento. no entanto mesmo com a indicação de 100% de bateria, após retirar da carga, ele fica poucos minutos ligado e ele torna a desligar
-300-133394;Incident;New;2025-10-27 09:06:52;;APOIO-COP-CELULAR;2;Solicito a troca do aparelho smartphone tendo em vista apresentar falha na tela.;A substituição se faz necessária para a utilização adequada da ferramenta de trabalho.
-100-102055;Service Request;New;2025-10-27 15:38:53;;COP-ORIENTAÇÃO-GRC;2;Solicitamos apoio para concluir a liberação do acesso do ABAPCBR8 para o ambiente DEV e liberar acesso ao QA para chave CBR8;
 100-91194;Service Request;Pending;2025-07-08 15:55:56;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;113;Afastamento Bruno Messias da Silva - Suape;"Acompanhar processo de afastamento:
 Dut orientações enviado  email: brunomessias12042019@gmail.com (81) 995912612. 
 Ligar para esposa - Josi 81 99654-6704
@@ -1509,10 +1489,6 @@ Erro na transação MIRO";"Bom dia!
 Solicito auxílio na emissão de nota de crédito do fornecedor 402935 (REBRACIL)
 Erro na transação MIRO :
 ""Entrada BR 39199090 não existente em T604F (verificar entrada)"
-100-101240;Service Request;Pending;2025-10-17 10:40:46;CARDOSO SILVA,IRENE;COP-IMPRESSORA;12;Impressora com defeito;"Impressora não está puxado papel das bandejas, possível obstrução de papel.
-
-o número de série é ZDEJBQAJ100048z
-IP 172.31.236.51"
 300-132768;Incident;Pending;2025-10-17 16:11:01;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;12;ANALISAR O TIPO DE PEDIDO LOC (LOCAL) QUE CONFORME NORMATIVO A REGRA E CRIAR PEDIDO ATÉ 5 MIL, FOI ENCONTRADO DOIS PEDIDOS LOC               (4503675038 / 4503719310) ACIMA DE 5 MIL, ANEXO EVIDENCIA;ANALISAR O TIPO DE PEDIDO LOC (LOCAL) QUE CONFORME NORMATIVO A REGRA E CRIAR PEDIDO ATÉ 5 MIL, FOI ENCONTRADO DOIS PEDIDOS LOC  (4503675038 / 4503719310) ACIMA DE 5 MIL, ANEXO EVIDENCIA.
 300-132795;Incident;Pending;2025-10-18 12:48:49;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;11;Lançamento de NFs Simpress via KT;"Boa tarde.
 
@@ -1530,14 +1506,6 @@ FSSD01 9\\SDC-VFSSD01.distribuidora.biz) (R:)
 R:\Depto\GAC\CAL_LIQUIGAS\CELULAS_ESPECIALIZADAS
 
 Centro: Matriz"
-300-132837;Incident;Pending;2025-10-20 11:03:04;BASTOS DE SOUZA KLEM,CAMILA;COP-SUPORTE-XML-TI;9;Notas ao estão indo paras KT;"USUÁRIO AFETADO:Cristina
-CHAVE:LGLV
-TELEFONE: 85986200717
-LOCALIZAÇÃO:1136 fortaleza
-
-DESCRIÇÃO: Notas não estão indo paras KT, erro ao criar recebimento!
-
-anexo!!"
 300-132856;Incident;Pending;2025-10-20 12:00:53;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;9;"Suporte XML TI, verificar com a KT qual o problema que está correndo.
 
 NFe 219618-01
@@ -1642,10 +1610,6 @@ FROTA F380
 Veículo PLS1C70
 TRIP 692904
 PAT 1380940"
-300-133142;Incident;Pending;2025-10-23 08:29:39;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;6;Não estou conseguindo lançar NF no SAP.;"Não consigo fazer o lançamento das NF no SAP que estou recebendo no almoxarifado.
-Com isso, está gerando o acumulo de NFs o que  pode gerar atrasos nos pagamentos aos fornecedores e dos imposto devidos caso isso não seja resolvida a tempo.
-
-Em anexo arquivo com a tela de erro."
 300-133163;Incident;Pending;2025-10-23 10:09:08;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;6;Nota de transferência de 21/10 está sem valor.;"Nota: 77996 série 1
 Centro: 1206
 Numdoc: 21218037
@@ -1698,34 +1662,6 @@ Localidade:  CO Canoas
 Contato: 51999832897
 
 Preciso com urgência"
-300-133355;Incident;Pending;2025-10-25 17:14:22;BASTOS DE SOUZA KLEM,CAMILA;COP-SUPORTE-XML-TI;4;"nota não aparece no KT
-
-
-Chamado KT #39051";"nota não aparece no KT
-
-CHAVES:
-
-23251035141171000115550010000002711214857935
- 
-23251039525839000189550020000055881025289739
- 
-23251039525839000189550020000055901646333779
- 
-23251039525839000189550020000055911375923432
- 
-23251000599919000143550010000240991000127286
- 
-23251019791896016368550010000407961446267460
- 
-23251010297362000140550010000659671455388815
- 
-23251010297362000140550010000659681432690679
- 
-23251010297362000140550010000659691237092382
- 
-23251010297362000140550010000659701098039233
- 
-23251010297362000140550010000659711915175251"
 300-133356;Incident;Pending;2025-10-25 19:37:59;DE ALMEIDA FERREIRA,FABIO;APOIO-COP-SD;4;Reset MFA;"Reset MFA
 
 resetar o mfa da chave :  d7lf."
@@ -1871,11 +1807,6 @@ anexo!"
 SEGUE IMAGEM DO PROBLEMA RELATADO EM ANEXO."
 100-99087;Service Request;Queued;2025-09-24 10:30:06;GOMES DE ARRUDA,ROSIMARA;COP-RH-HUB;35;Colaborador ativo de Passo Fundo-RS, realizou a solicitação de entrega do PPP para fins de Aposentadoria;OSIEL CHAVES MORAIS - CPF: 622.945.470-04 Matrícula: 50732
 300-130939;Incident;Queued;2025-09-24 16:22:59;LUIS GARCIA,RICARDO;COP-AUT-SAP-TRIBUTÁRIO-LES/MM/SD;35;Nos dias 24 e 25 rodamos o monitor de frete, referente ao transportador 420976, todos fretes foram bandeirados, porém entram com valores menores no livro fiscal. Anexo como está constando.;Nos dias 24 e 25 rodamos o monitor de frete, referente ao transportador 420976, todos fretes foram bandeirados, porém entram com valores menores no livro fiscal. Anexo como está constando.
-300-131175;Incident;Queued;2025-09-29 09:58:18;;COP-SAP SD-3N;30;Está gerando boleto para NF a vista, necessário ajustar.;"Cliente: 133256
-Mais infos enviadas por e-mail para Julio / Alberto / Clovis"
-300-131255;Incident;Queued;2025-09-30 07:32:48;;COP-SAP FI-3N;29;arquivo bancário rodou parcialmente FEBAN;"Colaboradora informou que o arquivo do banco do brasil está rodando parcialmente.
-
-Transação FEBAN"
 100-99553;Service Request;Queued;2025-09-30 12:24:18;;COP-SAP LES-3N;29;Desativação de automatização realizada na transação ICO/RF_ASJOB do SAP;Desativação de automatização realizada na transação ICO/RF_ASJOB do SAP. Solicito orientação de como proceder para desativar uma automatização realizada na transação citada, para análise e gravação de projeto no ZRF
 300-131363;Incident;Queued;2025-10-01 08:27:48;;COP-SAP MOBILE-3N;28;Bom dia, por favor verificar com urgência os cadastrados de RM´s pois não está saindo no campos de dados adicionais as informações de local de entrega, neste novo modelo SIVA+, clientes estão nos questionando.;"Bom dia, por favor verificar com urgência os cadastrados de RM´s pois não está saindo no campos de dados adicionais as informações de local de entrega, neste novo modelo SIVA+, clientes estão nos questionando.
 1201
@@ -1894,18 +1825,6 @@ As prints que eu preciso estão em anexo.
 
 Centro: 1200
 Capuava"
-300-131402;Incident;Queued;2025-10-01 11:42:41;;COP-AUT-SAP-LOGÍSTICA-SD;28;Frotas f4528 e f2e16 estão com problemas no IDM;As frotas f4528 e f2e16 estão com algum tipo de problema no cadastro. quando alocamos as ordens no IDM, a frota aparece que está saindo de SP, gerando FAT2 e bloqueando toda a utilização do IDM dessas duas frotas
-100-99763;Service Request;Queued;2025-10-02 10:39:31;FERNANDO MARQUES,CLAYTON;COP-GESTAO;27;impressora com defeito;"USUÁRIO AFETADO:Igor
-CHAVE: 6A17
-GESTOR:
-TELEFONE:
-LOCALIZAÇÃO: 1206 Sao jose do Rio preto
-
-DESCRIÇÃO: impressora com defeito na hora de imprimir as folhas saem enrugadas! travam as folhas na bandeja!
-
-NRO DE SERIE BRBPRDK0F4 
-
-HP laser jet MFPE52645"
 300-131632;Incident;Queued;2025-10-03 15:22:59;;COP-SAP FI-3N;26;"necessário realizar ajuste na transação.
 FEBAN - realizar ajuste entre a dz e juros.";"FEBAN - realizar ajuste entre a dz e juros. 
 Unidade: SEDE"
@@ -2111,10 +2030,6 @@ FORNECEDOR: MSTECNOLOGIA"
 100-101889;Service Request;Queued;2025-10-24 14:31:22;REGINA ARTUSO DE ANDRADE,CLAUDIA;COP-ORIENTAÇÃO-GRC;5;acesso à transação VL31N a VL33N em meu perfil (conforme email em anexo);"Ao tentar dar entrada da NF 1048270-005 através do KT, a mesma apresenta erro na criação do recebimento conforme ""print"" em anexo; Foi enviado um email para a área tributária que me orientou a solicitar acesso à transação VL31N a VL33N em meu perfil (conforme email em anexo)"
 100-101890;Service Request;Queued;2025-10-24 14:40:03;DOS ANJOS AFONSO,DANIELA;COP-AUT-SAP-GRCI;5;Solicitação de acesso;Solicito acesso as transações: VI02 e MR8 para a chave CZA3 para atividades de frete
 100-101893;Service Request;Queued;2025-10-24 14:48:50;;COP-SAP FI-3N;5;Abertura região SUL;Conforme conversado com o Fábio, reabrindo o chamado para abertura do campo Região Sul no acerto de viagem, segue em anexo- esse anexo é do acesso de outra colega, por isso estou mandando o exemplo.
-300-133311;Incident;Queued;2025-10-24 16:00:59;CEZAR DA SILVA,DENIS;COP-GESTAO;5;caixa de email esta cheia;"usuário alega que nao consegue entrar nessa caixa de email pois está cheio, aparece que deu erro, que nao maria nao consegue mais receber mensagem!
-email : mariana.ambrozini@copaenergia.com.br
-
-ela alega que tambem nao recebe mensagem no email : suporteni_sul@copaenergia.com.br"
 100-101903;Service Request;Queued;2025-10-24 16:09:06;;COP-RH-HUB;5;documentação para envio ao cliente Bracell que exige, condição para equipe granel entrar na empresa e realizar o abastecimento;"BAURU
 1204
 
@@ -2166,8 +2081,6 @@ Enviar para o colaborador o termo caso o mesmo queira receber a antecipação e 
 Obs: realizado acesso remoto e não consta pasta mapeada, ao realizar procedimento não aceita o mapeamento.
 
 Desktop: DCEUB1-23073"
-300-133396;Incident;Queued;2025-10-27 09:14:31;;COP-GESTAO;2;Notebook não está inicializando, liga fica com a tela preta e apitando e não passa disso. Usuário solicita urgência pois está sem poder trabalhar.;"Notebook: NCEFO2-50564
-Contato: 085 99177-3159"
 300-133419;Incident;Queued;2025-10-27 10:17:56;;COP-ORIENTAÇÃO-GRC;2;"Erro nos lançamentos na MIRO e Monitor de fretes.
 
 Chave para espelhar perfil 96PE
@@ -2188,9 +2101,6 @@ No lançamento de fretes com romaneio ou pedido também aparece esse erro."
 ASO retorno ao trabalho da colaboradora Roberta Gomes De Oliveira Lopes – 100401921"
 300-133433;Incident;Queued;2025-10-27 11:01:06;MAIVEN MUNIZ DA CUNHA,WESLLEY;COP-SALESFORCE;2;Erro - Falha no filtro de casos;"Informo que ao realizar filtro na fila de chamados no Salesforce, identificamos que os campo: ""Setor Industrial"" e ""Categoria Cliente"" não estão filtrando os casos de acordo com as parametrizações realizadas. 
 As filas são: ""Financeiro - Key Account"" e ""Financeiro - Órgão Público"""
-300-133438;Incident;Queued;2025-10-27 11:04:20;;COP-SAP BASIS;2;PREZADOS O SAP DAR ERRO AO GERAR O RELATÓRIO.;"PREZADOS O SAP DAR ERRO AO GERAR O RELATÓRIO.
-
-anexo print do erro."
 100-102013;Service Request;Queued;2025-10-27 11:49:21;DE SOUZA AGUIAR DE JESUS,BEATRIZ;COP-RH-ADMPESSOAL;2;SOLICITAÇÃO DE INCLUSÃO DE DADOS NO SENIOR;"Prezados , 
 Solicitamos a inclusão dos dados da dependente RIANI APARECIDA RIBEIRO (COMPANHEIRA)  no sistema Senior, vinculado a ALEXANDRE VASCONCELOS RODRIGUES – 106028 - CO DUQUE DE CAXIAS . Em anexo, encaminhamos o comprovante para as devidas alterações.
 Atenciosamente."
@@ -2245,56 +2155,8 @@ DUT 21/10/2025.
 Agendada perícia documental em 27/10/2025, n° do requerimento é: 1201263456.
 
 Orientar colaborador e acompanhar afastamento."
-100-91563;Service Request;Resolved-Validation;2025-07-11 12:18:37;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-ADMPESSOAL;110;AFASTAMENTO UNIDADE: CO CANOAS;"ENCAMINHAMENTO INSS – CANOAS – Rosivaldo Brito – 780096
-
-colaborador encontra-se afastado, realizou nova perícia no INSS, está em fase de ANALISE DOCUMENTAL.
-Em 10/07/25, em contato com o mesmo  informado que ainda não saiu o resultado. Favor, acompanhar.
-
-Segue em anexo histórico do afastamento"
-100-92885;Service Request;Resolved-Validation;2025-07-23 11:49:00;GIMENES,IDALINA;COP-RH-ADMPESSOAL;98;Afastamento - CO CAMPO GRANDE – Waldir Oliveira Campos – 100101150;"Segue anexo histórico de e-mail sobre o afastamento do funcionário Waldir Oliveira Campos – 100101150
-
-Ultima atualização do afastamento foi em 21/07/2025. A expert enviou o e-mail informando que o Auxílio por incapacidade temporária do colaborador Waldir Oliveira Campos foi concedido com cessação em 06/08/2025.
-
-Sendo assim, deverá agendar exame de retorno ao trabalho para o funcionário em 07/08/2025.
-
-Hoje, 5 de agosto, o colaborador entrou em contato conosco. Ele informou que tem uma consulta marcada com o médico amanhã 06/08 para saber se receberá autorização para voltar ao trabalho. Ele também comentou que ainda está fazendo sessões de fisioterapia e que continua sentindo dores."
-100-99845;Service Request;Resolved-Validation;2025-10-02 16:11:10;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;27;"SOLICITAÇÃO DE PPP E LTCAT, PPRA
-REQUERENTE: SANDRO LUIZ DA SILVA";"SOLICITAÇÃO DE PPP E FORNECIMENTO DE LTCAT E PPRA UE EMBASOU O PREENCHIMENTO DO PPP.
-DOCUMENTOS DAS DUAS SOLICITAÇÕES EM ANEXO.
-
-ENVIAR RETORNO PARA ESCRITORIO ADVOGADOS PELO EMAIL:
-alexandra@abellaadv.com.br"
-100-100541;Service Request;Resolved-Validation;2025-10-10 11:26:19;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;19;"SOLICITAÇÃO DE PPP
-REQUERENTE: ROGERIO FAGUNDES AIRES";"SOLICITAÇÃO DE PPP
-REQUERENTE: ROGERIO FAGUNDES AIRES
-CPF: 644641720-91
-CELULAR: 51-991325593
-PERÍODO TRABALHADO: 1995 A 2001
-
-DOCUMENTO ANEXO: CNH"
-100-101089;Service Request;Resolved-Validation;2025-10-16 09:28:02;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;13;Solicitação PPP;Solicito o envio do PPP - PERFIL PROFISSIOGRÁFICO PREVIDENCIÁRIO atualizado.
-100-101200;Service Request;Resolved-Validation;2025-10-16 18:55:25;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;13;Solicitação de PPP do colaborador do CO de Goiânia Antônio Francisco Dourado, matrícula 30234.;O colaborador do CO de Goiânia (1230), Antônio Francisco Dourado, matrícula 30234, Operador de Gás, admitido em 01/06/1995, solicitou seu PPP atualizado.
 100-101902;Service Request;Resolved-Validation;2025-10-24 16:06:19;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;5;Alteração do horário da jornada de trabalho do empregado Ramilson Santos Gomes - Matrícula n.º 100401554.;"Alteração do horário da jornada de trabalho do empregado Ramilson Santos Gomes - Matrícula n.º 100401554.
 
 De: 506 - 0900 13 14 1800 Sáb Qz 07 16
 
 Para: 526 - 1100 15 16 2000 Sáb Qz 07 16"
-100-101987;Service Request;Resolved-Validation;2025-10-27 10:06:45;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;2;Solicitação de Conversão crédito Ticket Refeição para o cartão Ticket Alimentação - Colaborador Guilherme Augusto Vaz da Silva;"O colaborador Guilherme Augusto Vaz da Silva , matrícula 121661 está solicitando a possibilidade de conversão de valor do crédito do Ticket Refeição para o cartão Ticket alimentação.
-
-Aguardo orientações;"
-100-102011;Service Request;Resolved-Validation;2025-10-27 11:46:50;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;2;Solicito cancelamento do auxilio Plano Odontologico;Solicito cancelamento do auxilio Plano Odontologico
-100-102025;Service Request;Resolved-Validation;2025-10-27 12:28:30;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;2;A colaboradora MARCELA DA SILVA VOLOSHKO matr. 122291 admitida em 13/10/2025 gostaria de optar pelo plano de assistência médica, não foi feito no dia da admissão, favor enviar as orientações para que seja possível a opção.;A colaboradora MARCELA DA SILVA VOLOSHKO matr. 122291 admitida em 13/10/2025 gostaria de optar pelo plano de assistência médica, não foi feito no dia da admissão, favor enviar as orientações para que seja possível a opção.
-100-102041;Service Request;Resolved-Validation;2025-10-27 14:20:16;JOSE BRITO VIEIRA,JAILSON;COP-RH-HUB;2;"Prezados
-
-Não estou conseguindo ""bater"" o ponto pelo computador. Diz q o login ou senha esta errado e não consigo mudar. Poderiam me ajudar?";"Prezados
-
-Não estou conseguindo ""bater"" o ponto pelo computador. Diz q o login ou senha esta errado e não consigo mudar. Poderiam me ajudar?"
-100-102056;Service Request;Resolved-Validation;2025-10-27 15:43:05;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;2;Mudança de escala dos colaboradores manutenção;"Solicito mudança de escala dos colaboradores Francisco Helry Rodrigues do Nascimento Matricula 113489 e Enoque Araújo de Brito Matrícula 120007 que estão na escala 680 para escala 560 no período de 28/10/25 a 01/10/25. 
-
-Justificativa: Estou sem colaborador no turno e está planejado troca de válvulas multiport nos tanques P60000"
-100-102065;Service Request;Resolved-Validation;2025-10-27 16:37:05;JOSE BRITO VIEIRA,JAILSON;COP-RH-HUB;2;Senha waapi;Quese a senha, e preciso uma nova
-100-102068;Service Request;Resolved-Validation;2025-10-27 17:09:29;JOSE BRITO VIEIRA,JAILSON;COP-RH-HUB;2;QUAL É A MINHA MARGEM ATUAL PARA CONTRATAÇÃO DE EMRÉSTIMO CONSIGNADO?;QUAL É A MINHA MARGEM ATUAL PARA CONTRATAÇÃO DE EMRÉSTIMO CONSIGNADO?
-100-102070;Service Request;Resolved-Validation;2025-10-27 17:46:51;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;2;ALTERAÇÃO DO PLANO ODONTOLOGICO PARA O PLANO BASICO DE R$ 10,29.;ALTERAÇÃO DO PLANO ODONTOLOGICO PARA O PLANO BASICO DE R$ 10,29.
-100-102073;Service Request;Resolved-Validation;2025-10-27 19:32:03;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;2;SOLICITAÇAO DE AJUTE DE ESCALA DO TIME DE OPERAÇOÕES;"SOLICITO AJUSTE NA ESCALA DE TRABALA CONFORME TEMPLATE QUE SEGUE EM ANEXO.
-
-OBS.: UMA DAS ALTERAÇÕES PRECISA DE V.R QUE AINDA NÃO FOI SOLICITADO ANTERIORMENTE."
