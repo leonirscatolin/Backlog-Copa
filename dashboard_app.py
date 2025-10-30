@@ -1,4 +1,4 @@
-# VERSÃO v0.9.34-744 (Corrigida)
+# VERSÃO v0.9.35-745 (Corrigida)
 
 import streamlit as st
 import pandas as pd
@@ -327,8 +327,8 @@ def carregar_dados_evolucao(_repo, closed_ticket_ids_list, dias_para_analisar=7)
 
         closed_ids_set = set(closed_ticket_ids_list)
         
-        # --- MODIFICADO v0.9.34 ---
-        grupos_para_excluir = 'RH|Aprovadores GGM'
+        # --- MODIFICADO v0.9.35 ---
+        grupos_para_excluir = r'RH|Aprovadores GGM|Service Desk \(L1\)'
         # --- FIM DA MODIFICAÇÃO ---
 
         processed_dates = []
@@ -352,8 +352,8 @@ def carregar_dados_evolucao(_repo, closed_ticket_ids_list, dias_para_analisar=7)
                     df_snapshot = read_github_file(_repo, file_name)
                     if not df_snapshot.empty and 'Atribuir a um grupo' in df_snapshot.columns:
                         
-                        # --- MODIFICADO v0.9.34 ---
-                        df_snapshot_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False)]
+                        # --- MODIFICADO v0.9.35 ---
+                        df_snapshot_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False, regex=True)]
                         id_col_snapshot = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_snapshot_filtrado.columns), None)
                         df_snapshot_final = df_snapshot_filtrado
                         if id_col_snapshot and closed_ids_set:
@@ -414,8 +414,8 @@ def carregar_evolucao_aging(_repo, closed_ticket_ids_list, dias_para_analisar=90
 
         closed_ids_set = set(closed_ticket_ids_list)
         
-        # --- MODIFICADO v0.9.34 ---
-        grupos_para_excluir = 'RH|Aprovadores GGM'
+        # --- MODIFICADO v0.9.35 ---
+        grupos_para_excluir = r'RH|Aprovadores GGM|Service Desk \(L1\)'
         # --- FIM DA MODIFICAÇÃO ---
 
         processed_files = []
@@ -437,8 +437,8 @@ def carregar_evolucao_aging(_repo, closed_ticket_ids_list, dias_para_analisar=90
                 if df_snapshot.empty:
                     continue
 
-                # --- MODIFICADO v0.9.34 ---
-                df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False)]
+                # --- MODIFICADO v0.9.35 ---
+                df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False, regex=True)]
                 # --- FIM DA MODIFICAÇÃO ---
 
                 id_col_snapshot = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_filtrado.columns), None)
@@ -699,25 +699,26 @@ try:
     df_encerrados = df_atual[df_atual['ID do ticket'].isin(closed_ticket_ids)]
     df_abertos = df_atual[~df_atual['ID do ticket'].isin(closed_ticket_ids)]
     
-    # --- MODIFICADO v0.9.34 ---
-    grupos_para_excluir = 'RH|Aprovadores GGM'
-    df_atual_filtrado = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False)]
-    df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False)]
+    # --- MODIFICADO v0.9.35 ---
+    grupos_para_excluir = r'RH|Aprovadores GGM|Service Desk \(L1\)'
+    df_atual_filtrado = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False, regex=True)]
+    df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False, regex=True)]
     df_aging = analisar_aging(df_atual_filtrado)
-    df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False)]
+    df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False, regex=True)]
     # --- FIM DA MODIFICAÇÃO ---
 
     tab1, tab2, tab3, tab4 = st.tabs(["Dashboard Completo", "Report Visual", "Evolução Semanal", "Evolução Aging"])
 
     with tab1:
-        # --- MODIFICADO v0.9.34 ---
+        # --- MODIFICADO v0.9.35 ---
         info_messages = ["**Filtros e Regras Aplicadas:**", 
-                         "- Grupos contendo 'RH' ou 'Aprovadores GGM' foram desconsiderados da análise.", 
+                         "- Grupos contendo 'RH', 'Aprovadores GGM' ou 'Service Desk (L1)' foram desconsiderados da análise.", 
                          "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
-        # --- FIM DA MODIFICAÇÃO ---
         
         if not df_encerrados.empty:
-            info_messages.append(f"- **{len(df_encerrados_filtrado)} chamados fechados no dia** (exceto RH e Aprovadores GGM) foram deduzidos das contagens principais.")
+            info_messages.append(f"- **{len(df_encerrados_filtrado)} chamados fechados no dia** (exceto RH, Aprovadores GGM e Service Desk (L1)) foram deduzidos das contagens principais.")
+        # --- FIM DA MODIFICAÇÃO ---
+        
         st.info("\n".join(info_messages))
         
         st.subheader("Análise de Antiguidade do Backlog Atual")
@@ -1175,6 +1176,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.34-744 | Este dashboard está em desenvolvimento.</p>
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.35-745 | Este dashboard está em desenvolvimento.</p>
+<p style'text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
