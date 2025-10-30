@@ -1815,8 +1815,6 @@ anexo!"
 SEGUE IMAGEM DO PROBLEMA RELATADO EM ANEXO."
 100-99087;Service Request;Queued;2025-09-24 10:30:06;GOMES DE ARRUDA,ROSIMARA;COP-RH-HUB;35;Colaborador ativo de Passo Fundo-RS, realizou a solicitação de entrega do PPP para fins de Aposentadoria;OSIEL CHAVES MORAIS - CPF: 622.945.470-04 Matrícula: 50732
 300-130939;Incident;Queued;2025-09-24 16:22:59;LUIS GARCIA,RICARDO;COP-AUT-SAP-TRIBUTÁRIO-LES/MM/SD;35;Nos dias 24 e 25 rodamos o monitor de frete, referente ao transportador 420976, todos fretes foram bandeirados, porém entram com valores menores no livro fiscal. Anexo como está constando.;Nos dias 24 e 25 rodamos o monitor de frete, referente ao transportador 420976, todos fretes foram bandeirados, porém entram com valores menores no livro fiscal. Anexo como está constando.
-300-131175;Incident;Queued;2025-09-29 09:58:18;;COP-SAP SD-3N;30;Está gerando boleto para NF a vista, necessário ajustar.;"Cliente: 133256
-Mais infos enviadas por e-mail para Julio / Alberto / Clovis"
 100-99553;Service Request;Queued;2025-09-30 12:24:18;;COP-SAP LES-3N;29;Desativação de automatização realizada na transação ICO/RF_ASJOB do SAP;Desativação de automatização realizada na transação ICO/RF_ASJOB do SAP. Solicito orientação de como proceder para desativar uma automatização realizada na transação citada, para análise e gravação de projeto no ZRF
 300-131363;Incident;Queued;2025-10-01 08:27:48;;COP-SAP MOBILE-3N;28;Bom dia, por favor verificar com urgência os cadastrados de RM´s pois não está saindo no campos de dados adicionais as informações de local de entrega, neste novo modelo SIVA+, clientes estão nos questionando.;"Bom dia, por favor verificar com urgência os cadastrados de RM´s pois não está saindo no campos de dados adicionais as informações de local de entrega, neste novo modelo SIVA+, clientes estão nos questionando.
 1201
@@ -2173,4 +2171,3 @@ Para: 526 - 1100 15 16 2000 Sáb Qz 07 16"
 100-102056;Service Request;Resolved-Validation;2025-10-27 15:43:05;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;2;Mudança de escala dos colaboradores manutenção;"Solicito mudança de escala dos colaboradores Francisco Helry Rodrigues do Nascimento Matricula 113489 e Enoque Araújo de Brito Matrícula 120007 que estão na escala 680 para escala 560 no período de 28/10/25 a 01/10/25. 
 
 Justificativa: Estou sem colaborador no turno e está planejado troca de válvulas multiport nos tanques P60000"
-100-102070;Service Request;Resolved-Validation;2025-10-27 17:46:51;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;2;ALTERAÇÃO DO PLANO ODONTOLOGICO PARA O PLANO BASICO DE R$ 10,29.;ALTERAÇÃO DO PLANO ODONTOLOGICO PARA O PLANO BASICO DE R$ 10,29.
