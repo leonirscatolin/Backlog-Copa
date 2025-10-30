@@ -260,9 +260,6 @@ Daniel Albino.
 O rh estava a frente desse trabalho, tem um retorno de como está esse processo."
 100-96316;Service Request;Active;2025-08-27 09:07:44;DE BARROS FERREIRA AMADOR,JANAINA;COP-RH-ADMPESSOAL;63;"AFASTAMENTO - 104950
 LILIAN CASSIANO - MATRIZ";Afastamento desde 06/2025. Perícia em 05/09/2025 - INSS reagendou pericia para o dia 24/10/2025 às 13:30.
-100-97193;Service Request;Active;2025-09-04 13:46:41;DURAN PRADO,MARCELO;COP-SAP CO-3N;55;SAP-CO -criação de relatório - visão na transação GR55;"Prezados,
-Por favor, poderia me dar apoio na criação de um  relatório (não sei qual transação que cria) para ter a visão na transação GR55, semelhante ao grupo de relatório ZC01, grupo de centro de custo KSS2_PROD e grupo de classe de centro de custo FECH_CUSTO.
-Segue arquivo com o arquivo que consulto hoje e, quero desenvolver um semelhante, com grupos de contas e centros diferentes."
 100-97305;Service Request;Active;2025-09-05 11:20:13;PISCIOTTANO LEITAO,LEONARDO;COP-RH-TREINAMENTO&AV.DESEMPENHO;54;Solicitação de curso de curta duração;"Curso IT Business Partner (12h, online).             FIAP – Analista de Negócios Online
 Link do curso: https://www.fiap.com.br/shift/curso/business/analista-de-negocios-online/
 
@@ -550,7 +547,6 @@ _______________________________________________
 * 07/11/2025: Mudança da escala atual 132 (0700 1100 1200 1520 SEG a SaB) para a escala 731 (0300 0700 0800 1120 segunda a sábado)."
 100-100957;Service Request;New;2025-10-15 10:49:30;;PROD-AUTOMAÇÃO;14;Aprovação automática de ordens de nota de crédito D2C.;"Atualmente, o time de Pricing utiliza um RPA que gera ordens de nota de crédito sem que essas ordens sejam encaminhadas para aprovação via Workflow. Gostaríamos que esse mesmo modelo de automação fosse desenvolvido para o time de Suporte a Vendas Financeiro. O objetivo é garantir que, ao gerarem ordens de D2C por meio do robô, essas também não sejam submetidas à aprovação do time de Pricing. Como já existe esse modelo ""pronto"", acredito que não seja tão complexa essa solicitação."
 300-132865;Incident;New;2025-10-20 13:23:59;;APOIO-COP-CELULAR;9;Sobre envio de mensagem através do wathassap;Não estou conseguindo enviar lista de transmissão para os cliente, para captação de pedidos através do wathasSap.
-100-102055;Service Request;New;2025-10-27 15:38:53;;COP-ORIENTAÇÃO-GRC;2;Solicitamos apoio para concluir a liberação do acesso do ABAPCBR8 para o ambiente DEV e liberar acesso ao QA para chave CBR8;
 100-91194;Service Request;Pending;2025-07-08 15:55:56;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;113;Afastamento Bruno Messias da Silva - Suape;"Acompanhar processo de afastamento:
 Dut orientações enviado  email: brunomessias12042019@gmail.com (81) 995912612. 
 Ligar para esposa - Josi 81 99654-6704
@@ -1614,10 +1610,6 @@ FROTA F380
 Veículo PLS1C70
 TRIP 692904
 PAT 1380940"
-300-133142;Incident;Pending;2025-10-23 08:29:39;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;6;Não estou conseguindo lançar NF no SAP.;"Não consigo fazer o lançamento das NF no SAP que estou recebendo no almoxarifado.
-Com isso, está gerando o acumulo de NFs o que  pode gerar atrasos nos pagamentos aos fornecedores e dos imposto devidos caso isso não seja resolvida a tempo.
-
-Em anexo arquivo com a tela de erro."
 300-133163;Incident;Pending;2025-10-23 10:09:08;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;6;Nota de transferência de 21/10 está sem valor.;"Nota: 77996 série 1
 Centro: 1206
 Numdoc: 21218037
@@ -2168,6 +2160,3 @@ Orientar colaborador e acompanhar afastamento."
 De: 506 - 0900 13 14 1800 Sáb Qz 07 16
 
 Para: 526 - 1100 15 16 2000 Sáb Qz 07 16"
-100-102056;Service Request;Resolved-Validation;2025-10-27 15:43:05;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;2;Mudança de escala dos colaboradores manutenção;"Solicito mudança de escala dos colaboradores Francisco Helry Rodrigues do Nascimento Matricula 113489 e Enoque Araújo de Brito Matrícula 120007 que estão na escala 680 para escala 560 no período de 28/10/25 a 01/10/25. 
-
-Justificativa: Estou sem colaborador no turno e está planejado troca de válvulas multiport nos tanques P60000"
