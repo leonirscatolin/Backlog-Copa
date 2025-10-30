@@ -1,4 +1,4 @@
-# VERSÃO v0.9.43-753 (Corrigida)
+# VERSÃO v0.9.45-755 (Corrigida)
 
 import streamlit as st
 import pandas as pd
@@ -18,11 +18,14 @@ import re
 
 # --- INÍCIO - Constantes Globais (Ideia 1) ---
 # Use regex para 'ou' (|) e escape parênteses com \
-GRUPOS_PARA_EXCLUIR_REGEX = r'RH|Aprovadores GGM|RDM-GTR'
-GRUPOS_PARA_EXCLUIR_TEXTO = "'RH', 'Aprovadores GGM' ou 'RDM-GTR'"
+GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM-GTR'
+GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou 'RDM-GTR'"
 
 GRUPOS_DE_AVISO_REGEX = r'Service Desk \(L1\)|LIQ-SUTEL'
 GRUPOS_DE_AVISO_TEXTO = "'Service Desk (L1)' ou 'LIQ-SUTEL'"
+
+# v0.9.45: Regex combinada para filtrar dados históricos (15 dias, Tab3, Tab4)
+GRUPOS_EXCLUSAO_TOTAL_REGEX = f"{GRUPOS_EXCLUSAO_PERMANENTE_REGEX}|{GRUPOS_DE_AVISO_REGEX}"
 # --- FIM - Constantes Globais ---
 
 st.set_page_config(
@@ -284,7 +287,7 @@ def get_image_as_base64(path):
 
 def sync_ticket_data():
     if 'ticket_editor' not in st.session_state or not st.session_state.ticket_editor.get('edited_rows'):
-        st.toast("Nenhuma alteração detectada para salvar.", icon="ℹ️")
+        # st.toast("Nenhuma alteração detectada para salvar.", icon="ℹ️") # v0.9.44: Removido
         return
         
     edited_rows = st.session_state.ticket_editor['edited_rows']
@@ -332,7 +335,7 @@ def sync_ticket_data():
             return
 
     else:
-         st.toast("Nenhuma alteração nova detectada para salvar.", icon="ℹ️")
+        pass # st.toast("Nenhuma alteração nova detectada para salvar.", icon="ℹ️") # v0.9.44: Removido
 
     st.session_state.ticket_editor['edited_rows'] = {}
     st.session_state.scroll_to_details = True
@@ -368,7 +371,10 @@ def carregar_dados_evolucao(_repo, dias_para_analisar=7): # v0.9.40: Removido 'c
                     df_snapshot = read_github_file(_repo, file_name)
                     if not df_snapshot.empty and 'Atribuir a um grupo' in df_snapshot.columns:
                         
-                        df_snapshot_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_PARA_EXCLUIR_REGEX, case=False, na=False, regex=True)]
+                        # --- MODIFICADO v0.9.45 ---
+                        # Filtra TODOS os grupos (permanentes + aviso)
+                        df_snapshot_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
+                        # --- FIM DA MODIFICAÇÃO ---
                         
                         df_snapshot_final = df_snapshot_filtrado
                         
@@ -442,7 +448,10 @@ def carregar_evolucao_aging(_repo, dias_para_analisar=90): # v0.9.40: Removido '
                 if df_snapshot.empty:
                     continue
 
-                df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_PARA_EXCLUIR_REGEX, case=False, na=False, regex=True)]
+                # --- MODIFICADO v0.9.45 ---
+                # Filtra TODOS os grupos (permanentes + aviso)
+                df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
+                # --- FIM DA MODIFICAÇÃO ---
 
                 df_final = df_filtrado
 
@@ -681,10 +690,15 @@ try:
     df_encerrados = df_atual[df_atual['ID do ticket'].isin(closed_ticket_ids)]
     df_abertos = df_atual[~df_atual['ID do ticket'].isin(closed_ticket_ids)]
     
-    df_atual_filtrado = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains(GRUPOS_PARA_EXCLUIR_REGEX, case=False, na=False, regex=True)]
-    df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(GRUPOS_PARA_EXCLUIR_REGEX, case=False, na=False, regex=True)]
+    # --- MODIFICADO v0.9.45 ---
+    # df_atual_filtrado filtra SÓ os permanentes (para o aviso funcionar)
+    df_atual_filtrado = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
+    # df_15dias_filtrado filtra TODOS (permanentes + aviso)
+    df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
     df_aging = analisar_aging(df_atual_filtrado)
-    df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains(GRUPOS_PARA_EXCLUIR_REGEX, case=False, na=False, regex=True)]
+    # df_encerrados_filtrado filtra SÓ os permanentes
+    df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
+    # --- FIM DA MODIFICAÇÃO ---
 
 
     tab1, tab2, tab3, tab4 = st.tabs(["Dashboard Completo", "Report Visual", "Evolução Semanal", "Evolução Aging"])
@@ -708,7 +722,7 @@ try:
             st.warning("\n".join(aviso_str_lista))
 
         info_messages = ["**Filtros e Regras Aplicadas:**", 
-                         f"- Grupos contendo {GRUPOS_PARA_EXCLUIR_TEXTO} foram desconsiderados da análise.", 
+                         f"- Grupos contendo {GRUPOS_EXCLUSAO_PERMANENTE_TEXTO} foram desconsiderados da análise.", 
                          "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
         
         if not df_encerrados.empty:
@@ -808,12 +822,10 @@ try:
                 components.html(js_code, height=0)
                 st.session_state.scroll_to_details = False
 
-            # --- MODIFICADO v0.9.42 ---
             st.selectbox("Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", 
                          options=ordem_faixas, 
                          key='faixa_selecionada',
-                         on_change=sync_ticket_data) # Salva ao trocar de faixa
-            # --- FIM DA MODIFICAÇÃO ---
+                         on_change=sync_ticket_data) # v0.9.42: Salva ao trocar de faixa
             
             faixa_atual = st.session_state.faixa_selecionada
             filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].copy()
@@ -850,8 +862,7 @@ try:
                     type="primary"
                 )
                 
-                # --- INÍCIO DA MODIFICAÇÃO v0.9.43 ---
-                # Adiciona aviso de "Alterações não salvas" ao tentar fechar a aba
+                # v0.9.43: Aviso de "Alterações não salvas" ao tentar fechar a aba
                 if st.session_state.ticket_editor.get('edited_rows'):
                     js_code = """
                     <script>
@@ -862,14 +873,12 @@ try:
                     """
                     components.html(js_code, height=0)
                 else:
-                    # Limpa o aviso se não houver edições
                     js_code = """
                     <script>
                     window.onbeforeunload = null;
                     </script>
                     """
                     components.html(js_code, height=0)
-                # --- FIM DA MODIFICAÇÃO ---
                 
             else:
                 st.info("Não há chamados nesta categoria.")
@@ -1191,6 +1200,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.43-753 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.45-755 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
