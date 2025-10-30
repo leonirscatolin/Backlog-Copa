@@ -1,4 +1,4 @@
-# VERSÃO v0.9.36-746 (Corrigida)
+# VERSÃO v0.9.38-748 (Corrigida)
 
 import streamlit as st
 import pandas as pd
@@ -327,8 +327,8 @@ def carregar_dados_evolucao(_repo, closed_ticket_ids_list, dias_para_analisar=7)
 
         closed_ids_set = set(closed_ticket_ids_list)
         
-        # --- MODIFICADO v0.9.36 ---
-        grupos_para_excluir = r'RH|Aprovadores GGM|Service Desk \(L1\)|LIQ-SUTEL'
+        # --- MODIFICADO v0.9.38 ---
+        grupos_para_excluir = r'RH|Aprovadores GGM|Service Desk \(L1\)|LIQ-SUTEL|RDM-GTR'
         # --- FIM DA MODIFICAÇÃO ---
 
         processed_dates = []
@@ -352,7 +352,7 @@ def carregar_dados_evolucao(_repo, closed_ticket_ids_list, dias_para_analisar=7)
                     df_snapshot = read_github_file(_repo, file_name)
                     if not df_snapshot.empty and 'Atribuir a um grupo' in df_snapshot.columns:
                         
-                        # --- MODIFICADO v0.9.36 ---
+                        # --- MODIFICADO v0.9.38 ---
                         df_snapshot_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False, regex=True)]
                         id_col_snapshot = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_snapshot_filtrado.columns), None)
                         df_snapshot_final = df_snapshot_filtrado
@@ -414,8 +414,8 @@ def carregar_evolucao_aging(_repo, closed_ticket_ids_list, dias_para_analisar=90
 
         closed_ids_set = set(closed_ticket_ids_list)
         
-        # --- MODIFICADO v0.9.36 ---
-        grupos_para_excluir = r'RH|Aprovadores GGM|Service Desk \(L1\)|LIQ-SUTEL'
+        # --- MODIFICADO v0.9.38 ---
+        grupos_para_excluir = r'RH|Aprovadores GGM|Service Desk \(L1\)|LIQ-SUTEL|RDM-GTR'
         # --- FIM DA MODIFICAÇÃO ---
 
         processed_files = []
@@ -437,7 +437,7 @@ def carregar_evolucao_aging(_repo, closed_ticket_ids_list, dias_para_analisar=90
                 if df_snapshot.empty:
                     continue
 
-                # --- MODIFICADO v0.9.36 ---
+                # --- MODIFICADO v0.9.38 ---
                 df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False, regex=True)]
                 # --- FIM DA MODIFICAÇÃO ---
 
@@ -699,8 +699,8 @@ try:
     df_encerrados = df_atual[df_atual['ID do ticket'].isin(closed_ticket_ids)]
     df_abertos = df_atual[~df_atual['ID do ticket'].isin(closed_ticket_ids)]
     
-    # --- MODIFICADO v0.9.36 ---
-    grupos_para_excluir = r'RH|Aprovadores GGM|Service Desk \(L1\)|LIQ-SUTEL'
+    # --- MODIFICADO v0.9.38 ---
+    grupos_para_excluir = r'RH|Aprovadores GGM|Service Desk \(L1\)|LIQ-SUTEL|RDM-GTR'
     df_atual_filtrado = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False, regex=True)]
     df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False, regex=True)]
     df_aging = analisar_aging(df_atual_filtrado)
@@ -710,9 +710,9 @@ try:
     tab1, tab2, tab3, tab4 = st.tabs(["Dashboard Completo", "Report Visual", "Evolução Semanal", "Evolução Aging"])
 
     with tab1:
-        # --- MODIFICADO v0.9.36 ---
+        # --- MODIFICADO v0.9.38 ---
         info_messages = ["**Filtros e Regras Aplicadas:**", 
-                         "- Grupos contendo 'RH', 'Aprovadores GGM', 'Service Desk (L1)' ou 'LIQ-SUTEL' foram desconsiderados da análise.", 
+                         "- Grupos contendo 'RH', 'Aprovadores GGM', 'Service Desk (L1)', 'LIQ-SUTEL' ou 'RDM-GTR' foram desconsiderados da análise.", 
                          "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
         
         if not df_encerrados.empty:
@@ -986,6 +986,10 @@ try:
 
     with tab4:
         st.subheader("Evolução do Aging do Backlog")
+        
+        # --- MODIFICADO v0.9.37 ---
+        st.info("Esta visualização ainda está coletando dados históricos. Utilize as outras abas como referência principal por enquanto.")
+        # --- FIM DA MODIFICAÇÃO ---
 
         try:
             df_hist = carregar_evolucao_aging(repo, closed_ticket_ids_list=closed_ticket_ids, dias_para_analisar=90)
@@ -1176,6 +1180,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.36-746 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.38-748 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
