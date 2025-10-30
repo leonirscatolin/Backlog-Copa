@@ -1,4 +1,4 @@
-# VERSÃO v0.9.40-750 (Corrigida)
+# VERSÃO v0.9.43-753 (Corrigida)
 
 import streamlit as st
 import pandas as pd
@@ -15,6 +15,15 @@ from urllib.parse import quote
 import json
 import colorsys
 import re
+
+# --- INÍCIO - Constantes Globais (Ideia 1) ---
+# Use regex para 'ou' (|) e escape parênteses com \
+GRUPOS_PARA_EXCLUIR_REGEX = r'RH|Aprovadores GGM|RDM-GTR'
+GRUPOS_PARA_EXCLUIR_TEXTO = "'RH', 'Aprovadores GGM' ou 'RDM-GTR'"
+
+GRUPOS_DE_AVISO_REGEX = r'Service Desk \(L1\)|LIQ-SUTEL'
+GRUPOS_DE_AVISO_TEXTO = "'Service Desk (L1)' ou 'LIQ-SUTEL'"
+# --- FIM - Constantes Globais ---
 
 st.set_page_config(
     layout="wide",
@@ -251,8 +260,7 @@ def analisar_aging(_df_atual):
         with st.expander(f"⚠️ Atenção: {len(linhas_invalidas)} chamados foram descartados por data inválida ou vazia."):
             st.dataframe(linhas_invalidas.head())
     
-    # df.dropna(subset=[date_col_name], inplace=True) # <-- LINHA ANTIGA
-    df = df.dropna(subset=[date_col_name]) # <-- CORREÇÃO APLICADA
+    df = df.dropna(subset=[date_col_name])
     
     hoje = pd.to_datetime('today').normalize()
     data_criacao_normalizada = df[date_col_name].dt.normalize()
@@ -276,10 +284,13 @@ def get_image_as_base64(path):
 
 def sync_ticket_data():
     if 'ticket_editor' not in st.session_state or not st.session_state.ticket_editor.get('edited_rows'):
+        st.toast("Nenhuma alteração detectada para salvar.", icon="ℹ️")
         return
+        
     edited_rows = st.session_state.ticket_editor['edited_rows']
     contact_changed = False
     observation_changed = False
+    
     for row_index, changes in edited_rows.items():
         try:
             ticket_id = str(st.session_state.last_filtered_df.iloc[row_index]['ID do ticket'])
@@ -302,34 +313,39 @@ def sync_ticket_data():
 
     if contact_changed or observation_changed:
         now_str = datetime.now(ZoneInfo('America/Sao_Paulo')).strftime('%d/%m/%Y %H:%M')
-        if contact_changed:
-            data_to_save = list(st.session_state.contacted_tickets)
-            json_content = json.dumps(data_to_save, indent=4)
-            commit_msg = f"Atualizando contatos em {now_str}"
-            update_github_file(st.session_state.repo, "contacted_tickets.json", json_content.encode('utf-8'), commit_msg)
-        if observation_changed:
-            json_content = json.dumps(st.session_state.observations, indent=4, ensure_ascii=False)
-            commit_msg = f"Atualizando observações em {now_str}"
-            update_github_file(st.session_state.repo, "ticket_observations.json", json_content.encode('utf-8'), commit_msg)
+        try:
+            if contact_changed:
+                data_to_save = list(st.session_state.contacted_tickets)
+                json_content = json.dumps(data_to_save, indent=4)
+                commit_msg = f"Atualizando contatos em {now_str}"
+                update_github_file(st.session_state.repo, "contacted_tickets.json", json_content.encode('utf-8'), commit_msg)
+            if observation_changed:
+                json_content = json.dumps(st.session_state.observations, indent=4, ensure_ascii=False)
+                commit_msg = f"Atualizando observações em {now_str}"
+                update_github_file(st.session_state.repo, "ticket_observations.json", json_content.encode('utf-8'), commit_msg)
+            
+            st.toast("Alterações salvas com sucesso!", icon="✅")
+            
+        except Exception as e:
+            st.error(f"Erro ao salvar alterações: {e}")
+            st.session_state.scroll_to_details = True
+            return
+
+    else:
+         st.toast("Nenhuma alteração nova detectada para salvar.", icon="ℹ️")
 
     st.session_state.ticket_editor['edited_rows'] = {}
     st.session_state.scroll_to_details = True
 
 
-# --- MODIFICADO v0.9.40 ---
-# Removido o parâmetro 'closed_ticket_ids_list'
 @st.cache_data(ttl=3600)
-def carregar_dados_evolucao(_repo, dias_para_analisar=7):
+def carregar_dados_evolucao(_repo, dias_para_analisar=7): # v0.9.40: Removido 'closed_ticket_ids_list'
     try:
         all_files_content = _repo.get_contents("snapshots")
         all_files = [f.path for f in all_files_content]
         df_evolucao_list = []
         end_date = date.today()
         start_date = end_date - timedelta(days=max(dias_para_analisar, 10))
-
-        # Removido: closed_ids_set = set(closed_ticket_ids_list)
-        
-        grupos_para_excluir = r'RH|Aprovadores GGM|RDM-GTR'
 
         processed_dates = []
         for file_name in all_files:
@@ -352,10 +368,8 @@ def carregar_dados_evolucao(_repo, dias_para_analisar=7):
                     df_snapshot = read_github_file(_repo, file_name)
                     if not df_snapshot.empty and 'Atribuir a um grupo' in df_snapshot.columns:
                         
-                        df_snapshot_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False, regex=True)]
+                        df_snapshot_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_PARA_EXCLUIR_REGEX, case=False, na=False, regex=True)]
                         
-                        # --- Bloco de filtragem por 'closed_ids_set' REMOVIDO ---
-                        # O snapshot já está correto e não deve ser filtrado novamente.
                         df_snapshot_final = df_snapshot_filtrado
                         
                         contagem_diaria = df_snapshot_final.groupby('Atribuir a um grupo').size().reset_index(name='Total Chamados')
@@ -374,7 +388,6 @@ def carregar_dados_evolucao(_repo, dias_para_analisar=7):
     except Exception as e:
         st.error(f"Erro ao carregar evolução: {e}")
         return pd.DataFrame()
-# --- FIM DA MODIFICAÇÃO ---
 
 @st.cache_data(ttl=300)
 def find_closest_snapshot_before(_repo, current_report_date, target_date):
@@ -400,10 +413,8 @@ def find_closest_snapshot_before(_repo, current_report_date, target_date):
         st.warning(f"Erro ao buscar snapshots: {e}")
         return None, None
 
-# --- MODIFICADO v0.9.40 ---
-# Removido o parâmetro 'closed_ticket_ids_list'
 @st.cache_data(ttl=3600)
-def carregar_evolucao_aging(_repo, dias_para_analisar=90):
+def carregar_evolucao_aging(_repo, dias_para_analisar=90): # v0.9.40: Removido 'closed_ticket_ids_list'
     try:
         all_files_content = _repo.get_contents("snapshots")
         all_files = [f.path for f in all_files_content]
@@ -411,10 +422,6 @@ def carregar_evolucao_aging(_repo, dias_para_analisar=90):
 
         end_date = date.today() - timedelta(days=1)
         start_date = end_date - timedelta(days=max(dias_para_analisar, 60))
-
-        # Removido: closed_ids_set = set(closed_ticket_ids_list)
-        
-        grupos_para_excluir = r'RH|Aprovadores GGM|RDM-GTR'
 
         processed_files = []
         for file_name in all_files:
@@ -435,21 +442,18 @@ def carregar_evolucao_aging(_repo, dias_para_analisar=90):
                 if df_snapshot.empty:
                     continue
 
-                df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False, regex=True)]
+                df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_PARA_EXCLUIR_REGEX, case=False, na=False, regex=True)]
 
-                # --- Bloco de filtragem por 'closed_ids_set' REMOVIDO ---
-                # O snapshot já está correto.
                 df_final = df_filtrado
 
-                df_final = df_final.copy() # <-- CORREÇÃO APLICADA
+                df_final = df_final.copy() 
 
                 date_col_name = next((col for col in ['Data de criação', 'Data de Criacao'] if col in df_final.columns), None)
                 if not date_col_name:
                     continue
 
                 df_final[date_col_name] = pd.to_datetime(df_final[date_col_name], errors='coerce')
-                # df_final.dropna(subset=[date_col_name], inplace=True) # <-- LINHA ANTIGA
-                df_final = df_final.dropna(subset=[date_col_name]) # <-- CORREÇÃO APLICADA
+                df_final = df_final.dropna(subset=[date_col_name])
 
                 snapshot_date_dt = pd.to_datetime(file_date)
                 data_criacao_normalizada = df_final[date_col_name].dt.normalize()
@@ -487,7 +491,6 @@ def carregar_evolucao_aging(_repo, dias_para_analisar=90):
     except Exception as e:
         st.error(f"Erro ao carregar evolução de aging: {e}")
         return pd.DataFrame()
-# --- FIM DA MODIFICAÇÃO ---
 
 
 def formatar_delta_card(delta_abs, delta_perc, valor_comparacao, data_comparacao_str):
@@ -567,22 +570,18 @@ if is_admin:
     uploaded_file_fechados = st.sidebar.file_uploader("Apenas Chamados FECHADOS no dia", type=["csv", "xlsx"], key="uploader_fechados")
     if st.sidebar.button("Salvar Apenas Chamados Fechados"):
         if uploaded_file_fechados:
-            # --- INÍCIO DA MODIFICAÇÃO (OPÇÃO 2) ---
             with st.spinner("Salvando arquivo de fechados e atualizando snapshot diário..."):
                 now_sao_paulo = datetime.now(ZoneInfo('America/Sao_Paulo'))
                 commit_msg = f"Atualizando chamados fechados em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
                 
-                # 1. Processa e salva o arquivo de fechados
                 content_fechados = process_uploaded_file(uploaded_file_fechados)
                 if content_fechados is None:
                     st.sidebar.error("Falha ao processar o arquivo de fechados.")
-                    st.stop() # Para a execução se o arquivo for inválido
+                    st.stop() 
 
                 try:
-                    # Salva o arquivo de fechados (como antes)
                     update_github_file(repo, "dados_fechados.csv", content_fechados, commit_msg)
 
-                    # 2. Atualiza a hora em datas_referencia.txt (como antes)
                     datas_existentes = read_github_text_file(repo, "datas_referencia.txt")
                     data_atual_existente = datas_existentes.get('data_atual', 'N/A')
                     data_15dias_existente = datas_existentes.get('data_15dias', 'N/A')
@@ -593,14 +592,11 @@ if is_admin:
                                                     f"hora_atualizacao:{hora_atualizacao_nova}")
                     update_github_file(repo, "datas_referencia.txt", datas_referencia_content_novo.encode('utf-8'), commit_msg)
                     
-                    # 3. Ler o dados_atuais.csv base (o da manhã)
                     df_atual_base = read_github_file(repo, "dados_atuais.csv")
                     if df_atual_base.empty:
                         st.sidebar.warning("Não foi possível ler o 'dados_atuais.csv' base para atualizar o snapshot.")
                         raise Exception("Arquivo 'dados_atuais.csv' base não encontrado.")
 
-                    # 4. Ler os IDs do arquivo de fechados que acabou de ser salvo
-                    # Usamos BytesIO para ler os bytes do arquivo recém-processado
                     df_fechados_novo = pd.read_csv(BytesIO(content_fechados), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
                     
                     id_col_fechados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_novo.columns), None)
@@ -610,33 +606,25 @@ if is_admin:
 
                     closed_ids_set = set(df_fechados_novo[id_col_fechados].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
 
-                    # 5. Encontrar ID no df_atual_base e filtrar
                     id_col_atual = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_atual_base.columns), None)
                     if not id_col_atual:
                          st.sidebar.warning("Não foi possível encontrar coluna de ID no 'dados_atuais.csv' base.")
                          raise Exception("Coluna de ID não encontrada no 'dados_atuais.csv' base.")
                     
-                    # Garantir que a coluna de ID no df_atual_base seja string limpa para comparação
                     df_atual_base[id_col_atual] = df_atual_base[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
                     
-                    # Filtrar o dataframe
                     df_atualizado_filtrado = df_atual_base[~df_atual_base[id_col_atual].isin(closed_ids_set)]
 
-                    # 6. Preparar o novo snapshot para salvar
                     output = StringIO()
                     df_atualizado_filtrado.to_csv(output, index=False, sep=';', encoding='utf-8')
                     content_snapshot_novo = output.getvalue().encode('utf-8')
 
-                    # 7. Salvar/Sobrescrever o snapshot do dia
                     today_str = now_sao_paulo.strftime('%Y-%m-%d')
                     snapshot_path = f"snapshots/backlog_{today_str}.csv"
                     commit_msg_snapshot = f"Atualizando snapshot (rápido) em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
                     
                     update_github_file(repo, snapshot_path, content_snapshot_novo, commit_msg_snapshot)
                     
-                    # --- FIM DA MODIFICAÇÃO (OPÇÃO 2) ---
-
-                    # 8. Limpar cache e recarregar
                     st.cache_data.clear()
                     st.cache_resource.clear()
                     st.sidebar.success("Arquivo de fechados salvo e snapshot diário atualizado! Recarregando...")
@@ -644,7 +632,6 @@ if is_admin:
 
                 except Exception as e:
                     st.sidebar.error(f"Erro durante a atualização rápida: {e}")
-            # --- FIM DO BLOCO DE MODIFICAÇÃO ---
         else:
             st.sidebar.warning("Por favor, carregue o arquivo de chamados fechados para salvar.")
 elif password:
@@ -694,24 +681,19 @@ try:
     df_encerrados = df_atual[df_atual['ID do ticket'].isin(closed_ticket_ids)]
     df_abertos = df_atual[~df_atual['ID do ticket'].isin(closed_ticket_ids)]
     
-    # --- MODIFICADO v0.9.39 ---
-    grupos_para_excluir = r'RH|Aprovadores GGM|RDM-GTR'
-    df_atual_filtrado = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False, regex=True)]
-    df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False, regex=True)]
+    df_atual_filtrado = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains(GRUPOS_PARA_EXCLUIR_REGEX, case=False, na=False, regex=True)]
+    df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(GRUPOS_PARA_EXCLUIR_REGEX, case=False, na=False, regex=True)]
     df_aging = analisar_aging(df_atual_filtrado)
-    df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False, regex=True)]
-    # --- FIM DA MODIFICAÇÃO ---
+    df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains(GRUPOS_PARA_EXCLUIR_REGEX, case=False, na=False, regex=True)]
+
 
     tab1, tab2, tab3, tab4 = st.tabs(["Dashboard Completo", "Report Visual", "Evolução Semanal", "Evolução Aging"])
 
     with tab1:
         
-        # --- INÍCIO DA MODIFICAÇÃO v0.9.39 ---
-        # Aviso para grupos que deveriam estar zerados mas foram re-incluídos
-        grupos_para_avisar_regex = r'Service Desk \(L1\)|LIQ-SUTEL'
         df_para_aviso = df_atual_filtrado[
             df_atual_filtrado['Atribuir a um grupo'].str.contains(
-                grupos_para_avisar_regex, case=False, na=False, regex=True
+                GRUPOS_DE_AVISO_REGEX, case=False, na=False, regex=True
             )
         ]
         
@@ -719,21 +701,18 @@ try:
             total_para_aviso = len(df_para_aviso)
             contagem_por_grupo = df_para_aviso['Atribuir a um grupo'].value_counts()
             
-            aviso_str_lista = [f"⚠️ **Atenção:** Foram encontrados **{total_para_aviso}** chamados em grupos que deveriam estar zerados:"]
+            aviso_str_lista = [f"⚠️ **Atenção:** Foram encontrados **{total_para_aviso}** chamados em grupos que deveriam estar zerados ({GRUPOS_DE_AVISO_TEXTO}):"]
             for grupo, contagem in contagem_por_grupo.items():
                 aviso_str_lista.append(f"- **{grupo}:** {contagem} chamado(s)")
             
             st.warning("\n".join(aviso_str_lista))
-        # --- FIM DA MODIFICAÇÃO ---
 
-        # --- MODIFICADO v0.9.39 ---
         info_messages = ["**Filtros e Regras Aplicadas:**", 
-                         "- Grupos contendo 'RH', 'Aprovadores GGM' ou 'RDM-GTR' foram desconsiderados da análise.", 
+                         f"- Grupos contendo {GRUPOS_PARA_EXCLUIR_TEXTO} foram desconsiderados da análise.", 
                          "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
         
         if not df_encerrados.empty:
             info_messages.append(f"- **{len(df_encerrados_filtrado)} chamados fechados no dia** (exceto os grupos filtrados acima) foram deduzidos das contagens principais.")
-        # --- FIM DA MODIFICAÇÃO ---
         
         st.info("\n".join(info_messages))
         
@@ -773,8 +752,7 @@ try:
         df_comparativo = processar_dados_comparativos(df_atual_filtrado.copy(), df_15dias_filtrado.copy())
         df_comparativo['Status'] = df_comparativo.apply(get_status, axis=1)
         
-        # df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}, inplace=True) # <-- LINHA ANTIGA
-        df_comparativo = df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'}) # <-- CORREÇÃO APLICADA
+        df_comparativo = df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'})
         
         df_comparativo = df_comparativo[['Grupo', '15 Dias Atrás', 'Atual', 'Diferença', 'Status']]
         st.dataframe(df_comparativo.set_index('Grupo').style.map(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
@@ -785,49 +763,35 @@ try:
             st.info("O arquivo de chamados encerrados ainda não foi carregado.")
         elif not df_encerrados_filtrado.empty:
             
-            # --- INÍCIO DA MODIFICAÇÃO (Adicionar 'Dias em Aberto' aos fechados) ---
-            
-            # Copiamos o dataframe para evitar SettingWithCopyWarning
             df_encerrados_para_exibir = df_encerrados_filtrado.copy()
             
-            # Tenta encontrar a coluna de data de criação
             date_col_name = next((col for col in ['Data de criação', 'Data de Criacao'] if col in df_encerrados_para_exibir.columns), None)
             
-            # Define as colunas básicas para exibir
             colunas_para_exibir_fechados = ['ID do ticket', 'Descrição', 'Atribuir a um grupo']
             
             if date_col_name:
                 try:
-                    # Converte a data de criação, tratando erros
                     df_encerrados_para_exibir[date_col_name] = pd.to_datetime(df_encerrados_para_exibir[date_col_name], errors='coerce')
                     
-                    # Pega a data de "hoje" (data do relatório)
                     hoje = pd.to_datetime('today').normalize()
                     
-                    # Normaliza a data de criação
                     data_criacao_normalizada = df_encerrados_para_exibir[date_col_name].dt.normalize()
                     
-                    # Calcula os dias (igual à lógica do aging dos abertos)
                     dias_calculados = (hoje - data_criacao_normalizada).dt.days
                     
-                    # Adiciona a coluna. Usamos .clip(lower=0) para garantir que não haja dias negativos.
                     df_encerrados_para_exibir['Dias em Aberto'] = (dias_calculados - 1).clip(lower=0)
                     
-                    # Adiciona a nova coluna à lista de exibição
                     colunas_para_exibir_fechados.append('Dias em Aberto')
                     
                 except Exception as e:
-                    # Se algo der errado no cálculo, apenas exibe um aviso e segue sem a coluna
                     st.warning(f"Não foi possível calcular os 'Dias em Aberto' para os chamados fechados: {e}")
             
-            # Exibe o data_editor com as colunas definidas (com ou sem 'Dias em Aberto')
             st.data_editor(
                 df_encerrados_para_exibir[colunas_para_exibir_fechados], 
                 hide_index=True, 
                 disabled=True, 
                 use_container_width=True
             )
-            # --- FIM DA MODIFICAÇÃO ---
             
         else:
             st.info("O arquivo de chamados encerrados do dia ainda não foi carregado.")
@@ -844,7 +808,13 @@ try:
                 components.html(js_code, height=0)
                 st.session_state.scroll_to_details = False
 
-            st.selectbox("Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", options=ordem_faixas, key='faixa_selecionada')
+            # --- MODIFICADO v0.9.42 ---
+            st.selectbox("Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", 
+                         options=ordem_faixas, 
+                         key='faixa_selecionada',
+                         on_change=sync_ticket_data) # Salva ao trocar de faixa
+            # --- FIM DA MODIFICAÇÃO ---
+            
             faixa_atual = st.session_state.faixa_selecionada
             filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].copy()
             if not filtered_df.empty:
@@ -871,9 +841,36 @@ try:
                     use_container_width=True,
                     hide_index=True,
                     disabled=['ID do ticket', 'Descrição', 'Grupo Atribuído', 'Dias em Aberto', 'Data de criação'],
-                    key='ticket_editor',
-                    on_change=sync_ticket_data
+                    key='ticket_editor'
                 )
+                
+                st.button(
+                    "Salvar Contatos e Observações",
+                    on_click=sync_ticket_data,
+                    type="primary"
+                )
+                
+                # --- INÍCIO DA MODIFICAÇÃO v0.9.43 ---
+                # Adiciona aviso de "Alterações não salvas" ao tentar fechar a aba
+                if st.session_state.ticket_editor.get('edited_rows'):
+                    js_code = """
+                    <script>
+                    window.onbeforeunload = function() {
+                        return "Você tem alterações não salvas. Deseja realmente sair?";
+                    };
+                    </script>
+                    """
+                    components.html(js_code, height=0)
+                else:
+                    # Limpa o aviso se não houver edições
+                    js_code = """
+                    <script>
+                    window.onbeforeunload = null;
+                    </script>
+                    """
+                    components.html(js_code, height=0)
+                # --- FIM DA MODIFICAÇÃO ---
+                
             else:
                 st.info("Não há chamados nesta categoria.")
             st.subheader("Buscar Chamados por Grupo")
@@ -941,10 +938,7 @@ try:
         st.subheader("Evolução do Backlog")
         dias_evolucao = st.slider("Ver evolução dos últimos dias:", min_value=7, max_value=30, value=7, key="slider_evolucao")
 
-        # --- MODIFICADO v0.9.40 ---
-        # Removida a passagem de 'closed_ticket_ids_list'
         df_evolucao_tab3 = carregar_dados_evolucao(repo, dias_para_analisar=dias_evolucao)
-        # --- FIM DA MODIFICAÇÃO ---
 
         if not df_evolucao_tab3.empty:
 
@@ -986,7 +980,7 @@ try:
 
                 fig_evolucao_grupo = px.line(
                     df_filtrado_display,
-                    x='Data (Eixo)', # <-- CORREÇÃO APLICADA (v0.9.33)
+                    x='Data (Eixo)',
                     y='Total Chamados',
                     color='Grupo Atribuído',
                     title='Evolução por Grupo (Apenas Dias de Semana)',
@@ -1006,15 +1000,10 @@ try:
     with tab4:
         st.subheader("Evolução do Aging do Backlog")
         
-        # --- MODIFICADO v0.9.37 ---
         st.info("Esta visualização ainda está coletando dados históricos. Utilize as outras abas como referência principal por enquanto.")
-        # --- FIM DA MODIFICAÇÃO ---
 
         try:
-            # --- MODIFICADO v0.9.40 ---
-            # Removida a passagem de 'closed_ticket_ids_list'
             df_hist = carregar_evolucao_aging(repo, dias_para_analisar=90)
-            # --- FIM DA MODIFICAÇÃO ---
 
             ordem_faixas_scaffold = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
             hoje_data = None
@@ -1202,6 +1191,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.40-750 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.43-753 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
