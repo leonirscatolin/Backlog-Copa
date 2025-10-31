@@ -1703,14 +1703,6 @@ Telefone do colaborador: (61) 99427-5564
 E-mail da esposa (Fabricia) do colaborador: fabricia_henry@hotmail.co"
 300-133433;Incident;Pending;2025-10-27 11:01:06;MAIVEN MUNIZ DA CUNHA,WESLLEY;COP-SALESFORCE;3;Erro - Falha no filtro de casos;"Informo que ao realizar filtro na fila de chamados no Salesforce, identificamos que os campo: ""Setor Industrial"" e ""Categoria Cliente"" não estão filtrando os casos de acordo com as parametrizações realizadas. 
 As filas são: ""Financeiro - Key Account"" e ""Financeiro - Órgão Público"""
-100-102028;Service Request;Pending;2025-10-27 12:52:52;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;3;impressora sumiu do SAP.;"USUÁRIO AFETADO: Cicero
-CHAVE: 9w73
-TELEFONE: 11 916659078
-LOCALIZAÇÃO: 1212
-
-DESCRIÇÃO: impressora sumiu do SAP.
-impressora utilizada para romaneio não esta mais no SAP precisa assistência para instalar!
----"
 300-133459;Incident;Pending;2025-10-27 13:42:44;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;3;VT 884337 - transferir incorreto;VT 884337 - aprovado na etapa transferir  - staus incorreto - retorno de carga . Passo Fundo - 1223
 100-102042;Service Request;Pending;2025-10-27 14:27:50;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;3;Incluir dependente na assistência medica;"Chamado para Semaias Martins Teixeira.
 Incluir cônjuge no plano de assistência médica."
@@ -1726,15 +1718,6 @@ Quando temos lançamento de nota no SAP seguido de estorno e um novo lançamento
 Quando temos lançamento de nota no SAP seguido de estorno e um novo lançamento da nota com as informações devidas, o livro fiscal de saída do SAP está trazendo o valor da nota estornada (20609676) e não está trazendo o valor contábil da nota fiscal ativa (20981654) o que gera diferença nas checagens.. Poderia por gentileza, verificar esse erro e corrigir. 
 
 Caso não seja a mesa certa direcionar para a correta e para o N3 verificar."
-300-133493;Incident;Pending;2025-10-27 16:35:26;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;3;usuário com dificuldade para conectar a vpn;"USUÁRIO AFETADO: paloma
-CHAVE:auf5
-GESTOR:
-TELEFONE:31 997158255
-LOCALIZAÇÃO: Externo
-
-DESCRIÇÃO: usuário com dificuldade para conectar a vpn, na hora de conectar ao check point e colocar as credencias.
-acesso negando por senha o usuário!
----"
 300-133502;Incident;Pending;2025-10-27 17:44:55;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP FI;3;Derivação de conta contábil no SAP;"Os códigos de materiais 600900; 600969; 601694 combinados com os CC não estão acatando a conta conta contábil 5112040080, e segundo a área de contabilidade essas derivações foram realizadas em 2023."
 300-133523;Incident;Pending;2025-10-28 09:09:02;SCATOLIN JUNIOR,LEONIR;PROD-COP-NOC;2;DAC SERRA - SDWAN;"Nome do Host |
 172.31.207.124
@@ -1800,37 +1783,6 @@ Colaborador afastado desde 20/03/2017.
 
 Não há atualização do afastamento do colaborador no prontuário dele. Foi enviado mensagem via whatsApp e estou aguardando retorno."
 100-102159;Service Request;Pending;2025-10-28 13:30:28;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP FI;2;problema no SAP para gerar relatório;estou desde as 08hs tentando tirar o relatório na ZFI0007, fica carregando e não gera, o sap já chegou a cair algumas vezes
-300-133612;Incident;Pending;2025-10-28 19:24:49;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;2;Erro de CTE de livro fiscal;"Transportador não consegue emitir o CTE.
-Segue em anexo o erro.
-VT:
-878560
-879095
-879471
-880356
-880988
-881535
-886063
-882555
-883574
-884054
-878211
-882131
-878152
-879144
-879273
-879815
-880445
-881010
-881413
-883623
-884115
-878112
-889765
-885286
-889064
-889715
-
-Centro: 1212"
 100-102215;Service Request;Pending;2025-10-28 23:22:49;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;2;Filha Emilly A. de Farias diagnosticada com TEA (Autismo) E TDAH.;Emilly é gemea com Heytor que nasceram prematuros extremos de 5 meses, ela nasceu pesando 735g, ela ficou internada por 7 meses e veio pra casa . No momento começou apresentar dificuldade de aprendizagem, sintomas cognitivos e comportamentais. Passou por avaliação neuropsicólogica e neuropediatra constatando o diagnostico de TEA e TDAH
 100-92928;Service Request;Queued;2025-07-23 16:24:08;JOSE BRITO VIEIRA,JAILSON;COP-RH-HUB;99;Afastamento MICHELLE ALVES PIMENTA - Ibirite;"novo Atestado de 180 dias  a partir de 08/07/2025
 
