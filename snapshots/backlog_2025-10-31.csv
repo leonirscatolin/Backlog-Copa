@@ -551,11 +551,6 @@ pat. 1384146.";"viagem está com retorno de cheio  diferente físico x contábil
 1136	DAC - FORTALEZA	Envasado	0000694589	00000000000001384146	F - Lançado	23.10.2025	00000000000001384732	F - Lançado	23.10.2025	Sim"
 100-102163;Service Request;Active;2025-10-28 13:44:06;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;2;Cancelamento plano odontológico;Colaborador solicita cancelamento do plano odontológico para titular e dependentes.
 100-102172;Service Request;Active;2025-10-28 14:10:42;GOMES DE ARRUDA,ROSIMARA;COP-RH-HUB;2;Solicitação de PPP;PPP do colaborador Celestino Manoel do Espirito Santo, emitido hoje dia 28/10/2025e enviado para QSMS.
-300-133605;Incident;Active;2025-10-28 17:50:51;BRITO,EDINISIO;COP-SALESFORCE;2;Agendamento Sales Force;"Sistema de Agendamento Sales Force não está direcionando os agendamentos para a Fila de Espera, criando casos.
-
-O cliente ao tentar realizar o agendamento para D-2 após as 17:00h está sendo direcionado para caso. 
-
-Exemplo: caso 01991946 / 01991926"
 100-100957;Service Request;New;2025-10-15 10:49:30;;PROD-AUTOMAÇÃO;15;Aprovação automática de ordens de nota de crédito D2C.;"Atualmente, o time de Pricing utiliza um RPA que gera ordens de nota de crédito sem que essas ordens sejam encaminhadas para aprovação via Workflow. Gostaríamos que esse mesmo modelo de automação fosse desenvolvido para o time de Suporte a Vendas Financeiro. O objetivo é garantir que, ao gerarem ordens de D2C por meio do robô, essas também não sejam submetidas à aprovação do time de Pricing. Como já existe esse modelo ""pronto"", acredito que não seja tão complexa essa solicitação."
 300-132865;Incident;New;2025-10-20 13:23:59;;APOIO-COP-CELULAR;10;Sobre envio de mensagem através do wathassap;Não estou conseguindo enviar lista de transmissão para os cliente, para captação de pedidos através do wathasSap.
 100-102096;Service Request;New;2025-10-28 08:33:32;;COP-TRUSTY;2;"Ola Bom dia !
@@ -566,10 +561,6 @@ Eu Solicito o Meu acesso Refaturamento.comercial
 
 
 A pedido Da Minha Supervizora Tatiane Cosme"
-100-102138;Service Request;New;2025-10-28 11:29:59;;COP-ORIENTAÇÃO-GRC;2;Solicito o acesso ao SAP com mesmos acessos do time de expansão, segue a chave: X58E;Solicito o acesso ao SAP com mesmos acessos do time de expansão, segue a chave: X58E
-300-133559;Incident;New;2025-10-28 11:55:05;;COP-ORIENTAÇÃO-GRC;2;Perdi acesso a todas as transações de FP&A no SAP.;"Perdi acesso as transações que eu sempre usei normalmente em meu trabalho.
-
-O perfil deve ser igual ao do meu chefe, com a chave: JA43"
 100-91194;Service Request;Pending;2025-07-08 15:55:56;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;114;Afastamento Bruno Messias da Silva - Suape;"Acompanhar processo de afastamento:
 Dut orientações enviado  email: brunomessias12042019@gmail.com (81) 995912612. 
 Ligar para esposa - Josi 81 99654-6704
@@ -1702,21 +1693,6 @@ Obs: realizado acesso remoto e não consta pasta mapeada, ao realizar procedimen
 
 Desktop: DCEUB1-23073"
 300-133395;Incident;Pending;2025-10-27 09:13:58;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;3;Erro ao gerar ordem 63819956;Falha ao tentar faturar uma nota de amostra grátis para dar entrada no SAP
-300-133419;Incident;Pending;2025-10-27 10:17:56;REGINA ARTUSO DE ANDRADE,CLAUDIA;COP-ORIENTAÇÃO-GRC;3;"Erro nos lançamentos na MIRO e Monitor de fretes.
-
-Chave para espelhar perfil 96PE
-
-Falta de acesso na MIRO, ME23N, VL01N
-
-ME23N
-MIR5
-MIRO
-VL31N
-VL32N
-MIR4 
-FBL1N 
-ME2N";"Estou com erro para acessar pedidos de compras que tem itens com centro de custo de outras filiais, além das que sou responsável 1015 e 1207. 
-No lançamento de fretes com romaneio ou pedido também aparece esse erro."
 100-101992;Service Request;Pending;2025-10-27 10:19:27;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;3;Solicito o envio do meu PPP com data atualizada;Solicito o envio do meu PPP com data atualizada
 100-101996;Service Request;Pending;2025-10-27 10:34:27;BRITO DA CRUZ,LUCELIA;COP-RH-HUB;3;AFASTAMENTO_UNIDADE BRASILIA_VALMIR DOS SANTOS;"O colaborador foi admitido em 14/06/2000.
 A empresa registrou um Boletim de Ocorrência contra o empregado em razão de roubo de GLP.
@@ -1753,14 +1729,6 @@ impressora utilizada para romaneio não esta mais no SAP precisa assistência pa
 300-133459;Incident;Pending;2025-10-27 13:42:44;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;3;VT 884337 - transferir incorreto;VT 884337 - aprovado na etapa transferir  - staus incorreto - retorno de carga . Passo Fundo - 1223
 100-102042;Service Request;Pending;2025-10-27 14:27:50;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;3;Incluir dependente na assistência medica;"Chamado para Semaias Martins Teixeira.
 Incluir cônjuge no plano de assistência médica."
-300-133474;Incident;Pending;2025-10-27 15:08:50;DARIO DURAN CARRILLO,VICTOR;COP-SAP MOBILE;3;"Chamado Softmovel 2593 27/10 16:60 - 267 Rejeicao: Chave de Acesso referenciada inexistente
-
-Chamado SOftmovel 2612 29/10 10:58 - 267 REJEICAO: CHAVE DE ACESSO REFERENCIADA INEXISTENTE";"Todas as notas da unidade Uberlândia 1027 estão saindo como pendente nos BOBtails, não está subindo a nota.
-
-0000695286 serie 20 - 00000000000001387065
-0000695404 serie 7
-0000695277 serie 18
-0000695268 serie 22"
 100-102049;Service Request;Pending;2025-10-27 15:17:07;BASTOS DE SOUZA KLEM,CAMILA;COP-SUPORTE-XML-TI;3;"preciso que subao o XML de 2 notas   passei email para nfe_taxfy@copaenergia.com.br no  mas ate agora nada. 
 Para a nota de N 9 ja havia aberto chamado mas ela nao aparece pra mim.";"41251004868682000100550010000000091171045442 NF 9  CLIENTE ZE DO GAS LTDA
 
@@ -1841,23 +1809,12 @@ Colaborador afastado desde 22/10/2019."
 Colaborador foi encaminhado para Reabilitação profissional.
 
 Colaborador afastado desde 21/12/2021."
-300-133563;Incident;Pending;2025-10-28 13:13:26;CARDOSO SILVA,IRENE;COP-IMPRESSORA;2;Problema com a impressora;"Estamos com problema na impressora do faturamento, precisamos que seja feito o reparo.
-
-Localidade: Ibirité
-
-Modelo: Samsung Mono SL-M4020ND 
-
-IBI233_ M4020ND
-IP: 172.31.234.108"
 100-102156;Service Request;Pending;2025-10-28 13:20:24;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;2;Afastamento - CO Duque de Caxias -  ELIAS MUNIZ DE SIQUEIRA – 112393;"Telefone de contato: 24 99962-0190
 
 Colaborador afastado desde 20/03/2017.
 
 Não há atualização do afastamento do colaborador no prontuário dele. Foi enviado mensagem via whatsApp e estou aguardando retorno."
 100-102159;Service Request;Pending;2025-10-28 13:30:28;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP FI;2;problema no SAP para gerar relatório;estou desde as 08hs tentando tirar o relatório na ZFI0007, fica carregando e não gera, o sap já chegou a cair algumas vezes
-300-133568;Incident;Pending;2025-10-28 14:11:52;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;2;ERRO LANÇAMENTO CTE;FOI LANÇADO NO ZLESS (MONITOR ) VT 894325 ,COMO ESTAVA FALTANDO UM CTE O DE 50732 ,DEU ERRO NO NOTFIS ,FOI ESTORNADO O PROCESSO TODO ,ESTAVA AGUARDANDO ,PARA SER RELANÇADO ,MAS NA CONFERENCIA FISCAL ,FOI VERIFICADO QUE ESSE ROMANEIO DESCRITO ACIMA ,NAO ESTA APROVADO NO MONITOR MAS GEROU LANÇAMENTO NA PARTE FINANCEIRA ,SEGUE EVIDENCIAS EM ANEXO ,COMO PROCEGUIR
-300-133575;Incident;Pending;2025-10-28 14:28:56;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;2;ERRO LANÇAMENTO CTE;"FOI LANÇADO NO ZLESS (MONITOR ) VT 894807,COMO ESTAVA FALTANDO UM CTE O DE 50820
- ,DEU ERRO NO NOTFIS ,FOI ESTORNADO O PROCESSO TODO ,ESTAVA AGUARDANDO ,PARA SER RELANÇADO ,MAS NA CONFERENCIA FISCAL ,FOI VERIFICADO QUE ESSE ROMANEIO DESCRITO ACIMA ,NAO ESTA APROVADO NO MONITOR MAS GEROU LANÇAMENTO NA PARTE FINANCEIRA ,COMO PROSSEGUIR."
 300-133612;Incident;Pending;2025-10-28 19:24:49;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;2;Erro de CTE de livro fiscal;"Transportador não consegue emitir o CTE.
 Segue em anexo o erro.
 VT:
@@ -2425,9 +2382,6 @@ Carlos Eduardo Silva Pereira"
 100-101534;Service Request;Resolved-Validation;2025-10-21 07:48:02;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;9;Atualização do PPP do colaborador WELLINGTON SARINHO DA ROCHA - 750121.;Atualização do PPP do colaborador WELLINGTON SARINHO DA ROCHA - 750121.
 100-101589;Service Request;Resolved-Validation;2025-10-21 13:31:01;SOUZA DA SILVA,KELLY;COP-RH-ADMPESSOAL;9;FGTS e INSS;"Olá, gostaria de solicitar a guia de pagamento e comprovante do INSS e FGTS para envio ao cliente Mohawk, o mesmo solicita para atualização.
 Centro: 1221"
-100-101772;Service Request;Resolved-Validation;2025-10-23 09:57:45;DE SOUZA AGUIAR DE JESUS,BEATRIZ;COP-RH-ADMPESSOAL;7;Solicitação do Beneficio Premiação de Brigadistas;"Colaboradores abaixo foram inclusos no time da brigada da Unidade de Ponta Grossa, com devido treinamento realizado de formação e ASOs com a avaliação de APTO a todos, desse modo, solicito o beneficio de premiação por participação no time de brigadistas.
-FELIPE MIRANDA BARREIROS-121737, PAULO CESAR DO NASCIMENTO-121631, SERGIO MIGUEL RIBEIRO BATISTA-121245,TIAGO MORAIS DO SANTOS-121516, VINICIUS WASHINGTON DE ANDRADE CHAM-121720."
-100-102009;Service Request;Resolved-Validation;2025-10-27 11:35:39;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;3;Solicitação de vale transporte.;Solicitação de vale transporte.
 100-102071;Service Request;Resolved-Validation;2025-10-27 17:54:49;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;3;CANCELAMENTO VALE TRANSPORTE.;CANCELAMENTO VALE TRANSPORTE.
 100-102075;Service Request;Resolved-Validation;2025-10-27 20:04:52;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-HUB;3;Mudança de escala.;"Solicito a mudança de escala do colaborador LUCIANO VALTER DOS SANTOS, matrícula: 730130, nos seguintes dias.
 
