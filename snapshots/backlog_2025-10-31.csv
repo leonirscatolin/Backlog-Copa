@@ -1604,7 +1604,6 @@ Novo: Natan Pablo Azevedo Sousa"
 300-132978;Incident;Pending;2025-10-21 14:09:41;DE OLIVEIRA MANCO,TAMILIS;COP-SAP MOBILE;9;"Softmovel: 2545 21.10 15:25
 A unidade de Capuava (1200)  nos informou que está sem conseguir visualizar a opção de consulta da  assinatura digital para algumas notas.";"A unidade de Capuava (1200)  nos informou que está sem conseguir visualizar a opção de consulta da  assinatura digital para algumas notas. 
 Precisamos avaliar o motivo de tal comportamento, uma vez que deveria estar disponível para 100% das NFs granel assinadas digitalmente."
-100-101627;Service Request;Pending;2025-10-21 16:34:25;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;9;KEEPTRUE não está processando a entrega das notas fiscais, entrada manual  também não está processando/permitindo.;KEEPTRUE não está processando a entrega das notas fiscais, entrada manual  também não está processando/permitindo. Isso acabará gerando divergências no inventário
 300-133034;Incident;Pending;2025-10-22 08:28:24;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;8;Transação ZLES0014 não esta imprimindo documentos do carro CIF.;Ao utilizar a transação ZLES0014 os documentos: folha de rota, ordem de carregamento, romaneio entre outros não estão imprimindo.
 100-101655;Service Request;Pending;2025-10-22 08:42:04;GIMENES,IDALINA;COP-RH-HUB;8;Afastamento – Kaike Eduardo Braga Martins – 121959 - CO CAMPO GRANDE;"CO CAMPO GRANDE – Kaike Eduardo Braga Martins – 121959
 
@@ -2087,15 +2086,6 @@ viagem 693288
 1007	JARDINÓPOLIS	Envasado	0000693288	00000000000001381562	F - Lançado	20.10.2025	00000000000001381949	F - Lançado	20.10.2025	Sim"
 100-101805;Service Request;Queued;2025-10-23 13:51:35;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;7;Solicito acesso as horas extras e banco de horas do CO Paulínia do ano de 2025 desde janeiro.;"A pedido do GEROP II (Antonio Carlos Magalhães Moura), solicito o relatório de hora extra e o que pagamos de banco de horas do CO Paulinia no ano de 2025 para que possamos fazer uma análise das despesas e montar um plano de ação para evitar horas desnecessárias.
 Relatório precisa conter nome do colaborador, data da hora extra e gestor para facilitar a análise e se foi pago via banco de horas ou hora extra direto."
-100-101807;Service Request;Queued;2025-10-23 14:02:01;;COP-FAT MOVEL;7;Acesso ao SAP IDM- Acesso ao sap IDM tanto para envasados quando para granel;"Acesso ao SAP IDM
-
-COLABOIRADOR SOLICITANTE :
-
-CHAVE : 035n
-CONTATO :  21 973977087
-UNIDADE : 1207
-
-Acesso ao sap IDM tanto para envasados quando para granel"
 100-101819;Service Request;Queued;2025-10-23 14:58:50;BERTHOLATO SCURSONI,RAPHAEL;Aprovadores GGM;7;SOLICITO ACESSO AO SIVA PLUS, PARA CONFERENCIA DE DANFINHOS.;SOLICITO ACESSO AO SIVA PLUS, PARA CONFERENCIA DE DANFINHOS.
 100-101838;Service Request;Queued;2025-10-23 17:41:31;;COP-APLIC-NOTES;7;Acesso ao Lotes Notes;"Solicito  a criação de perfil Notes.
 Usarei para a base de contratos."
@@ -2294,14 +2284,6 @@ Equipe de Treinamentos"
 No dia 21/10 inseri um atestado na plataforma o mesmo foi recusado pois estava cortado inseri novamente em 27/10 por favor verificar.";"Bom dia,
 
 No dia 21/10 inseri um atestado na plataforma o mesmo foi recusado pois estava cortado inseri novamente em 27/10 por favor verificar."
-100-102133;Service Request;Queued;2025-10-28 11:16:23;;COP-RECONCILIAÇÃO;2;Acesso ao sistema Siva+;"USUÁRIO AFETADO: lidisey
-CHAVE:z8ay
-GESTOR:
-TELEFONE: 71 93869928
-LOCALIZAÇÃO:1234 Mataripe 
-
-DESCRIÇÃO: Acesso ao sistema Siva+
-para jovem aprendiz."
 100-102144;Service Request;Queued;2025-10-28 11:51:53;DE SOUZA AGUIAR DE JESUS,BEATRIZ;COP-RH-ADMPESSOAL;2;Anexei no dia 10/10 no ATESTADO.ME  um atestado médico de acompanhamento da minha filha, porém, entrei de férias e não vi o motivo da recusa (falta de anexar a certidão de nascimento). Ontem (27/10) retornei de férias e anexei o atestado novamente junto com o documento, porém, foi recusado devido ao tempo passado superior ha 2 dias.;Anexei no dia 10/10 no ATESTADO.ME  um atestado médico de acompanhamento da minha filha, porém, entrei de férias e não vi o motivo da recusa (falta de anexar a certidão de nascimento). Ontem (27/10) retornei de férias e anexei o atestado novamente junto com o documento, porém, foi recusado devido ao tempo passado superior ha 2 dias.
 100-102152;Service Request;Queued;2025-10-28 12:33:02;DE SOUSA SIMAO,EDILAINE;COP-RH-FOPAG;2;Solicitação de Atualização de Dados Bancários - Amilton Soares Pinheiro Junior;O Amilton Soares Pinheiro Junior, ex-colaborador da manutenção no CO de Paulínia, entrou em contato para informar que a conta bancária que ele utilizava para receber seus pagamentos não está mais ativa. Ele gostaria de fornecer uma nova conta para o recebimento da Participação nos Lucros e Resultados (PLR) referente ao período em que trabalhou na Copa Energia. Como devo proceder para atualizar essas informações?
 100-102153;Service Request;Queued;2025-10-28 12:38:51;TADEU LOPES DA SILVA,FELIPPE;COP-RH-BENEFÍCIOS;2;Auxílio Combustível;"Venho por meio deste solicitar uma ajuda de custo referente ao deslocamento até o local de trabalho.
@@ -2350,15 +2332,6 @@ SEGUE ANEXO A IMAGEM COM EMAIL QUE NAO RECEBEU O AVISO DE FÉRIAS."
 
 DUT: 03/09/2025"
 100-100608;Service Request;Resolved-Validation;2025-10-11 08:46:51;KINTZEL OTTONI SORIANO,HANNAY;COP-RH-BENEFÍCIOS;19;Por favor, avaliar solicitação do ex empregado aposentado vitalício e nos orientar como proceder e/ou contata-lo para maiores explicações. Epitacio Brasileiro de Souza, 626.044.654-34 11 98618-2448;"""fez uma cirurgia recente onde pagou 25 mil, o médico tinha falado que o convenio reembolsava, mas reembolsou somente 2.160 reias. Foi questionado a secretaria do medico e ela pediu para apresentar o contrato do convenio para melhor entendimento. O mesmo possui lupus/gota"""
-100-100866;Service Request;Resolved-Validation;2025-10-14 14:49:51;SOUZA DA SILVA,KELLY;COP-RH-FOPAG;16;Alta colaborador Valdeci Sales da Silva - 13111 - Barueri;"Boa tarde!
- 
-Jana,
-
-Segue anexo o ASO de retorno ao trabalho do colaborador Valdeci Sales da Silva - 13111 - CO BARUERI.
-
-Favor processar alta no sistema.
-
-Att;"
 100-100888;Service Request;Resolved-Validation;2025-10-14 15:48:08;JOSE BRITO VIEIRA,JAILSON;COP-RH-ADMPESSOAL;16;Solicito a segunda via do crachá.;"Solicito a segunda via do crachá.
 
 Carlos Eduardo Silva Pereira"
