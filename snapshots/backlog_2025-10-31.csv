@@ -1635,7 +1635,6 @@ Numdoc: 21218037
 
 Obs: nota de transferência de Jardinópolis foi dado entrada porém está sem valor."
 100-101779;Service Request;Pending;2025-10-23 11:07:23;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;7;Inclusão de dependente no auxilio saúde (Unimed);Inclusão de dependente no auxilio saúde (Unimed)
-300-133212;Incident;Pending;2025-10-23 15:19:29;SILVA SIMOES,FABIO;COP-SAP FI;7;"Funcionalidade ""tipo de documento"" na operação fb60";"Preciso solicitar um reembolso através da operação fb60, porém não consigo devido a ausência do campo ""tipo de documento"" onde devo indicar tratar-se de um reembolso."
 100-101821;Service Request;Pending;2025-10-23 15:30:30;PEREIRA SILVA MEDEIROS,ADRIANA;COP-GMI-SMIL-SUSTENTAÇÃO;7;"Canal do fornecedor com erro no carregamento das paginas - Veritas
 
 https://smi.liquigas.com.br/wps/portal/canal-fornecedor";"Canal do fornecedor com erro no carregamento das paginas - Veritas
@@ -1805,21 +1804,6 @@ O mesmo solicitou o beneficio na data de 31/07/2025 e já está em análise."
 Informo que chamados anteriores já haviam sido abertos sobre essa mesma situação, sendo o mais recente o de número 300125831, porém o problema ainda não foi solucionado.
 
 Solicitamos a revisão urgente do caso e a correção definitiva da falha, uma vez que o erro impacta diretamente no processo fiscal e não consigo pagar o fornecedor."
-300-130635;Incident;Queued;2025-09-19 13:40:31;REGINA RIBEIRO LUZ,CLAUDIA;COP-AUT-SAP-SUP-VENDAS-ADM;41;NA NOTA SAI O CPF DO CLIENTE E NÃO O CNPJ, POREM NO SISTEMA ESTÁ CADASTRADO O CNPJ DO CLIENTE;"NOTA : 7122
-SERIE27
-
-Entrar em contato com : ALEXANDRE FERNANDES GIACOMINI alexandre.giacomini@copaenergia.com.br
-
-
-TI / faturamento móvel
-
-Desde o mês 05/2025 as notas emitidas através do faturamento móvel para o cliente 41143 - MAURICIO PEREIRA DOS SANTOS PINTURA,  estão sendo rejeitadas pela SEFAZ através do código de Rejeição 728.
-
-NA NOTA SAI O CPF DO CLIENTE E NÃO O CNPJ, POREM NO SISTEMA ESTÁ CADASTRADO O CNPJ DO CLIENTE
-
-E a  informação apresentada  é que está sem informação da I.E. do destinatário.
-
-Devido  a este rejeição, as vendas estão sendo realizadas através de venda certa."
 100-98758;Service Request;Queued;2025-09-19 15:45:23;APARECIDA VIEIRA,SUZANA;COP-RH-ADMPESSOAL;41;Afastamento - DA ITAJAI -  Alessandra Del Corso Oliveira Portezani – 113900019.;"Segue anexo histórico de afastamento do colaboradora Alessandra Del Corso Oliveira Portezani – 113900019, unidade DA ITAJAI.
  
 Favor emitir a carta DUT e enviar ao colaborador para incluir no meu INSS.
