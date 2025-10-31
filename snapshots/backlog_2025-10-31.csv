@@ -1723,10 +1723,6 @@ FBL1N
 ME2N";"Estou com erro para acessar pedidos de compras que tem itens com centro de custo de outras filiais, além das que sou responsável 1015 e 1207. 
 No lançamento de fretes com romaneio ou pedido também aparece esse erro."
 100-101992;Service Request;Pending;2025-10-27 10:19:27;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;3;Solicito o envio do meu PPP com data atualizada;Solicito o envio do meu PPP com data atualizada
-300-133420;Incident;Pending;2025-10-27 10:27:09;BASTOS DE SOUZA KLEM,CAMILA;COP-SUPORTE-XML-TI;3;"MIGRAÇÃO CTE 188.261 KEEPTRUE
-
-
-Chamado #39100 kt";Preciso que o cte migre para o keeptrue para realizar a Manifestação de Operação Não realizada
 100-101996;Service Request;Pending;2025-10-27 10:34:27;BRITO DA CRUZ,LUCELIA;COP-RH-HUB;3;AFASTAMENTO_UNIDADE BRASILIA_VALMIR DOS SANTOS;"O colaborador foi admitido em 14/06/2000.
 A empresa registrou um Boletim de Ocorrência contra o empregado em razão de roubo de GLP.
 O desligamento ocorreu em 09/11/2021.
@@ -2438,7 +2434,6 @@ Carlos Eduardo Silva Pereira"
 Centro: 1221"
 100-101772;Service Request;Resolved-Validation;2025-10-23 09:57:45;DE SOUZA AGUIAR DE JESUS,BEATRIZ;COP-RH-ADMPESSOAL;7;Solicitação do Beneficio Premiação de Brigadistas;"Colaboradores abaixo foram inclusos no time da brigada da Unidade de Ponta Grossa, com devido treinamento realizado de formação e ASOs com a avaliação de APTO a todos, desse modo, solicito o beneficio de premiação por participação no time de brigadistas.
 FELIPE MIRANDA BARREIROS-121737, PAULO CESAR DO NASCIMENTO-121631, SERGIO MIGUEL RIBEIRO BATISTA-121245,TIAGO MORAIS DO SANTOS-121516, VINICIUS WASHINGTON DE ANDRADE CHAM-121720."
-100-101899;Service Request;Resolved-Validation;2025-10-24 15:52:26;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;6;Ativação de benefício;Solicito a ativação do vale transporte do colaborador EDILSON GOMES PEREIRA 120068
 100-102009;Service Request;Resolved-Validation;2025-10-27 11:35:39;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;3;Solicitação de vale transporte.;Solicitação de vale transporte.
 100-102071;Service Request;Resolved-Validation;2025-10-27 17:54:49;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;3;CANCELAMENTO VALE TRANSPORTE.;CANCELAMENTO VALE TRANSPORTE.
 100-102075;Service Request;Resolved-Validation;2025-10-27 20:04:52;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-HUB;3;Mudança de escala.;"Solicito a mudança de escala do colaborador LUCIANO VALTER DOS SANTOS, matrícula: 730130, nos seguintes dias.
