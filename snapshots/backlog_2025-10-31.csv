@@ -517,9 +517,6 @@ Favor emitir a carta DUT  e enviar ao colaborador para incluir no meu INSS.
 
 Enviar para o colaborador o termo caso o mesmo queira receber a antecipação e quando receber de volta abrir um novo chamado para que a Jana faça a antecipação."
 300-133399;Incident;Active;2025-10-27 09:21:31;BRITO,EDINISIO;COP-SALESFORCE;3;Direcionamento incorreto de caso;Bom dia! Identificado inconsistência na abertura do caso, com o qual foi direcionado para Depósito Avançado de Cariacica ao invés do Depósito Avançado de Serra, com o qual está cadastrada conta do cliente. E-mail com evidências em anexo.
-100-101975;Service Request;Active;2025-10-27 09:35:55;DA SILVA CACULA,CLAUDETE;COP-RH-ADMPESSOAL;3;reset de senha para acessar o wappi;"Rivelino Rodrigues de Sousa
-matrícula 760049
-tel: 859 87373186"
 100-101981;Service Request;Active;2025-10-27 09:45:22;DA SILVA CACULA,CLAUDETE;COP-RH-HUB;3;Reembolso Bolsa de Estudos;Segue anexo o comprovante de pagamento e o boleto referente ao mês de Novembro/2025 para reembolso
 100-101986;Service Request;Active;2025-10-27 10:03:10;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;3;"SOLICITAÇÃO DE PPP E LAUDO
 REQUERENTE: OSCAR PERCI GAMALHO";"Solicitação de PPP e laudo
@@ -1953,7 +1950,6 @@ anexo!"
 
 SEGUE IMAGEM DO PROBLEMA RELATADO EM ANEXO."
 100-99087;Service Request;Queued;2025-09-24 10:30:06;GOMES DE ARRUDA,ROSIMARA;COP-RH-HUB;36;Colaborador ativo de Passo Fundo-RS, realizou a solicitação de entrega do PPP para fins de Aposentadoria;OSIEL CHAVES MORAIS - CPF: 622.945.470-04 Matrícula: 50732
-300-130939;Incident;Queued;2025-09-24 16:22:59;LUIS GARCIA,RICARDO;COP-AUT-SAP-TRIBUTÁRIO-LES/MM/SD;36;Nos dias 24 e 25 rodamos o monitor de frete, referente ao transportador 420976, todos fretes foram bandeirados, porém entram com valores menores no livro fiscal. Anexo como está constando.;Nos dias 24 e 25 rodamos o monitor de frete, referente ao transportador 420976, todos fretes foram bandeirados, porém entram com valores menores no livro fiscal. Anexo como está constando.
 100-99553;Service Request;Queued;2025-09-30 12:24:18;;PROD-AUTOMAÇÃO;30;Desativação de automatização realizada na transação ICO/RF_ASJOB do SAP;Desativação de automatização realizada na transação ICO/RF_ASJOB do SAP. Solicito orientação de como proceder para desativar uma automatização realizada na transação citada, para análise e gravação de projeto no ZRF
 300-131363;Incident;Queued;2025-10-01 08:27:48;;COP-SAP MOBILE-3N;29;Bom dia, por favor verificar com urgência os cadastrados de RM´s pois não está saindo no campos de dados adicionais as informações de local de entrega, neste novo modelo SIVA+, clientes estão nos questionando.;"Bom dia, por favor verificar com urgência os cadastrados de RM´s pois não está saindo no campos de dados adicionais as informações de local de entrega, neste novo modelo SIVA+, clientes estão nos questionando.
 1201
