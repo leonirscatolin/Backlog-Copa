@@ -1659,15 +1659,6 @@ ERRO: :REC,mensagem:Reconciliação da viagem: 0000694426 está em processamento
 NILSON ANTONIO DOS SANTOS - fferron83@gmail.com -  (41) 98875-2911";"Solicitação PPP demitido Nilson Antonio dos Santos  - solicitado através do Compliance - Araucária PR.
 
 NILSON ANTONIO DOS SANTOS - fferron83@gmail.com -  (41) 98875-2911"
-300-133279;Incident;Pending;2025-10-24 13:12:57;DE BARROS DA SILVA,ERICKSON;APOIO-COP-SEDE;6;usuário solicita atualizar o Sistema operativo da maquina.;"USUÁRIO AFETADO: Rodrigo
-CHAVE: LQSN
-TELEFONE: 81 981385953
-LOCALIZAÇÃO: CO Suape
-
-DESCRIÇÃO: usuário solicita atualizar o Sistema operativo da maquina.
-Asset: NCEIP1-360024 
-MAQUINA APRESENTANDO PROBLEMAS.
-maquina não atualizar remotamente!"
 300-133309;Incident;Pending;2025-10-24 15:43:28;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;6;Falha ao carregar sistema operacional;"Não está carregando o Windows no meu notebook  Erro System 32
 
 notebook: NCECA1-00048
@@ -1687,11 +1678,6 @@ Usuário informa que aprova, porém quando recarrega a aprovação desaparece.
 
 
 Verificar print da SU53"
-100-101948;Service Request;Pending;2025-10-27 08:59:29;SAMUEL DA SILVA,AUDRYK;APOIO-COP-SEDE;3;Usuário informa que o citrix está fora, impossibilitando acesso as pastas de rede que precisa para trabalhar. Solicita apoio para mapeamento das pastas de rede.;"Usuário informa que o citrix está fora, impossibilitando acesso as pastas de rede que precisa para trabalhar. Solicita apoio para mapeamento das pastas de rede. 
-
-Obs: realizado acesso remoto e não consta pasta mapeada, ao realizar procedimento não aceita o mapeamento.
-
-Desktop: DCEUB1-23073"
 300-133395;Incident;Pending;2025-10-27 09:13:58;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;3;Erro ao gerar ordem 63819956;Falha ao tentar faturar uma nota de amostra grátis para dar entrada no SAP
 100-101992;Service Request;Pending;2025-10-27 10:19:27;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;3;Solicito o envio do meu PPP com data atualizada;Solicito o envio do meu PPP com data atualizada
 100-101996;Service Request;Pending;2025-10-27 10:34:27;BRITO DA CRUZ,LUCELIA;COP-RH-HUB;3;AFASTAMENTO_UNIDADE BRASILIA_VALMIR DOS SANTOS;"O colaborador foi admitido em 14/06/2000.
