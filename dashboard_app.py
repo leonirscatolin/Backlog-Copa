@@ -1,5 +1,3 @@
-# VERSÃO v0.9.45-755 (Corrigida)
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -15,18 +13,6 @@ from urllib.parse import quote
 import json
 import colorsys
 import re
-
-# --- INÍCIO - Constantes Globais (Ideia 1) ---
-# Use regex para 'ou' (|) e escape parênteses com \
-GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM-GTR'
-GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou 'RDM-GTR'"
-
-GRUPOS_DE_AVISO_REGEX = r'Service Desk \(L1\)|LIQ-SUTEL'
-GRUPOS_DE_AVISO_TEXTO = "'Service Desk (L1)' ou 'LIQ-SUTEL'"
-
-# v0.9.45: Regex combinada para filtrar dados históricos (15 dias, Tab3, Tab4)
-GRUPOS_EXCLUSAO_TOTAL_REGEX = f"{GRUPOS_EXCLUSAO_PERMANENTE_REGEX}|{GRUPOS_DE_AVISO_REGEX}"
-# --- FIM - Constantes Globais ---
 
 st.set_page_config(
     layout="wide",
@@ -112,18 +98,18 @@ def update_github_file(_repo, file_path, file_content, commit_message):
         if isinstance(file_content, str):
             file_content = file_content.encode('utf-8')
         _repo.update_file(contents.path, commit_message, file_content, contents.sha)
-        if file_path not in ["contacted_tickets.json", "ticket_observations.json", "datas_referencia.txt"]: # Evitar spam de msg
+        if file_path not in ["contacted_tickets.json", "ticket_observations.json", "datas_referencia.txt"]: 
             st.sidebar.info(f"Arquivo '{file_path}' atualizado.")
     except GithubException as e:
         if e.status == 404:
             if isinstance(file_content, str):
                 file_content = file_content.encode('utf-8')
             _repo.create_file(file_path, commit_message, file_content)
-            if file_path not in ["contacted_tickets.json", "ticket_observations.json", "datas_referencia.txt"]: # Evitar spam de msg
+            if file_path not in ["contacted_tickets.json", "ticket_observations.json", "datas_referencia.txt"]: 
                 st.sidebar.info(f"Arquivo '{file_path}' criado.")
         else:
             st.sidebar.error(f"Falha ao salvar '{file_path}': {e}")
-            raise # Re-levanta a exceção para o bloco superior tratar
+            raise 
 
 @st.cache_data(ttl=300)
 def read_github_file(_repo, file_path):
@@ -181,7 +167,7 @@ def read_github_text_file(_repo, file_path):
                 dates[key.strip()] = value.strip()
         return dates
     except GithubException as e:
-        if e.status == 404: # Arquivo pode não existir na primeira vez
+        if e.status == 404: 
             return {}
         else:
             st.warning(f"Erro ao ler {file_path}: {e}")
@@ -287,7 +273,6 @@ def get_image_as_base64(path):
 
 def sync_ticket_data():
     if 'ticket_editor' not in st.session_state or not st.session_state.ticket_editor.get('edited_rows'):
-        # st.toast("Nenhuma alteração detectada para salvar.", icon="ℹ️") # v0.9.44: Removido
         return
         
     edited_rows = st.session_state.ticket_editor['edited_rows']
@@ -335,20 +320,22 @@ def sync_ticket_data():
             return
 
     else:
-        pass # st.toast("Nenhuma alteração nova detectada para salvar.", icon="ℹ️") # v0.9.44: Removido
+        pass 
 
     st.session_state.ticket_editor['edited_rows'] = {}
     st.session_state.scroll_to_details = True
 
 
 @st.cache_data(ttl=3600)
-def carregar_dados_evolucao(_repo, dias_para_analisar=7): # v0.9.40: Removido 'closed_ticket_ids_list'
+def carregar_dados_evolucao(_repo, dias_para_analisar=7): 
     try:
         all_files_content = _repo.get_contents("snapshots")
         all_files = [f.path for f in all_files_content]
         df_evolucao_list = []
         end_date = date.today()
         start_date = end_date - timedelta(days=max(dias_para_analisar, 10))
+
+        grupos_para_excluir = r'RH|Aprovadores GGM|RDM-GTR|Service Desk \(L1\)|LIQ-SUTEL'
 
         processed_dates = []
         for file_name in all_files:
@@ -371,10 +358,7 @@ def carregar_dados_evolucao(_repo, dias_para_analisar=7): # v0.9.40: Removido 'c
                     df_snapshot = read_github_file(_repo, file_name)
                     if not df_snapshot.empty and 'Atribuir a um grupo' in df_snapshot.columns:
                         
-                        # --- MODIFICADO v0.9.45 ---
-                        # Filtra TODOS os grupos (permanentes + aviso)
-                        df_snapshot_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
-                        # --- FIM DA MODIFICAÇÃO ---
+                        df_snapshot_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False, regex=True)]
                         
                         df_snapshot_final = df_snapshot_filtrado
                         
@@ -420,7 +404,7 @@ def find_closest_snapshot_before(_repo, current_report_date, target_date):
         return None, None
 
 @st.cache_data(ttl=3600)
-def carregar_evolucao_aging(_repo, dias_para_analisar=90): # v0.9.40: Removido 'closed_ticket_ids_list'
+def carregar_evolucao_aging(_repo, dias_para_analisar=90): 
     try:
         all_files_content = _repo.get_contents("snapshots")
         all_files = [f.path for f in all_files_content]
@@ -428,6 +412,8 @@ def carregar_evolucao_aging(_repo, dias_para_analisar=90): # v0.9.40: Removido '
 
         end_date = date.today() - timedelta(days=1)
         start_date = end_date - timedelta(days=max(dias_para_analisar, 60))
+        
+        grupos_para_excluir = r'RH|Aprovadores GGM|RDM-GTR|Service Desk \(L1\)|LIQ-SUTEL'
 
         processed_files = []
         for file_name in all_files:
@@ -448,10 +434,7 @@ def carregar_evolucao_aging(_repo, dias_para_analisar=90): # v0.9.40: Removido '
                 if df_snapshot.empty:
                     continue
 
-                # --- MODIFICADO v0.9.45 ---
-                # Filtra TODOS os grupos (permanentes + aviso)
-                df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
-                # --- FIM DA MODIFICAÇÃO ---
+                df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False, regex=True)]
 
                 df_final = df_filtrado
 
@@ -690,24 +673,23 @@ try:
     df_encerrados = df_atual[df_atual['ID do ticket'].isin(closed_ticket_ids)]
     df_abertos = df_atual[~df_atual['ID do ticket'].isin(closed_ticket_ids)]
     
-    # --- MODIFICADO v0.9.45 ---
-    # df_atual_filtrado filtra SÓ os permanentes (para o aviso funcionar)
-    df_atual_filtrado = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
-    # df_15dias_filtrado filtra TODOS (permanentes + aviso)
-    df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
+    grupos_para_excluir_perm = r'RH|Aprovadores GGM|RDM-GTR'
+    grupos_para_excluir_total = r'RH|Aprovadores GGM|RDM-GTR|Service Desk \(L1\)|LIQ-SUTEL'
+    
+    df_atual_filtrado = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains(grupos_para_excluir_perm, case=False, na=False, regex=True)]
+    df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(grupos_para_excluir_total, case=False, na=False, regex=True)]
     df_aging = analisar_aging(df_atual_filtrado)
-    # df_encerrados_filtrado filtra SÓ os permanentes
-    df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
-    # --- FIM DA MODIFICAÇÃO ---
+    df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains(grupos_para_excluir_perm, case=False, na=False, regex=True)]
 
 
     tab1, tab2, tab3, tab4 = st.tabs(["Dashboard Completo", "Report Visual", "Evolução Semanal", "Evolução Aging"])
 
     with tab1:
         
+        grupos_de_aviso_regex = r'Service Desk \(L1\)|LIQ-SUTEL'
         df_para_aviso = df_atual_filtrado[
             df_atual_filtrado['Atribuir a um grupo'].str.contains(
-                GRUPOS_DE_AVISO_REGEX, case=False, na=False, regex=True
+                grupos_de_aviso_regex, case=False, na=False, regex=True
             )
         ]
         
@@ -715,14 +697,14 @@ try:
             total_para_aviso = len(df_para_aviso)
             contagem_por_grupo = df_para_aviso['Atribuir a um grupo'].value_counts()
             
-            aviso_str_lista = [f"⚠️ **Atenção:** Foram encontrados **{total_para_aviso}** chamados em grupos que deveriam estar zerados ({GRUPOS_DE_AVISO_TEXTO}):"]
+            aviso_str_lista = [f"⚠️ **Atenção:** Foram encontrados **{total_para_aviso}** chamados em grupos que deveriam estar zerados ('Service Desk (L1)' ou 'LIQ-SUTEL'):"]
             for grupo, contagem in contagem_por_grupo.items():
                 aviso_str_lista.append(f"- **{grupo}:** {contagem} chamado(s)")
             
             st.warning("\n".join(aviso_str_lista))
 
         info_messages = ["**Filtros e Regras Aplicadas:**", 
-                         f"- Grupos contendo {GRUPOS_EXCLUSAO_PERMANENTE_TEXTO} foram desconsiderados da análise.", 
+                         f"- Grupos contendo 'RH', 'Aprovadores GGM' ou 'RDM-GTR' foram desconsiderados da análise.", 
                          "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
         
         if not df_encerrados.empty:
@@ -825,7 +807,7 @@ try:
             st.selectbox("Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", 
                          options=ordem_faixas, 
                          key='faixa_selecionada',
-                         on_change=sync_ticket_data) # v0.9.42: Salva ao trocar de faixa
+                         on_change=sync_ticket_data)
             
             faixa_atual = st.session_state.faixa_selecionada
             filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].copy()
@@ -862,7 +844,6 @@ try:
                     type="primary"
                 )
                 
-                # v0.9.43: Aviso de "Alterações não salvas" ao tentar fechar a aba
                 if st.session_state.ticket_editor.get('edited_rows'):
                     js_code = """
                     <script>
@@ -1200,6 +1181,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.45-755 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
