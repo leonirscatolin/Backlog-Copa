@@ -1705,11 +1705,6 @@ As filas são: ""Financeiro - Key Account"" e ""Financeiro - Órgão Público"""
 300-133459;Incident;Pending;2025-10-27 13:42:44;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;3;VT 884337 - transferir incorreto;VT 884337 - aprovado na etapa transferir  - staus incorreto - retorno de carga . Passo Fundo - 1223
 100-102042;Service Request;Pending;2025-10-27 14:27:50;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;3;Incluir dependente na assistência medica;"Chamado para Semaias Martins Teixeira.
 Incluir cônjuge no plano de assistência médica."
-100-102049;Service Request;Pending;2025-10-27 15:17:07;BASTOS DE SOUZA KLEM,CAMILA;COP-SUPORTE-XML-TI;3;"preciso que subao o XML de 2 notas   passei email para nfe_taxfy@copaenergia.com.br no  mas ate agora nada. 
-Para a nota de N 9 ja havia aberto chamado mas ela nao aparece pra mim.";"41251004868682000100550010000000091171045442 NF 9  CLIENTE ZE DO GAS LTDA
-
-41251061916920000572550990000298291232321046
- NF 29829 - Utingas armazenadora"
 300-133485;Incident;Pending;2025-10-27 16:04:19;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;3;"Chamado aberto pelo Tributário.
 
 Quando temos lançamento de nota no SAP seguido de estorno e um novo lançamento da nota com as informações devidas, o livro fiscal de saída do SAP está trazendo o valor da nota estornada (20609676) e não está trazendo o valor contábil da nota fiscal ativa (20981654) o que gera diferença nas checagens.. Poderia por gentileza, verificar esse erro e corrigir.";"Chamado aberto pelo Tributário.
@@ -1781,7 +1776,6 @@ Colaborador afastado desde 21/12/2021."
 Colaborador afastado desde 20/03/2017.
 
 Não há atualização do afastamento do colaborador no prontuário dele. Foi enviado mensagem via whatsApp e estou aguardando retorno."
-100-102159;Service Request;Pending;2025-10-28 13:30:28;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP FI;2;problema no SAP para gerar relatório;estou desde as 08hs tentando tirar o relatório na ZFI0007, fica carregando e não gera, o sap já chegou a cair algumas vezes
 100-102215;Service Request;Pending;2025-10-28 23:22:49;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;2;Filha Emilly A. de Farias diagnosticada com TEA (Autismo) E TDAH.;Emilly é gemea com Heytor que nasceram prematuros extremos de 5 meses, ela nasceu pesando 735g, ela ficou internada por 7 meses e veio pra casa . No momento começou apresentar dificuldade de aprendizagem, sintomas cognitivos e comportamentais. Passou por avaliação neuropsicólogica e neuropediatra constatando o diagnostico de TEA e TDAH
 100-92928;Service Request;Queued;2025-07-23 16:24:08;JOSE BRITO VIEIRA,JAILSON;COP-RH-HUB;99;Afastamento MICHELLE ALVES PIMENTA - Ibirite;"novo Atestado de 180 dias  a partir de 08/07/2025
 
