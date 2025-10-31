@@ -1,3 +1,5 @@
+# VERSÃO v0.9.47-757 (Corrigida)
+
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -13,6 +15,16 @@ from urllib.parse import quote
 import json
 import colorsys
 import re
+
+# --- INÍCIO - Constantes Globais (v0.9.46) ---
+GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM-GTR'
+GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou 'RDM-GTR'"
+
+GRUPOS_DE_AVISO_REGEX = r'Service Desk \(L1\)|LIQ-SUTEL'
+GRUPOS_DE_AVISO_TEXTO = "'Service Desk (L1)' ou 'LIQ-SUTEL'"
+
+GRUPOS_EXCLUSAO_TOTAL_REGEX = f"{GRUPOS_EXCLUSAO_PERMANENTE_REGEX}|{GRUPOS_DE_AVISO_REGEX}"
+# --- FIM - Constantes Globais ---
 
 st.set_page_config(
     layout="wide",
@@ -98,18 +110,18 @@ def update_github_file(_repo, file_path, file_content, commit_message):
         if isinstance(file_content, str):
             file_content = file_content.encode('utf-8')
         _repo.update_file(contents.path, commit_message, file_content, contents.sha)
-        if file_path not in ["contacted_tickets.json", "ticket_observations.json", "datas_referencia.txt"]: 
+        if file_path not in ["contacted_tickets.json", "ticket_observations.json", "datas_referencia.txt", "previous_closed_ids.json"]: # Evitar spam
             st.sidebar.info(f"Arquivo '{file_path}' atualizado.")
     except GithubException as e:
         if e.status == 404:
             if isinstance(file_content, str):
                 file_content = file_content.encode('utf-8')
             _repo.create_file(file_path, commit_message, file_content)
-            if file_path not in ["contacted_tickets.json", "ticket_observations.json", "datas_referencia.txt"]: 
+            if file_path not in ["contacted_tickets.json", "ticket_observations.json", "datas_referencia.txt", "previous_closed_ids.json"]: # Evitar spam
                 st.sidebar.info(f"Arquivo '{file_path}' criado.")
         else:
             st.sidebar.error(f"Falha ao salvar '{file_path}': {e}")
-            raise 
+            raise # Re-levanta a exceção para o bloco superior tratar
 
 @st.cache_data(ttl=300)
 def read_github_file(_repo, file_path):
@@ -167,7 +179,7 @@ def read_github_text_file(_repo, file_path):
                 dates[key.strip()] = value.strip()
         return dates
     except GithubException as e:
-        if e.status == 404: 
+        if e.status == 404: # Arquivo pode não existir na primeira vez
             return {}
         else:
             st.warning(f"Erro ao ler {file_path}: {e}")
@@ -178,20 +190,20 @@ def read_github_text_file(_repo, file_path):
 
 
 @st.cache_data(ttl=300)
-def read_github_json_dict(_repo, file_path):
+def read_github_json_file(_repo, file_path, default_return_type='dict'): # Modificado para aceitar lista
     try:
         file_content = _repo.get_contents(file_path).decoded_content.decode("utf-8")
-        return json.loads(file_content) if file_content else {}
+        return json.loads(file_content) if file_content else (default_return_type == 'dict' and {} or [])
     except GithubException as e:
-        if e.status == 404: return {}
+        if e.status == 404: return (default_return_type == 'dict' and {} or [])
         st.error(f"Erro ao carregar JSON '{file_path}': {e}")
-        return {}
+        return (default_return_type == 'dict' and {} or [])
     except json.JSONDecodeError:
         st.error(f"Erro ao decodificar JSON '{file_path}'. Verifique o conteúdo.")
-        return {}
+        return (default_return_type == 'dict' and {} or [])
     except Exception as e:
         st.error(f"Erro inesperado ao ler JSON '{file_path}': {e}")
-        return {}
+        return (default_return_type == 'dict' and {} or [])
 
 def process_uploaded_file(uploaded_file):
     if uploaded_file is None:
@@ -327,15 +339,13 @@ def sync_ticket_data():
 
 
 @st.cache_data(ttl=3600)
-def carregar_dados_evolucao(_repo, dias_para_analisar=7): 
+def carregar_dados_evolucao(_repo, dias_para_analisar=7): # v0.9.40: Removido 'closed_ticket_ids_list'
     try:
         all_files_content = _repo.get_contents("snapshots")
         all_files = [f.path for f in all_files_content]
         df_evolucao_list = []
         end_date = date.today()
         start_date = end_date - timedelta(days=max(dias_para_analisar, 10))
-
-        grupos_para_excluir = r'RH|Aprovadores GGM|RDM-GTR|Service Desk \(L1\)|LIQ-SUTEL'
 
         processed_dates = []
         for file_name in all_files:
@@ -358,7 +368,7 @@ def carregar_dados_evolucao(_repo, dias_para_analisar=7):
                     df_snapshot = read_github_file(_repo, file_name)
                     if not df_snapshot.empty and 'Atribuir a um grupo' in df_snapshot.columns:
                         
-                        df_snapshot_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False, regex=True)]
+                        df_snapshot_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
                         
                         df_snapshot_final = df_snapshot_filtrado
                         
@@ -404,7 +414,7 @@ def find_closest_snapshot_before(_repo, current_report_date, target_date):
         return None, None
 
 @st.cache_data(ttl=3600)
-def carregar_evolucao_aging(_repo, dias_para_analisar=90): 
+def carregar_evolucao_aging(_repo, dias_para_analisar=90): # v0.9.40: Removido 'closed_ticket_ids_list'
     try:
         all_files_content = _repo.get_contents("snapshots")
         all_files = [f.path for f in all_files_content]
@@ -412,8 +422,6 @@ def carregar_evolucao_aging(_repo, dias_para_analisar=90):
 
         end_date = date.today() - timedelta(days=1)
         start_date = end_date - timedelta(days=max(dias_para_analisar, 60))
-        
-        grupos_para_excluir = r'RH|Aprovadores GGM|RDM-GTR|Service Desk \(L1\)|LIQ-SUTEL'
 
         processed_files = []
         for file_name in all_files:
@@ -434,7 +442,7 @@ def carregar_evolucao_aging(_repo, dias_para_analisar=90):
                 if df_snapshot.empty:
                     continue
 
-                df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(grupos_para_excluir, case=False, na=False, regex=True)]
+                df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
 
                 df_final = df_filtrado
 
@@ -572,8 +580,25 @@ if is_admin:
                     st.stop() 
 
                 try:
+                    # --- INÍCIO DA MODIFICAÇÃO v0.9.47 ---
+                    # 1. Ler o arquivo de fechados ATUAL (antes de sobrescrever)
+                    # Usamos read_github_file que já está cacheado da carga principal
+                    df_fechados_anterior = read_github_file(repo, "dados_fechados.csv")
+                    previous_closed_ids = set()
+                    if not df_fechados_anterior.empty:
+                        id_col_anterior = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_anterior.columns), None)
+                        if id_col_anterior:
+                            previous_closed_ids = set(df_fechados_anterior[id_col_anterior].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
+                    
+                    # 2. Salvar esta lista de IDs como a "anterior"
+                    json_content = json.dumps(list(previous_closed_ids), indent=4)
+                    update_github_file(repo, "previous_closed_ids.json", json_content.encode('utf-8'), "Snapshot dos IDs de fechados anteriores")
+                    # --- FIM DA MODIFICAÇÃO v0.9.47 ---
+
+                    # 3. Salva o NOVO arquivo de fechados
                     update_github_file(repo, "dados_fechados.csv", content_fechados, commit_msg)
 
+                    # 4. Atualiza a hora
                     datas_existentes = read_github_text_file(repo, "datas_referencia.txt")
                     data_atual_existente = datas_existentes.get('data_atual', 'N/A')
                     data_15dias_existente = datas_existentes.get('data_15dias', 'N/A')
@@ -584,11 +609,13 @@ if is_admin:
                                                     f"hora_atualizacao:{hora_atualizacao_nova}")
                     update_github_file(repo, "datas_referencia.txt", datas_referencia_content_novo.encode('utf-8'), commit_msg)
                     
+                    # 5. Ler o dados_atuais.csv base
                     df_atual_base = read_github_file(repo, "dados_atuais.csv")
                     if df_atual_base.empty:
                         st.sidebar.warning("Não foi possível ler o 'dados_atuais.csv' base para atualizar o snapshot.")
                         raise Exception("Arquivo 'dados_atuais.csv' base não encontrado.")
 
+                    # 6. Ler os IDs do NOVO arquivo de fechados
                     df_fechados_novo = pd.read_csv(BytesIO(content_fechados), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
                     
                     id_col_fechados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_novo.columns), None)
@@ -598,6 +625,7 @@ if is_admin:
 
                     closed_ids_set = set(df_fechados_novo[id_col_fechados].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
 
+                    # 7. Encontrar ID no df_atual_base e filtrar
                     id_col_atual = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_atual_base.columns), None)
                     if not id_col_atual:
                          st.sidebar.warning("Não foi possível encontrar coluna de ID no 'dados_atuais.csv' base.")
@@ -607,6 +635,7 @@ if is_admin:
                     
                     df_atualizado_filtrado = df_atual_base[~df_atual_base[id_col_atual].isin(closed_ids_set)]
 
+                    # 8. Preparar e salvar o novo snapshot
                     output = StringIO()
                     df_atualizado_filtrado.to_csv(output, index=False, sep=';', encoding='utf-8')
                     content_snapshot_novo = output.getvalue().encode('utf-8')
@@ -617,6 +646,7 @@ if is_admin:
                     
                     update_github_file(repo, snapshot_path, content_snapshot_novo, commit_msg_snapshot)
                     
+                    # 9. Limpar cache e recarregar
                     st.cache_data.clear()
                     st.cache_resource.clear()
                     st.sidebar.success("Arquivo de fechados salvo e snapshot diário atualizado! Recarregando...")
@@ -639,7 +669,7 @@ try:
             else: st.error(f"Erro ao carregar o estado dos tickets: {e}"); st.session_state.contacted_tickets = set()
 
     if 'observations' not in st.session_state:
-        st.session_state.observations = read_github_json_dict(repo, "ticket_observations.json")
+        st.session_state.observations = read_github_json_file(repo, "ticket_observations.json", default_return_type='dict')
 
     needs_scroll = "scroll" in st.query_params
     if "faixa" in st.query_params:
@@ -654,6 +684,12 @@ try:
     df_15dias = read_github_file(repo, "dados_15_dias.csv")
     df_fechados = read_github_file(repo, "dados_fechados.csv")
     datas_referencia = read_github_text_file(repo, "datas_referencia.txt")
+    
+    # --- INÍCIO DA MODIFICAÇÃO v0.9.47 ---
+    # Carrega os IDs de fechados ANTERIORES
+    previous_closed_ids = set(read_github_json_file(repo, "previous_closed_ids.json", default_return_type='list'))
+    # --- FIM DA MODIFICAÇÃO ---
+    
     data_atual_str = datas_referencia.get('data_atual', 'N/A')
     data_15dias_str = datas_referencia.get('data_15dias', 'N/A')
     hora_atualizacao_str = datas_referencia.get('hora_atualizacao', '')
@@ -663,33 +699,42 @@ try:
     if 'ID do ticket' in df_atual.columns:
         df_atual['ID do ticket'] = df_atual['ID do ticket'].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
 
+    # --- INÍCIO DA MODIFICAÇÃO v0.9.47 ---
     closed_ticket_ids = []
+    current_closed_ids = set()
+    newly_closed_ids = set() # Define o set de "novos"
+
     if not df_fechados.empty:
         id_col_name = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados.columns), None)
         if id_col_name:
             df_fechados[id_col_name] = df_fechados[id_col_name].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-            closed_ticket_ids = df_fechados[id_col_name].dropna().unique()
+            current_closed_ids = set(df_fechados[id_col_name].dropna().unique())
+            closed_ticket_ids = list(current_closed_ids) # Mantém a variável antiga
+    
+    # Compara o set atual com o anterior
+    if previous_closed_ids: 
+        newly_closed_ids = current_closed_ids - previous_closed_ids
+    else: # Se não houver anterior, todos os atuais são "novos"
+        newly_closed_ids = current_closed_ids
+    # --- FIM DA MODIFICAÇÃO ---
 
     df_encerrados = df_atual[df_atual['ID do ticket'].isin(closed_ticket_ids)]
     df_abertos = df_atual[~df_atual['ID do ticket'].isin(closed_ticket_ids)]
     
-    grupos_para_excluir_perm = r'RH|Aprovadores GGM|RDM-GTR'
-    grupos_para_excluir_total = r'RH|Aprovadores GGM|RDM-GTR|Service Desk \(L1\)|LIQ-SUTEL'
-    
-    df_atual_filtrado = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains(grupos_para_excluir_perm, case=False, na=False, regex=True)]
-    df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(grupos_para_excluir_total, case=False, na=False, regex=True)]
+    # v0.9.45: Lógica de filtro atualizada
+    df_atual_filtrado = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
+    df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
     df_aging = analisar_aging(df_atual_filtrado)
-    df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains(grupos_para_excluir_perm, case=False, na=False, regex=True)]
+    df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
 
 
     tab1, tab2, tab3, tab4 = st.tabs(["Dashboard Completo", "Report Visual", "Evolução Semanal", "Evolução Aging"])
 
     with tab1:
         
-        grupos_de_aviso_regex = r'Service Desk \(L1\)|LIQ-SUTEL'
         df_para_aviso = df_atual_filtrado[
             df_atual_filtrado['Atribuir a um grupo'].str.contains(
-                grupos_de_aviso_regex, case=False, na=False, regex=True
+                GRUPOS_DE_AVISO_REGEX, case=False, na=False, regex=True
             )
         ]
         
@@ -697,14 +742,14 @@ try:
             total_para_aviso = len(df_para_aviso)
             contagem_por_grupo = df_para_aviso['Atribuir a um grupo'].value_counts()
             
-            aviso_str_lista = [f"⚠️ **Atenção:** Foram encontrados **{total_para_aviso}** chamados em grupos que deveriam estar zerados ('Service Desk (L1)' ou 'LIQ-SUTEL'):"]
+            aviso_str_lista = [f"⚠️ **Atenção:** Foram encontrados **{total_para_aviso}** chamados em grupos que deveriam estar zerados ({GRUPOS_DE_AVISO_TEXTO}):"]
             for grupo, contagem in contagem_por_grupo.items():
                 aviso_str_lista.append(f"- **{grupo}:** {contagem} chamado(s)")
             
             st.warning("\n".join(aviso_str_lista))
 
         info_messages = ["**Filtros e Regras Aplicadas:**", 
-                         f"- Grupos contendo 'RH', 'Aprovadores GGM' ou 'RDM-GTR' foram desconsiderados da análise.", 
+                         f"- Grupos contendo {GRUPOS_EXCLUSAO_PERMANENTE_TEXTO} foram desconsiderados da análise.", 
                          "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
         
         if not df_encerrados.empty:
@@ -763,8 +808,20 @@ try:
             
             date_col_name = next((col for col in ['Data de criação', 'Data de Criacao'] if col in df_encerrados_para_exibir.columns), None)
             
-            colunas_para_exibir_fechados = ['ID do ticket', 'Descrição', 'Atribuir a um grupo']
+            # --- INÍCIO DA MODIFICAÇÃO v0.9.47 ---
+            # Adiciona 'Status'
+            colunas_para_exibir_fechados = ['Status', 'ID do ticket', 'Descrição', 'Atribuir a um grupo']
             
+            # Adiciona a coluna 'Status' com base na comparação
+            id_col_encerrados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_encerrados_para_exibir.columns), None)
+            if id_col_encerrados:
+                 df_encerrados_para_exibir['Status'] = df_encerrados_para_exibir[id_col_encerrados].apply(
+                    lambda x: "Novo" if x in newly_closed_ids else ""
+                )
+            else:
+                df_encerrados_para_exibir['Status'] = ""
+            # --- FIM DA MODIFICAÇÃO v0.9.47 ---
+
             if date_col_name:
                 try:
                     df_encerrados_para_exibir[date_col_name] = pd.to_datetime(df_encerrados_para_exibir[date_col_name], errors='coerce')
@@ -807,7 +864,7 @@ try:
             st.selectbox("Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", 
                          options=ordem_faixas, 
                          key='faixa_selecionada',
-                         on_change=sync_ticket_data)
+                         on_change=sync_ticket_data) # v0.9.42: Salva ao trocar de faixa
             
             faixa_atual = st.session_state.faixa_selecionada
             filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].copy()
@@ -844,6 +901,7 @@ try:
                     type="primary"
                 )
                 
+                # v0.9.43: Aviso de "Alterações não salvas" ao tentar fechar a aba
                 if st.session_state.ticket_editor.get('edited_rows'):
                     js_code = """
                     <script>
@@ -1181,6 +1239,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.47-757 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
