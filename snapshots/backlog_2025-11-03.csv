@@ -688,11 +688,6 @@ Qualquer dúvida estou à disposição.
 
 Att,
 Wellington"
-100-102280;Service Request;New;2025-10-29 12:53:47;;COP-ORIENTAÇÃO-GRC;4;"Senha SAP IDM
-Já  foi liberado o acesso as transações mas não estou conseguindo acessar com a senha.
-Solicito com urgência o envio da senha para acesso do SAP IDM";"Senha SAP IDM
-Já  foi liberado o acesso as transações mas não estou conseguindo acessar com a senha.
-Solicito com urgência o envio da senha para acesso do SAP IDM"
 100-102336;Service Request;New;2025-10-30 07:26:52;;COP-POWER-BI;3;Havia aberto um chamado anterior, porém não foi resolvido (100-102039), continuo sem conseguir visualizar os dados do relatório;Havia aberto um chamado anterior, porém não foi resolvido (100-102039), continuo sem conseguir visualizar os dados do relatório
 100-102344;Service Request;New;2025-10-30 08:27:34;;COP-ORIENTAÇÃO-GRC;3;FALTA DE AUTORIZAÇÃO ENTRADA NOTA NAVIO;"AO TENTAR REALIZAR O PROCESSO DA ENTRADA DE NOTA DO NAVIO O SEGUINTE ERRO ACONTECE 
 FALTA DE AUTORIZAÇÃO PARA DOCUMENTO 4503774142 
@@ -752,13 +747,6 @@ precisa ser liberado.
 
 aparecen agendamentos de outras unidades mais nao do CO pelotas"
 300-133857;Incident;New;2025-10-31 15:05:18;;COP-SALESFORCE;2;Erro ao rejeitar leads e oportunidade;A funcionária Júlia Alves Loucano do time de expansão não esta conseguindo rejeitar lead, pois informa que o motivo de perda e rejeição não esta sendo preenchido, porém esse campo não é preenchido na etapa do lead.
-100-102577;Service Request;New;2025-10-31 16:19:34;;APOIO-COP-ACESSO;2;"Colaborador Carlos Augusto Barbosa Pereira (Matricula 121647) solicita reset da senha para acesso no aplicativo SENIOR
-
-email: carlos.profissional2022@gmail.com
-Telefone: 67 991951035";"Colaborador Carlos Augusto Barbosa Pereira (Matricula 121647) solicita reset da senha para acesso no aplicativo SENIOR
-
-email: carlos.profissional2022@gmail.com
-Telefone: 67 991951035"
 100-102584;Service Request;New;2025-10-31 17:00:37;;COP-ORIENTAÇÃO-GRC;2;Liberação na VI02 na função de exclusão dos documento gerados para classe Cst. transportes Z001 .;"Liberação na transação VI02 na função de exclusão dos documento gerados para classe Cst. transportes Z001 .
 Não é gerado dentro da PAT , os defeitos  e as vendas de comodatos, por isso temos que fazer a inclusão manual da VL , nos romaneios definitivos. 
 
@@ -1743,21 +1731,6 @@ FSSD01 9\\SDC-VFSSD01.distribuidora.biz) (R:)
 R:\Depto\GAC\CAL_LIQUIGAS\CELULAS_ESPECIALIZADAS
 
 Centro: Matriz"
-300-132856;Incident;Pending;2025-10-20 12:00:53;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;13;"Suporte XML TI, verificar com a KT qual o problema que está correndo.
-
-NFe 219618-01
-Doc. nr.: 21202951
-
-KeepTrue aparece a mensagem de erro abaixo:
-"" Nenhum registro encontrado para estorno ""
-
-Em anexo e-mail do "" Suporte Tributário "" com a orientação para abrir chamado.";"Bom dia.
-
-Informo que foi feito o registro da NFe 219618-1 da unidade 1223(Passo Fundo/RS) equivocadamente no sistema KeepTrue da unidade 1221(São José/SC).
-
-E ao tentar efetuar o estorno do processo no KeepTrue aparece a mensagem de erro abaixo:
-
-"" Nenhum registro encontrado para estorno """
 100-101526;Service Request;Pending;2025-10-20 17:42:04;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;13;Em complemento ao chamado 100-100608, segue anexo documentos (NF e comprovante pagamento) para atendimento da solicitação do ex colaborador.;"Tipo cirurgia: Prótese no joelho esquerdo
 Data: 13/08/2025
 Local: Hospital das Clínicas"
@@ -1820,9 +1793,6 @@ DUT - 04/10/2025"
 Em anexo, segue um exemplo da conta Inter.";"Contas digitais como Nubank, C6, Inter e etc, estão cadastradas no SAP, porém no SMI não as localizamos para cadastro de dados bancários. 
 
 Em anexo, segue um exemplo da conta Inter."
-300-133115;Incident;Pending;2025-10-22 16:09:12;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;11;"Solicitamos apoio para verificar a Nota Fiscal nº 17, referente ao cliente Francisco de A S do Nascimento (132011).Não estamos conseguindo lançar essa NF nem pela transação KeepTrue, nem de forma manual. O sistema SAP não permite o lançamento.
-Segue em anexo os prints dos erros apresentados para análise.";"Solicitamos apoio para verificar a Nota Fiscal nº 17, referente ao cliente Francisco de A S do Nascimento (132011).Não estamos conseguindo lançar essa NF nem pela transação KeepTrue, nem de forma manual. O sistema SAP não permite o lançamento.
-Segue em anexo os prints dos erros apresentados para análise."
 300-133127;Incident;Pending;2025-10-22 17:29:20;CARLOS DA SILVA RIBEIRO,ELI;COP-SAP MOBILE;11;Cliente informa que as notas fiscais estão sendo emitidas sem a identificação das escolas, o que tem dificultado a rotina de conferência e pagamento.;Em anexo, seguem todos os códigos dos clientes que necessitam dessa alteração.
 300-133132;Incident;Pending;2025-10-22 19:15:56;DE OLIVEIRA MANCO,TAMILIS;COP-SAP MOBILE;11;"Softmovel: 2579 
 Na hora da entrega foi emitido nota nº 4726-11 para o cliente Urbano código 71776 mas no Siva está com recusa;
@@ -1960,7 +1930,6 @@ erro: sua organização excluiu este dispositivo!
 ---
 cood erro: 700003"
 300-133671;Incident;Pending;2025-10-29 13:51:55;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;4;Gentileza poderia verificar pois realizo o pedido e os aprovadores estão com erro e não consegue prosseguir com aprovação.;Gentileza poderia verificar pois realizo o pedido e os aprovadores estão com erro e não consegue prosseguir com aprovação.
-300-133710;Incident;Pending;2025-10-29 16:36:58;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;4;Falha na entrada USB;Meu notebook está com problemas nas 2 entradas USB. Não consigo utilizar o mouse sem fio ou outros acessórios USB.
 300-133714;Incident;Pending;2025-10-29 17:12:56;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP WF;4;LIBERAÇÃO OV;FAVOR LIBERAR OV 0013325517 POIS TRAVOU NO FLUXO
 300-133716;Incident;Pending;2025-10-29 17:22:29;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;4;"Exclusão 
 
@@ -1991,15 +1960,6 @@ DESCRIÇÃO: IMPRESSORA APRESENTA ERROS
 NOME EQUIPAMENTO: SEC842519045B94
 IP: 172.31.231.190
 NUMERO DE SERIE: Z7NUBQAJ30008TM"
-300-133730;Incident;Pending;2025-10-30 08:29:18;DARIO DURAN CARRILLO,VICTOR;COP-SAP MOBILE;3;Estoq.client.livre não atingido em 2,000 UN : 200039 1221 W;"Ao reconciliar a viajem, da erro. 
-
-viajem: 696555 
-pat: 1388074
-envasado. 
-
-centro: 1221 
-
-PAT=00000000000001388074; Reconciliação->  PROBLEMA no SAP = status:NOK,mensagem:Estoq.client.livre não atingido em 2,000 UN : 200039 1221 W\r\nMódulo de função WS_DELIVERY_UPDATE retornou 01 mensagens de erro\r\nModificações de DB foram desfeitas via Rollback\r\nCancelamento de regra de processo ZGOODSISSR\r\nCancelamento do lançamento após erro no item 000010\r\nDocumento PAT 1388596 foi lançado com erro; Veja log\r\nDocumento PAT 1388596 foi lançado com erro; Veja log"
 300-133748;Incident;Pending;2025-10-30 09:55:27;DE OLIVEIRA MANCO,TAMILIS;COP-SAP MOBILE;3;"Toda entrega de gás ,  quando o motorista vai emitir os boletos , os mesmo estão saindo com vencimento no mesmo dia, isso já esta ocorrendo direto.
 
 No Sistema Sales force o boleto esta com vencimento correto. Mas os que deixam pro cliente esta com vencimento no mesmo dia.
@@ -2769,9 +2729,6 @@ Fui marcar férias do colaborador mas informa que não tem saldo.
 o colaborador aparece que tem direito a 24 dias porque tem 8 faltas.
 Verificando no sistema identifiquei 5 faltas.
 Necessário verificar."
-100-102453;Service Request;Queued;2025-10-30 16:25:56;;APOIO-COP-ACESSO;3;Chamada via Teams para orientar o prestador acessar a VPN;"Prestador está com dificuldades para acessar a VPN, solicito uma chamada via Teams para orientação e ajuda neste processo, 
-
-Chave: FYU4"
 100-102454;Service Request;Queued;2025-10-30 16:38:06;THOME DA SILVA,ARNANDO;COP-RH-FOPAG;3;FOI DESCONTADO O VALOR INDEVIDAMENTE NA PLR ASSISTENCIA PR CCT NO VALOR $162,29, DE ACORDO COM O HOLERITE.;PRINT DO HOLERITE EM ANEXO DEMONSTRANDO O DESCONTO INDEVIDO NA PLR DE ASSISTENCIA PR CCT $162,29
 100-102458;Service Request;Queued;2025-10-30 17:07:54;;COP-RH-HUB;3;Solicitação do empregado do empregado Sr. Valdeci Sales da Silva - Matrícula n.º 13111;"Solicitação de documentos pelo INSS ao empregado do empregado Sr. Valdeci Sales da Silva - Matrícula n.º 1311.
 
