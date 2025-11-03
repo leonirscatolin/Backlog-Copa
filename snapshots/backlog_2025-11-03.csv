@@ -787,9 +787,6 @@ Função: Assistente de logística"
  É meu primeiro acesso, e o meu login com a senha de rede só da erro."
 100-102494;Service Request;New;2025-10-31 08:39:33;;COP-ACESSO-SAP;2;Erro ao tentar acessar o SAP;Erro ao tentar acessar o SAP
 300-133810;Incident;New;2025-10-31 08:59:26;;COP-SAP-FRETES;2;Erro para lançamento da VT 896816;Status da VT consta em vermelho para lançamento do frete do transportado 430976, nf 13184.
-100-102498;Service Request;New;2025-10-31 09:00:59;;APOIO-COP-ACESSO;2;Solicito acesso a rede do Jurídico, pastas PUBLICO E INTEL_JUR - para Igor Aquino P31A - Aprovação da Gestora em anexo.;"CAMINHO:
-
-JURIDICO(\\SDC-VFSSD01\FSSD01) (U:) - CONTENCIOSO_REGULATORIO - APOIO"
 100-102499;Service Request;New;2025-10-31 09:04:35;;COP-ORIENTAÇÃO-GRC;2;Solicito acesso ao SAP - para o funcionário Igor Aquino P31A . Perfil igual Vanessa - lh87;Solicito acesso ao SAP - para o funcionário Igor Aquino P31A . Perfil igual Vanessa - lh87
 100-102502;Service Request;New;2025-10-31 09:23:46;;COP-ORIENTAÇÃO-GRC;2;solicitação de acesso ao SAP para jovem aprendiz na chave 3HWL;solicitação de acesso ao SAP para jovem aprendiz na chave 3HWL
 100-102524;Service Request;New;2025-10-31 11:25:20;;APOIO-COP-ACESSO;2;Acesso as pastas do financeiro MI;Bom dia, por gentileza, liberar acesso as pastas que estão na rede do financeiro, credito e cobrança. A Suellen solicitou.
@@ -1685,10 +1682,6 @@ REQUERENTE: RICARDO DA SILVEIRA ESTIMA
 CPF: 36930296015
 PERIODO TRABALHADO: 13/10/1997 A 04/08/2000
 ESCRITÓRIO SOLICITANTE: ANILDO ADVOGADOS"
-300-131368;Incident;Pending;2025-10-01 08:51:58;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES-3N;32;Muitos erros no GRC com relaçao a entrada de documentos do transportador no monitor de fretes.;"Usualmente utilizamos o acesso ao GRC, para verificar possíveis erros de recebimentos de CTE que não migraram no monitor de fretes (zlesr004).  Porem hoje ao entrar, o sistema informa que tem 370966 documentos pendentes. Acho que está ocorrendo algum erro bem serio e precisamos que verifiquem com urgência.
-
-
-Favor repassar para Ronald com urgencia!"
 100-99698;Service Request;Pending;2025-10-01 16:03:46;APARECIDA VIEIRA,SUZANA;COP-RH-HUB;32;Afastamento Daniel Rodrigues da Silva Joinville.;"Afastamento Daniel Rodrigues da Silva Joinville.
 
 Chamado aberto novamente pois o anterior 100-94011. 
@@ -1769,23 +1762,6 @@ CTEs em anexo.
 41983-1 - 43251043251230002007570010000419831000419833
 
 Solicito auxílio."
-100-100974;Service Request;Pending;2025-10-15 11:57:08;PEREIRA SILVA MEDEIROS,ADRIANA;COP-GMI-SMIL-SUSTENTAÇÃO;18;"Gostaria de solicitar o cadastro do novo leiturista da -  Veritas 
-Nome: Fernando Vicente Zark Farias 
-Data de Nascimento: 03/03/1987
-CPF: 020.627.851-94
-RG: 1558116-0
-E-mail: fernandozark@hotmail.com
-Telefone: 65 99329-7265
-Troca do crachá: 154
-Antigo para excluir : Douglas Luiz Lara da Costa";"Gostaria de solicitar o cadastro do novo leiturista da -  Veritas 
-Nome: Fernando Vicente Zark Farias 
-Data de Nascimento: 03/03/1987
-CPF: 020.627.851-94
-RG: 1558116-0
-E-mail: fernandozark@hotmail.com
-Telefone: 65 99329-7265
-Troca do crachá: 154
-Antigo para excluir : Douglas Luiz Lara da Costa"
 100-101010;Service Request;Pending;2025-10-15 14:36:30;JOSE BRITO VIEIRA,JAILSON;COP-RH-HUB;18;Afastamento - CO Capuava - Edson Carlos Francelino – 100401915;"Segue anexo histórico de afastamento do colaborador  Edson Carlos Francelino – 100401915
 
 Perícia agendada para o dia 11/12/2025.
@@ -1826,12 +1802,6 @@ Aparentemente o sistema está trazendo o município do emissor para o recebedor.
 Anexo um exemplo da ocorrência. 
 
 Foi obrigatório a informação de uma viagem mas reforço que são um número grande de ocorrências"
-300-132606;Incident;Pending;2025-10-16 10:05:14;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;17;FALHA NO KEPTRUEE;"KEPTRUEE NÃO APARECE PEDIDO PARA ASSOCIAÇÃO CONFORME ANEXOS.
-
-PEDIDO 4503411034
-PEDIDO 4503411276
-
-NOVA FASE - REQUALIFICADORA"
 300-132628;Incident;Pending;2025-10-16 11:02:40;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;17;Transação ZLES0014 não esta imprimindo documentos dos carros CIFs.;Ao utilizar a transação ZLES0014 os documentos: folha de rota, ordem de carregamento, romaneio entre outros não estão imprimindo. Em anexo segue a msg que aparece após tentativas de imprimir.
 100-101202;Service Request;Pending;2025-10-16 19:09:18;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;17;Avaliação do beneficio para empregada Francisca das Chagas Feitosa da Silva - Matrícula n.º 122049.;Empregada Francisca das Chagas Feitosa da Silva - Matrícula n.º 122049, encaminhou laudos para análise e pleito do beneficio previsto em convenção coletiva.
 300-132711;Incident;Pending;2025-10-17 10:28:46;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;16;"Bom dia!
@@ -1919,26 +1889,6 @@ JSON de envio  do Salesforce para o  SAP
 retorno SAP --> {""MT_Dados_Cliente_SF_Response"":""""}
  
 O JSON está chegando ao PI, mas o ABAP está retornando branco, precisamos debugar o ABAP para ver o que está ocorrendo"
-300-132961;Incident;Pending;2025-10-21 11:59:00;PEREIRA SILVA MEDEIROS,ADRIANA;COP-GMI-SMIL-SUSTENTAÇÃO;12;"Cadastrar novo leiturista - Veritas
-
-Nome: Natan Pablo Azevedo Sousa 
-Data de Nascimento: 20/05/1992 
-CPF: 404.418.298-13 
-RG: 428176100 
-E-mail: n.pablo@hotmail.com 
-Telefone: 1196606-2806
-Troca do crachá: 162
-Antigo: Adriano Inácio dos Santos
-Novo: Natan Pablo Azevedo Sousa";"Cadastrar novo leiturista - Veritas
-Nome: Natan Pablo Azevedo Sousa 
-Data de Nascimento: 20/05/1992 
-CPF: 404.418.298-13 
-RG: 428176100 
-E-mail: n.pablo@hotmail.com 
-Telefone: 1196606-2806
-Troca do crachá: 162
-Antigo: Adriano Inácio dos Santos
-Novo: Natan Pablo Azevedo Sousa"
 300-132978;Incident;Pending;2025-10-21 14:09:41;DE OLIVEIRA MANCO,TAMILIS;COP-SAP MOBILE;12;"Softmovel: 2545 21.10 15:25
 A unidade de Capuava (1200)  nos informou que está sem conseguir visualizar a opção de consulta da  assinatura digital para algumas notas.";"A unidade de Capuava (1200)  nos informou que está sem conseguir visualizar a opção de consulta da  assinatura digital para algumas notas. 
 Precisamos avaliar o motivo de tal comportamento, uma vez que deveria estar disponível para 100% das NFs granel assinadas digitalmente."
@@ -1947,8 +1897,6 @@ Precisamos avaliar o motivo de tal comportamento, uma vez que deveria estar disp
 
 Colaborador com perícia agendada para 21/11/2025.
 DUT - 04/10/2025"
-300-133056;Incident;Pending;2025-10-22 10:12:56;SILVA SIMOES,FABIO;COP-SUPORTE-XML-TI;11;Erro ao fazer entrega/faturamento em entrada de nota (vasilhame) no Keeptrue. Centro 1230 - KWN2;"NF-e 3606-1 - cliente Atacadista Monteiro, Código 18602.  VA 63834437. 
-Descrição do erro: erro ao criar entrega"
 300-133067;Incident;Pending;2025-10-22 11:12:19;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;11;ERRO LOG;Ao acessar a transação ZLESR004 - MONITOR - PAGAMENTO DE FRETES, está aparecendo o seguinte erro no log  ''Saldo da fatura não igual a zero''
 100-101704;Service Request;Pending;2025-10-22 14:35:13;PEREIRA SILVA MEDEIROS,ADRIANA;COP-GMI-SMIL-SUSTENTAÇÃO;11;"Contas digitais como Nubank, C6, Inter e etc, estão cadastradas no SAP, porém no SMI não as localizamos para cadastro de dados bancários. 
 
@@ -2247,7 +2195,6 @@ OV: 13367498
 ERRO: Ordem como venda direta impactando o fechamento do acerto.
 
 Não teve venda"
-300-133806;Incident;Pending;2025-10-31 08:08:00;PEREIRA SILVA MEDEIROS,ADRIANA;COP-GMI-SMIL-SUSTENTAÇÃO;2;Ação Manual - Status 802 -Os dados de centro do material 100003 estão bloqueados;Ação Manual - Status 802 -Os dados de centro do material 100003 estão bloqueados
 100-102496;Service Request;Pending;2025-10-31 08:53:51;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;2;Contracheque;Verificação de descontos.
 300-133813;Incident;Pending;2025-10-31 09:11:30;DO CARMO,DENIS;APOIO-COP-SEDE;2;sem acesso ao SAP;"sem acesso ao SAP
 
@@ -3017,7 +2964,6 @@ CASO PRECISE IR ATÉ A UNIDADE, AGENDAR O DIA PARA O PROCEDIMENTO."
 Valor adiantamento viagem R$ 225,00 não entrou na conta do funcionário, tinha previsão dia 26/10;
 Funcionário: Fabio Lourenço Cezar - nº 3919
 nº viagem: 99799"
-300-133833;Incident;Queued;2025-10-31 11:30:28;;COP-ACESSO-SAP;2;após troca de senha obrigatória, meu SAP bloqueou devido tentativas de acesso.;após troca de senha obrigatória, meu SAP bloqueou devido tentativas de acesso.
 100-102536;Service Request;Queued;2025-10-31 13:42:07;;COP-RH-TREINAMENTO&AV.DESEMPENHO;2;Comprovante de pagamento , mensalidade de faculdade.;Comprovante de pagamento referente  a mensalidade de setembro.
 100-102538;Service Request;Queued;2025-10-31 13:47:13;SOUZA DA SILVA,KELLY;COP-RH-FOPAG;2;Desconto em folha pensao;Colabroador ROGERIO CZARNESKI JUNIOR, SOLICITA DESCONTO EM FOLHA DE PENSAO ALIMENTICIA.
 300-133844;Incident;Queued;2025-10-31 13:55:37;;APOIO-COP-ACESSO;2;Usuária informa que após realizar troca de senha não está mais conseguindo acesso a VPN, ao tentar logar não aceita login e senha. Obs: demais acessos que não dependem da vpn acessam normalmente. Em anexo print do erro.;"chave: U0JM
@@ -3032,7 +2978,6 @@ SAMILLY AMALIA LIMA GOMES
 FRANCIELE DA SILVA VENTURINI"
 100-102543;Service Request;Queued;2025-10-31 14:18:54;;COP-RH-HUB;2;desconto indevido na PL - ASSISTENCIAL PR CCT no colaborador  - da chave KV41 - Tatiane Denise Pinati Ribeiro;desconto indevido na PL - ASSISTENCIAL PR CCT no colaborador  - da chave KV41 - Tatiane Denise Pinati Ribeiro
 100-102544;Service Request;Queued;2025-10-31 14:30:27;;COP-ORIENTAÇÃO-GRC;2;Acesso a transação para a chave: BAPJ;acesso a transação: ZLESR003 - para chave: BAPJ
-100-102546;Service Request;Queued;2025-10-31 14:57:34;;COP-ACESSO-SAP;2;Senha Bloqueada;Alterei as senhas e no SAP ECC o sistema esta informando que a senha nao confere, necessito urgencia no atendimento devido a liberações no sistema.
 100-102550;Service Request;Queued;2025-10-31 15:25:11;THOME DA SILVA,ARNANDO;COP-RH-ADMPESSOAL;2;Solicitação de alteração de férias emergencial para o colaborador GUSTAVO SILVA LABETA matrícula: 101500733;"Motivo: Necessidade de alteração para cobertura de licença médica eletiva que ocorrerá em dezembro com outros colaboradores da filial.
 
 Mudar de:
@@ -3062,7 +3007,6 @@ início no 17/11 até 28/11 (trabalho até 14/11 e retorno 01/12), totalizando d
 100-102563;Service Request;Queued;2025-10-31 15:37:08;;APOIO-COP-ACESSO;2;Usuário da chave: WS8R - Heloise Rossi Corona precisa de acesso ao SMI, verificado que no ad está sendo solicitado reenvio do termo, em conversa com Ednea solicitado abertura do chamado e encaminhamento para mesa de acesso.;Usuário da chave: WS8R - Heloise Rossi Corona precisa de acesso ao SMI, verificado que no ad está sendo solicitado reenvio do termo, em conversa com Ednea solicitado abertura do chamado e encaminhamento para mesa de acesso.
 100-102564;Service Request;Queued;2025-10-31 15:37:59;;APOIO-COP-ACESSO;2;Usuário da chave: 7EYQ - Maria Ana Juliene Freitas Puca precisa de acesso ao SMI, verificado que no ad está sendo solicitado reenvio do termo, em conversa com Ednea solicitado abertura do chamado e encaminhamento para mesa de acesso.;Usuário da chave: 7EYQ - Maria Ana Juliene Freitas Puca precisa de acesso ao SMI, verificado que no ad está sendo solicitado reenvio do termo, em conversa com Ednea solicitado abertura do chamado e encaminhamento para mesa de acesso.
 100-102565;Service Request;Queued;2025-10-31 15:39:02;;APOIO-COP-ACESSO;2;Usuário da chave: 5G8V - Maria Jose De Lima precisa de acesso ao SMI, verificado que no ad está sendo solicitado reenvio do termo, em conversa com Ednea solicitado abertura do chamado e encaminhamento para mesa de acesso.;Usuário da chave: 5G8V - Maria Jose De Lima precisa de acesso ao SMI, verificado que no ad está sendo solicitado reenvio do termo, em conversa com Ednea solicitado abertura do chamado e encaminhamento para mesa de acesso.
-100-102566;Service Request;Queued;2025-10-31 15:39:58;;COP-ACESSO-SAP;2;Usuário está bloqueado no SAP chave: LH77;Usuário está bloqueado no SAP chave: LH77
 100-102568;Service Request;Queued;2025-10-31 15:43:41;;APOIO-COP-ACESSO;2;Usuário da chave: 8SNT - Matheus Augusto Da Silva precisa de acesso ao SMI, verificado que no ad está sendo solicitado reenvio do termo, em conversa com Ednea solicitado abertura do chamado e encaminhamento para mesa de acesso.;Usuário da chave: 8SNT - Matheus Augusto Da Silva precisa de acesso ao SMI, verificado que no ad está sendo solicitado reenvio do termo, em conversa com Ednea solicitado abertura do chamado e encaminhamento para mesa de acesso.
 100-102569;Service Request;Queued;2025-10-31 15:44:39;THOME DA SILVA,ARNANDO;COP-RH-ADMPESSOAL;2;"Solicitação de alteração de férias emergencial para o colaborador RODRIGO CEZAR DE CASTRO PIRES; matrícula: 104947";"Motivo: Necessidade de alteração para que o colaborador possa cobrir licença médica eletiva de outro profissional na filial. 
 
@@ -3102,7 +3046,6 @@ O que seria esse valor descontado.";Foi descontado Coparticipação e gostaria d
 
  Ajusta marcação de ponto  Saída de 18:45 para 17:54 do colaborador Renato Bonfim dos  Santos - matricula: 120394."
 100-102592;Service Request;Queued;2025-10-31 17:58:44;;COP-RH-HUB;2;Recibo Auxilio Creche Ref.: mês de Novembro  / 2025;Recibo Auxilio Creche Ref.: mês de Novembro  / 2025
-300-133875;Incident;Queued;2025-10-31 17:59:15;;COP-SAP WF;2;13346542 ,13388099 ,13381707 ,13381708 OVs presas por favor, liberar;13346542 ,13388099 ,13381707 ,13381708 OVs presas por favor, liberar
 100-102075;Service Request;Resolved-Validation;2025-10-27 20:04:52;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-HUB;6;Mudança de escala.;"Solicito a mudança de escala do colaborador LUCIANO VALTER DOS SANTOS, matrícula: 730130, nos seguintes dias.
 
 * 27/10/2025: Mudança da escala atual 132 (0700 1100 1200 1520 SEG a SaB) para a escala 600 (0940 1300 1400 1800 s0940 1800).
