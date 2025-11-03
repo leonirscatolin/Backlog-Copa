@@ -610,8 +610,6 @@ Em anexo, seguem fotos do material para conhecimento."
 100-102511;Service Request;Active;2025-10-31 10:13:31;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;2;"Solicito agendamento de férias para DEOLCI DA SILVA, CO CANOAS,  dia 08/12/2025 20 dias;";favor agendar
 300-133821;Incident;Active;2025-10-31 10:13:35;CAROLINE FARIA DE ARAUJO,ANNA;PROD-COP-NOC;2;CO GOIÂNIA - SDWAN;"Designação: 08680148
 protocolo algar:  202532752467"
-300-133828;Incident;Active;2025-10-31 10:54:57;CARLO GONCALVES DA SILVA,JEAN;COP-INFRA;2;Usuário informa que seu global security está com problema, não está conseguindo conectar a rede em home. Em anexo print do erro.;"Notebook: NCESD2-00143
-Contato: 011 99664-7107"
 100-102516;Service Request;Active;2025-10-31 10:55:18;DA SILVA CACULA,CLAUDETE;COP-RH-TREINAMENTO&AV.DESEMPENHO;2;SOLICITO REEMBOLSO REFERENTE AO BOLETO COM VENCIMENTO EM 15/11.;SOLICITO REEMBOLSO REFERENTE AO BOLETO COM VENCIMENTO EM 15/11.
 300-133836;Incident;Active;2025-10-31 11:45:07;DARIO DURAN CARRILLO,VICTOR;COP-SAP MOBILE;2;"F8A32
 VIAGEM 696624
@@ -696,7 +694,6 @@ Já  foi liberado o acesso as transações mas não estou conseguindo acessar co
 Solicito com urgência o envio da senha para acesso do SAP IDM";"Senha SAP IDM
 Já  foi liberado o acesso as transações mas não estou conseguindo acessar com a senha.
 Solicito com urgência o envio da senha para acesso do SAP IDM"
-100-102292;Service Request;New;2025-10-29 14:23:15;;COP-ORIENTAÇÃO-GRC;4;ESTOU SEM ACESSO A OUTRAS FILIAIS, EXCETO 1207 E 1015, PARA REALIZAR A OPERAÇÃO DA TRANSAÇÃO ZLES0008.;QUANDO VOU REALIZAR A TRANSFERENCIA DE GRANEL, NÃO CONSIGO, PORQUE NÃO TENHO ACESSO ÀS FILIAIS, EXCETO 1015 E 1207.
 100-102336;Service Request;New;2025-10-30 07:26:52;;COP-POWER-BI;3;Havia aberto um chamado anterior, porém não foi resolvido (100-102039), continuo sem conseguir visualizar os dados do relatório;Havia aberto um chamado anterior, porém não foi resolvido (100-102039), continuo sem conseguir visualizar os dados do relatório
 100-102344;Service Request;New;2025-10-30 08:27:34;;COP-ORIENTAÇÃO-GRC;3;FALTA DE AUTORIZAÇÃO ENTRADA NOTA NAVIO;"AO TENTAR REALIZAR O PROCESSO DA ENTRADA DE NOTA DO NAVIO O SEGUINTE ERRO ACONTECE 
 FALTA DE AUTORIZAÇÃO PARA DOCUMENTO 4503774142 
@@ -710,7 +707,6 @@ POR GENTILEZA CHAMAR O USUARIO DA CHAVE  LG5A"
 100-102413;Service Request;New;2025-10-30 12:34:36;;COP-SAP-MM-TRIBUTARIO;3;Boa tarde, por favor, solicito autorização para baixar o programa ReceitaNet, para transmissão do SPED EFD - ICMS/IPI;Boa tarde, por favor, solicito autorização para baixar o programa ReceitaNet, para transmissão do SPED EFD - ICMS/IPI
 100-102414;Service Request;New;2025-10-30 12:48:55;;COP-ORIENTAÇÃO-GRC;3;Solicito, por gentileza, ser incluído no fluxo de aprovação de pedidos, requisições, viagens e demais controles referentes à filial de Ibirité – 1014.;"Na segunda quinzena do mês de outubro, fui designado como gerente do Centro Operativo de Ibirité.
 Para desempenhar minhas atividades de forma adequada, preciso ter acesso idêntico ao do gestor Carlos Roberto Alves (chave IKYX), porém vinculado à filial 1024."
-100-102415;Service Request;New;2025-10-30 13:07:16;;APOIO-COP-ACESSO;3;Chave yxb1 expirou, solicito a prorrogação.;Chave yxb1 expirou, solicito a prorrogação.
 100-102417;Service Request;New;2025-10-30 13:19:18;;APOIO-COP-ACESSO;3;"Liberação de Acesso Service Aide para colaboradora: Lillian Mendes Mognon
 Assistente Logística de Suporte a Vendas
 CPF: 025.100.310-82
@@ -733,49 +729,6 @@ Nome do Host |
 172.31.236.199
 Endereço IP |
 172.31.236.19"
-100-102475;Service Request;New;2025-10-30 19:34:12;;APOIO-COP-ACESSO;3;"Solicitação de acesso para os empregados da logística na pasta de rede da unidade Barueri.
-
-Caminho: U:\GCO-OS\SULOG";"Solicitação de acesso para os empregados da logística na pasta de rede da unidade Barueri.
-
-Caminho: U:\GCO-OS\SULOG
-
-Daiane Alves de Brito
-g8ky@copaenergia.com.br"
-100-102476;Service Request;New;2025-10-30 19:36:34;;APOIO-COP-ACESSO;3;"Solicitação de acesso pasta de rede:
-
-Solicitação de acesso para os empregados da logística na pasta de rede da unidade Barueri.
-
-Caminho: U:\GCO-OS\SULOG";Solicitação de acesso na pasta Caminho: U:\GCO-OS\SULOG, empregada Daiane Alves Ferreira da Silva b7xk@copaenergia.com.br
-100-102477;Service Request;New;2025-10-30 19:38:41;;APOIO-COP-ACESSO;3;"Liberação de acesso para de rede da logística.
-
-U:\GCO-OS\SULOG";"Liberação de acesso para de rede da logística.
-
-U:\GCO-OS\SULOG
-
-Guilherme Nunes de Melo
-ru2s@copaenergia.com.br"
-100-102478;Service Request;New;2025-10-30 19:40:28;;APOIO-COP-ACESSO;3;"Liberação de acesso pasta de rede:
-caminho: U:\GCO-OS\SULOG";"Liberação de acesso pasta de rede:
-caminho: U:\GCO-OS\SULOG
-
-Guilherme Nunes de Melo
-ru2s@copaenergia.com.br"
-100-102479;Service Request;New;2025-10-30 19:43:10;;APOIO-COP-ACESSO;3;"Liberação de acesso na pasta de rede da logística.
-
-U:\GCO-OS\SULOG";Liberação de acesso pasta de rede da logística U:\GCO-OS\SULOG para o empregado Veridiano Santos de Menezes - fnn3@copaenergia.com.br
-100-102480;Service Request;New;2025-10-30 19:46:38;;APOIO-COP-ACESSO;3;"Liberação de acesso para de rede da logística.
-
-Caminho U:\GCO-OS\SULOG";"Liberação de acesso da pasta de rede da logística para o empregado Felipe de Souza Nunes.
-
-es8o@copaenergia.com.br"
-100-102481;Service Request;New;2025-10-30 19:48:49;;APOIO-COP-ACESSO;3;"Liberação de acesso na pasta de rede da logística.
-U:\GCO-OS\SULOG";Liberação de acesso da pasta da logística U:\GCO-OS\SULOG, empregado Weslley Vinicius Lima Ferreira - 0jns@copaenergia.com.br
-100-102482;Service Request;New;2025-10-30 19:50:31;;APOIO-COP-ACESSO;3;"Solicitação de acesso pasta Logística.
-GCO-OS\SULOG";"Solicitação de acesso pasta Logística.
-GCO-OS\SULOG - empregado Danilo Victor Silva De Oliveira - 4rk1@copaenergia.com.br"
-100-102483;Service Request;New;2025-10-30 20:00:41;;APOIO-COP-ACESSO;3;"Solicitação de acesso pasta de rede da logística.
-U:\GCO-OS\SULOG";"Solicitação de acesso pasta de rede da logística.
-U:\GCO-OS\SULOG, empregado Joao Francisco Da Silva Lima - 8vkd@copaenergia.com.br"
 100-102491;Service Request;New;2025-10-31 08:30:18;;APOIO-COP-ACESSO;2;Solicito apoio para criação de chave e acesso ao sistema para um funcionário recém contratado que fica sob minha gestão.;"Dados do funcionário:
 
 Data de inicio: 03/11/2025
@@ -811,7 +764,6 @@ precisa ser liberado.
 
 aparecen agendamentos de outras unidades mais nao do CO pelotas"
 300-133857;Incident;New;2025-10-31 15:05:18;;COP-SALESFORCE;2;Erro ao rejeitar leads e oportunidade;A funcionária Júlia Alves Loucano do time de expansão não esta conseguindo rejeitar lead, pois informa que o motivo de perda e rejeição não esta sendo preenchido, porém esse campo não é preenchido na etapa do lead.
-300-133859;Incident;New;2025-10-31 15:17:55;;APOIO-COP-ACESSO;2;Problemas para abrir RDM;Nao estou conseguindo abrir RDM não aparece nenhuma opção, segue print em anexo.
 100-102577;Service Request;New;2025-10-31 16:19:34;;APOIO-COP-ACESSO;2;"Colaborador Carlos Augusto Barbosa Pereira (Matricula 121647) solicita reset da senha para acesso no aplicativo SENIOR
 
 email: carlos.profissional2022@gmail.com
@@ -2188,8 +2140,6 @@ agendada visita pra hoje (01/11) com Roberto Renna.(27) 99665-2881, já passei o
 
 VIAGEM : 696870 
 PAT : 1388802"
-300-133826;Incident;Pending;2025-10-31 10:37:34;CARLO GONCALVES DA SILVA,JEAN;COP-INFRA;2;Usuário está com problema ao tentar acesso ao SAP ocorre o erro 88 no logon conforme print em anexo solicita prioridade pois está em fechamento.;"Usuário está com problema ao tentar acesso ao SAP ocorre o erro 88 no logon conforme print em anexo solicita prioridade pois está em fechamento.
-chave: ITKY"
 300-133832;Incident;Pending;2025-10-31 11:17:34;CARLOS CABRINI,JEAN;PROD-COP-NOC;2;DAC MACAPÁ;"DAC MACAPÁ  
 Designação: 08471627
 protocolo algar:   202532381432
@@ -2464,11 +2414,6 @@ ela informou que caso eu não realize a renovação meu beneficio sera cancelado
 100-101735;Service Request;Queued;2025-10-22 17:46:44;RODRIGUES LURIAL GOMES,FELIPE;COP-RH-SOLUÇÕES;11;Aplicativo Evope não esta aparecendo para solicitação de hora extra.;"Aplicativo Evope não esta aparecendo para solicitação de hora extra.
 Não estou conseguindo solicitar Horas extra para trabalho após o horário."
 300-133139;Incident;Queued;2025-10-23 08:05:02;;COP-SAP-SD-TRIBUTARIO;10;Nota de devolução lançada conforme doc. 21210603 , porém não bandeirou solicitamos de apoio para finalizar o processo de faturamento da nota;Nota de devolução lançada conforme doc. 21210603 , porém não bandeirou solicitamos de apoio para finalizar o processo de faturamento da nota
-300-133154;Incident;Queued;2025-10-23 09:40:37;CARDOSO SOUZA DA SILVA,RONALD;COP-SAP LES-3N;10;"Bom dia!
-Problema no faturamento de notas fiscais. Apresentando o ERRO MARA sobre a placa do veiculo HVL 0367/MG.";"Bom dia!
-Problema no faturamento de notas fiscais. Apresentando o ERRO MARA sobre a placa do veiculo HVL 0367/MG.
-
-URGENTE!"
 300-133160;Incident;Queued;2025-10-23 09:58:54;;COP-SAP MOBILE-3N;10;"CHAMADO SOFTMÓVEL 2566
 Ao encerra a viagem 693859 através do portal do SIVA+ , a mesma apresenta erro conforme imagem em anexo; centro 1233;";"Ao encerra a viagem 693859 através do portal do SIVA+ , a mesma apresenta erro conforme imagem em anexo; centro 1233"
 100-101774;Service Request;Queued;2025-10-23 10:03:52;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-ADMPESSOAL;10;ASO RETORNO AO TRABALHO - JOSE RONALDO GARCIA BATISTA, MAT 14301;"Bom dia!
