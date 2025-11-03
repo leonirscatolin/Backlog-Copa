@@ -610,15 +610,6 @@ Em anexo, seguem fotos do material para conhecimento."
 300-133821;Incident;Active;2025-10-31 10:13:35;CAROLINE FARIA DE ARAUJO,ANNA;PROD-COP-NOC;2;CO GOIÂNIA - SDWAN;"Designação: 08680148
 protocolo algar:  202532752467"
 100-102516;Service Request;Active;2025-10-31 10:55:18;DA SILVA CACULA,CLAUDETE;COP-RH-TREINAMENTO&AV.DESEMPENHO;2;SOLICITO REEMBOLSO REFERENTE AO BOLETO COM VENCIMENTO EM 15/11.;SOLICITO REEMBOLSO REFERENTE AO BOLETO COM VENCIMENTO EM 15/11.
-300-133836;Incident;Active;2025-10-31 11:45:07;DARIO DURAN CARRILLO,VICTOR;COP-SAP MOBILE;2;"F8A32
-VIAGEM 696624
-PAT RETORNO 1388672
-
-PAT FOI BANDEIRADO, MAS NAO SUBIU AS NFS NO SISTEMA.";"F8A32
-VIAGEM 696624
-PAT RETORNO 1388672
-
-PAT FOI BANDEIRADO, MAS NAO SUBIU AS NFS NO SISTEMA."
 100-102531;Service Request;Active;2025-10-31 13:04:53;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;2;"SOLICITAÇÃO DE LTCAT E PPP
 REQUERENTE: CARLOS ROGERIO FREITAS DA SILVA
 CPF:472626720-53";"SOLICITAÇÃO DE LTCAT E PPP
@@ -2064,7 +2055,6 @@ FROTA ESTAVA COM A SÉRIE 7 E HOJE PRECISAMOS FAZER A SUBSTITUIÇÃO DELA, POREM
 Ajudante de Carga e Descarga - DAC SANTOS";"Colaborador está afastado desde o dia 04/07/2023.
 
 Artrose no joelho esquerdo, fará cirurgia em janeiro de 2026."
-300-133874;Incident;Pending;2025-10-31 17:49:50;ALVARENGA RANGEL LIANG,ALINE;COP-SAP MOBILE;2;Erro reconciliação;"PAT=00000000000001388969; Reconciliação->  Erro SIVA-> E006: OrdemVenda:0013366850. Não encontrado uma nota ou recusa para reconciliar"
 300-133880;Incident;Pending;2025-10-31 19:41:12;CARLOS DA SILVA RIBEIRO,ELI;COP-SAP MOBILE;2;Não estou conseguindo reconciliar;"Não estou conseguindo reconciliar 
 
 Pat 1389648
@@ -2651,11 +2641,6 @@ Gentileza verificar."
 100-102474;Service Request;Queued;2025-10-30 19:21:47;;COP-RH-HUB;3;Alteração da folga de trabalho da empregada Magda Merim da Silva - Matrícula n.º 121732.;"Alteração da folga de trabalho da empregada Magda Merim da Silva - Matrícula n.º 121732.
 
 Alteração do sábado de folga."
-100-102484;Service Request;Queued;2025-10-30 20:26:02;;COP-SAP SD-3N;3;Carga no Campo Segmentação no Cadastro de Clientes Empresarial;"Boa tarde,
-
-foi criado no sap na parte de cadastro de cliente no Campo Segmentação algumas opções de segmentação para que seja utilizada para área empresarial seguindo as premissas da Inteligência de Mercado e precisamos que este campo seja atualizado nos clientes já existentes  através de carga conforme planilha anexa com os códigos do cliente x segmentação que é necessário constar no cadastro deles.
- 
-qq dúvida estou à disposição."
 300-133808;Incident;Queued;2025-10-31 08:45:04;;COP-TELECOM;2;Sem internet na base 1247.;Sem internet na base 1247.
 300-133809;Incident;Queued;2025-10-31 08:46:41;CARDOSO SOUZA DA SILVA,RONALD;COP-SAP LES-3N;2;ERRO LANÇAMENTO FRETES ZLESR004;ERRO TEMPO EXECUÇÃO DE TELA NA TRANZAÇÃO ZLESR004, LANÇAMENTO NOTAS FISCAIS DE SERVIÇO
 100-102497;Service Request;Queued;2025-10-31 08:57:51;THOME DA SILVA,ARNANDO;COP-RH-FOPAG;2;desconto de taxa sindical da participação de lucros;"Solicito analise e reembolso da taxa sindical descontada na participação de lucos no valor de R$ 200,00
