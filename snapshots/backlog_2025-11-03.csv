@@ -560,7 +560,6 @@ Por favor nos envie um técnico para nos ajudar."
 100-102390;Service Request;Active;2025-10-30 10:57:32;DA SILVA CACULA,CLAUDETE;COP-RH-TREINAMENTO&AV.DESEMPENHO;3;REEMBOLSO POS GRADUAÇÃO MÊS 10/2025;REEMBOLSO POS GRADUAÇÃO MÊS 10/2025
 300-133762;Incident;Active;2025-10-30 11:08:51;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;3;Falha na utilização do SOC Plug, não esta capturando a digital;Falha na utilização do SOC Plug, não esta capturando a digital
 100-102397;Service Request;Active;2025-10-30 11:26:43;DA SILVA CACULA,CLAUDETE;COP-RH-TREINAMENTO&AV.DESEMPENHO;3;Comprovante 11/2025;Segue comprovante referente ao mês 11/2025
-100-102401;Service Request;Active;2025-10-30 11:36:33;NEVES DA SILVA,EDNEA;APOIO-COP-ACESSO;3;Solicito acesso as filas de chamado espelhado na chave CIDJ.;Solicito acesso as filas de chamado espelhado na chave CIDJ.
 100-102403;Service Request;Active;2025-10-30 11:52:04;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;3;PPP;DOCUMENTO PARA FECHAR O PROCESSO EM SEGUNDA ESTANCIA.
 100-102420;Service Request;Active;2025-10-30 14:06:37;GOMES DE ARRUDA,ROSIMARA;COP-RH-HUB;3;Desconto indevido contribuição assistencial;Fiz a contestação para não ser descontado a contribuição assistencial (sindicato) mas verifiquei agora no meu holerite que descontou R$ 130,00
 100-102431;Service Request;Active;2025-10-30 14:47:36;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;3;Solicitação de PPP;"Por gentileza, solicito o meu PPP.
@@ -798,11 +797,6 @@ Endereço: SCD-VFSSD01\FSSD01
 - Pasta: APOIO e COORD_COBR
 
 Obrigada, Suellen."
-300-133842;Incident;New;2025-10-31 13:41:38;;COP-OneID-Suporte;2;Falha no perfil de usuário Nimbi;"usuário cadastrado sem perfil na nimbi conforme anexo
-
-CHRYSTIAN HENRIQUE OLIVEIRA DE ANDRADE
-
-devia ter recebido o perfil Comprador"
 100-102537;Service Request;New;2025-10-31 13:47:09;;COP-ORIENTAÇÃO-GRC;2;"Preciso do acesso à transação VI02 para modificar custos e assim fazer os ajustes necessários que para o CTES sejam lançados corretamente;";"Preciso do acesso à transação VI02 para modificar custos e assim fazer os ajustes necessários que para o CTES sejam lançados corretamente;"
 100-102539;Service Request;New;2025-10-31 13:58:48;;COP-ORIENTAÇÃO-GRC;2;Problema ao analisar projeto na ZRF;Na operação ZRF não está puxando a análise de resultados nos projetos, sendo assim não estamos conseguindo criar ordens de venda para o granel.
 100-102541;Service Request;New;2025-10-31 14:15:25;;APOIO-COP-ACESSO;2;acesso a pasta userliq;estou sem acesso a pasta userliq
@@ -817,14 +811,6 @@ precisa ser liberado.
 
 aparecen agendamentos de outras unidades mais nao do CO pelotas"
 300-133857;Incident;New;2025-10-31 15:05:18;;COP-SALESFORCE;2;Erro ao rejeitar leads e oportunidade;A funcionária Júlia Alves Loucano do time de expansão não esta conseguindo rejeitar lead, pois informa que o motivo de perda e rejeição não esta sendo preenchido, porém esse campo não é preenchido na etapa do lead.
-100-102548;Service Request;New;2025-10-31 15:16:01;;COP-SALESFORCE;2;Tornar o campo “Área do Consultor/API” obrigatório no fluxo;"Para o fluxo funcionar sem retrabalho, precisamos que o campo “Área do Consultor/API” venha sempre preenchido. Hoje, em alguns casos ele chega vazio.
-
-Tornar o campo obrigatório no início do funil..
-Automatizar o preenchimento com base no proprietário da Oportunidade.
-
-Segue link no salesforce:
-
-https://copagaz.lightning.force.com/lightning/r/Report/00OTW000000fL5J2AU/view?queryScope=userFolders."
 300-133859;Incident;New;2025-10-31 15:17:55;;APOIO-COP-ACESSO;2;Problemas para abrir RDM;Nao estou conseguindo abrir RDM não aparece nenhuma opção, segue print em anexo.
 100-102577;Service Request;New;2025-10-31 16:19:34;;APOIO-COP-ACESSO;2;"Colaborador Carlos Augusto Barbosa Pereira (Matricula 121647) solicita reset da senha para acesso no aplicativo SENIOR
 
@@ -839,14 +825,6 @@ Não é gerado dentro da PAT , os defeitos  e as vendas de comodatos, por isso t
 Muito obrigada 
 Luciana Mara de Oliveira"
 100-102587;Service Request;New;2025-10-31 17:21:32;;COP-ORIENTAÇÃO-GRC;2;Solicito acesso ao SAP com perfil igual ao da Vanessa LH87;Solicito acesso ao SAP com perfil igual ao da Vanessa LH87
-300-133878;Incident;New;2025-10-31 18:34:41;;APOIO-COP-SEDE;2;Instalar Global Security;"Instalar Global Security 
-
-preciso que seja feita a instalação em minha máquina para que eu possa resolver algumas demandas em home office
-
-
-CHAVE :ZKZN
-CONTATO : 31 993021306
-IP: 172.31.234.58"
 100-102593;Service Request;New;2025-10-31 18:44:58;;APOIO-COP-SEDE;2;Instalação dos aplicativos Outlook e Teams no computador;Solicito a instalação dos aplicativos Outlook e Microsoft Teams na minha máquina. O Outlook só consigo abrir pelo Citrix, e o Teams apenas a versão web.
 100-91194;Service Request;Pending;2025-07-08 15:55:56;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;117;Afastamento Bruno Messias da Silva - Suape;"Acompanhar processo de afastamento:
 Dut orientações enviado  email: brunomessias12042019@gmail.com (81) 995912612. 
@@ -2008,21 +1986,6 @@ Colaborador afastado desde  03/03/2015."
 Colaborador encaminhado para Reabilitação Profissional.
 
 Colaborador afastado desde 30/01/2021."
-300-133556;Incident;Pending;2025-10-28 11:40:13;BASTOS DE SOUZA KLEM,CAMILA;COP-SUPORTE-XML-TI;5;"Erro ao tentar gerar a miro para o conhecimento de transporte 2314-1.
-
-o SAP apresenta o erro de que o documento já foi lançado, porém não há lançamento
-
-VT/VI: 891204
-Conhecimento de Transporte:
-
-35251042655504000351570010000023141060219565";"Erro ao tentar gerar a miro para o conhecimento de transporte 2314-1.
-
-o SAP apresenta o erro de que o documento já foi lançado, porém não há lançamento
-
-VT/VI: 891204
-Conhecimento de Transporte:
-
-35251042655504000351570010000023141060219565"
 100-102148;Service Request;Pending;2025-10-28 12:19:13;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;5;Afastamento - CO Duque de Caxias -  JORGE REGINALDO DO NASCIMENTO – 115299;"Telefone de contato: 21 96458-4430
 
 Colaborador encaminhado para reabilitação profissional.
