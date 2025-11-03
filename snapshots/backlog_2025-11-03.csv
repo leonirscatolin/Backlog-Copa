@@ -632,14 +632,6 @@ douglassilvaadvogado@gmail.com
 fone: 51-99191-6476"
 100-102549;Service Request;Active;2025-10-31 15:22:35;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;2;"Boa tarde 
 Cancelamento do vale transporte";Detalhe não estou utilizando
-300-133869;Incident;Active;2025-10-31 16:24:12;APARECIDO DO CARMO,MARQUES;COP-INFRA;2;Problema para acessar o SAP;"Problema para acessar o SAP
-
-estou em home tentando acessar o SAP IDM porem da um erro conforme imagem em anexo.
-
-O  global security  aparece como desabilitado 
-
-CHAVE : 7431
-CONTATO: 71 996581963"
 100-102591;Service Request;Active;2025-10-31 17:40:49;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;2;AFASTAMENTO_MATRIZ-JANAINA DE BARROS FERREIRA AMADOR;"AFASTAMENTO_MATRIZ-JANAINA DE BARROS FERREIRA AMADOR/115131
 
 
@@ -700,11 +692,6 @@ POR GENTILEZA CHAMAR O USUARIO DA CHAVE  LG5A"
 100-102413;Service Request;New;2025-10-30 12:34:36;;COP-SAP-MM-TRIBUTARIO;3;Boa tarde, por favor, solicito autorização para baixar o programa ReceitaNet, para transmissão do SPED EFD - ICMS/IPI;Boa tarde, por favor, solicito autorização para baixar o programa ReceitaNet, para transmissão do SPED EFD - ICMS/IPI
 100-102414;Service Request;New;2025-10-30 12:48:55;;COP-ORIENTAÇÃO-GRC;3;Solicito, por gentileza, ser incluído no fluxo de aprovação de pedidos, requisições, viagens e demais controles referentes à filial de Ibirité – 1014.;"Na segunda quinzena do mês de outubro, fui designado como gerente do Centro Operativo de Ibirité.
 Para desempenhar minhas atividades de forma adequada, preciso ter acesso idêntico ao do gestor Carlos Roberto Alves (chave IKYX), porém vinculado à filial 1024."
-100-102441;Service Request;New;2025-10-30 15:38:05;;APOIO-COP-ACESSO;3;"Prestador esqueceu a senha para acessar a VPN, poderia por gentileza redefinir?
-
-Chave: FYU4";"Prestador esqueceu a senha para acessar a VPN, poderia por gentileza redefinir?
-
-Chave: FYU4"
 100-102452;Service Request;New;2025-10-30 16:25:22;;APOIO-COP-ACESSO;3;APLICAÇÕES LOTUS NOTES;"Inserir na area d etrabalho 
 
 1- Historico  Manual de Contratos Granel e Envasado
@@ -726,13 +713,6 @@ Endereço IP |
 100-102502;Service Request;New;2025-10-31 09:23:46;;COP-ORIENTAÇÃO-GRC;2;solicitação de acesso ao SAP para jovem aprendiz na chave 3HWL;solicitação de acesso ao SAP para jovem aprendiz na chave 3HWL
 100-102524;Service Request;New;2025-10-31 11:25:20;;APOIO-COP-ACESSO;2;Acesso as pastas do financeiro MI;Bom dia, por gentileza, liberar acesso as pastas que estão na rede do financeiro, credito e cobrança. A Suellen solicitou.
 100-102526;Service Request;New;2025-10-31 11:51:30;;APOIO-COP-ACESSO;2;Bom dia, preciso do acesso ao lotus notes e da liberação para esses documentos (imagem em anexo);Bom dia, preciso do acesso ao lotus notes e da liberação para esses documentos (imagem em anexo)
-100-102528;Service Request;New;2025-10-31 12:14:26;;APOIO-COP-ACESSO;2;Acesso a pasta Financeiro - Denise Sena;"Favor conceder acesso ao Diretório do Financeiro a colaboradora Denise Sena: denise.sena@copaenergia.com.br 
-
-Endereço: SCD-VFSSD01\FSSD01
-- U:\CREDITO_COBRANCA
-- Pasta: APOIO e COORD_COBR
-
-Obrigada, Suellen."
 100-102537;Service Request;New;2025-10-31 13:47:09;;COP-ORIENTAÇÃO-GRC;2;"Preciso do acesso à transação VI02 para modificar custos e assim fazer os ajustes necessários que para o CTES sejam lançados corretamente;";"Preciso do acesso à transação VI02 para modificar custos e assim fazer os ajustes necessários que para o CTES sejam lançados corretamente;"
 100-102539;Service Request;New;2025-10-31 13:58:48;;COP-ORIENTAÇÃO-GRC;2;Problema ao analisar projeto na ZRF;Na operação ZRF não está puxando a análise de resultados nos projetos, sendo assim não estamos conseguindo criar ordens de venda para o granel.
 100-102541;Service Request;New;2025-10-31 14:15:25;;APOIO-COP-ACESSO;2;acesso a pasta userliq;estou sem acesso a pasta userliq
@@ -1794,14 +1774,6 @@ Em anexo, segue um exemplo da conta Inter.";"Contas digitais como Nubank, C6, In
 
 Em anexo, segue um exemplo da conta Inter."
 300-133127;Incident;Pending;2025-10-22 17:29:20;CARLOS DA SILVA RIBEIRO,ELI;COP-SAP MOBILE;11;Cliente informa que as notas fiscais estão sendo emitidas sem a identificação das escolas, o que tem dificultado a rotina de conferência e pagamento.;Em anexo, seguem todos os códigos dos clientes que necessitam dessa alteração.
-300-133132;Incident;Pending;2025-10-22 19:15:56;DE OLIVEIRA MANCO,TAMILIS;COP-SAP MOBILE;11;"Softmovel: 2579 
-Na hora da entrega foi emitido nota nº 4726-11 para o cliente Urbano código 71776 mas no Siva está com recusa;
-Na outra entrega em outra unidade do cliente Urbano código 333102 foi emitido nota 4725-11 mas no Siva está outro número 4739-11";"Centro 1222
-C. O. Canoas
-FROTA F380
-Veículo PLS1C70
-TRIP 692904
-PAT 1380940"
 300-133163;Incident;Pending;2025-10-23 10:09:08;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;10;Nota de transferência de 21/10 está sem valor.;"Nota: 77996 série 1
 Centro: 1206
 Numdoc: 21218037
@@ -1820,16 +1792,6 @@ Usarei para a base de contratos."
 NILSON ANTONIO DOS SANTOS - fferron83@gmail.com -  (41) 98875-2911";"Solicitação PPP demitido Nilson Antonio dos Santos  - solicitado através do Compliance - Araucária PR.
 
 NILSON ANTONIO DOS SANTOS - fferron83@gmail.com -  (41) 98875-2911"
-300-133309;Incident;Pending;2025-10-24 15:43:28;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;9;Falha ao carregar sistema operacional;"Não está carregando o Windows no meu notebook  Erro System 32
-
-notebook: NCECA1-00048
-Modelo Thinkpad P490
-
-Localidade:  CO Canoas
-
-Contato: 51999832897
-
-Preciso com urgência"
 100-101916;Service Request;Pending;2025-10-25 09:18:25;DA SILVA CACULA,CLAUDETE;COP-RH-HUB;8;Solicito reset de senha dos apps Marcação de Ponto e app WAAPI;Não consigo acessar aplicativos: Marcação de Ponto e WAAPI
 300-133356;Incident;Pending;2025-10-25 19:37:59;DE ALMEIDA FERREIRA,FABIO;APOIO-COP-SD;8;Reset MFA;"Reset MFA
 
@@ -1969,19 +1931,6 @@ você precisa abrir um chamado junto a TI para análise do SIVA PLUS, porque a e
 No Sistema Sales force o boleto esta com vencimento correto. Mas os que deixam pro cliente esta com vencimento no mesmo dia.
 
 você precisa abrir um chamado junto a TI para análise do SIVA PLUS, porque a emissão do caminhão não está seguindo a condição de pagamento do cliente."
-300-133749;Incident;Pending;2025-10-30 09:57:34;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;3;"Prezados, bom dia!
-
-Não estou conseguindo efetuar o lançamento da nota fiscal nº 5508, referente ao pedido – 4503710300. Na Keep True está apontando a ausência de documento de transporte como motivo de impedimento. De acordo com a análise realizada pelo Jhonatan, o pedido encontra-se correto.";"Resposta do Tributário
-Bom dia!
-
-Referente a este caso, conforme mensagem, está requerendo que seja criada VT/VI de frete.
-
-Mas, de acordo com o documento fiscal, o frete desta compra é CIF (por conta do vendedor) e não deveria estar exigindo a criação de VT/VI.
-
-Sendo assim, por favor, queira abrir chamado para a TI – equipe de MM avaliar esse caso.
-
-Atenciosamente, 
-Ricardo Luis Garcia"
 100-102374;Service Request;Pending;2025-10-30 09:58:32;NEVES DA SILVA,EDNEA;APOIO-COP-ACESSO;3;acesso a pasta de rede;"usuária necessita de acessa a uma pasta de rede:
 
 CAMINHO:
