@@ -1,4 +1,4 @@
-# VERSÃO v0.9.54-764 (Renomeando coluna de analista)
+# VERSÃO v0.9.56-766 (Removida automação API)
 
 import streamlit as st
 import pandas as pd
@@ -15,7 +15,7 @@ from urllib.parse import quote
 import json
 import colorsys
 import re
-import requests
+# import requests # Removido
 
 # --- INÍCIO - Constantes Globais ---
 GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM-GTR'
@@ -516,6 +516,7 @@ def formatar_delta_card(delta_abs, delta_perc, valor_comparacao, data_comparacao
     return delta_text, delta_class
 
 
+# --- v0.9.56: Função de teste de API mantida, mas chamada removida da sidebar principal ---
 def trigger_serviceaide_fetch(repo):
     st.sidebar.info("Iniciando teste de busca (API ServiceAide)...")
     try:
@@ -734,13 +735,7 @@ if is_admin:
 elif password:
     st.sidebar.error("Senha incorreta.")
 
-if is_admin:
-    st.sidebar.markdown("---")
-    st.sidebar.subheader("Teste de Automação")
-    st.sidebar.info("Para automação: configure os Secrets 'SERVICEAIDE_USER' e 'SERVICEAIDE_PASS' (para uma conta sem SSO) e clique abaixo para testar.")
-    
-    if st.sidebar.button("Testar Busca (API ServiceAide)"):
-        trigger_serviceaide_fetch(repo)
+# --- v0.9.56: Seção de teste de automação removida ---
 
 try:
     if 'contacted_tickets' not in st.session_state:
@@ -884,12 +879,9 @@ try:
             
             date_col_name = next((col for col in ['Data de criação', 'Data de Criacao'] if col in df_encerrados_para_exibir.columns), None)
             
-            # --- INÍCIO DA MODIFICAÇÃO v0.9.54 ---
             colunas_para_exibir_fechados = ['Status', 'ID do ticket', 'Descrição']
             
-            # Nome que queremos exibir na tabela
             novo_nome_analista = "Analista de Resolução" 
-            # Nome da coluna como ela vem no arquivo .csv
             analista_col_name_origem = "Analista atribuído" 
             
             id_col_encerrados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_encerrados_para_exibir.columns), None)
@@ -902,9 +894,11 @@ try:
             
             id_col_fechados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados.columns), None)
             
-            # Verifica se a coluna de *origem* existe no arquivo de fechados
             if id_col_fechados and analista_col_name_origem in df_fechados.columns:
-                df_analistas_lookup = df_fechados[[id_col_fechados, analista_col_name_origem]].drop_duplicates(subset=[id_col_fechados])
+                df_analistas_lookup = df_fechados[[id_col_fechados, analista_col_name_origem]].drop_duplicates(subset=[id_col_fechados]).copy()
+                
+                # v0.9.55: Limpa espaços extras no nome do analista
+                df_analistas_lookup[analista_col_name_origem] = df_analistas_lookup[analista_col_name_origem].astype(str).replace(r'\s+', ' ', regex=True).str.strip()
                 
                 df_encerrados_para_exibir = pd.merge(
                     df_encerrados_para_exibir,
@@ -914,12 +908,10 @@ try:
                     how='left'
                 )
                 
-                # Renomeia a coluna de origem para o novo nome de exibição
                 df_encerrados_para_exibir.rename(columns={analista_col_name_origem: novo_nome_analista}, inplace=True)
-                colunas_para_exibir_fechados.append(novo_nome_analista) # Adiciona o *novo* nome à lista
+                colunas_para_exibir_fechados.append(novo_nome_analista)
             
-            colunas_para_exibir_fechados.append('Atribuir a um grupo') # Adiciona grupo de volta
-            # --- FIM DA MODIFICAÇÃO ---
+            colunas_para_exibir_fechados.append('Atribuir a um grupo')
 
             if date_col_name:
                 try:
@@ -1343,6 +1335,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.53-763 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.55-765 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
