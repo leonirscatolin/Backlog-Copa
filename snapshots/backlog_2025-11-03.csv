@@ -681,13 +681,6 @@ Qualquer dúvida estou à disposição.
 Att,
 Wellington"
 100-102336;Service Request;New;2025-10-30 07:26:52;;COP-POWER-BI;3;Havia aberto um chamado anterior, porém não foi resolvido (100-102039), continuo sem conseguir visualizar os dados do relatório;Havia aberto um chamado anterior, porém não foi resolvido (100-102039), continuo sem conseguir visualizar os dados do relatório
-100-102344;Service Request;New;2025-10-30 08:27:34;;COP-ORIENTAÇÃO-GRC;3;FALTA DE AUTORIZAÇÃO ENTRADA NOTA NAVIO;"AO TENTAR REALIZAR O PROCESSO DA ENTRADA DE NOTA DO NAVIO O SEGUINTE ERRO ACONTECE 
-FALTA DE AUTORIZAÇÃO PARA DOCUMENTO 4503774142 
-
-""DIAGNÓSTICO"" 
-PARA O DOCUMENTO 4503774142 E O ITEM 00000 FOI VERIFICADA A AUTORIZAÇÃO M_BEST_BSA 
-
-POR GENTILEZA CHAMAR O USUARIO DA CHAVE  LG5A"
 300-133763;Incident;New;2025-10-30 11:14:34;;COP-ORIENTAÇÃO-GRC;3;aprovador do DAC Santos (1202) - ZMM0131;Prezados, não estou cadastrado como aprovador de intercambialidade (ZMM0131) do DAC de Santos (1202), solicito liberação deste cadastro, obrigado.
 100-102413;Service Request;New;2025-10-30 12:34:36;;COP-SAP-MM-TRIBUTARIO;3;Boa tarde, por favor, solicito autorização para baixar o programa ReceitaNet, para transmissão do SPED EFD - ICMS/IPI;Boa tarde, por favor, solicito autorização para baixar o programa ReceitaNet, para transmissão do SPED EFD - ICMS/IPI
 100-102414;Service Request;New;2025-10-30 12:48:55;;COP-ORIENTAÇÃO-GRC;3;Solicito, por gentileza, ser incluído no fluxo de aprovação de pedidos, requisições, viagens e demais controles referentes à filial de Ibirité – 1014.;"Na segunda quinzena do mês de outubro, fui designado como gerente do Centro Operativo de Ibirité.
@@ -1881,16 +1874,6 @@ NF: 682/ 697/ 684/ 692/ 699/ 694
 
 1230 695660"
 300-133639;Incident;Pending;2025-10-29 09:50:16;DARIO DURAN CARRILLO,VICTOR;COP-SAP SD;4;Erro na transação: VA41 - TIPO DE DOCUMENTO ZA06 - ADITIVO DE TEXTO, NO TEXTO ADITIVO PARTE 1 NÃO CONSIGO EDITAR O TEXTO. ABRE A TELA DO WORD MAS NÃO DEIXA EDITAR;Erro na transação: VA41 - TIPO DE DOCUMENTO ZA06 - ADITIVO DE TEXTO, NO TEXTO ADITIVO PARTE 1 NÃO CONSIGO EDITAR O TEXTO. ABRE A TELA DO WORD MAS NÃO DEIXA EDITAR
-300-133658;Incident;Pending;2025-10-29 12:59:54;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;4;Erro no  outlook e teams, aplicativo gera erro para acesso!;"USUÁRIO AFETADO: FRANCINALDO
-CHAVE:jc08
-GESTOR:
-TELEFONE: 11996492236
-LOCALIZAÇÃO: 1212 barueri
-
-DESCRIÇÃO: Erro no  outlook e teams, aplicativo gera erro para acesso!
-erro: sua organização excluiu este dispositivo!
----
-cood erro: 700003"
 300-133671;Incident;Pending;2025-10-29 13:51:55;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;4;Gentileza poderia verificar pois realizo o pedido e os aprovadores estão com erro e não consegue prosseguir com aprovação.;Gentileza poderia verificar pois realizo o pedido e os aprovadores estão com erro e não consegue prosseguir com aprovação.
 300-133714;Incident;Pending;2025-10-29 17:12:56;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP WF;4;LIBERAÇÃO OV;FAVOR LIBERAR OV 0013325517 POIS TRAVOU NO FLUXO
 300-133716;Incident;Pending;2025-10-29 17:22:29;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;4;"Exclusão 
@@ -2009,12 +1992,6 @@ CONTATO : 84 999079438"
 100-102506;Service Request;Pending;2025-10-31 09:52:00;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;2;auxilio creche;auxilio creche
 100-102508;Service Request;Pending;2025-10-31 10:02:20;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;2;Funcionário ROGER GABRIEL SILVA COUTO , operações, Canoas, solicitou cancelamento de vale transporte em agosto de 2025, após cancelamento continua sendo descontado nos meses de agosto, setembro e outubro;RH local havia informado que em outubro não seria mais decontado.
 100-102510;Service Request;Pending;2025-10-31 10:11:01;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;2;Solicito alterar as férias de JOÃO MARCELO BRANCALION, matricula 113119, CO Canoas para 29/12/2025 cinco dias e 09/02/2026 15 dias.;alteração de férias
-300-133822;Incident;Pending;2025-10-31 10:14:24;CARLOS CABRINI,JEAN;PROD-COP-NOC;2;DAC BAURU - SDWAN;"Designação: 08680144
-protocolo algar:  202532753752
-
-01/11
-
-agendada visita pra hoje (01/11) com Roberto Renna.(27) 99665-2881, já passei os dados do técnico."
 300-133824;Incident;Pending;2025-10-31 10:23:39;DARIO DURAN CARRILLO,VICTOR;COP-SAP SD;2;Erro na atribuição da repesagem, atualizar os preços na ordem de venda;"ERRO AO REALIZAR A RECONCILIAÇÃO DA VIAGEM 696870 
 
 ""ERRO NA ATRIBUIÇÃO DA REPESAGEM, ATUALIZAR OS PREÇOS NA ORDEM DE VENDA "" 
@@ -2583,24 +2560,6 @@ Peço, por gentileza, que seja realizada a correção no espelho de ponto e a de
 No entanto, neste ano, foi efetuado o desconto sobre a minha PLR, mesmo sem minha autorização. Solicito, por gentileza, a verificação do ocorrido. Já havia realizado um chamado sobre isso anteriormente  100-90377.
 
 Reforço que em nenhum momento autorizei ou consenti esse desconto,"
-300-133755;Incident;Queued;2025-10-30 10:35:50;;COP-ORIENTAÇÃO-GRC;3;Liberação de acesso função VI02 - Unidade Capuava;"Alguns colaboradores da minha equipe de Capuava e  eu continuamos sem acesso a transação VI02,  Nós utilizamos a transação para localizar pedidos e realizar lançamento dos CTEs para pagamento, segue abaixo as chaves das pessoas que precisam do acesso:
-UP4G - WELLINGTON HENRIQUE FAUSTINO DOS SANTOS
-perfil : YP:8-00062-X - Controladoria Unidade - Coordenador Administrativo Controladoria Unidade Filial
-
-V5QJ - MARCELLY DE SOUZA FERREIRA 
-perfil : YP:4-00069-X - Controladoria Unidade – Assistente de Controladoria
-
-4N7A - LUKAS RODRIGUES GALDINO
-perfil : YP:4-00069-X - Controladoria Unidade – Assistente de Controladoria
-
-CRISTIANO RODRIGUES RIBEIRO SANTO – Chave: 9S21
-Controladoria Unidade – Assistente de Controladoria
-
-FABIO LOPES RIBEIRO – Chave: TRQK
-Controladoria Unidade – Assistente de Controladoria
-
-EDUARDO SARTORI ESTAFOGE - Chave: C873
-Controladoria Unidade – Assistente de Controladoria"
 100-102385;Service Request;Queued;2025-10-30 10:42:33;THOME DA SILVA,ARNANDO;COP-RH-FOPAG;3;Cobrança indevida na PLR;Prezados, houve uma cobrança indevida na minha PLR, eu fiz a carta e foi aprovado meu pedido de retirar as cobranças para o sindicato conforme protocolo 100-91104, foi informado que não haveria descontos, podem verificar, por gentileza.
 300-133757;Incident;Queued;2025-10-30 10:49:04;;COP-ORIENTAÇÃO-GRC;3;Falta de funcionalidade na operação FB60;"Solicito adição do campo ""Tipo de documento"" na operação FB60. Esse campo é indicado no manual de utilização da operação para apontar qual o tipo de documento a ser pago. Contudo, na meu perfil do SAP a operação FB60 está sem a operação citada. 
 
@@ -2749,7 +2708,6 @@ Início: 08/12/2025 - 15 dias
 
 Para: 
 01/12/2025 - 15 dias"
-100-102557;Service Request;Queued;2025-10-31 15:33:31;;APOIO-COP-ACESSO;2;Usuário da chave: 0UJJ - Anna Beatriz De Oliveira Soares precisa de acesso ao SMI, verificado que no ad está sendo solicitado reenvio do termo, em conversa com Ednea solicitado abertura do chamado e encaminhamento para mesa de acesso.;Usuário da chave: 0UJJ - Anna Beatriz De Oliveira Soares precisa de acesso ao SMI, verificado que no ad está sendo solicitado reenvio do termo, em conversa com Ednea solicitado abertura do chamado e encaminhamento para mesa de acesso.
 100-102558;Service Request;Queued;2025-10-31 15:34:23;THOME DA SILVA,ARNANDO;COP-RH-ADMPESSOAL;2;"Solicitação de férias com aprovação do diretor.
 
 início no 17/11 até 28/11 (trabalho até 14/11 e retorno 01/12), totalizando duas semanas";"Solicitação de férias com aprovação do diretor.
