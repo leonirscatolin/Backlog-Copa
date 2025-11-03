@@ -673,7 +673,6 @@ PAT 1388876
 Veículo BZ318580
 Nota DUPLICADA Nota a ser cancelada 5673-8"
 100-100957;Service Request;New;2025-10-15 10:49:30;;PROD-AUTOMAÇÃO;18;Aprovação automática de ordens de nota de crédito D2C.;"Atualmente, o time de Pricing utiliza um RPA que gera ordens de nota de crédito sem que essas ordens sejam encaminhadas para aprovação via Workflow. Gostaríamos que esse mesmo modelo de automação fosse desenvolvido para o time de Suporte a Vendas Financeiro. O objetivo é garantir que, ao gerarem ordens de D2C por meio do robô, essas também não sejam submetidas à aprovação do time de Pricing. Como já existe esse modelo ""pronto"", acredito que não seja tão complexa essa solicitação."
-300-132865;Incident;New;2025-10-20 13:23:59;;APOIO-COP-CELULAR;13;Sobre envio de mensagem através do wathassap;Não estou conseguindo enviar lista de transmissão para os cliente, para captação de pedidos através do wathasSap.
 100-102096;Service Request;New;2025-10-28 08:33:32;;COP-TRUSTY;5;"Ola Bom dia !
 Eu Solicito o Meu acesso Refaturamento.comercial
 
@@ -2500,13 +2499,6 @@ DE: GERT KOHLER JUNIOR
 PARA:"
 300-132732;Incident;Queued;2025-10-17 11:45:31;;COP-SAP-FI-AR;16;Dispositivo de saída CARIACICA - CAR200;Estou com problemas na emissões de notas fiscais, pois ao faturar e passar pelo monitor, só está saindo a nota de vasilhame, a nota do produto acabado não sai e nem boleto, tenho que reemprimir ou salvar e imprimir.
 100-101265;Service Request;Queued;2025-10-17 12:26:02;GOMES DE ARRUDA,ROSIMARA;COP-RH-ADMPESSOAL;16;retorno de afastamento;tem que agendar o meu retorno com o médico do trabalho
-300-132811;Incident;Queued;2025-10-20 08:24:28;;APOIO-COP-CELULAR;13;Erro no transmitir pelo whatsapp business;"Não deixa fazer transmissão
-mensagem : pede um pagamento ao enviar
-
-erro em anexo
-contato:  62 996462370
-
-centro : 1230"
 300-132845;Incident;Queued;2025-10-20 11:23:58;;COP-SAP-SD-TRIBUTARIO;13;IMPOSTO INCORRETO NF SAP;"Usuário informa que a NF 879, série 1 está com o valor de imposto incorreto, o mesmo solicita suporte na questão.
 
 21191484	000000879"
@@ -2798,9 +2790,6 @@ DESCRIÇÃO: Maquina DCEDC1-25102  não esta reconhecendo a rede de internet do 
 
 ---"
 100-102289;Service Request;Queued;2025-10-29 14:18:33;;COP-RH-HUB;4;Solicitação de VR para o período de 13/10 a 01/11/2025 de Luis Fabiano Alves, matrícula 102000195 pelo gestor Marcos Pereira Coordenador Distribuição Suape através do chamado nº 100-102073;Solicitação de VR para o período de 13/10 a 01/11/2025 de Luis Fabiano Alves, matrícula 102000195 pelo gestor Marcos Pereira Coordenador Distribuição Suape através do chamado nº 100-102073
-100-102296;Service Request;Queued;2025-10-29 14:41:54;;APOIO-COP-CELULAR;4;sem acesso ao app Siva+;"dois dos nosso veículos está parado devido a exclusão do Siva.
-Receberam mensagem: Siva+ Excluido pelo administrador.
-Até o momento não conseguem buscar o app para atualizar e seguir emitindo NF."
 100-102299;Service Request;Queued;2025-10-29 14:53:22;Eron da Silva Soares,Rafael;COP-RH-RELAÇÕESTRAB&SIND;4;"Boa tarde!
 
 Solicito alterações de horários, conforme informações no anexo.
@@ -3000,9 +2989,6 @@ Alteração do sábado de folga."
 foi criado no sap na parte de cadastro de cliente no Campo Segmentação algumas opções de segmentação para que seja utilizada para área empresarial seguindo as premissas da Inteligência de Mercado e precisamos que este campo seja atualizado nos clientes já existentes  através de carga conforme planilha anexa com os códigos do cliente x segmentação que é necessário constar no cadastro deles.
  
 qq dúvida estou à disposição."
-100-102493;Service Request;Queued;2025-10-31 08:38:40;;COP-TELECOM;2;"Após migração, não estamos conseguindo conctar no wifi.
-Co Paulinia.";"Após migração, não estamos conseguindo conctar no wifi.
-Co Paulinia."
 300-133808;Incident;Queued;2025-10-31 08:45:04;;COP-TELECOM;2;Sem internet na base 1247.;Sem internet na base 1247.
 300-133809;Incident;Queued;2025-10-31 08:46:41;CARDOSO SOUZA DA SILVA,RONALD;COP-SAP LES-3N;2;ERRO LANÇAMENTO FRETES ZLESR004;ERRO TEMPO EXECUÇÃO DE TELA NA TRANZAÇÃO ZLESR004, LANÇAMENTO NOTAS FISCAIS DE SERVIÇO
 100-102497;Service Request;Queued;2025-10-31 08:57:51;THOME DA SILVA,ARNANDO;COP-RH-FOPAG;2;desconto de taxa sindical da participação de lucros;"Solicito analise e reembolso da taxa sindical descontada na participação de lucos no valor de R$ 200,00
