@@ -1,4 +1,4 @@
-# VERSÃO v0.9.48-758 (Corrigida)
+# VERSÃO v0.9.53-763 (Corrigida)
 
 import streamlit as st
 import pandas as pd
@@ -15,8 +15,9 @@ from urllib.parse import quote
 import json
 import colorsys
 import re
+import requests
 
-# --- INÍCIO - Constantes Globais (v0.9.46) ---
+# --- INÍCIO - Constantes Globais ---
 GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM-GTR'
 GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou 'RDM-GTR'"
 
@@ -515,6 +516,92 @@ def formatar_delta_card(delta_abs, delta_perc, valor_comparacao, data_comparacao
     return delta_text, delta_class
 
 
+def trigger_serviceaide_fetch(repo):
+    st.sidebar.info("Iniciando teste de busca (API ServiceAide)...")
+    try:
+        user = st.secrets.get("SERVICEAIDE_USER")
+        pwd = st.secrets.get("SERVICEAIDE_PASS")
+        if not user or not pwd:
+            st.sidebar.error("Segredos 'SERVICEAIDE_USER' ou 'SERVICEAIDE_PASS' não configurados.")
+            return
+
+        base_url = "https://csm3.serviceaide.com/reportservice"
+        resource_path = "/shared/adhoccomponents/Massa_de_dados___TOTAL___Fechados"
+        target_url = f"{base_url}/rest_v2/reports{resource_path}.csv"
+        
+        st.sidebar.write(f"Tentando acessar: `{target_url}`")
+
+        response = requests.get(target_url, auth=(user, pwd))
+
+        if response.status_code != 200:
+            st.sidebar.error(f"Falha na conexão. Status: {response.status_code}")
+            st.sidebar.write(f"Resposta (primeiros 500 chars): {response.text[:500]}")
+            return
+
+        content_type = response.headers.get('Content-Type', '')
+        if 'text/html' in content_type:
+            st.sidebar.error("Erro: O servidor retornou uma página HTML, não um arquivo CSV. Verifique a URL ou as credenciais (login pode ter falhado).")
+            return
+
+        if 'text/csv' not in content_type and 'application/csv' not in content_type:
+            st.sidebar.warning(f"Tipo de conteúdo inesperado: {content_type}. Tentando processar mesmo assim...")
+
+        content_fechados = response.content
+        st.sidebar.success(f"Dados baixados! ({len(content_fechados)} bytes)")
+
+        with st.spinner("Processando dados e atualizando o repositório..."):
+            now_sao_paulo = datetime.now(ZoneInfo('America/Sao_Paulo'))
+            commit_msg = f"Atualização automática (TESTE) em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
+
+            df_fechados_anterior = read_github_file(repo, "dados_fechados.csv")
+            previous_closed_ids = set()
+            if not df_fechados_anterior.empty:
+                id_col_anterior = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_anterior.columns), None)
+                if id_col_anterior:
+                    previous_closed_ids = set(df_fechados_anterior[id_col_anterior].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
+            
+            json_content = json.dumps(list(previous_closed_ids), indent=4)
+            update_github_file(repo, "previous_closed_ids.json", json_content.encode('utf-8'), "Snapshot dos IDs de fechados anteriores")
+
+            update_github_file(repo, "dados_fechados.csv", content_fechados, commit_msg)
+
+            datas_existentes = read_github_text_file(repo, "datas_referencia.txt")
+            data_atual_existente = datas_existentes.get('data_atual', 'N/A')
+            data_15dias_existente = datas_existentes.get('data_15dias', 'N/A')
+            hora_atualizacao_nova = now_sao_paulo.strftime('%H:%M')
+            datas_referencia_content_novo = (f"data_atual:{data_atual_existente}\n"
+                                            f"data_15dias:{data_15dias_existente}\n"
+                                            f"hora_atualizacao:{hora_atualizacao_nova}")
+            update_github_file(repo, "datas_referencia.txt", datas_referencia_content_novo.encode('utf-8'), commit_msg)
+            
+            df_atual_base = read_github_file(repo, "dados_atuais.csv")
+            df_fechados_novo = pd.read_csv(BytesIO(content_fechados), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
+            
+            id_col_fechados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_novo.columns), None)
+            closed_ids_set = set(df_fechados_novo[id_col_fechados].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
+
+            id_col_atual = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_atual_base.columns), None)
+            df_atual_base[id_col_atual] = df_atual_base[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
+            df_atualizado_filtrado = df_atual_base[~df_atual_base[id_col_atual].isin(closed_ids_set)]
+
+            output = StringIO()
+            df_atualizado_filtrado.to_csv(output, index=False, sep=';', encoding='utf-8')
+            content_snapshot_novo = output.getvalue().encode('utf-8')
+
+            today_str = now_sao_paulo.strftime('%Y-%m-%d')
+            snapshot_path = f"snapshots/backlog_{today_str}.csv"
+            commit_msg_snapshot = f"Atualizando snapshot (auto-teste) em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
+            update_github_file(repo, snapshot_path, content_snapshot_novo, commit_msg_snapshot)
+            
+            st.sidebar.success("Busca automática e atualização de snapshot concluídas! Recarregando...")
+            st.cache_data.clear()
+            st.cache_resource.clear()
+            st.rerun()
+
+    except Exception as e:
+        st.sidebar.error(f"Erro no teste automático: {e}")
+
+
 logo_copa_b64 = get_image_as_base64("logo_sidebar.png")
 logo_belago_b64 = get_image_as_base64("logo_belago.png")
 if logo_copa_b64 and logo_belago_b64:
@@ -566,7 +653,7 @@ if is_admin:
             st.sidebar.warning("Para a atualização completa, carregue os arquivos ATUAL e de 15 DIAS.")
             
     st.sidebar.markdown("---")
-    st.sidebar.subheader("Atualização Rápida")
+    st.sidebar.subheader("Atualização Rápida (Manual)")
     uploaded_file_fechados = st.sidebar.file_uploader("Apenas Chamados FECHADOS no dia", type=["csv", "xlsx"], key="uploader_fechados")
     if st.sidebar.button("Salvar Apenas Chamados Fechados"):
         if uploaded_file_fechados:
@@ -580,7 +667,6 @@ if is_admin:
                     st.stop() 
 
                 try:
-                    # v0.9.47: Salva os IDs de fechados ANTERIORES
                     df_fechados_anterior = read_github_file(repo, "dados_fechados.csv")
                     previous_closed_ids = set()
                     if not df_fechados_anterior.empty:
@@ -591,10 +677,8 @@ if is_admin:
                     json_content = json.dumps(list(previous_closed_ids), indent=4)
                     update_github_file(repo, "previous_closed_ids.json", json_content.encode('utf-8'), "Snapshot dos IDs de fechados anteriores")
 
-                    # Salva o NOVO arquivo de fechados
                     update_github_file(repo, "dados_fechados.csv", content_fechados, commit_msg)
 
-                    # Atualiza a hora
                     datas_existentes = read_github_text_file(repo, "datas_referencia.txt")
                     data_atual_existente = datas_existentes.get('data_atual', 'N/A')
                     data_15dias_existente = datas_existentes.get('data_15dias', 'N/A')
@@ -649,6 +733,15 @@ if is_admin:
             st.sidebar.warning("Por favor, carregue o arquivo de chamados fechados para salvar.")
 elif password:
     st.sidebar.error("Senha incorreta.")
+
+# --- v0.9.51: Removido teste de email, mantido teste de API ---
+if is_admin:
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("Teste de Automação")
+    st.sidebar.info("Para automação: configure os Secrets 'SERVICEAIDE_USER' e 'SERVICEAIDE_PASS' (para uma conta sem SSO) e clique abaixo para testar.")
+    
+    if st.sidebar.button("Testar Busca (API ServiceAide)"):
+        trigger_serviceaide_fetch(repo)
 
 try:
     if 'contacted_tickets' not in st.session_state:
@@ -792,7 +885,9 @@ try:
             
             date_col_name = next((col for col in ['Data de criação', 'Data de Criacao'] if col in df_encerrados_para_exibir.columns), None)
             
-            colunas_para_exibir_fechados = ['Status', 'ID do ticket', 'Descrição', 'Atribuir a um grupo']
+            # --- MODIFICADO v0.9.53 ---
+            colunas_para_exibir_fechados = ['Status', 'ID do ticket', 'Descrição']
+            analista_col_name = "Analista que encerrou"
             
             id_col_encerrados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_encerrados_para_exibir.columns), None)
             if id_col_encerrados:
@@ -801,6 +896,27 @@ try:
                 )
             else:
                 df_encerrados_para_exibir['Status'] = ""
+            
+            # Tentar merge com df_fechados para buscar o analista
+            id_col_fechados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados.columns), None)
+            
+            if id_col_fechados and analista_col_name in df_fechados.columns:
+                df_analistas_lookup = df_fechados[[id_col_fechados, analista_col_name]].drop_duplicates(subset=[id_col_fechados])
+                
+                df_encerrados_para_exibir = pd.merge(
+                    df_encerrados_para_exibir,
+                    df_analistas_lookup,
+                    left_on='ID do ticket',
+                    right_on=id_col_fechados,
+                    how='left'
+                )
+                colunas_para_exibir_fechados.append(analista_col_name) # Adiciona à lista
+            else:
+                if analista_col_name not in df_fechados.columns:
+                    st.warning(f"A coluna '{analista_col_name}' não foi encontrada no arquivo de chamados fechados.")
+            
+            colunas_para_exibir_fechados.append('Atribuir a um grupo') # Adiciona grupo de volta
+            # --- FIM DA MODIFICAÇÃO ---
 
             if date_col_name:
                 try:
@@ -819,7 +935,6 @@ try:
                 except Exception as e:
                     st.warning(f"Não foi possível calcular os 'Dias em Aberto' para os chamados fechados: {e}")
             
-            # --- INÍCIO DA MODIFICAÇÃO v0.9.48 ---
             st.data_editor(
                 df_encerrados_para_exibir[colunas_para_exibir_fechados], 
                 hide_index=True, 
@@ -831,7 +946,6 @@ try:
                     )
                 }
             )
-            # --- FIM DA MODIFICAÇÃO ---
             
         else:
             st.info("O arquivo de chamados encerrados do dia ainda não foi carregado.")
@@ -1226,6 +1340,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.48-758 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.52-762 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
