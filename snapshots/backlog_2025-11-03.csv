@@ -1969,14 +1969,6 @@ ERRO: Ordem como venda direta impactando o fechamento do acerto.
 
 Não teve venda"
 100-102496;Service Request;Pending;2025-10-31 08:53:51;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;2;Contracheque;Verificação de descontos.
-300-133813;Incident;Pending;2025-10-31 09:11:30;DO CARMO,DENIS;APOIO-COP-SEDE;2;sem acesso ao SAP;"sem acesso ao SAP
-
-Estou em home e não estou conseguindo acessar o SAP
-
-erro em anexo
-
-CHAVE :LQ24
-CONTATO : 84 999079438"
 100-102506;Service Request;Pending;2025-10-31 09:52:00;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;2;auxilio creche;auxilio creche
 100-102508;Service Request;Pending;2025-10-31 10:02:20;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;2;Funcionário ROGER GABRIEL SILVA COUTO , operações, Canoas, solicitou cancelamento de vale transporte em agosto de 2025, após cancelamento continua sendo descontado nos meses de agosto, setembro e outubro;RH local havia informado que em outubro não seria mais decontado.
 100-102510;Service Request;Pending;2025-10-31 10:11:01;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;2;Solicito alterar as férias de JOÃO MARCELO BRANCALION, matricula 113119, CO Canoas para 29/12/2025 cinco dias e 09/02/2026 15 dias.;alteração de férias
@@ -2126,12 +2118,6 @@ email: marli.bras@yahoo.com.br
 
 COPAJUR - Contencioso e Regulatório
 #1231190709"
-300-132077;Incident;Queued;2025-10-09 15:03:39;;COP-SAP SD-3N;24;"CHAMADO SOFTMÓVEL 2476
-FILIAL 1216 - Os danfe CANCELADOS no SIVA estão migrando para o SAP com quantidades e valores divergentes. 
-
-Em anexo relação das notas e descrição das inconsistências.";"FILIAL 1216 - Os danfe CANCELADOS no SIVA estão migrando para o SAP com quantidades e valores divergentes. 
-
-Em anexo relação das notas e descrição das inconsistências."
 300-132120;Incident;Queued;2025-10-10 11:50:40;BENEDITO VAZ,FABIO;COP-AUT-SAP-TRIBUTÁRIO-LES/MM/SD;23;Falha ao assinar com certificado digital;Estou em processo de renovação de alvara e preciso assinar um documento com o certificado digital, porem no portal da prefeitura, nao reconhece o nosso certificado.
 300-132158;Incident;Queued;2025-10-11 08:05:36;;COP-SAP MOBILE-3N;22;Usuário informa problemas ao tentar acessar o SAP IDM, o mesmo demora a acessar e em seguida cai.;"Usuário informa problemas ao tentar acessar o SAP IDM, o mesmo demora a acessar e em seguida cai.
 chave: LHJ0"
@@ -2374,17 +2360,7 @@ Protocolo: 202532280889
 
 Status:  técnico foi no local e constou problema na rede interna, aguardando TELECOM."
 100-102100;Service Request;Queued;2025-10-28 09:10:25;TADEU LOPES DA SILVA,FELIPPE;COP-RH-BENEFÍCIOS;5;Fiz um empréstimo com o banco Itaú, e o mesmo já veio descontando em folha (não fiz essa solicitação) - o problema é que fui descontada no pagamento e o banco está me cobrando, informando que não foi pago.;Já está quase batendo o segundo pagamento e minha divida está em aberto, preciso de ajuda urgente, pois vão começar me cobrar juros de algo que foi pago.
-300-133526;Incident;Queued;2025-10-28 09:25:45;;COP-SAP SD-3N;5;DANFE Nº 16122 serie 12  e DANFE nº 4100 serie 31 , não subiu para SAP como cancelada,;precisa incluir as DANFE DANFE Nº 16122 serie 12  e DANFE nº 4100 serie 31 não consta no SAP como cancelada, faltando essa sequencia.
 100-102103;Service Request;Queued;2025-10-28 09:37:51;;COP-ACESSO-SAP;5;Estou precisando que o SAP seja configurado para que as notas sejam impressas por uma determinada impressora. Centro 1238.;Estou precisando que o SAP seja configurado para que as notas sejam impressas por uma determinada impressora. Centro 1238.
-300-133535;Incident;Queued;2025-10-28 10:18:27;;COP-SAP SD-3N;5;Erro referente a nota de devolução gerada com quantidade incorreta, referente a reconciliação de viagem do granel (bobtail);"Nota de devolução gerada com a quantidade incorreta:
-Centro: 1027 Uberlândia
-Viagem (TRIP): 694738 
-PAT Saída: 1384415
-PAT Reconciliação: 1385229
-Quantidade Manifesto: 9.000 Kg (NF 518878)
-Quantidade Vendida: 6.062 Kg
-Quantidade Retorno: 2.938 Kg
-NF Retorno: 310 Kg (NF 33484)"
 100-102112;Service Request;Queued;2025-10-28 10:21:52;;COP-RH-TREINAMENTO&AV.DESEMPENHO;5;"Tenho recebido esse email para ""Avaliações de Eficácia Pendentes – Ação Necessária"", porém, entro na plataforma e não tem nenhuma avaliação pendente para minha avaliação. anexei print da plataforma na aba certificado. Favor cancelar esses envios ou liberar os certificados para minha avaliação.";"Prezado(a) ANDERSON FERNANDO DE FREITAS,
 Identificamos que ainda existem avaliações de eficácia pendentes de sua resposta, referentes aos colaboradores sob sua responsabilidade que participaram de treinamentos nos últimos 90 dias.
 Ressaltamos que a participação na avaliação de eficácia é essencial para o encerramento do processo de capacitação e acompanhamento do desempenho dos colaboradores.
