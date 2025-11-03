@@ -606,7 +606,6 @@ Retorno: 21/01/2026"
 Como essa sala será transformada em uma sala de reunião e os documentos já foram digitalizados, solicitamos orientação sobre como proceder com os prontuários físicos — se deverão ser encaminhados para arquivo central, ou outro destino definido pela área responsável.
 
 Em anexo, seguem fotos do material para conhecimento."
-300-133818;Incident;Active;2025-10-31 09:58:58;NEVES DA SILVA,EDNEA;APOIO-COP-ACESSO;2;Recusa de Acesso;Estou sem acesso a pasta de DHO
 100-102511;Service Request;Active;2025-10-31 10:13:31;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;2;"Solicito agendamento de férias para DEOLCI DA SILVA, CO CANOAS,  dia 08/12/2025 20 dias;";favor agendar
 300-133821;Incident;Active;2025-10-31 10:13:35;CAROLINE FARIA DE ARAUJO,ANNA;PROD-COP-NOC;2;CO GOIÂNIA - SDWAN;"Designação: 08680148
 protocolo algar:  202532752467"
@@ -702,15 +701,10 @@ FALTA DE AUTORIZAÇÃO PARA DOCUMENTO 4503774142
 PARA O DOCUMENTO 4503774142 E O ITEM 00000 FOI VERIFICADA A AUTORIZAÇÃO M_BEST_BSA 
 
 POR GENTILEZA CHAMAR O USUARIO DA CHAVE  LG5A"
-100-102375;Service Request;New;2025-10-30 09:58:57;;COP-ORIENTAÇÃO-GRC;3;SAP apresentando ERRO .;(Erro de distribuição de carga trabalho logon 88 ..)
 300-133763;Incident;New;2025-10-30 11:14:34;;COP-ORIENTAÇÃO-GRC;3;aprovador do DAC Santos (1202) - ZMM0131;Prezados, não estou cadastrado como aprovador de intercambialidade (ZMM0131) do DAC de Santos (1202), solicito liberação deste cadastro, obrigado.
 100-102413;Service Request;New;2025-10-30 12:34:36;;COP-SAP-MM-TRIBUTARIO;3;Boa tarde, por favor, solicito autorização para baixar o programa ReceitaNet, para transmissão do SPED EFD - ICMS/IPI;Boa tarde, por favor, solicito autorização para baixar o programa ReceitaNet, para transmissão do SPED EFD - ICMS/IPI
 100-102414;Service Request;New;2025-10-30 12:48:55;;COP-ORIENTAÇÃO-GRC;3;Solicito, por gentileza, ser incluído no fluxo de aprovação de pedidos, requisições, viagens e demais controles referentes à filial de Ibirité – 1014.;"Na segunda quinzena do mês de outubro, fui designado como gerente do Centro Operativo de Ibirité.
 Para desempenhar minhas atividades de forma adequada, preciso ter acesso idêntico ao do gestor Carlos Roberto Alves (chave IKYX), porém vinculado à filial 1024."
-100-102417;Service Request;New;2025-10-30 13:19:18;;APOIO-COP-ACESSO;3;"Liberação de Acesso Service Aide para colaboradora: Lillian Mendes Mognon
-Assistente Logística de Suporte a Vendas
-CPF: 025.100.310-82
-PASSO FUNDO ADM SUPORTE A VENDAS 3";Colaboradora Lilian não esta conseguindo acessar o Service Aide nem utilizando a chave com a senha do sistema da Copa nem com o CPF
 100-102441;Service Request;New;2025-10-30 15:38:05;;APOIO-COP-ACESSO;3;"Prestador esqueceu a senha para acessar a VPN, poderia por gentileza redefinir?
 
 Chave: FYU4";"Prestador esqueceu a senha para acessar a VPN, poderia por gentileza redefinir?
@@ -729,12 +723,6 @@ Nome do Host |
 172.31.236.199
 Endereço IP |
 172.31.236.19"
-100-102491;Service Request;New;2025-10-31 08:30:18;;APOIO-COP-ACESSO;2;Solicito apoio para criação de chave e acesso ao sistema para um funcionário recém contratado que fica sob minha gestão.;"Dados do funcionário:
-
-Data de inicio: 03/11/2025
-Nome: Andrei Silva Vicentini
-Matricula: 122317
-Função: Assistente de logística"
 100-102492;Service Request;New;2025-10-31 08:34:33;;COP-ORIENTAÇÃO-GRC;2;Preciso de acesso ao sistema SAP.;"Olá, preciso de aceso urgente ao sistema SAP. 
  É meu primeiro acesso, e o meu login com a senha de rede só da erro."
 100-102494;Service Request;New;2025-10-31 08:39:33;;COP-ACESSO-SAP;2;Erro ao tentar acessar o SAP;Erro ao tentar acessar o SAP
@@ -777,7 +765,6 @@ Não é gerado dentro da PAT , os defeitos  e as vendas de comodatos, por isso t
 Muito obrigada 
 Luciana Mara de Oliveira"
 100-102587;Service Request;New;2025-10-31 17:21:32;;COP-ORIENTAÇÃO-GRC;2;Solicito acesso ao SAP com perfil igual ao da Vanessa LH87;Solicito acesso ao SAP com perfil igual ao da Vanessa LH87
-100-102593;Service Request;New;2025-10-31 18:44:58;;APOIO-COP-SEDE;2;Instalação dos aplicativos Outlook e Teams no computador;Solicito a instalação dos aplicativos Outlook e Microsoft Teams na minha máquina. O Outlook só consigo abrir pelo Citrix, e o Teams apenas a versão web.
 100-91194;Service Request;Pending;2025-07-08 15:55:56;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;117;Afastamento Bruno Messias da Silva - Suape;"Acompanhar processo de afastamento:
 Dut orientações enviado  email: brunomessias12042019@gmail.com (81) 995912612. 
 Ligar para esposa - Josi 81 99654-6704
@@ -1973,15 +1960,6 @@ erro: sua organização excluiu este dispositivo!
 ---
 cood erro: 700003"
 300-133671;Incident;Pending;2025-10-29 13:51:55;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;4;Gentileza poderia verificar pois realizo o pedido e os aprovadores estão com erro e não consegue prosseguir com aprovação.;Gentileza poderia verificar pois realizo o pedido e os aprovadores estão com erro e não consegue prosseguir com aprovação.
-100-102288;Service Request;Pending;2025-10-29 14:08:52;NEVES DA SILVA,EDNEA;APOIO-COP-ACESSO;4;Acesso ao diretório de sustentabilidade (FSSD01 (\\SDC-VFSSD01) (U:);"Preciso ter acesso a pasta (U:) do diretório de sustentabilidade e não estou conseguindo.
-
-
-R:\SUSTENTABILIDADE\COORD_SUSTENTABILIDADE\APOIO"
-300-133701;Incident;Pending;2025-10-29 15:51:25;BASTOS DE SOUZA KLEM,CAMILA;COP-SUPORTE-XML-TI;4;"Chamado #40070 kt
-Notas emitidas a mas de duas horas pelas revendas, não estão aparecendo na KT, onde temos que fazer o processo de forma manual pela SZD0067, onde a mesma fica sem manifestação.
-
-
-Chamado #40070 kt";Segue evidencia em anexo, onde esta foi feita de forma manual, devido ao que foi descrito.
 300-133710;Incident;Pending;2025-10-29 16:36:58;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;4;Falha na entrada USB;Meu notebook está com problemas nas 2 entradas USB. Não consigo utilizar o mouse sem fio ou outros acessórios USB.
 300-133714;Incident;Pending;2025-10-29 17:12:56;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP WF;4;LIBERAÇÃO OV;FAVOR LIBERAR OV 0013325517 POIS TRAVOU NO FLUXO
 300-133716;Incident;Pending;2025-10-29 17:22:29;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;4;"Exclusão 
@@ -2120,12 +2098,6 @@ erro em anexo
 CHAVE :LQ24
 CONTATO : 84 999079438"
 100-102506;Service Request;Pending;2025-10-31 09:52:00;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;2;auxilio creche;auxilio creche
-300-133819;Incident;Pending;2025-10-31 09:59:35;DE OLIVEIRA MANCO,TAMILIS;COP-SAP MOBILE;2;INUTILIZAR NOTAS;"Devido uma Falha no app SIVA+ será necessário inutilizar as notas abaixo: 
-238-6 - viagem 696279
-23471-7 - viagem 695826
-23472-7 - viagem 695826
-
-Peço ainda para ajustar o numero da próxima NF no pocket, pois os carros ja foram faturados para uma nova viagem. Peço urgência na resolução."
 100-102508;Service Request;Pending;2025-10-31 10:02:20;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;2;Funcionário ROGER GABRIEL SILVA COUTO , operações, Canoas, solicitou cancelamento de vale transporte em agosto de 2025, após cancelamento continua sendo descontado nos meses de agosto, setembro e outubro;RH local havia informado que em outubro não seria mais decontado.
 100-102510;Service Request;Pending;2025-10-31 10:11:01;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;2;Solicito alterar as férias de JOÃO MARCELO BRANCALION, matricula 113119, CO Canoas para 29/12/2025 cinco dias e 09/02/2026 15 dias.;alteração de férias
 300-133822;Incident;Pending;2025-10-31 10:14:24;CARLOS CABRINI,JEAN;PROD-COP-NOC;2;DAC BAURU - SDWAN;"Designação: 08680144
@@ -2148,13 +2120,6 @@ protocolo algar:   202532381432
 status 01/11
 
 aguardando nova avaliação da parceira feita na madrugada."
-300-133838;Incident;Pending;2025-10-31 13:19:26;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;2;Problema para abrir arquivos PDF;"Problema para abrir arquivos PDF
-
-após a atualização feita no meu sistema, não consigo mais abrir nenhum arquivo em PDF.
-
-CHAVE : MHKY
-CONTATO : 41 991222485
-ASET:  NLQAR1-30193"
 300-133840;Incident;Pending;2025-10-31 13:37:15;CARLOS DA SILVA RIBEIRO,ELI;COP-SAP MOBILE;2;"Chamado Softomovel: 2638
 Data:31/10/2025
 Hora:14:28
@@ -2191,9 +2156,6 @@ LOCALIZAÇÃO:Capuava
 
 DESCRIÇÃO: usuário não consegue acesso ao site do https://frotacontrol.com.br/. 
 reporta mais usuários sem conseguir acesso na unidade!"
-100-102567;Service Request;Pending;2025-10-31 15:41:27;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;2;Instalação de Power BI diretamente no notebook.;"Instalação de Power BI diretamente no notebook. 
-Asset: NCESD2-12000
-contato: 011 98752-8838"
 100-102571;Service Request;Pending;2025-10-31 15:44:59;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;2;instalação de programa;"instalação de programa
 
 preciso que seja feita a instalação da aplicação 
@@ -2362,11 +2324,6 @@ PARA:"
 300-132845;Incident;Queued;2025-10-20 11:23:58;;COP-SAP-SD-TRIBUTARIO;13;IMPOSTO INCORRETO NF SAP;"Usuário informa que a NF 879, série 1 está com o valor de imposto incorreto, o mesmo solicita suporte na questão.
 
 21191484	000000879"
-300-132941;Incident;Queued;2025-10-21 10:12:38;;COP-AUT-SAP-LOGÍSTICA-LES;12;FALHA NA TRANSAÇÃO ZLESR004 - MONITOR - PAGAMENTO DE FRETES;"Ao tentar realizar a aprovação do pagamento, a tela atualiza e vai para outro CTE aleatório
- 
-Quando pesquiso novamente, consta que nada foi lançado
- 
-Tentei com outras transportadoras e está com o mesmo problema"
 100-101581;Service Request;Queued;2025-10-21 11:44:37;DE BARROS FERREIRA AMADOR,JANAINA;COP-RH-ADMPESSOAL;12;Retorno ao trabalho do Helisson Vargas De Oliveira  – 121553 CO Campo Grande;"Anexo ASO e laudo de retorno ao trabalho do  Helisson Vargas De Oliveira  – 121553.
 
 O laudo apresenta restrição indicada pelo médico. 
@@ -2603,13 +2560,6 @@ II - o número do boletim de conformidade correspondente ao GLP comercializado q
 Solicito analisar a possibilidade, de estender o prazo de pagamento e diminuir o valor das parcelas do saldo devedor, do crédito de adiantamento de salário por afastamento do trabalho, que foi concedido ao colaborador Lucas Bruno. Hoje o valor descontado está comprometendo em muito a renda do colaborador, acarretando em atrasos em outras contas."
 300-133598;Incident;Queued;2025-10-28 16:44:12;RODRIGUES LURIAL GOMES,FELIPE;COP-RH-SOLUÇÕES;5;O software EVOPE não está registrando os horários do ponto em que inicio o horário de trabalho;"O Evope fica mandando notificações de ""Bom dia! Você não registrou seu ponto ainda"", mesmo estando quase no final do expediente. Este aviso aparece a cada 2 minutos e quando estou próximo de finalizar minhas horas de trabalho. Hoje apareceu 16:40."
 100-102212;Service Request;Queued;2025-10-28 17:22:36;SOUZA,AMILTON;COP-RH-FOPAG;5;Relação de infração de trânsito para desconto em folha.;Relação de infração de trânsito para desconto em folha dos condutores executivos Copa Energia.
-300-133610;Incident;Queued;2025-10-28 19:03:29;;COP-OUTLOOK;5;colocou no Outlook resposta automática;"Localidade: Jardinópolis
-
-Colocou no Outlook resposta automática, pessoal externo não tá recebendo msg, fez teste no e-mail particular e não recebe, aparece o recado: Este e-mail parece invulgar, não foi enviado nos últimos 30 dias.
-setor: consultor comercial
-joaquim.alves@copaenergia.com.br
-
-SEGUE ANEXO A IMAGEM COM EMAIL QUE NAO RECEBEU O AVISO DE FÉRIAS."
 100-102237;Service Request;Queued;2025-10-29 08:47:32;RODRIGUES LURIAL GOMES,FELIPE;COP-RH-SOLUÇÕES;4;O EVOPE está instalado em meu computador, porém, não há opção de seleção. Só aparece as informações sobre o aplicativo.;"Bom dia!
 
 O EVOPE foi instalado em meu computador, porém, só funcionou no primeiro dia, 12/09/2025. 
@@ -2893,15 +2843,6 @@ Início: 08/12/2025 - 15 dias
 
 Para: 
 01/12/2025 - 15 dias"
-100-102551;Service Request;Queued;2025-10-31 15:27:12;;APOIO-COP-ACESSO;2;acesso as caixas do outlook;"Solicito acesso da caixa do outtlook 
-
-suporte  CO  suporte SP   suporte sul
-Suporte SE
-suporte NE
-suporte  PR
-operacional MI
-
-não responda"
 100-102557;Service Request;Queued;2025-10-31 15:33:31;;APOIO-COP-ACESSO;2;Usuário da chave: 0UJJ - Anna Beatriz De Oliveira Soares precisa de acesso ao SMI, verificado que no ad está sendo solicitado reenvio do termo, em conversa com Ednea solicitado abertura do chamado e encaminhamento para mesa de acesso.;Usuário da chave: 0UJJ - Anna Beatriz De Oliveira Soares precisa de acesso ao SMI, verificado que no ad está sendo solicitado reenvio do termo, em conversa com Ednea solicitado abertura do chamado e encaminhamento para mesa de acesso.
 100-102558;Service Request;Queued;2025-10-31 15:34:23;THOME DA SILVA,ARNANDO;COP-RH-ADMPESSOAL;2;"Solicitação de férias com aprovação do diretor.
 
