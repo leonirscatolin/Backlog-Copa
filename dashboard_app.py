@@ -1,4 +1,4 @@
-# VERSÃO v0.9.53-763 (Corrigida)
+# VERSÃO v0.9.53-763 (Corrigido nome da coluna do analista)
 
 import streamlit as st
 import pandas as pd
@@ -734,7 +734,6 @@ if is_admin:
 elif password:
     st.sidebar.error("Senha incorreta.")
 
-# --- v0.9.51: Removido teste de email, mantido teste de API ---
 if is_admin:
     st.sidebar.markdown("---")
     st.sidebar.subheader("Teste de Automação")
@@ -885,9 +884,10 @@ try:
             
             date_col_name = next((col for col in ['Data de criação', 'Data de Criacao'] if col in df_encerrados_para_exibir.columns), None)
             
-            # --- MODIFICADO v0.9.53 ---
+            # --- INÍCIO DA MODIFICAÇÃO v0.9.53 ---
             colunas_para_exibir_fechados = ['Status', 'ID do ticket', 'Descrição']
-            analista_col_name = "Analista que encerrou"
+            
+            analista_col_name = "Analista atribuído" # <-- Corrigido
             
             id_col_encerrados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_encerrados_para_exibir.columns), None)
             if id_col_encerrados:
@@ -897,7 +897,6 @@ try:
             else:
                 df_encerrados_para_exibir['Status'] = ""
             
-            # Tentar merge com df_fechados para buscar o analista
             id_col_fechados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados.columns), None)
             
             if id_col_fechados and analista_col_name in df_fechados.columns:
@@ -913,7 +912,8 @@ try:
                 colunas_para_exibir_fechados.append(analista_col_name) # Adiciona à lista
             else:
                 if analista_col_name not in df_fechados.columns:
-                    st.warning(f"A coluna '{analista_col_name}' não foi encontrada no arquivo de chamados fechados.")
+                    # Aviso foi removido para não poluir
+                    pass
             
             colunas_para_exibir_fechados.append('Atribuir a um grupo') # Adiciona grupo de volta
             # --- FIM DA MODIFICAÇÃO ---
@@ -1340,6 +1340,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.52-762 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.53-763 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
