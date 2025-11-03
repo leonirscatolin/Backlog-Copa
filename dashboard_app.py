@@ -1,4 +1,4 @@
-# VERSÃO v0.9.56-766 (Removida automação API)
+# VERSÃO v0.9.58-768 (Estilo dos botões admin)
 
 import streamlit as st
 import pandas as pd
@@ -15,7 +15,7 @@ from urllib.parse import quote
 import json
 import colorsys
 import re
-# import requests # Removido
+import requests
 
 # --- INÍCIO - Constantes Globais ---
 GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM-GTR'
@@ -71,7 +71,7 @@ a.metric-box:hover {
 .metric-box .value { /* Número principal */
     font-size: 2.5em;
     font-weight: bold;
-    color: #375623;
+    color: #375623; 
 }
 .metric-box .delta { /* Texto de comparação (delta) */
     font-size: 0.9em;
@@ -81,6 +81,29 @@ a.metric-box:hover {
 .delta-positive { color: #d9534f; } /* Vermelho para aumento */
 .delta-negative { color: #5cb85c; } /* Verde para redução */
 .delta-neutral { color: #666666; } /* Cinza para sem mudança ou N/A */
+
+/* --- INÍCIO DA MODIFICAÇÃO v0.9.58 --- */
+/* Estiliza os botões de Salvar no Admin Sidebar */
+[data-testid="stSidebar"] [data-testid="stButton"] button {
+    background-color: #f28801;
+    color: white;
+    border: 1px solid #f28801;
+}
+[data-testid="stSidebar"] [data-testid="stButton"] button:hover {
+    background-color: #d97900; /* Laranja mais escuro no hover */
+    color: white;
+    border-color: #d97900;
+}
+[data-testid="stSidebar"] [data-testid="stButton"] button:active {
+    background-color: #b86700; /* Laranja ainda mais escuro no clique */
+    color: white;
+    border-color: #b86700;
+}
+[data-testid="stSidebar"] [data-testid="stButton"] button:focus:not(:active) {
+    border-color: #f28801;
+    box-shadow: 0 0 0 0.2rem rgba(242, 136, 1, 0.5); /* Anel de foco laranja */
+}
+/* --- FIM DA MODIFICAÇÃO --- */
 </style>
 """)
 
@@ -516,91 +539,7 @@ def formatar_delta_card(delta_abs, delta_perc, valor_comparacao, data_comparacao
     return delta_text, delta_class
 
 
-# --- v0.9.56: Função de teste de API mantida, mas chamada removida da sidebar principal ---
-def trigger_serviceaide_fetch(repo):
-    st.sidebar.info("Iniciando teste de busca (API ServiceAide)...")
-    try:
-        user = st.secrets.get("SERVICEAIDE_USER")
-        pwd = st.secrets.get("SERVICEAIDE_PASS")
-        if not user or not pwd:
-            st.sidebar.error("Segredos 'SERVICEAIDE_USER' ou 'SERVICEAIDE_PASS' não configurados.")
-            return
-
-        base_url = "https://csm3.serviceaide.com/reportservice"
-        resource_path = "/shared/adhoccomponents/Massa_de_dados___TOTAL___Fechados"
-        target_url = f"{base_url}/rest_v2/reports{resource_path}.csv"
-        
-        st.sidebar.write(f"Tentando acessar: `{target_url}`")
-
-        response = requests.get(target_url, auth=(user, pwd))
-
-        if response.status_code != 200:
-            st.sidebar.error(f"Falha na conexão. Status: {response.status_code}")
-            st.sidebar.write(f"Resposta (primeiros 500 chars): {response.text[:500]}")
-            return
-
-        content_type = response.headers.get('Content-Type', '')
-        if 'text/html' in content_type:
-            st.sidebar.error("Erro: O servidor retornou uma página HTML, não um arquivo CSV. Verifique a URL ou as credenciais (login pode ter falhado).")
-            return
-
-        if 'text/csv' not in content_type and 'application/csv' not in content_type:
-            st.sidebar.warning(f"Tipo de conteúdo inesperado: {content_type}. Tentando processar mesmo assim...")
-
-        content_fechados = response.content
-        st.sidebar.success(f"Dados baixados! ({len(content_fechados)} bytes)")
-
-        with st.spinner("Processando dados e atualizando o repositório..."):
-            now_sao_paulo = datetime.now(ZoneInfo('America/Sao_Paulo'))
-            commit_msg = f"Atualização automática (TESTE) em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
-
-            df_fechados_anterior = read_github_file(repo, "dados_fechados.csv")
-            previous_closed_ids = set()
-            if not df_fechados_anterior.empty:
-                id_col_anterior = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_anterior.columns), None)
-                if id_col_anterior:
-                    previous_closed_ids = set(df_fechados_anterior[id_col_anterior].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
-            
-            json_content = json.dumps(list(previous_closed_ids), indent=4)
-            update_github_file(repo, "previous_closed_ids.json", json_content.encode('utf-8'), "Snapshot dos IDs de fechados anteriores")
-
-            update_github_file(repo, "dados_fechados.csv", content_fechados, commit_msg)
-
-            datas_existentes = read_github_text_file(repo, "datas_referencia.txt")
-            data_atual_existente = datas_existentes.get('data_atual', 'N/A')
-            data_15dias_existente = datas_existentes.get('data_15dias', 'N/A')
-            hora_atualizacao_nova = now_sao_paulo.strftime('%H:%M')
-            datas_referencia_content_novo = (f"data_atual:{data_atual_existente}\n"
-                                            f"data_15dias:{data_15dias_existente}\n"
-                                            f"hora_atualizacao:{hora_atualizacao_nova}")
-            update_github_file(repo, "datas_referencia.txt", datas_referencia_content_novo.encode('utf-8'), commit_msg)
-            
-            df_atual_base = read_github_file(repo, "dados_atuais.csv")
-            df_fechados_novo = pd.read_csv(BytesIO(content_fechados), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
-            
-            id_col_fechados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_novo.columns), None)
-            closed_ids_set = set(df_fechados_novo[id_col_fechados].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
-
-            id_col_atual = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_atual_base.columns), None)
-            df_atual_base[id_col_atual] = df_atual_base[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-            df_atualizado_filtrado = df_atual_base[~df_atual_base[id_col_atual].isin(closed_ids_set)]
-
-            output = StringIO()
-            df_atualizado_filtrado.to_csv(output, index=False, sep=';', encoding='utf-8')
-            content_snapshot_novo = output.getvalue().encode('utf-8')
-
-            today_str = now_sao_paulo.strftime('%Y-%m-%d')
-            snapshot_path = f"snapshots/backlog_{today_str}.csv"
-            commit_msg_snapshot = f"Atualizando snapshot (auto-teste) em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
-            update_github_file(repo, snapshot_path, content_snapshot_novo, commit_msg_snapshot)
-            
-            st.sidebar.success("Busca automática e atualização de snapshot concluídas! Recarregando...")
-            st.cache_data.clear()
-            st.cache_resource.clear()
-            st.rerun()
-
-    except Exception as e:
-        st.sidebar.error(f"Erro no teste automático: {e}")
+# --- v0.9.56: Função de automação removida ---
 
 
 logo_copa_b64 = get_image_as_base64("logo_sidebar.png")
@@ -897,7 +836,6 @@ try:
             if id_col_fechados and analista_col_name_origem in df_fechados.columns:
                 df_analistas_lookup = df_fechados[[id_col_fechados, analista_col_name_origem]].drop_duplicates(subset=[id_col_fechados]).copy()
                 
-                # v0.9.55: Limpa espaços extras no nome do analista
                 df_analistas_lookup[analista_col_name_origem] = df_analistas_lookup[analista_col_name_origem].astype(str).replace(r'\s+', ' ', regex=True).str.strip()
                 
                 df_encerrados_para_exibir = pd.merge(
@@ -1335,6 +1273,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.55-765 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.57-767 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
