@@ -2022,18 +2022,6 @@ LOCALIZAÇÃO:Capuava
 
 DESCRIÇÃO: usuário não consegue acesso ao site do https://frotacontrol.com.br/. 
 reporta mais usuários sem conseguir acesso na unidade!"
-100-102571;Service Request;Pending;2025-10-31 15:44:59;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;2;instalação de programa;"instalação de programa
-
-preciso que seja feita a instalação da aplicação 
-OMNITRACS
-
-CHAVE: omni
-CONTATO : 11 981461833
-ASET: DCESD2-10054
-
-EXPEDIENTE:
-SEGUNDA À SEXTA : 14:00 ÁS 22:00
-SABÁDO 12:00 ÁS 18"
 300-133873;Incident;Pending;2025-10-31 17:09:19;DARIO DURAN CARRILLO,VICTOR;COP-SAP MOBILE;2;"F8A32
 VIAGEM 696767
 PAT RETORNO 1388554
@@ -2617,7 +2605,6 @@ Gentileza verificar."
 100-102474;Service Request;Queued;2025-10-30 19:21:47;;COP-RH-HUB;3;Alteração da folga de trabalho da empregada Magda Merim da Silva - Matrícula n.º 121732.;"Alteração da folga de trabalho da empregada Magda Merim da Silva - Matrícula n.º 121732.
 
 Alteração do sábado de folga."
-300-133808;Incident;Queued;2025-10-31 08:45:04;;COP-TELECOM;2;Sem internet na base 1247.;Sem internet na base 1247.
 300-133809;Incident;Queued;2025-10-31 08:46:41;CARDOSO SOUZA DA SILVA,RONALD;COP-SAP LES-3N;2;ERRO LANÇAMENTO FRETES ZLESR004;ERRO TEMPO EXECUÇÃO DE TELA NA TRANZAÇÃO ZLESR004, LANÇAMENTO NOTAS FISCAIS DE SERVIÇO
 100-102497;Service Request;Queued;2025-10-31 08:57:51;THOME DA SILVA,ARNANDO;COP-RH-FOPAG;2;desconto de taxa sindical da participação de lucros;"Solicito analise e reembolso da taxa sindical descontada na participação de lucos no valor de R$ 200,00
 
