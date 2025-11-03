@@ -1,4 +1,4 @@
-# VERSÃO v0.9.53-763 (Corrigido nome da coluna do analista)
+# VERSÃO v0.9.54-764 (Renomeando coluna de analista)
 
 import streamlit as st
 import pandas as pd
@@ -884,10 +884,13 @@ try:
             
             date_col_name = next((col for col in ['Data de criação', 'Data de Criacao'] if col in df_encerrados_para_exibir.columns), None)
             
-            # --- INÍCIO DA MODIFICAÇÃO v0.9.53 ---
+            # --- INÍCIO DA MODIFICAÇÃO v0.9.54 ---
             colunas_para_exibir_fechados = ['Status', 'ID do ticket', 'Descrição']
             
-            analista_col_name = "Analista atribuído" # <-- Corrigido
+            # Nome que queremos exibir na tabela
+            novo_nome_analista = "Analista de Resolução" 
+            # Nome da coluna como ela vem no arquivo .csv
+            analista_col_name_origem = "Analista atribuído" 
             
             id_col_encerrados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_encerrados_para_exibir.columns), None)
             if id_col_encerrados:
@@ -899,8 +902,9 @@ try:
             
             id_col_fechados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados.columns), None)
             
-            if id_col_fechados and analista_col_name in df_fechados.columns:
-                df_analistas_lookup = df_fechados[[id_col_fechados, analista_col_name]].drop_duplicates(subset=[id_col_fechados])
+            # Verifica se a coluna de *origem* existe no arquivo de fechados
+            if id_col_fechados and analista_col_name_origem in df_fechados.columns:
+                df_analistas_lookup = df_fechados[[id_col_fechados, analista_col_name_origem]].drop_duplicates(subset=[id_col_fechados])
                 
                 df_encerrados_para_exibir = pd.merge(
                     df_encerrados_para_exibir,
@@ -909,11 +913,10 @@ try:
                     right_on=id_col_fechados,
                     how='left'
                 )
-                colunas_para_exibir_fechados.append(analista_col_name) # Adiciona à lista
-            else:
-                if analista_col_name not in df_fechados.columns:
-                    # Aviso foi removido para não poluir
-                    pass
+                
+                # Renomeia a coluna de origem para o novo nome de exibição
+                df_encerrados_para_exibir.rename(columns={analista_col_name_origem: novo_nome_analista}, inplace=True)
+                colunas_para_exibir_fechados.append(novo_nome_analista) # Adiciona o *novo* nome à lista
             
             colunas_para_exibir_fechados.append('Atribuir a um grupo') # Adiciona grupo de volta
             # --- FIM DA MODIFICAÇÃO ---
