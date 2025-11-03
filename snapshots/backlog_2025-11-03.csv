@@ -683,8 +683,6 @@ Wellington"
 100-102336;Service Request;New;2025-10-30 07:26:52;;COP-POWER-BI;3;Havia aberto um chamado anterior, porém não foi resolvido (100-102039), continuo sem conseguir visualizar os dados do relatório;Havia aberto um chamado anterior, porém não foi resolvido (100-102039), continuo sem conseguir visualizar os dados do relatório
 300-133763;Incident;New;2025-10-30 11:14:34;;COP-ORIENTAÇÃO-GRC;3;aprovador do DAC Santos (1202) - ZMM0131;Prezados, não estou cadastrado como aprovador de intercambialidade (ZMM0131) do DAC de Santos (1202), solicito liberação deste cadastro, obrigado.
 100-102413;Service Request;New;2025-10-30 12:34:36;;COP-SAP-MM-TRIBUTARIO;3;Boa tarde, por favor, solicito autorização para baixar o programa ReceitaNet, para transmissão do SPED EFD - ICMS/IPI;Boa tarde, por favor, solicito autorização para baixar o programa ReceitaNet, para transmissão do SPED EFD - ICMS/IPI
-100-102414;Service Request;New;2025-10-30 12:48:55;;COP-ORIENTAÇÃO-GRC;3;Solicito, por gentileza, ser incluído no fluxo de aprovação de pedidos, requisições, viagens e demais controles referentes à filial de Ibirité – 1014.;"Na segunda quinzena do mês de outubro, fui designado como gerente do Centro Operativo de Ibirité.
-Para desempenhar minhas atividades de forma adequada, preciso ter acesso idêntico ao do gestor Carlos Roberto Alves (chave IKYX), porém vinculado à filial 1024."
 100-102452;Service Request;New;2025-10-30 16:25:22;;APOIO-COP-ACESSO;3;APLICAÇÕES LOTUS NOTES;"Inserir na area d etrabalho 
 
 1- Historico  Manual de Contratos Granel e Envasado
@@ -1755,7 +1753,6 @@ O JSON está chegando ao PI, mas o ABAP está retornando branco, precisamos debu
 300-132978;Incident;Pending;2025-10-21 14:09:41;DE OLIVEIRA MANCO,TAMILIS;COP-SAP MOBILE;12;"Softmovel: 2545 21.10 15:25
 A unidade de Capuava (1200)  nos informou que está sem conseguir visualizar a opção de consulta da  assinatura digital para algumas notas.";"A unidade de Capuava (1200)  nos informou que está sem conseguir visualizar a opção de consulta da  assinatura digital para algumas notas. 
 Precisamos avaliar o motivo de tal comportamento, uma vez que deveria estar disponível para 100% das NFs granel assinadas digitalmente."
-300-133034;Incident;Pending;2025-10-22 08:28:24;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;11;Transação ZLES0014 não esta imprimindo documentos do carro CIF.;Ao utilizar a transação ZLES0014 os documentos: folha de rota, ordem de carregamento, romaneio entre outros não estão imprimindo.
 100-101655;Service Request;Pending;2025-10-22 08:42:04;GIMENES,IDALINA;COP-RH-HUB;11;Afastamento – Kaike Eduardo Braga Martins – 121959 - CO CAMPO GRANDE;"CO CAMPO GRANDE – Kaike Eduardo Braga Martins – 121959
 
 Colaborador com perícia agendada para 21/11/2025.
