@@ -1470,7 +1470,6 @@ Chamado aberto novamente pois o anterior 100-94011.
 
 Contato: 48 9942-3159 (Daniel)
 email: daanieldrs10@gmailcom"
-300-131775;Incident;Pending;2025-10-06 16:48:37;BASTOS DE SOUZA KLEM,CAMILA;COP-SALESFORCE;28;Identificamos inconsistências na base integrada SAP x Salesforce (RDM 200-1164), usada na Jornada de Cobrança. Há duplicidades no campo “número_documento” (coluna C), com dados distintos no SAP. O campo “codigo_boleto” (coluna J) também apresenta duplicidade para o mesmo cliente e casos de vínculo com clientes diferentes, o que é incorreto segundo o time financeiro. Alguns dos casos encontrados estão destacados em vermelho na planilha anexa.;Solicitamos uma investigação detalhada sobre os registros duplicados nos campos “número_documento” e “codigo_boleto” da base integrada na RDM 200-1164. É essencial que a base enviada esteja livre de duplicidades para garantir a integridade das informações e evitar comunicações incorretas com os clientes. A planilha com alguns dos casos destacados foi anexada ao chamado. A correção desses dados é fundamental para a efetividade da Jornada de Cobrança e para preservar a experiência do cliente.
 100-100219;Service Request;Pending;2025-10-07 15:05:48;APARECIDA VIEIRA,SUZANA;COP-RH-HUB;27;Afastamento médico de Jalisson Francisco de Almeida Santos - Itajaí SC;"Afastamento médico de Jalisson Francisco de Almeida Santos - Itajaí SC
 
 Chamado anterior 100-91993 fechado pelo RH sede.
@@ -2696,9 +2695,6 @@ Desde já agradeço."
 100-102339;Service Request;Resolved-Validation;2025-10-30 07:56:01;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;4;Solicitação do DUT;"Por gentileza peço a geração do meu DUT, do meu tempo de afastamento ate o meu retorno.
 Estive afastado do dia 20/08/2025 ao dia 22/09/2025.
 Se possível, gerar um DUT do meu retorno."
-100-102340;Service Request;Resolved-Validation;2025-10-30 08:04:56;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;4;Dúvidas sobre meu primeiro pagamento;"Bom dia, 
-
-Fiquei com dúvida em relação ao meu primeiro pagamento."
 100-102349;Service Request;Resolved-Validation;2025-10-30 08:39:41;SILVA FERREIRA,MARIANA;COP-RH-HUB;4;Ajustar a escala do colaborador PEDRO AUGUSTO NASARIO, matr. 120793, para escala 506 das 09h00 às 18h00 somente no dia 29/10/2025, alteração pontual para atendimento das rotinas.;Ajustar a escala do colaborador PEDRO AUGUSTO NASARIO, matr. 120793, para escala 506 das 09h00 às 18h00 somente no dia 29/10/2025, alteração pontual para atendimento das rotinas.
 100-102350;Service Request;Resolved-Validation;2025-10-30 08:41:53;KINTZEL OTTONI SORIANO,HANNAY;COP-RH-BENEFÍCIOS;4;Desconto no holerite;"Fiz a quitação do meu empréstimo no banco ALFA o qual descontava as parcelas na minha folha de pagamento.
 Porém nesta folha de holerite do mês veio descontando parcela do empréstimo.
@@ -2757,7 +2753,6 @@ Previsão
 
 Saída: 23/12/2025
 Retorno: 21/01/2026"
-100-102496;Service Request;Resolved-Validation;2025-10-31 08:53:51;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;3;Contracheque;Verificação de descontos.
 100-102511;Service Request;Resolved-Validation;2025-10-31 10:13:31;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;3;"Solicito agendamento de férias para DEOLCI DA SILVA, CO CANOAS,  dia 08/12/2025 20 dias;";favor agendar
 100-102543;Service Request;Resolved-Validation;2025-10-31 14:18:54;APARECIDA VIEIRA,SUZANA;COP-RH-HUB;3;desconto indevido na PL - ASSISTENCIAL PR CCT no colaborador  - da chave KV41 - Tatiane Denise Pinati Ribeiro;desconto indevido na PL - ASSISTENCIAL PR CCT no colaborador  - da chave KV41 - Tatiane Denise Pinati Ribeiro
 100-102583;Service Request;Resolved-Validation;2025-10-31 16:52:23;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;3;Cancelamento do vale transporte;Não estou utilizando
