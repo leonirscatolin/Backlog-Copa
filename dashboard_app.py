@@ -1,4 +1,4 @@
-# VERSÃO v0.9.58-768 (Reativando automação API)
+# VERSÃO v0.9.59-769 (Automação API - Login em 2 etapas)
 
 import streamlit as st
 import pandas as pd
@@ -15,7 +15,7 @@ from urllib.parse import quote
 import json
 import colorsys
 import re
-import requests # <-- Re-adicionado
+import requests 
 
 # --- INÍCIO - Constantes Globais ---
 GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM-GTR'
@@ -537,7 +537,7 @@ def formatar_delta_card(delta_abs, delta_perc, valor_comparacao, data_comparacao
     return delta_text, delta_class
 
 
-# --- v0.9.58: Função de automação ServiceAide re-adicionada ---
+# --- v0.9.59: Função de automação ServiceAide com login em 2 etapas ---
 def trigger_serviceaide_fetch(repo):
     st.sidebar.info("Iniciando busca automática (API ServiceAide)...")
     try:
@@ -547,36 +547,59 @@ def trigger_serviceaide_fetch(repo):
             st.sidebar.error("Segredos 'SERVICEAIDE_USER' ou 'SERVICEAIDE_PASS' não configurados.")
             return
 
-        base_url = "https://csm3.serviceaide.com/reportservice"
+        # URLs
+        base_url = "https://csm3.serviceaide.com"
+        login_url = "https://csm3.serviceaide.com/NimsoftServiceDesk/servicedesk/odata/login?$format=JSON"
         resource_path = "/shared/adhoccomponents/Massa_de_dados___TOTAL___Fechados"
-        # API REST para exportar relatórios (assumindo que termine com .csv)
-        target_url = f"{base_url}/rest_v2/reports{resource_path}.csv"
+        report_url = f"{base_url}/reportservice/rest_v2/reports{resource_path}.csv"
         
-        st.sidebar.write(f"Tentando acessar: `{target_url}`")
+        # Payload de Login (assumindo formato JSON padrão)
+        login_payload = {
+            "username": user,
+            "password": pwd
+        }
+        
+        st.sidebar.write("Etapa 1: Autenticando na API...")
+        
+        # Criar uma sessão para persistir o cookie de login
+        with requests.Session() as session:
+            # Etapa 1: Fazer o POST de login
+            login_response = session.post(login_url, json=login_payload)
 
-        response = requests.get(target_url, auth=(user, pwd))
+            if login_response.status_code != 200:
+                st.sidebar.error(f"Falha na Etapa 1 (Login). Status: {login_response.status_code}")
+                st.sidebar.write(f"Resposta: {login_response.text[:500]}")
+                st.sidebar.info("Verifique se as credenciais nos Secrets estão corretas.")
+                return
 
-        if response.status_code != 200:
-            st.sidebar.error(f"Falha na conexão. Status: {response.status_code}")
-            st.sidebar.write(f"Resposta (primeiros 500 chars): {response.text[:500]}")
-            return
+            st.sidebar.write("Login OK. Cookie de sessão obtido.")
 
-        content_type = response.headers.get('Content-Type', '')
-        if 'text/html' in content_type:
-            st.sidebar.error("Erro: O servidor retornou uma página HTML, não um arquivo CSV. Verifique a URL ou as credenciais (login pode ter falhado).")
-            return
+            # Etapa 2: Fazer o GET do relatório CSV usando a sessão autenticada
+            st.sidebar.write(f"Etapa 2: Baixando relatório de: `{report_url}`")
+            report_response = session.get(report_url)
 
-        if 'text/csv' not in content_type and 'application/csv' not in content_type:
-            st.sidebar.warning(f"Tipo de conteúdo inesperado: {content_type}. Tentando processar mesmo assim...")
+            if report_response.status_code != 200:
+                st.sidebar.error(f"Falha na Etapa 2 (Download). Status: {report_response.status_code}")
+                st.sidebar.write(f"Resposta: {report_response.text[:500]}")
+                return
 
-        content_fechados = response.content
-        st.sidebar.success(f"Dados baixados! ({len(content_fechados)} bytes)")
+            content_type = report_response.headers.get('Content-Type', '')
+            if 'text/html' in content_type:
+                st.sidebar.error("Erro: O servidor retornou uma página HTML. O cookie de login pode não ter sido aceito para baixar o relatório.")
+                return
 
-        # Reutiliza a lógica completa do botão "Atualização Rápida"
+            if 'text/csv' not in content_type and 'application/csv' not in content_type:
+                st.sidebar.warning(f"Tipo de conteúdo inesperado: {content_type}. Tentando processar mesmo assim...")
+
+            content_fechados = report_response.content
+            st.sidebar.success(f"Dados baixados! ({len(content_fechados)} bytes)")
+
+        # Etapa 3: Processar os dados e salvar no GitHub
         with st.spinner("Processando dados e atualizando o repositório..."):
             now_sao_paulo = datetime.now(ZoneInfo('America/Sao_Paulo'))
             commit_msg = f"Atualização automática (API) em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
 
+            # 3a. Salvar IDs anteriores
             df_fechados_anterior = read_github_file(repo, "dados_fechados.csv")
             previous_closed_ids = set()
             if not df_fechados_anterior.empty:
@@ -587,8 +610,10 @@ def trigger_serviceaide_fetch(repo):
             json_content = json.dumps(list(previous_closed_ids), indent=4)
             update_github_file(repo, "previous_closed_ids.json", json_content.encode('utf-8'), "Snapshot dos IDs de fechados anteriores")
 
+            # 3b. Salvar novo arquivo de fechados
             update_github_file(repo, "dados_fechados.csv", content_fechados, commit_msg)
 
+            # 3c. Atualizar hora
             datas_existentes = read_github_text_file(repo, "datas_referencia.txt")
             data_atual_existente = datas_existentes.get('data_atual', 'N/A')
             data_15dias_existente = datas_existentes.get('data_15dias', 'N/A')
@@ -598,8 +623,8 @@ def trigger_serviceaide_fetch(repo):
                                             f"hora_atualizacao:{hora_atualizacao_nova}")
             update_github_file(repo, "datas_referencia.txt", datas_referencia_content_novo.encode('utf-8'), commit_msg)
             
+            # 3d. Atualizar snapshot
             df_atual_base = read_github_file(repo, "dados_atuais.csv")
-            # Usa BytesIO para ler o conteúdo CSV baixado em bytes
             df_fechados_novo = pd.read_csv(BytesIO(content_fechados), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
             
             id_col_fechados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_novo.columns), None)
@@ -618,6 +643,7 @@ def trigger_serviceaide_fetch(repo):
             commit_msg_snapshot = f"Atualizando snapshot (auto-api) em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
             update_github_file(repo, snapshot_path, content_snapshot_novo, commit_msg_snapshot)
             
+            # 3e. Sucesso
             st.sidebar.success("Busca automática e atualização de snapshot concluídas! Recarregando...")
             st.cache_data.clear()
             st.cache_resource.clear()
@@ -762,8 +788,8 @@ elif password:
 # --- v0.9.58: Seção de teste de automação (ServiceAide) ---
 if is_admin:
     st.sidebar.markdown("---")
-    st.sidebar.subheader("Teste de Automação")
-    st.sidebar.info("Para automação: configure os Secrets 'SERVICEAIDE_USER' e 'SERVICEAIDE_PASS' (para uma conta sem SSO) e clique abaixo para testar.")
+    st.sidebar.subheader("Atualização Automática (API)")
+    st.sidebar.info("Busca os chamados fechados diretamente do ServiceAide. (Requer Secrets configurados)")
     
     if st.sidebar.button("Buscar Fechados (Automático)"):
         trigger_serviceaide_fetch(repo)
@@ -1365,6 +1391,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.56-766 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.58-768 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
