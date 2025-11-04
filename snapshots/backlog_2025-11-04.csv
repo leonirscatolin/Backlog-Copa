@@ -511,11 +511,6 @@ matricula: 121311";"Horário atual: 06h as 15h.
 Horário para alteração: 11h as 20h.
 A partir do dia 28/10/2025."
 100-102333;Service Request;Active;2025-10-29 20:03:42;BRITO DA CRUZ,LUCELIA;COP-RH-HUB;5;Desconto REF atraso;Gostaria de saber qual dia houve atraso para ter sido descontado na folha de Outubro, sendo que todos os dias chego no horário correto e a saída tbm.
-300-133737;Incident;Active;2025-10-30 08:58:24;NEVES DA SILVA,EDNEA;APOIO-COP-ACESSO;4;Acesso ao SAP - Liquigás - 01 - ECC - PRD (Produção);"Usuário: LQRP
-Acesso: SAP - Liquigás - 01 - ECC - PRD (Produção)
-Mandante: 120
-
-O usuário precisará de acesso ao SAP antigo da Liquigás para consulta de notas de comodato de tanques industriais, para que consiga processar os retornos com referências."
 100-102363;Service Request;Active;2025-10-30 09:26:06;DA SILVA CACULA,CLAUDETE;COP-RH-TREINAMENTO&AV.DESEMPENHO;4;SOLICITAÇÃO DE REEMBOLSO;SOLICITAÇÃO DE REEMBOLSO
 100-102365;Service Request;Active;2025-10-30 09:32:07;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;4;Feriado Municipal em Gurupi - incluir no Sênior;"Centro: 1245 - CO Gurupi
 Sistema: Sênior 
@@ -2586,21 +2581,9 @@ Desde já agradeço."
 Estive afastado do dia 20/08/2025 ao dia 22/09/2025.
 Se possível, gerar um DUT do meu retorno."
 100-102349;Service Request;Resolved-Validation;2025-10-30 08:39:41;SILVA FERREIRA,MARIANA;COP-RH-HUB;4;Ajustar a escala do colaborador PEDRO AUGUSTO NASARIO, matr. 120793, para escala 506 das 09h00 às 18h00 somente no dia 29/10/2025, alteração pontual para atendimento das rotinas.;Ajustar a escala do colaborador PEDRO AUGUSTO NASARIO, matr. 120793, para escala 506 das 09h00 às 18h00 somente no dia 29/10/2025, alteração pontual para atendimento das rotinas.
-100-102350;Service Request;Resolved-Validation;2025-10-30 08:41:53;KINTZEL OTTONI SORIANO,HANNAY;COP-RH-BENEFÍCIOS;4;Desconto no holerite;"Fiz a quitação do meu empréstimo no banco ALFA o qual descontava as parcelas na minha folha de pagamento.
-Porém nesta folha de holerite do mês veio descontando parcela do empréstimo.
-Liguei no banco o qual orientou para eu abrir um chamado informando a minha empresa sobre a quitação."
 100-102352;Service Request;Resolved-Validation;2025-10-30 08:55:14;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;4;justificativa do ponto de entrada;"29/10 entrada mais tarde motivo curso 
 30/10 entrada mais tarde motivo interjornada"
 100-102370;Service Request;Resolved-Validation;2025-10-30 09:46:28;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;4;Favor verificar a migração dos dados do Ponto para o Senior. Exemplo o colaborador ANTONIO BARBOSA DA FONSECA (720110) DOS DIAS 21 A 27/10 ESTÁ COM ATESTADO MÉDICO APROVADO, PORÉM NÃO MIGROU PARA O SISTEMA.;Efetuar o ajuste do ponto do colaborador ANTONIO BARBOSA DA FONSECA (720110) DOS DIAS 21 A 27/10 ESTÁ COM ATESTADO MÉDICO APROVADO, PORÉM NÃO MIGROU PARA O SISTEMA.
-100-102418;Service Request;Resolved-Validation;2025-10-30 14:04:04;KINTZEL OTTONI SORIANO,HANNAY;COP-RH-BENEFÍCIOS;4;Valores da previdencia privada;"Olá,
-
-Estive analisando os descontos referentes à previdência privada na minha folha de pagamento e notei o seguinte:
-
-Os descontos somam R$ 117,00 + R$ 197,15, totalizando R$ 314,15.
-No entanto, no aplicativo IFM, consta apenas o valor de R$ 287,80 como minha contribuição.
-Considerando a contrapartida da empresa (COPA), o total creditado no IFM é de R$ 575,60.
-
-Gostaria de entender a diferença de R$ 26,35 entre o valor descontado da minha folha e o valor efetivamente creditado no IFM. Essa diferença pode estar relacionada a alguma taxa de manutenção ou outro tipo de encargo?"
 100-102421;Service Request;Resolved-Validation;2025-10-30 14:16:41;GIMENES,IDALINA;COP-RH-HUB;4;Desconto Sindicato;"Gostaria de cancelar o desconto do sindicato. 
 
 Ontem saiu a folha de pagamento e veio o desconto. Não fui informado sobre, gostaria que não fosse mais descontado nos próximos anos."
@@ -2608,7 +2591,6 @@ Ontem saiu a folha de pagamento e veio o desconto. Não fui informado sobre, gos
 
 Gentileza verificar."
 100-102511;Service Request;Resolved-Validation;2025-10-31 10:13:31;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;3;"Solicito agendamento de férias para DEOLCI DA SILVA, CO CANOAS,  dia 08/12/2025 20 dias;";favor agendar
-100-102601;Service Request;Resolved-Validation;2025-11-01 11:42:21;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;2;Alteração escala;Alteração escala colaboradores.
 100-102603;Service Request;Resolved-Validation;2025-11-01 15:09:42;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;2;"Não estou conseguindo bandeirar o PAT pela transação, o que está me impedindo de finalizar o faturamento pelo meu acesso.
 Deixo o erro em anexo para verificação.
 
