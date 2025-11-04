@@ -472,7 +472,6 @@ Benefício por análise documental.
 Favor emitir a carta DUT  e enviar ao colaborador para incluir no meu INSS.
 
 Enviar para o colaborador o termo caso o mesmo queira receber a antecipação e quando receber de volta abrir um novo chamado para que a Jana faça a antecipação."
-300-133399;Incident;Active;2025-10-27 09:21:31;BRITO,EDINISIO;COP-SALESFORCE;7;Direcionamento incorreto de caso;Bom dia! Identificado inconsistência na abertura do caso, com o qual foi direcionado para Depósito Avançado de Cariacica ao invés do Depósito Avançado de Serra, com o qual está cadastrada conta do cliente. E-mail com evidências em anexo.
 100-101986;Service Request;Active;2025-10-27 10:03:10;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;7;"SOLICITAÇÃO DE PPP E LAUDO
 REQUERENTE: OSCAR PERCI GAMALHO";"Solicitação de PPP e laudo
 Requerente: Oscar Perci Ramalho
@@ -1851,15 +1850,6 @@ Notas: Todas as notas doa dia 04/10 serie 9
 Viagem: 687660
 
 Centro: 1206"
-100-102404;Service Request;Pending;2025-10-30 11:53:50;SAMUEL DA SILVA,AUDRYK;APOIO-COP-SEDE;4;Ticket 100-102230 não concluído, solicitação de liberação de envio de email via caixa de inovação;"Ticket 100-102230 não foi concluído (colaboradores seguem sem poder enviar email como ""inovacao@copaenergia.com.br""
-
-Solicito liberação (ESCRITA E LEITURA) da caixa de e-mail de inovação (inovacao@copaenergia.com.br) para os colaboradores:
-Kemilly Cristina Machado Banhos, 1H5M
-[kemilly.banhos@copaenergia.com.br]
-Fellipe Vilhena Bazilio - 74ZS
-[fellipe.bazilio@copaenergia.com.br]
-Gabriella Gomes Do Nascimento Cruz - U82B
-[gabriela.cruz@copaenergia.com.br]"
 300-133779;Incident;Pending;2025-10-30 14:14:05;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;4;NÃO ESTAMSO CONSEGUINDO ESTORNAR UM RECEBIMENTO 180588467;"EM ANEXO O ERRO APRESENTADO NA VL09
 
 O pedido 4503540481 
@@ -2590,7 +2580,6 @@ Ontem saiu a folha de pagamento e veio o desconto. Não fui informado sobre, gos
 100-102470;Service Request;Resolved-Validation;2025-10-30 19:01:31;MACEDO GONCALVES MALARDO,INGRID;COP-RH-REMUNERAÇÃO;4;Colaboradores, Vitor dos Santos Moura matricula 120646, no qual cobriu às férias do Operador de Gás, e Rafael Borges Landucci matricula 120387 no qual esta cobrindo a ausência do Operador de Gás que esta afastado de suas atividades, informaram que não receberam hoje 30/10 os salários substituição.;"Colaboradores, Vitor dos Santos Moura matricula 120646, no qual cobriu às férias do Operador de Gás, e Rafael Borges Landucci matricula 120387 no qual esta cobrindo a ausência do Operador de Gás que esta afastado de suas atividades, informaram que não receberam hoje 30/10 os salários substituição.
 
 Gentileza verificar."
-100-102511;Service Request;Resolved-Validation;2025-10-31 10:13:31;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;3;"Solicito agendamento de férias para DEOLCI DA SILVA, CO CANOAS,  dia 08/12/2025 20 dias;";favor agendar
 100-102603;Service Request;Resolved-Validation;2025-11-01 15:09:42;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;2;"Não estou conseguindo bandeirar o PAT pela transação, o que está me impedindo de finalizar o faturamento pelo meu acesso.
 Deixo o erro em anexo para verificação.
 
