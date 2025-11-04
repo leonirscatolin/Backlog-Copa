@@ -267,9 +267,6 @@ A perícia será por análise documental
 Favor emitir a carta DUT e enviar ao colaborador para incluir no meu INSS.
 
 Enviar para o colaborador o termo caso o mesmo queira receber a antecipação e quando receber de volta abrir um novo chamado para que a Jana faça a antecipação."
-300-130843;Incident;Active;2025-09-23 14:37:55;LOPES MEDEIROS,JEFFERSON;COP-SAP SD-3N;41;Perda do itinerário na F7G12;"Perda do itinerário na F7G12 em todas as viagens todas processam com erro. Acredito ser problema no cadastro da frota pois nas demais não ocorre o problema
-
-SEGUE IMAGEM DO PROBLEMA RELATADO EM ANEXO."
 100-99570;Service Request;Active;2025-09-30 14:08:35;APARECIDA VIEIRA,SUZANA;COP-RH-HUB;34;"Solicitação de PPP ex colaborador
 Rogerio Altemir Bassani juridicosousasc@gmail.com - (48) 99150-1219";"Solicitação de PPP ex colaborador
 Rogerio Altemir Bassani juridicosousasc@gmail.com - (48) 99150-1219
@@ -592,16 +589,7 @@ Eu Solicito o Meu acesso Refaturamento.comercial
 
 
 A pedido Da Minha Supervizora Tatiane Cosme"
-300-133763;Incident;New;2025-10-30 11:14:34;;COP-ORIENTAÇÃO-GRC;4;aprovador do DAC Santos (1202) - ZMM0131;Prezados, não estou cadastrado como aprovador de intercambialidade (ZMM0131) do DAC de Santos (1202), solicito liberação deste cadastro, obrigado.
 100-102413;Service Request;New;2025-10-30 12:34:36;;COP-SAP-MM-TRIBUTARIO;4;Boa tarde, por favor, solicito autorização para baixar o programa ReceitaNet, para transmissão do SPED EFD - ICMS/IPI;Boa tarde, por favor, solicito autorização para baixar o programa ReceitaNet, para transmissão do SPED EFD - ICMS/IPI
-300-133800;Incident;New;2025-10-30 18:19:13;;COP-TELECOM;4;"Nome para Exibição |
-WLQFO1-AP001";"Manter Detalhes Atuais
-Nome para Exibição |
-WLQFO1-AP001
-Nome do Host |
-172.31.236.199
-Endereço IP |
-172.31.236.19"
 300-133810;Incident;New;2025-10-31 08:59:26;;COP-SAP-FRETES;3;Erro para lançamento da VT 896816;Status da VT consta em vermelho para lançamento do frete do transportado 430976, nf 13184.
 100-91194;Service Request;Pending;2025-07-08 15:55:56;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-ADMPESSOAL;118;Afastamento Bruno Messias da Silva - Suape;"Acompanhar processo de afastamento:
 Dut orientações enviado  email: brunomessias12042019@gmail.com (81) 995912612. 
@@ -1423,17 +1411,6 @@ E-mail: rodrigogasmais@gmail.com/rodrigo.digim.udi@gmail.com
 DUT e Atestado estão salvos na pasta do colaborador 
 
 Acompanhar para programar ASO de retorno em 06/03/2026"
-300-131223;Incident;Pending;2025-09-29 14:43:57;DE OLIVEIRA MANCO,TAMILIS;COP-SAP MOBILE;35;"Boa tarde , gostaria que as notas fiscais do cliente 97204 do CO 1201 saísse no Campo de Dados adicionais as seguinte mensagem:
-CONVÊNIO : SUS 005/2021
-FONTE DE RECURSO: ESTADUAL
-SECRETARIA MUNICIPAL DA SAÚDE
-MUNICÍPIO: CAMPINAS
-CONTA BANCÁRIA : 6960-4";"Boa tarde , gostaria que as notas fiscais do cliente 97204 do CO 1201 saísse no Campo de Dados adicionais as seguinte mensagem:
-CONVÊNIO : SUS 005/2021
-FONTE DE RECURSO: ESTADUAL
-SECRETARIA MUNICIPAL DA SAÚDE
-MUNICÍPIO: CAMPINAS
-CONTA BANCÁRIA : 6960-4"
 100-99481;Service Request;Pending;2025-09-29 15:50:26;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;35;SOLICITAÇÃO DE PPP E LTCAT;"SOLICITAÇÃO DE PPP E LTCAT
 REQUERENTE: RICARDO DA SILVEIRA ESTIMA
 CPF: 36930296015
@@ -1638,11 +1615,6 @@ Precisamos avaliar o motivo de tal comportamento, uma vez que deveria estar disp
 Colaborador com perícia agendada para 21/11/2025.
 DUT - 04/10/2025"
 300-133067;Incident;Pending;2025-10-22 11:12:19;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;12;ERRO LOG;Ao acessar a transação ZLESR004 - MONITOR - PAGAMENTO DE FRETES, está aparecendo o seguinte erro no log  ''Saldo da fatura não igual a zero''
-100-101704;Service Request;Pending;2025-10-22 14:35:13;PEREIRA SILVA MEDEIROS,ADRIANA;COP-GMI-SMIL-SUSTENTAÇÃO;12;"Contas digitais como Nubank, C6, Inter e etc, estão cadastradas no SAP, porém no SMI não as localizamos para cadastro de dados bancários. 
-
-Em anexo, segue um exemplo da conta Inter.";"Contas digitais como Nubank, C6, Inter e etc, estão cadastradas no SAP, porém no SMI não as localizamos para cadastro de dados bancários. 
-
-Em anexo, segue um exemplo da conta Inter."
 300-133127;Incident;Pending;2025-10-22 17:29:20;CARLOS DA SILVA RIBEIRO,ELI;COP-SAP MOBILE;12;Cliente informa que as notas fiscais estão sendo emitidas sem a identificação das escolas, o que tem dificultado a rotina de conferência e pagamento.;Em anexo, seguem todos os códigos dos clientes que necessitam dessa alteração.
 300-133163;Incident;Pending;2025-10-23 10:09:08;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;11;Nota de transferência de 21/10 está sem valor.;"Nota: 77996 série 1
 Centro: 1206
@@ -1790,23 +1762,6 @@ Wellington"
 100-102324;Service Request;Pending;2025-10-29 17:12:24;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;5;Desconto período 09/2024;"Ao verificar o extrato no aplicativo da SulAmérica referente ao mês anterior, observei que está sendo cobrada uma consulta do ano de 2024, realizada antes da cirurgia. Ressalto que a consulta de retorno foi descontada em dezembro. Gostaria, por gentileza, de verificar o motivo pelo qual essa cobrança está sendo efetuada somente agora e confirmar se ela já não havia sido descontada anteriormente.
 Segue anexo."
 300-133714;Incident;Pending;2025-10-29 17:12:56;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP WF;5;LIBERAÇÃO OV;FAVOR LIBERAR OV 0013325517 POIS TRAVOU NO FLUXO
-300-133716;Incident;Pending;2025-10-29 17:22:29;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;5;"Exclusão 
-
-Transporte 896394
-Custe Frete 956317
-
-centro: 1212
-Viagem: 696211";"Tratando-se de notas de saída já reconciliadas, houve incidência de pagamento de frete indevido. 
-
-Para que possamos prosseguir com o cancelamento, solicito a exclusão dos seguintes itens vinculados à ordem de venda: 
-
-Transporte 896394
-Custe Frete 956317
-
-Em anexo print dos itens que precisa excluir.
-
-centro: 1212
-Viagem: 696211"
 100-102329;Service Request;Pending;2025-10-29 18:29:49;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;5;Requerimento de benefício filho excepcional por 3 diagnósticos TDAH, TPAC E DERMATITE ATÓPICA GRAVE;"Solicito a concessão do benefício “Filho Excepcional”, oferecido pela empresa aos colaboradores que possuem dependentes com deficiências ou condições que demandam acompanhamento contínuo e cuidados especiais.
 Minha filha, Érica, encontra-se atualmente em acompanhamento médico e terapêutico devido a três diagnósticos confirmados:
 
@@ -1897,19 +1852,9 @@ ESTAREI NA UNIDADE ATÉ AS 16:00H DO DIA 31/10
 CASO PRECISE IR ATÉ A UNIDADE, AGENDAR O DIA PARA O PROCEDIMENTO."
 100-102524;Service Request;Pending;2025-10-31 11:25:20;NEVES DA SILVA,EDNEA;APOIO-COP-ACESSO;3;Acesso as pastas do financeiro MI;Bom dia, por gentileza, liberar acesso as pastas que estão na rede do financeiro, credito e cobrança. A Suellen solicitou.
 100-102526;Service Request;Pending;2025-10-31 11:51:30;NEVES DA SILVA,EDNEA;APOIO-COP-ACESSO;3;Bom dia, preciso do acesso ao lotus notes e da liberação para esses documentos (imagem em anexo);Bom dia, preciso do acesso ao lotus notes e da liberação para esses documentos (imagem em anexo)
-300-133844;Incident;Pending;2025-10-31 13:55:37;NEVES DA SILVA,EDNEA;APOIO-COP-ACESSO;3;Usuária informa que após realizar troca de senha não está mais conseguindo acesso a VPN, ao tentar logar não aceita login e senha. Obs: demais acessos que não dependem da vpn acessam normalmente. Em anexo print do erro.;"chave: U0JM
-contato: 048 99934-5443"
 300-133845;Incident;Pending;2025-10-31 14:05:59;CASSIMIRO MARTINS,RAONI;COP-ORIENTAÇÃO-GRC;3;Transação ZRF não está gerando a lista de clientes para criar os projetos.;"centro 1136
 
 /Anexo!"
-100-102541;Service Request;Pending;2025-10-31 14:15:25;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;3;acesso a pasta userliq;"estou sem acesso a pasta userliq
-serliq (\\sdc-vfsun01.distribuidora.biz\fsun01) (m:) > share > GESMS
-
-Tenho acesso a pasta porém o caminho não está aparecendo, depois da atualização não consegui mais acessar e também a pasta da Copaenergia no menu iniciar não está aparecendo como se eu não tivesse ZTNA.
-
-O Noc tentou acesso mas pelo script rodado também não deu certo.
-
-NCEGU1-31050"
 300-133848;Incident;Pending;2025-10-31 14:33:18;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;3;435 Rejeição: NF-e não pode ter o indicativo do intermediador;"Nota: 78727
 Série: 1
 Numdoc: 21346524
@@ -1934,24 +1879,7 @@ DOC: 21328053
 
 CENTRO: 1225"
 300-133857;Incident;Pending;2025-10-31 15:05:18;BRITO,EDINISIO;COP-SALESFORCE;3;Erro ao rejeitar leads e oportunidade;A funcionária Júlia Alves Loucano do time de expansão não esta conseguindo rejeitar lead, pois informa que o motivo de perda e rejeição não esta sendo preenchido, porém esse campo não é preenchido na etapa do lead.
-100-102547;Service Request;Pending;2025-10-31 15:06:19;BRAGA MARTINS,EDEMILSON;COP-SEGURANÇA;3;acesso ao site;"USUÁRIO AFETADO: Vinicius
-CHAVE:cjt6
-GESTOR:
-TELEFONE: 11970240098
-LOCALIZAÇÃO:Capuava
-
-DESCRIÇÃO: usuário não consegue acesso ao site do https://frotacontrol.com.br/. 
-reporta mais usuários sem conseguir acesso na unidade!"
 100-102579;Service Request;Pending;2025-10-31 16:30:14;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;3;FILHO COM TEA 2;transtorno do espectro autista,  necessidade de acompanhamento de to, fono, psico
-300-133873;Incident;Pending;2025-10-31 17:09:19;DARIO DURAN CARRILLO,VICTOR;COP-SAP MOBILE;3;"F8A32
-VIAGEM 696767
-PAT RETORNO 1388554
-
-FROTA ESTAVA COM A SÉRIE 7 E HOJE PRECISAMOS FAZER A SUBSTITUIÇÃO DELA, POREM AINDA TINHA VIAGEM PENDENTE DE RECONCILIAÇÃO. A RECONCILIAÇÃO FOI FEITA (PAT BANDEIRADO) GERANDO NFS SÉRIE 1 E AS NOTAS NÃO SUBIU PARA O PAT.";"F8A32
-VIAGEM 696767
-PAT RETORNO 1388554
-
-FROTA ESTAVA COM A SÉRIE 7 E HOJE PRECISAMOS FAZER A SUBSTITUIÇÃO DELA, POREM AINDA TINHA VIAGEM PENDENTE DE RECONCILIAÇÃO. A RECONCILIAÇÃO FOI FEITA (PAT BANDEIRADO) GERANDO NFS SÉRIE 1 E AS NOTAS NÃO SUBIRAM PARA O PAT."
 100-102589;Service Request;Pending;2025-10-31 17:30:02;GIMENES,IDALINA;COP-RH-HUB;3;"Luciano Pedro da Silva - 14144
 Ajudante de Carga e Descarga - DAC SANTOS";"Colaborador está afastado desde o dia 04/07/2023.
 
@@ -2170,7 +2098,6 @@ Att;"
 100-101922;Service Request;Queued;2025-10-25 11:23:29;SOUZA,AMILTON;COP-RH-FOPAG;9;Pagamento de PR ano 2023;"Informo que no ano de 2023, não recebi a parcela fixa referente a PR2023, por gentileza, poderiam verificar o que houve?
 
 Segue em anexo, copia do contra cheque e cédula C"
-300-133375;Incident;Queued;2025-10-27 08:13:52;;COP-SAP BASIS;7;Muita lentidão para abrir documentos dos anexos;Usuário informa muita lentidão ao acessar anexos dentro de Contratos no SAP.
 100-101937;Service Request;Queued;2025-10-27 08:35:01;DE SOUZA AGUIAR DE JESUS,BEATRIZ;COP-RH-ADMPESSOAL;7;SOLICITAÇÃO DE INCLUSÃO DE DADOS NO SENIOR;"Prezados , 
 Solicitamos a inclusão dos dados da dependente YOHANA FIALHO ROCHA (FILHA)  no sistema Senior, vinculado a JOAO PAULO ROCHA DE AZEVEDO – 122253- SÃO JOSE DOS CAMPOS . Em anexo, encaminhamos o comprovante para as devidas alterações.
 Atenciosamente."
@@ -2498,12 +2425,6 @@ A alteração deverá entrar em vigor a partir do dia 03/11/2025.
 Grato."
 300-133889;Incident;Queued;2025-11-01 10:11:05;;COP-RECONCILIAÇÃO;2;ERRO DE RECONCILIAÇÃO;"VIAGEM 697286 / PAT 1390776
 ERRO :Erro no controle dos dados incompletos: cancelamento esquema ZRETURNS método 5013"
-300-133893;Incident;Queued;2025-11-01 10:54:56;;COP-TELECOM;2;WLQFO1-AP004;"Nome do Host |
-172.31.236.194
-Endereço IP |
-172.31.236.194
-
-CO Fortaleza"
 100-102600;Service Request;Queued;2025-11-01 11:07:40;;COP-RH-HUB;2;Precisamos da alteração do horário de ponto do colaborador Daniel de Souza Cardoso, matrícula 112862, no período de 17/11/2025 a 06/12/2025, devido a necessidade dele cobrir as férias do conferente Ezequiel dos Santos Bispo, matrícula 118862, precisando chegar mais cedo na unidade. Grata!;Colaborador pediu para formalizarmos essa substituição.
 100-94806;Service Request;Resolved-Validation;2025-08-12 14:19:18;GIMENES,IDALINA;COP-RH-HUB;83;Afastamento - CO Campo Grande -  IGOR THALES FERREIRA BARBERIZ – 100101182;"Segue anexo histórico de afastamento do colaborador  IGOR THALES FERREIRA BARBERIZ – 100101182
 
@@ -2570,10 +2491,8 @@ Desde já agradeço."
 100-102339;Service Request;Resolved-Validation;2025-10-30 07:56:01;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;4;Solicitação do DUT;"Por gentileza peço a geração do meu DUT, do meu tempo de afastamento ate o meu retorno.
 Estive afastado do dia 20/08/2025 ao dia 22/09/2025.
 Se possível, gerar um DUT do meu retorno."
-100-102349;Service Request;Resolved-Validation;2025-10-30 08:39:41;SILVA FERREIRA,MARIANA;COP-RH-HUB;4;Ajustar a escala do colaborador PEDRO AUGUSTO NASARIO, matr. 120793, para escala 506 das 09h00 às 18h00 somente no dia 29/10/2025, alteração pontual para atendimento das rotinas.;Ajustar a escala do colaborador PEDRO AUGUSTO NASARIO, matr. 120793, para escala 506 das 09h00 às 18h00 somente no dia 29/10/2025, alteração pontual para atendimento das rotinas.
 100-102352;Service Request;Resolved-Validation;2025-10-30 08:55:14;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;4;justificativa do ponto de entrada;"29/10 entrada mais tarde motivo curso 
 30/10 entrada mais tarde motivo interjornada"
-100-102370;Service Request;Resolved-Validation;2025-10-30 09:46:28;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;4;Favor verificar a migração dos dados do Ponto para o Senior. Exemplo o colaborador ANTONIO BARBOSA DA FONSECA (720110) DOS DIAS 21 A 27/10 ESTÁ COM ATESTADO MÉDICO APROVADO, PORÉM NÃO MIGROU PARA O SISTEMA.;Efetuar o ajuste do ponto do colaborador ANTONIO BARBOSA DA FONSECA (720110) DOS DIAS 21 A 27/10 ESTÁ COM ATESTADO MÉDICO APROVADO, PORÉM NÃO MIGROU PARA O SISTEMA.
 100-102421;Service Request;Resolved-Validation;2025-10-30 14:16:41;GIMENES,IDALINA;COP-RH-HUB;4;Desconto Sindicato;"Gostaria de cancelar o desconto do sindicato. 
 
 Ontem saiu a folha de pagamento e veio o desconto. Não fui informado sobre, gostaria que não fosse mais descontado nos próximos anos."
