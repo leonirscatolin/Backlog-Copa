@@ -500,23 +500,6 @@ pat. 1384146.";"viagem está com retorno de cheio  diferente físico x contábil
 
 1136	DAC - FORTALEZA	Envasado	0000694589	00000000000001384146	F - Lançado	23.10.2025	00000000000001384732	F - Lançado	23.10.2025	Sim"
 100-102172;Service Request;Active;2025-10-28 14:10:42;GOMES DE ARRUDA,ROSIMARA;COP-RH-HUB;6;Solicitação de PPP;PPP do colaborador Celestino Manoel do Espirito Santo, emitido hoje dia 28/10/2025e enviado para QSMS.
-300-133641;Incident;Active;2025-10-29 10:05:35;LOPES MEDEIROS,JEFFERSON;COP-SAP SD-3N;5;NOTAS LANÇADAS EM CONTINGENCIA 25/10;"As notas 
-266-1 cliente 124070 / 
-1030-1 cliente 97922 / 
-2301-1 e 2303 cliente 97656 
-
-21286185	000002303
-21285839	000002301
-21286066	000001030
-21286102	000000266
-
-Centro 1027
-
-Foram emitidas em contingencia no dia 25/10 e lançadas no sap, 
-
-pois a Sefaz de Minas estava em manutenção,
-
-mas no dia 27/10 as notas foram validadas com outra chave de acesso."
 100-102297;Service Request;Active;2025-10-29 14:43:21;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;5;O Sr. Antonio Ferreira Sobrinho foi colaborador da Copa Energia no período de 05/04/1989 até 23/01/2001. Ele já tem um PPP, porém precisa de um emitido com a data atual.;O Sr. Antonio Ferreira Sobrinho foi colaborador da Copa Energia no período de 05/04/1989 até 23/01/2001. Ele já tem um PPP, porém precisa de um emitido com a data atual.
 100-102298;Service Request;Active;2025-10-29 14:49:36;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;5;"Sr. José Carlos Maes, ex colaborador da empresa solicita PPP do período trabalhado na Liquigas S.A e da Copagaz Distribuidora de Gás Ltda.
 Documentos relativos aos períodos anexos.";"Sr. José Carlos Maes, ex colaborador da empresa solicita PPP do período trabalhado na Liquigas S.A e da Copagaz Distribuidora de Gás Ltda.
@@ -1566,11 +1549,6 @@ Colaborador realizou perícia no dia 07.10.2025.
 Favor orientar o colaborador quanto a solicitações das antecipações, caso necessário.
 
 Contato do colaborador: 51 99993 6989"
-300-132554;Incident;Pending;2025-10-15 16:17:08;DE OLIVEIRA MANCO,TAMILIS;COP-SAP MOBILE;19;"Erro na emissão da N'f de venda. 
-Pocket.";"A equipe realiza todo o processo de venda no pocket, porém ao tentar colocar os Kg's de venda aparece a mensagem "" acertar condição de pagamento"" 
-O cliente no pocket fica em vermelho e assim travando a nota. 
-
-Cliente número : 11132"
 100-101040;Service Request;Pending;2025-10-15 16:20:02;JOSE BRITO VIEIRA,JAILSON;COP-RH-HUB;19;Afastamento - CO Cascavel -  Julio Cesar Carnaval Oliveira – 122130;"Segue anexo histórico de afastamento do colaborador  Julio Cesar Carnaval Oliveira – 122130
 
 Perícia agendada para o dia 22/10/2025.
@@ -1970,16 +1948,6 @@ NOTA: 235169
 DOC: 21328053
 
 CENTRO: 1225"
-300-133856;Incident;Pending;2025-10-31 14:57:23;BRITO,EDINISIO;COP-SALESFORCE;3;usuário não tem acesso a para de agendamentos de carregamento;"USUÁRIO AFETADO: Paulo
-CHAVE:lh67
-GESTOR:
-TELEFONE:53 999314324
-LOCALIZAÇÃO: Pelotas RS
-
-DESCRIÇÃO: usuário não tem acesso a ara de agendamentos d carregamento no Sales Force.
-precisa ser liberado.
-
-aparecen agendamentos de outras unidades mais nao do CO pelotas"
 300-133857;Incident;Pending;2025-10-31 15:05:18;BRITO,EDINISIO;COP-SALESFORCE;3;Erro ao rejeitar leads e oportunidade;A funcionária Júlia Alves Loucano do time de expansão não esta conseguindo rejeitar lead, pois informa que o motivo de perda e rejeição não esta sendo preenchido, porém esse campo não é preenchido na etapa do lead.
 100-102547;Service Request;Pending;2025-10-31 15:06:19;BRAGA MARTINS,EDEMILSON;COP-SEGURANÇA;3;acesso ao site;"USUÁRIO AFETADO: Vinicius
 CHAVE:cjt6
@@ -2027,15 +1995,6 @@ HISTÓRICO<2016 - MANUAL DE CONTRATO - GRANEL E ENVASADO"
 300-133897;Incident;Pending;2025-11-01 11:30:24;GALDINO TORRES,OTAVIO;APOIO-PROJETO-INFRA;2;O vigilante porteiro Ezequiel Lemos Alves não está conseguindo acessar o excel no computador de trabalho. Coloca a email, confirma a senha no Authenticator, porém, o sistema não está liberando. Precisei logar no meu para ele preencher os dados de hoje, 01/11/2025.;"Chave: ja56.
 A chave já foi resetada mas ainda não resolveu.
 Foi feito de duas formas a configuração, da MFA mas ai da esse erro que está em anexo."
-100-102604;Service Request;Pending;2025-11-01 16:12:18;DE OLIVEIRA MANCO,TAMILIS;COP-SAP-NFE;2;"ERRO AO TENTAR GERRA NOTA FISCAL 
-
-ERRO PARA TENTAR RECONCILIAR 
-
-TODAS AS VEZES QUE TENTO GERAR PAT DE RETORNO FICA EM PROCESSAMENTO POR VARIAS HORAS , TANTO NO SIVA QUANDO NA TRANSAÇÃO PAT PELO SAP";"ERRO AO TENTAR GERRA NOTA FISCAL 
-
-ERRO PARA TENTAR RECONCILIAR 
-
-TODAS AS VEZES QUE TENTO GERAR PAT DE RETORNO FICA EM PROCESSAMENTO POR VARIAS HORAS , TANTO NO SIVA QUANDO NA TRANSAÇÃO PAT PELO SAP"
 300-133909;Incident;Pending;2025-11-01 16:19:44;ALVARENGA RANGEL LIANG,ALINE;COP-SAP MOBILE;2;"ERRO AO TENTAR RECONCILIAR VIAGEM .NÃO SAI DA MENSAGEM DE PROCESSAMENTO 
 
 VIAGEM 697357
@@ -2633,17 +2592,6 @@ Liguei no banco o qual orientou para eu abrir um chamado informando a minha empr
 100-102352;Service Request;Resolved-Validation;2025-10-30 08:55:14;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;4;justificativa do ponto de entrada;"29/10 entrada mais tarde motivo curso 
 30/10 entrada mais tarde motivo interjornada"
 100-102370;Service Request;Resolved-Validation;2025-10-30 09:46:28;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;4;Favor verificar a migração dos dados do Ponto para o Senior. Exemplo o colaborador ANTONIO BARBOSA DA FONSECA (720110) DOS DIAS 21 A 27/10 ESTÁ COM ATESTADO MÉDICO APROVADO, PORÉM NÃO MIGROU PARA O SISTEMA.;Efetuar o ajuste do ponto do colaborador ANTONIO BARBOSA DA FONSECA (720110) DOS DIAS 21 A 27/10 ESTÁ COM ATESTADO MÉDICO APROVADO, PORÉM NÃO MIGROU PARA O SISTEMA.
-100-102393;Service Request;Resolved-Validation;2025-10-30 11:02:17;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;4;"Atualização de como esta a inclusão da esposa do colaborador Felipe Augusto dos Santos (Matr. 120743) - Esposa Bruna Jamille de Souza Barbosa.
-Colaborador tem urgência nessa inclusão devido sua esposa estar gravida e necessita de atendimento médico.
-Telefone para contato com o colaborador: (67)99300-3491
-
-100-101779 - Aberto em 23/10/2025 11:07
-Atribuído a LARA DA SILVA GUTIERRES, KARINA | COP-RH-BENEFÍCIOS";"Atualização de como esta a inclusão da esposa do colaborador Felipe Augusto dos Santos (Matr. 120743) - Esposa Bruna Jamille de Souza Barbosa.
-Colaborador tem urgência nessa inclusão devido sua esposa estar gravida e necessita de atendimento médico.
-Telefone para contato com o colaborador: (67)99300-3491
-
-100-101779 - Aberto em 23/10/2025 11:07
-Atribuído a LARA DA SILVA GUTIERRES, KARINA | COP-RH-BENEFÍCIOS"
 100-102418;Service Request;Resolved-Validation;2025-10-30 14:04:04;KINTZEL OTTONI SORIANO,HANNAY;COP-RH-BENEFÍCIOS;4;Valores da previdencia privada;"Olá,
 
 Estive analisando os descontos referentes à previdência privada na minha folha de pagamento e notei o seguinte:
@@ -2660,7 +2608,6 @@ Ontem saiu a folha de pagamento e veio o desconto. Não fui informado sobre, gos
 
 Gentileza verificar."
 100-102511;Service Request;Resolved-Validation;2025-10-31 10:13:31;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;3;"Solicito agendamento de férias para DEOLCI DA SILVA, CO CANOAS,  dia 08/12/2025 20 dias;";favor agendar
-100-102583;Service Request;Resolved-Validation;2025-10-31 16:52:23;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;3;Cancelamento do vale transporte;Não estou utilizando
 100-102601;Service Request;Resolved-Validation;2025-11-01 11:42:21;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;2;Alteração escala;Alteração escala colaboradores.
 100-102603;Service Request;Resolved-Validation;2025-11-01 15:09:42;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;2;"Não estou conseguindo bandeirar o PAT pela transação, o que está me impedindo de finalizar o faturamento pelo meu acesso.
 Deixo o erro em anexo para verificação.
@@ -2674,10 +2621,3 @@ Erro — Documento PAT incompleto: consulte o log ou notificações."
 100-102605;Service Request;Resolved-Validation;2025-11-01 17:54:11;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;2;Solicito alteração de horário dos colaboradores de Duque de Caxias conforme planilha em anexo.;Solicito alteração de horário dos colaboradores de Duque de Caxias conforme planilha em anexo.
 100-102606;Service Request;Resolved-Validation;2025-11-01 18:10:54;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;2;Alteração de horário dos colaboradores Duque de Caxias conforme planilha em anexo.;Alteração de horário dos colaboradores Duque de Caxias conforme planilha em anexo.
 100-102607;Service Request;Resolved-Validation;2025-11-01 18:14:13;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;2;Alteração de horário equipe Duque de Caxias conforme planilha em anexo;Alteração de horário equipe Duque de Caxias conforme planilha em anexo
-100-102608;Service Request;Resolved-Validation;2025-11-01 18:16:07;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;2;Alteração do sábado de trabalho;"Alteração do sábado de trabalho do colaborador LEONARDO TEIXEIRA DA SILVA.
-
-Sendo 
-25/10/25 - FOLGA
-01/11/2025 - TRABALHO
-08/11/2025 - FOLGA
-15/11/2025 - TRABALHO"
