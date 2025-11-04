@@ -1,4 +1,4 @@
-# VERSÃO v0.9.60-770 (Automação API - Usando 'data' em vez de 'json')
+# VERSÃO v0.9.61-771 (Automação API - Corrigindo payload de login)
 
 import streamlit as st
 import pandas as pd
@@ -552,10 +552,10 @@ def trigger_serviceaide_fetch(repo):
         resource_path = "/shared/adhoccomponents/Massa_de_dados___TOTAL___Fechados"
         report_url = f"{base_url}/reportservice/rest_v2/reports{resource_path}.csv"
         
-        # --- INÍCIO DA MODIFICAÇÃO v0.9.60 ---
-        # Payload de Login agora como 'data' (formato x-www-form-urlencoded)
+        # --- INÍCIO DA MODIFICAÇÃO v0.9.61 ---
+        # Payload de Login agora usa "email" e "password"
         login_payload = {
-            "username": user,
+            "email": user,
             "password": pwd
         }
         
@@ -563,7 +563,7 @@ def trigger_serviceaide_fetch(repo):
         
         with requests.Session() as session:
             # Etapa 1: Fazer o POST de login
-            # Trocado json= por data=
+            # Trocado json= por data= na v0.9.60
             login_response = session.post(login_url, data=login_payload)
             # --- FIM DA MODIFICAÇÃO ---
 
@@ -1386,6 +1386,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.58-768 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.61-771 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
