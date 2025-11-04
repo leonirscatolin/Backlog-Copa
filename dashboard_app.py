@@ -1,4 +1,4 @@
-# VERSÃO v0.9.62-772 (Versão Manual Estável Definitiva)
+# VERSÃO v0.9.63-773 (Limpeza final)
 
 import streamlit as st
 import pandas as pd
@@ -15,9 +15,8 @@ from urllib.parse import quote
 import json
 import colorsys
 import re
-# import requests # Removido v0.9.62
 
-# --- INÍCIO - Constantes Globais ---
+# --- Constantes Globais ---
 GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM-GTR'
 GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou 'RDM-GTR'"
 
@@ -132,18 +131,18 @@ def update_github_file(_repo, file_path, file_content, commit_message):
         if isinstance(file_content, str):
             file_content = file_content.encode('utf-8')
         _repo.update_file(contents.path, commit_message, file_content, contents.sha)
-        if file_path not in ["contacted_tickets.json", "ticket_observations.json", "datas_referencia.txt", "previous_closed_ids.json"]: # Evitar spam
+        if file_path not in ["contacted_tickets.json", "ticket_observations.json", "datas_referencia.txt", "previous_closed_ids.json"]: 
             st.sidebar.info(f"Arquivo '{file_path}' atualizado.")
     except GithubException as e:
         if e.status == 404:
             if isinstance(file_content, str):
                 file_content = file_content.encode('utf-8')
             _repo.create_file(file_path, commit_message, file_content)
-            if file_path not in ["contacted_tickets.json", "ticket_observations.json", "datas_referencia.txt", "previous_closed_ids.json"]: # Evitar spam
+            if file_path not in ["contacted_tickets.json", "ticket_observations.json", "datas_referencia.txt", "previous_closed_ids.json"]: 
                 st.sidebar.info(f"Arquivo '{file_path}' criado.")
         else:
             st.sidebar.error(f"Falha ao salvar '{file_path}': {e}")
-            raise # Re-levanta a exceção para o bloco superior tratar
+            raise 
 
 @st.cache_data(ttl=300)
 def read_github_file(_repo, file_path):
@@ -201,7 +200,7 @@ def read_github_text_file(_repo, file_path):
                 dates[key.strip()] = value.strip()
         return dates
     except GithubException as e:
-        if e.status == 404: # Arquivo pode não existir na primeira vez
+        if e.status == 404: 
             return {}
         else:
             st.warning(f"Erro ao ler {file_path}: {e}")
@@ -212,7 +211,7 @@ def read_github_text_file(_repo, file_path):
 
 
 @st.cache_data(ttl=300)
-def read_github_json_file(_repo, file_path, default_return_type='dict'): # Modificado para aceitar lista
+def read_github_json_file(_repo, file_path, default_return_type='dict'): 
     try:
         file_content = _repo.get_contents(file_path).decoded_content.decode("utf-8")
         return json.loads(file_content) if file_content else (default_return_type == 'dict' and {} or [])
@@ -361,7 +360,7 @@ def sync_ticket_data():
 
 
 @st.cache_data(ttl=3600)
-def carregar_dados_evolucao(_repo, dias_para_analisar=7): # v0.9.40: Removido 'closed_ticket_ids_list'
+def carregar_dados_evolucao(_repo, dias_para_analisar=7): 
     try:
         all_files_content = _repo.get_contents("snapshots")
         all_files = [f.path for f in all_files_content]
@@ -436,7 +435,7 @@ def find_closest_snapshot_before(_repo, current_report_date, target_date):
         return None, None
 
 @st.cache_data(ttl=3600)
-def carregar_evolucao_aging(_repo, dias_para_analisar=90): # v0.9.40: Removido 'closed_ticket_ids_list'
+def carregar_evolucao_aging(_repo, dias_para_analisar=90): 
     try:
         all_files_content = _repo.get_contents("snapshots")
         all_files = [f.path for f in all_files_content]
@@ -535,9 +534,6 @@ def formatar_delta_card(delta_abs, delta_perc, valor_comparacao, data_comparacao
         delta_class = "delta-neutral"
 
     return delta_text, delta_class
-
-
-# --- v0.9.62: Função de automação ServiceAide removida ---
 
 
 logo_copa_b64 = get_image_as_base64("logo_sidebar.png")
@@ -671,8 +667,6 @@ if is_admin:
             st.sidebar.warning("Por favor, carregue o arquivo de chamados fechados para salvar.")
 elif password:
     st.sidebar.error("Senha incorreta.")
-
-# --- v0.9.62: Seção de teste de automação removida ---
 
 try:
     if 'contacted_tickets' not in st.session_state:
@@ -933,7 +927,6 @@ try:
                     type="primary"
                 )
                 
-                # v0.9.43: Aviso de "Alterações não salvas" ao tentar fechar a aba
                 if st.session_state.ticket_editor.get('edited_rows'):
                     js_code = """
                     <script>
@@ -1271,6 +1264,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.62-772 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.63-773 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
