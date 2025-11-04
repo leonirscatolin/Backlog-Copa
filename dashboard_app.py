@@ -1,4 +1,4 @@
-# VERSÃO v0.9.61-771 (Automação API - Corrigindo payload de login)
+# VERSÃO v0.9.62-772 (Versão Manual Estável Definitiva)
 
 import streamlit as st
 import pandas as pd
@@ -15,7 +15,7 @@ from urllib.parse import quote
 import json
 import colorsys
 import re
-import requests 
+# import requests # Removido v0.9.62
 
 # --- INÍCIO - Constantes Globais ---
 GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM-GTR'
@@ -537,116 +537,7 @@ def formatar_delta_card(delta_abs, delta_perc, valor_comparacao, data_comparacao
     return delta_text, delta_class
 
 
-def trigger_serviceaide_fetch(repo):
-    st.sidebar.info("Iniciando busca automática (API ServiceAide)...")
-    try:
-        user = st.secrets.get("SERVICEAIDE_USER")
-        pwd = st.secrets.get("SERVICEAIDE_PASS")
-        if not user or not pwd:
-            st.sidebar.error("Segredos 'SERVICEAIDE_USER' ou 'SERVICEAIDE_PASS' não configurados.")
-            return
-
-        # URLs
-        base_url = "https://csm3.serviceaide.com"
-        login_url = "https://csm3.serviceaide.com/NimsoftServiceDesk/servicedesk/odata/login?$format=JSON"
-        resource_path = "/shared/adhoccomponents/Massa_de_dados___TOTAL___Fechados"
-        report_url = f"{base_url}/reportservice/rest_v2/reports{resource_path}.csv"
-        
-        # --- INÍCIO DA MODIFICAÇÃO v0.9.61 ---
-        # Payload de Login agora usa "email" e "password"
-        login_payload = {
-            "email": user,
-            "password": pwd
-        }
-        
-        st.sidebar.write("Etapa 1: Autenticando na API...")
-        
-        with requests.Session() as session:
-            # Etapa 1: Fazer o POST de login
-            # Trocado json= por data= na v0.9.60
-            login_response = session.post(login_url, data=login_payload)
-            # --- FIM DA MODIFICAÇÃO ---
-
-            if login_response.status_code != 200:
-                st.sidebar.error(f"Falha na Etapa 1 (Login). Status: {login_response.status_code}")
-                st.sidebar.write(f"Resposta: {login_response.text[:500]}")
-                st.sidebar.info("Verifique se as credenciais nos Secrets estão corretas.")
-                return
-
-            st.sidebar.write("Login OK. Cookie de sessão obtido.")
-
-            # Etapa 2: Fazer o GET do relatório CSV usando a sessão autenticada
-            st.sidebar.write(f"Etapa 2: Baixando relatório de: `{report_url}`")
-            report_response = session.get(report_url)
-
-            if report_response.status_code != 200:
-                st.sidebar.error(f"Falha na Etapa 2 (Download). Status: {report_response.status_code}")
-                st.sidebar.write(f"Resposta: {report_response.text[:500]}")
-                return
-
-            content_type = report_response.headers.get('Content-Type', '')
-            if 'text/html' in content_type:
-                st.sidebar.error("Erro: O servidor retornou uma página HTML. O cookie de login pode não ter sido aceito para baixar o relatório.")
-                return
-
-            if 'text/csv' not in content_type and 'application/csv' not in content_type:
-                st.sidebar.warning(f"Tipo de conteúdo inesperado: {content_type}. Tentando processar mesmo assim...")
-
-            content_fechados = report_response.content
-            st.sidebar.success(f"Dados baixados! ({len(content_fechados)} bytes)")
-
-        # Etapa 3: Processar os dados e salvar no GitHub
-        with st.spinner("Processando dados e atualizando o repositório..."):
-            now_sao_paulo = datetime.now(ZoneInfo('America/Sao_Paulo'))
-            commit_msg = f"Atualização automática (API) em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
-
-            df_fechados_anterior = read_github_file(repo, "dados_fechados.csv")
-            previous_closed_ids = set()
-            if not df_fechados_anterior.empty:
-                id_col_anterior = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_anterior.columns), None)
-                if id_col_anterior:
-                    previous_closed_ids = set(df_fechados_anterior[id_col_anterior].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
-            
-            json_content = json.dumps(list(previous_closed_ids), indent=4)
-            update_github_file(repo, "previous_closed_ids.json", json_content.encode('utf-8'), "Snapshot dos IDs de fechados anteriores")
-
-            update_github_file(repo, "dados_fechados.csv", content_fechados, commit_msg)
-
-            datas_existentes = read_github_text_file(repo, "datas_referencia.txt")
-            data_atual_existente = datas_existentes.get('data_atual', 'N/A')
-            data_15dias_existente = datas_existentes.get('data_15dias', 'N/A')
-            hora_atualizacao_nova = now_sao_paulo.strftime('%H:%M')
-            datas_referencia_content_novo = (f"data_atual:{data_atual_existente}\n"
-                                            f"data_15dias:{data_15dias_existente}\n"
-                                            f"hora_atualizacao:{hora_atualizacao_nova}")
-            update_github_file(repo, "datas_referencia.txt", datas_referencia_content_novo.encode('utf-8'), commit_msg)
-            
-            df_atual_base = read_github_file(repo, "dados_atuais.csv")
-            df_fechados_novo = pd.read_csv(BytesIO(content_fechados), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
-            
-            id_col_fechados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_novo.columns), None)
-            closed_ids_set = set(df_fechados_novo[id_col_fechados].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
-
-            id_col_atual = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_atual_base.columns), None)
-            df_atual_base[id_col_atual] = df_atual_base[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-            df_atualizado_filtrado = df_atual_base[~df_atual_base[id_col_atual].isin(closed_ids_set)]
-
-            output = StringIO()
-            df_atualizado_filtrado.to_csv(output, index=False, sep=';', encoding='utf-8')
-            content_snapshot_novo = output.getvalue().encode('utf-8')
-
-            today_str = now_sao_paulo.strftime('%Y-%m-%d')
-            snapshot_path = f"snapshots/backlog_{today_str}.csv"
-            commit_msg_snapshot = f"Atualizando snapshot (auto-api) em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
-            update_github_file(repo, snapshot_path, content_snapshot_novo, commit_msg_snapshot)
-            
-            st.sidebar.success("Busca automática e atualização de snapshot concluídas! Recarregando...")
-            st.cache_data.clear()
-            st.cache_resource.clear()
-            st.rerun()
-
-    except Exception as e:
-        st.sidebar.error(f"Erro no teste automático: {e}")
+# --- v0.9.62: Função de automação ServiceAide removida ---
 
 
 logo_copa_b64 = get_image_as_base64("logo_sidebar.png")
@@ -781,13 +672,7 @@ if is_admin:
 elif password:
     st.sidebar.error("Senha incorreta.")
 
-if is_admin:
-    st.sidebar.markdown("---")
-    st.sidebar.subheader("Atualização Automática (API)")
-    st.sidebar.info("Busca os chamados fechados diretamente do ServiceAide. (Requer Secrets configurados)")
-    
-    if st.sidebar.button("Buscar Fechados (Automático)"):
-        trigger_serviceaide_fetch(repo)
+# --- v0.9.62: Seção de teste de automação removida ---
 
 try:
     if 'contacted_tickets' not in st.session_state:
@@ -1386,6 +1271,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.61-771 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.62-772 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
