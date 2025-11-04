@@ -1,4 +1,4 @@
-# VERSÃO v0.9.59-769 (Automação API - Login em 2 etapas)
+# VERSÃO v0.9.60-770 (Automação API - Usando 'data' em vez de 'json')
 
 import streamlit as st
 import pandas as pd
@@ -537,7 +537,6 @@ def formatar_delta_card(delta_abs, delta_perc, valor_comparacao, data_comparacao
     return delta_text, delta_class
 
 
-# --- v0.9.59: Função de automação ServiceAide com login em 2 etapas ---
 def trigger_serviceaide_fetch(repo):
     st.sidebar.info("Iniciando busca automática (API ServiceAide)...")
     try:
@@ -553,7 +552,8 @@ def trigger_serviceaide_fetch(repo):
         resource_path = "/shared/adhoccomponents/Massa_de_dados___TOTAL___Fechados"
         report_url = f"{base_url}/reportservice/rest_v2/reports{resource_path}.csv"
         
-        # Payload de Login (assumindo formato JSON padrão)
+        # --- INÍCIO DA MODIFICAÇÃO v0.9.60 ---
+        # Payload de Login agora como 'data' (formato x-www-form-urlencoded)
         login_payload = {
             "username": user,
             "password": pwd
@@ -561,10 +561,11 @@ def trigger_serviceaide_fetch(repo):
         
         st.sidebar.write("Etapa 1: Autenticando na API...")
         
-        # Criar uma sessão para persistir o cookie de login
         with requests.Session() as session:
             # Etapa 1: Fazer o POST de login
-            login_response = session.post(login_url, json=login_payload)
+            # Trocado json= por data=
+            login_response = session.post(login_url, data=login_payload)
+            # --- FIM DA MODIFICAÇÃO ---
 
             if login_response.status_code != 200:
                 st.sidebar.error(f"Falha na Etapa 1 (Login). Status: {login_response.status_code}")
@@ -599,7 +600,6 @@ def trigger_serviceaide_fetch(repo):
             now_sao_paulo = datetime.now(ZoneInfo('America/Sao_Paulo'))
             commit_msg = f"Atualização automática (API) em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
 
-            # 3a. Salvar IDs anteriores
             df_fechados_anterior = read_github_file(repo, "dados_fechados.csv")
             previous_closed_ids = set()
             if not df_fechados_anterior.empty:
@@ -610,10 +610,8 @@ def trigger_serviceaide_fetch(repo):
             json_content = json.dumps(list(previous_closed_ids), indent=4)
             update_github_file(repo, "previous_closed_ids.json", json_content.encode('utf-8'), "Snapshot dos IDs de fechados anteriores")
 
-            # 3b. Salvar novo arquivo de fechados
             update_github_file(repo, "dados_fechados.csv", content_fechados, commit_msg)
 
-            # 3c. Atualizar hora
             datas_existentes = read_github_text_file(repo, "datas_referencia.txt")
             data_atual_existente = datas_existentes.get('data_atual', 'N/A')
             data_15dias_existente = datas_existentes.get('data_15dias', 'N/A')
@@ -623,7 +621,6 @@ def trigger_serviceaide_fetch(repo):
                                             f"hora_atualizacao:{hora_atualizacao_nova}")
             update_github_file(repo, "datas_referencia.txt", datas_referencia_content_novo.encode('utf-8'), commit_msg)
             
-            # 3d. Atualizar snapshot
             df_atual_base = read_github_file(repo, "dados_atuais.csv")
             df_fechados_novo = pd.read_csv(BytesIO(content_fechados), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
             
@@ -643,7 +640,6 @@ def trigger_serviceaide_fetch(repo):
             commit_msg_snapshot = f"Atualizando snapshot (auto-api) em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
             update_github_file(repo, snapshot_path, content_snapshot_novo, commit_msg_snapshot)
             
-            # 3e. Sucesso
             st.sidebar.success("Busca automática e atualização de snapshot concluídas! Recarregando...")
             st.cache_data.clear()
             st.cache_resource.clear()
@@ -785,7 +781,6 @@ if is_admin:
 elif password:
     st.sidebar.error("Senha incorreta.")
 
-# --- v0.9.58: Seção de teste de automação (ServiceAide) ---
 if is_admin:
     st.sidebar.markdown("---")
     st.sidebar.subheader("Atualização Automática (API)")
