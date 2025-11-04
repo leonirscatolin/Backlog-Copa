@@ -1428,7 +1428,6 @@ Obs.: Colaborador foi desligado, reintegrado e segue afastado desde então."
 
 
 Favor confeccionar DUT e orientar o colaborador."
-100-99253;Service Request;Pending;2025-09-26 08:24:58;DE MEDEIROS MARIZ NETO,EDGAR;COP-APLIC-NOTES;38;Solicito verificação de atualização da informação de programações do cliente no Salesforce;"Solicito verificação de atualização da informação de programações do cliente no Salesforce. Quando ocorre atualização na aba ""Métodos"" na transação XD02 no SAP, essa informação deve ser atualizada automaticamente no campo ""Programações"" no Salesforce. Mas isso está com falhas, conforme demonstrado através do exemplo anexo. Cliente 1299520"
 100-99278;Service Request;Pending;2025-09-26 10:40:51;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;38;AFASTAMENTO – UBERLÂNDIA - RODRIGO FRANCISCO FERREIRA;"AFASTAMENTO – UBERLÂNDIA - RODRIGO FRANCISCO FERREIRA
 
 Funcionário esteve no limbo previdenciário desde 2016. Em 2024 foi convocado ao trabalho, momento em que apresentou atestado médico. Foi solicitado o afastamento e concedido 10/01/2025, e após essa data foi prorrogado benefício até 24/01/2026.
@@ -1694,12 +1693,6 @@ NILSON ANTONIO DOS SANTOS - fferron83@gmail.com -  (41) 98875-2911"
 300-133356;Incident;Pending;2025-10-25 19:37:59;DE ALMEIDA FERREIRA,FABIO;APOIO-COP-SD;9;Reset MFA;"Reset MFA
 
 resetar o mfa da chave :  d7lf."
-300-133377;Incident;Pending;2025-10-27 08:23:16;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;7;APROVAÇÃO MONITOR DE FRETES;"Usuário informa erro na aprovação no monitor de fretes.
-
-Usuário informa que aprova, porém quando recarrega a aprovação desaparece.
-
-
-Verificar print da SU53"
 100-101946;Service Request;Pending;2025-10-27 08:56:28;GIMENES,IDALINA;COP-RH-HUB;7;Afastamento - DA SOCORRO – Alexandra De Sousa – 100401366;"Segue anexo histórico de afastamento do colaborador  Alexandra De Sousa – 100401366
 
 Perícia por análise documental.
@@ -1938,8 +1931,6 @@ OV: 13367498
 ERRO: Ordem como venda direta impactando o fechamento do acerto.
 
 Não teve venda"
-100-102492;Service Request;Pending;2025-10-31 08:34:33;CASSIMIRO MARTINS,RAONI;COP-ORIENTAÇÃO-GRC;3;Preciso de acesso ao sistema SAP.;"Olá, preciso de aceso urgente ao sistema SAP. 
- É meu primeiro acesso, e o meu login com a senha de rede só da erro."
 100-102502;Service Request;Pending;2025-10-31 09:23:46;CASSIMIRO MARTINS,RAONI;COP-ORIENTAÇÃO-GRC;3;solicitação de acesso ao SAP para jovem aprendiz na chave 3HWL;solicitação de acesso ao SAP para jovem aprendiz na chave 3HWL
 100-102506;Service Request;Pending;2025-10-31 09:52:00;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;3;auxilio creche;auxilio creche
 100-102508;Service Request;Pending;2025-10-31 10:02:20;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;3;Funcionário ROGER GABRIEL SILVA COUTO , operações, Canoas, solicitou cancelamento de vale transporte em agosto de 2025, após cancelamento continua sendo descontado nos meses de agosto, setembro e outubro;RH local havia informado que em outubro não seria mais decontado.
@@ -2174,9 +2165,6 @@ Centro: 1024"
 100-101144;Service Request;Queued;2025-10-16 14:17:16;GOMES DE ARRUDA,ROSIMARA;COP-RH-ADMPESSOAL;18;Retorno ao trabalho;Segue anexo o ASO de retorno ao trabalho do colaborador Anderson Almeida da Costa, matr. 991121, informando que está apto para o retorno ao trabalho.
 300-132732;Incident;Queued;2025-10-17 11:45:31;;COP-SAP-FI-AR;17;Dispositivo de saída CARIACICA - CAR200;Estou com problemas na emissões de notas fiscais, pois ao faturar e passar pelo monitor, só está saindo a nota de vasilhame, a nota do produto acabado não sai e nem boleto, tenho que reemprimir ou salvar e imprimir.
 100-101265;Service Request;Queued;2025-10-17 12:26:02;GOMES DE ARRUDA,ROSIMARA;COP-RH-ADMPESSOAL;17;retorno de afastamento;tem que agendar o meu retorno com o médico do trabalho
-300-132845;Incident;Queued;2025-10-20 11:23:58;;COP-SAP-SD-TRIBUTARIO;14;IMPOSTO INCORRETO NF SAP;"Usuário informa que a NF 879, série 1 está com o valor de imposto incorreto, o mesmo solicita suporte na questão.
-
-21191484	000000879"
 100-101581;Service Request;Queued;2025-10-21 11:44:37;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-ADMPESSOAL;13;Retorno ao trabalho do Helisson Vargas De Oliveira  – 121553 CO Campo Grande;"Anexo ASO e laudo de retorno ao trabalho do  Helisson Vargas De Oliveira  – 121553.
 
 O laudo apresenta restrição indicada pelo médico. 
@@ -2218,7 +2206,6 @@ ela informou que caso eu não realize a renovação meu beneficio sera cancelado
 100-101724;Service Request;Queued;2025-10-22 16:34:26;BEATRIZ MIRANDA ARAUJO,FERNANDA;COP-RH-ADMPESSOAL;12;Relógio de ponto;Relógio de ponto da unidade está aparecendo para todos os funcionarios novos como crachá não cadastrado, impossobilitando o cadastro via matricula e marcaão de ponto dos mesmos.
 100-101735;Service Request;Queued;2025-10-22 17:46:44;RODRIGUES LURIAL GOMES,FELIPE;COP-RH-SOLUÇÕES;12;Aplicativo Evope não esta aparecendo para solicitação de hora extra.;"Aplicativo Evope não esta aparecendo para solicitação de hora extra.
 Não estou conseguindo solicitar Horas extra para trabalho após o horário."
-300-133139;Incident;Queued;2025-10-23 08:05:02;;COP-SAP-SD-TRIBUTARIO;11;Nota de devolução lançada conforme doc. 21210603 , porém não bandeirou solicitamos de apoio para finalizar o processo de faturamento da nota;Nota de devolução lançada conforme doc. 21210603 , porém não bandeirou solicitamos de apoio para finalizar o processo de faturamento da nota
 300-133160;Incident;Queued;2025-10-23 09:58:54;;COP-SAP MOBILE-3N;11;"CHAMADO SOFTMÓVEL 2566
 Ao encerra a viagem 693859 através do portal do SIVA+ , a mesma apresenta erro conforme imagem em anexo; centro 1233;";"Ao encerra a viagem 693859 através do portal do SIVA+ , a mesma apresenta erro conforme imagem em anexo; centro 1233"
 100-101774;Service Request;Queued;2025-10-23 10:03:52;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-ADMPESSOAL;11;ASO RETORNO AO TRABALHO - JOSE RONALDO GARCIA BATISTA, MAT 14301;"Bom dia!
@@ -2450,7 +2437,6 @@ Reforço que em nenhum momento autorizei ou consenti esse desconto,"
 100-102394;Service Request;Queued;2025-10-30 11:04:02;THOME DA SILVA,ARNANDO;COP-RH-FOPAG;4;Dúvida em Desconto na Folha de Pagamento;"Gostaria de saber ao que se refere o desconto na folha de Participação de Resultados com a seguinte descrição: Assistencial PR CCT.
 
 Este desconto ocorreu este ano, mas no ano de 2024 não houve."
-300-133769;Incident;Queued;2025-10-30 11:48:53;;COP-SAP-SD-TRIBUTARIO;4;CANCELAMENTO NF 22642-1 DAC BARRA DE SÃO FRANCISCO -1214;CANCELAMENTO NF 22642-1 DAC BARRA DE SÃO FRANCISCO -1214
 100-102407;Service Request;Queued;2025-10-30 11:56:23;SOUZA DA SILVA,KELLY;COP-RH-FOPAG;4;"SOLICITAÇÃO DE RELAÇÃO DE SALÁRIOS
 REQUERENTE: PAULO ROLLSING FILHO
 PERIODO: 18/04/1979 A 07/03/1981";"SOLICITAÇÃO  DA RELAÇÃO DE SALÁRIOS
@@ -2727,32 +2713,9 @@ Gostaria de entender a diferença de R$ 26,35 entre o valor descontado da minha 
 
 Ontem saiu a folha de pagamento e veio o desconto. Não fui informado sobre, gostaria que não fosse mais descontado nos próximos anos."
 100-102428;Service Request;Resolved-Validation;2025-10-30 14:40:14;CRISTINA PINTO SANTOS,GLAUCIA;COP-RH-FACILITIES;4;Solicitação de Cartão de Visita;Gerente de Mercado Empresarial
-100-102468;Service Request;Resolved-Validation;2025-10-30 18:51:40;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;4;Programação de férias do empregado Luciano Alves Mendonça - Matrícula n.º 109193.;"Programação de férias do empregado Luciano Alves Mendonça - Matrícula n.º 109193.
-
-1º Período
-
-Saída: 22/12/2025
-Retorno: 05/01/2026
-
-2º Período
-
-Saída: 23/02/2026
-Retorno: 09/03/2026"
-100-102469;Service Request;Resolved-Validation;2025-10-30 18:59:02;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;4;Programação de férias do empregado Valdionor Silva Braga - Matrícula n.º 100401777.;"Programação de férias do empregado Valdionor Silva Braga - Matrícula n.º 100401777.
-
-Período
-
-12/01/2026
-10/02/2026"
 100-102470;Service Request;Resolved-Validation;2025-10-30 19:01:31;MACEDO GONCALVES MALARDO,INGRID;COP-RH-REMUNERAÇÃO;4;Colaboradores, Vitor dos Santos Moura matricula 120646, no qual cobriu às férias do Operador de Gás, e Rafael Borges Landucci matricula 120387 no qual esta cobrindo a ausência do Operador de Gás que esta afastado de suas atividades, informaram que não receberam hoje 30/10 os salários substituição.;"Colaboradores, Vitor dos Santos Moura matricula 120646, no qual cobriu às férias do Operador de Gás, e Rafael Borges Landucci matricula 120387 no qual esta cobrindo a ausência do Operador de Gás que esta afastado de suas atividades, informaram que não receberam hoje 30/10 os salários substituição.
 
 Gentileza verificar."
-100-102472;Service Request;Resolved-Validation;2025-10-30 19:09:01;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;4;Programação de férias do empregado Antônio Aldair Soares Moreira - Matrícula n.º 117148.;"Programação de férias do empregado Antônio Aldair Soares Moreira - Matrícula n.º 117148.
-
-Previsão
-
-Saída: 23/12/2025
-Retorno: 21/01/2026"
 100-102511;Service Request;Resolved-Validation;2025-10-31 10:13:31;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;3;"Solicito agendamento de férias para DEOLCI DA SILVA, CO CANOAS,  dia 08/12/2025 20 dias;";favor agendar
 100-102543;Service Request;Resolved-Validation;2025-10-31 14:18:54;APARECIDA VIEIRA,SUZANA;COP-RH-HUB;3;desconto indevido na PL - ASSISTENCIAL PR CCT no colaborador  - da chave KV41 - Tatiane Denise Pinati Ribeiro;desconto indevido na PL - ASSISTENCIAL PR CCT no colaborador  - da chave KV41 - Tatiane Denise Pinati Ribeiro
 100-102583;Service Request;Resolved-Validation;2025-10-31 16:52:23;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;3;Cancelamento do vale transporte;Não estou utilizando
