@@ -615,7 +615,6 @@ Eu Solicito o Meu acesso Refaturamento.comercial
 
 
 A pedido Da Minha Supervizora Tatiane Cosme"
-100-102336;Service Request;New;2025-10-30 07:26:52;;COP-POWER-BI;4;Havia aberto um chamado anterior, porém não foi resolvido (100-102039), continuo sem conseguir visualizar os dados do relatório;Havia aberto um chamado anterior, porém não foi resolvido (100-102039), continuo sem conseguir visualizar os dados do relatório
 300-133763;Incident;New;2025-10-30 11:14:34;;COP-ORIENTAÇÃO-GRC;4;aprovador do DAC Santos (1202) - ZMM0131;Prezados, não estou cadastrado como aprovador de intercambialidade (ZMM0131) do DAC de Santos (1202), solicito liberação deste cadastro, obrigado.
 100-102413;Service Request;New;2025-10-30 12:34:36;;COP-SAP-MM-TRIBUTARIO;4;Boa tarde, por favor, solicito autorização para baixar o programa ReceitaNet, para transmissão do SPED EFD - ICMS/IPI;Boa tarde, por favor, solicito autorização para baixar o programa ReceitaNet, para transmissão do SPED EFD - ICMS/IPI
 300-133800;Incident;New;2025-10-30 18:19:13;;COP-TELECOM;4;"Nome para Exibição |
@@ -1919,18 +1918,6 @@ Segue exemplos:
 1851121;
 1749536."
 300-133796;Incident;Pending;2025-10-30 16:39:47;CARLOS DA SILVA RIBEIRO,ELI;COP-SAP SD;4;Cadastrar domicilio fiscal;89386-420
-300-133797;Incident;Pending;2025-10-30 17:16:32;ALVARENGA RANGEL LIANG,ALINE;COP-SAP MOBILE;4;"CHAMADO SOFTMÓVEL 1632
-Problema reconciliação Brasília 1232";"Problema reconciliação Brasília 1232
-
-Viagem: 696807
-
-PAT: 1388639
-
-OV: 13367498
-
-ERRO: Ordem como venda direta impactando o fechamento do acerto.
-
-Não teve venda"
 100-102502;Service Request;Pending;2025-10-31 09:23:46;CASSIMIRO MARTINS,RAONI;COP-ORIENTAÇÃO-GRC;3;solicitação de acesso ao SAP para jovem aprendiz na chave 3HWL;solicitação de acesso ao SAP para jovem aprendiz na chave 3HWL
 100-102506;Service Request;Pending;2025-10-31 09:52:00;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;3;auxilio creche;auxilio creche
 100-102508;Service Request;Pending;2025-10-31 10:02:20;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;3;Funcionário ROGER GABRIEL SILVA COUTO , operações, Canoas, solicitou cancelamento de vale transporte em agosto de 2025, após cancelamento continua sendo descontado nos meses de agosto, setembro e outubro;RH local havia informado que em outubro não seria mais decontado.
@@ -2036,22 +2023,10 @@ APLICAÇÕES:
 MANUAL DE CONTRATOS GLP - GRANEL E ENVASADO
 HISTÓRICO DO MANUAL DE CONTRATOS GLP - GRANEL E ENVASADO
 HISTÓRICO<2016 - MANUAL DE CONTRATO - GRANEL E ENVASADO"
-300-133886;Incident;Pending;2025-11-01 09:24:31;ALVARENGA RANGEL LIANG,ALINE;COP-SAP-NFE;2;"erro nf 3042/5, a mesma foi emitida com uma quantidade e migrou para o sistema com outra quantidade.
-viaem 697219
-PAT retorno - 1389464";"erro nf 3042/5, a mesma foi emitida com uma quantidade e migrou para o sistema com outra quantidade.
-viaem 697219
-PAT retorno - 1389464"
 300-133891;Incident;Pending;2025-11-01 10:51:58;CARLOS DA SILVA RIBEIRO,ELI;COP-SAP MOBILE;2;Na viagem 697631, que está em rota, o veículo está com 460 P13. Foram tiradas apenas duas notas totalizando 156 P13 tendo que ter de sobra 304 P13. Mas no app consta apenas 05 P13 de saldo. Centro 1238.;Na viagem 697631, que está em rota, o veículo está com 460 P13. Foram tiradas apenas duas notas totalizando 156 P13 tendo que ter de sobra 304 P13. Mas no app consta apenas 05 P13 de saldo. Centro 1238.
 300-133897;Incident;Pending;2025-11-01 11:30:24;GALDINO TORRES,OTAVIO;APOIO-PROJETO-INFRA;2;O vigilante porteiro Ezequiel Lemos Alves não está conseguindo acessar o excel no computador de trabalho. Coloca a email, confirma a senha no Authenticator, porém, o sistema não está liberando. Precisei logar no meu para ele preencher os dados de hoje, 01/11/2025.;"Chave: ja56.
 A chave já foi resetada mas ainda não resolveu.
 Foi feito de duas formas a configuração, da MFA mas ai da esse erro que está em anexo."
-300-133907;Incident;Pending;2025-11-01 16:05:33;ALVARENGA RANGEL LIANG,ALINE;COP-SAP MOBILE;2;"Erro na tentativa de reconciliação 
- processamento não gera PAT de chegada 
-viagem 697356
-pat de saída 1389689";"Erro na tentativa de reconciliação 
- processamento não gera PAT de chegada 
-viagem 697356
-pat de saída 1389689"
 100-102604;Service Request;Pending;2025-11-01 16:12:18;DE OLIVEIRA MANCO,TAMILIS;COP-SAP-NFE;2;"ERRO AO TENTAR GERRA NOTA FISCAL 
 
 ERRO PARA TENTAR RECONCILIAR 
@@ -2460,18 +2435,6 @@ Desconto de associação PR CCT"
 100-102430;Service Request;Queued;2025-10-30 14:44:48;THOME DA SILVA,ARNANDO;COP-RH-ADMPESSOAL;4;Desconto indevido  na PR;Veio descontado indevidamente o valor de R$ 295,17 com descrição de ASSISTENCIAL PR CCT.
 100-102432;Service Request;Queued;2025-10-30 15:03:12;HOLANDA FERNANDES,SAMARA;COP-RH-RELAÇÕESTRAB&SIND;4;Ajuste horário;Boa tarde, o meu horário no evope não está contabilizando corretamente, tive alteração de escala dia 20 e não se ajustou, no momento estou sem gestor imediato, com isso não conseguem aprovar as horas que solicito, meu horário hoje é de Seg-Sex 11h00 às 20h48.
 300-133785;Incident;Queued;2025-10-30 15:05:08;CARDOSO SOUZA DA SILVA,RONALD;COP-SAP LES-3N;4;AO REALIZAR O LANÇAMENTO DE NOTAS FISCAIS DE SERVIÇO PELA TRANSAÇÃO ZLESR004 – MONITOR DE PAGAMENTO DE FRETES, O SISTEMA NÃO ESTÁ EFETUANDO A RETENÇÃO DE ISS;AO REALIZAR O LANÇAMENTO DE NOTAS FISCAIS DE SERVIÇO PELA TRANSAÇÃO ZLESR004 – MONITOR DE PAGAMENTO DE FRETES, O SISTEMA NÃO ESTÁ EFETUANDO A RETENÇÃO DE ISS. ESTOU ANEXANDO A MIRO SEM RETENÇÃO DO ISS PARA VERIFICAÇÃO.
-300-133786;Incident;Queued;2025-10-30 15:07:58;;COP-SAP-SD-TRIBUTARIO;4;Está com CFOP errado.;"Está com CFOP errado.
-CFOP errado: 2932/AA
-Correto: 1652/AA
-
-Nota: 
-67647-17
-67648-17
-67649-17
-67650-17
-
-Centro: 1234
-Mataripe"
 100-102438;Service Request;Queued;2025-10-30 15:20:56;THOME DA SILVA,ARNANDO;COP-RH-FOPAG;4;Solicito revisão do desconto assistencial da PLR feito no dia 30.10.2025.;Solicito revisão do desconto assistencial da PLR feito no dia 30.10.2025.
 100-102439;Service Request;Queued;2025-10-30 15:31:01;SOUZA,AMILTON;COP-RH-FOPAG;4;desconto empréstimo consiguinado Itaú na folha de outubro;teve a comunicação que o consignado no banco Itaú não ia ser mais descontado em folha, na folha de setembro não houve o desconto e na folha de outubro voltou a descontar. E eu tambem realizei a quitação do empréstimo em 2 de outubro, favor verificar.
 100-102442;Service Request;Queued;2025-10-30 15:38:54;THOME DA SILVA,ARNANDO;COP-RH-FOPAG;4;"Boa tarde!
@@ -2622,26 +2585,12 @@ PARA: BRUNO MARCUS ANDRADE NASCIMENTO
 112965 - EDSON FERREIRA DE LIMA FILHO
 DE: GERT KOHLER JUNIOR
 PARA:"
-100-101526;Service Request;Resolved-Validation;2025-10-20 17:42:04;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;14;Em complemento ao chamado 100-100608, segue anexo documentos (NF e comprovante pagamento) para atendimento da solicitação do ex colaborador.;"Tipo cirurgia: Prótese no joelho esquerdo
-Data: 13/08/2025
-Local: Hospital das Clínicas"
 100-101700;Service Request;Resolved-Validation;2025-10-22 14:21:32;GIMENES,IDALINA;COP-RH-ADMPESSOAL;12;Afastamento do funcionário Waldir Oliveira Campos – 100101150.;"Afastamento do funcionário Waldir Oliveira Campos – 100101150.
 
 Anexo ASO de RETORNO AO TRABALHO APTO a partir de 22/10/2025.
 
 CO Campo Grande"
-100-101787;Service Request;Resolved-Validation;2025-10-23 11:29:29;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;11;Vale-transporte;Solicitação de vale-transporte  , casa trabalho, trabalho casa. Valor atual da passagem em Fortaleza, R$4,50
 100-101857;Service Request;Resolved-Validation;2025-10-24 10:07:31;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;10;Solicito vale-transporte do funcionário Douglas Jivago Alves Barbosa, matrícula Nº 115673.;Conforme chamados anteriores, solicito vale-transporte de Douglas Jivago Alves Barbosa - Mat Nº 115673. O funcionário citado encontrava-se em afastamento e retornou às suas atividades desde o dia 10.09.2025.
-100-101866;Service Request;Resolved-Validation;2025-10-24 10:49:08;PEREIRA DOS SANTOS,KARINE;COP-RH-BENEFÍCIOS;10;Inclusão vale farmacia;"Colaborador Marcus Vinicius da Silva matricula: 122199.
-Recebeu o cartão com a senha e dados.
-mas consta senha icnorreta.
-Ele ligou no numero do cartão e informaramq ue não tem cadastro de CPF dele nesse cartão."
-100-102019;Service Request;Resolved-Validation;2025-10-27 12:10:12;DE SOUZA AGUIAR DE JESUS,BEATRIZ;COP-RH-ADMPESSOAL;7;Documentação Brigada Teresina;"Estou anexando as documentações referente a atualização da Brigada de Teresina.
-
-Peço verificar a possibilidade de pagamento retroativo."
-100-102020;Service Request;Resolved-Validation;2025-10-27 12:18:04;DE SOUZA AGUIAR DE JESUS,BEATRIZ;COP-RH-ADMPESSOAL;7;Atualização dos brigadistas de Teresina;Encaminho documentação atualizada da brigada de Teresina, peço verificar a possibilidade de pagamento retroativo
-100-102042;Service Request;Resolved-Validation;2025-10-27 14:27:50;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;7;Incluir dependente na assistência medica;"Chamado para Semaias Martins Teixeira.
-Incluir cônjuge no plano de assistência médica."
 100-102075;Service Request;Resolved-Validation;2025-10-27 20:04:52;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-HUB;7;Mudança de escala.;"Solicito a mudança de escala do colaborador LUCIANO VALTER DOS SANTOS, matrícula: 730130, nos seguintes dias.
 
 * 27/10/2025: Mudança da escala atual 132 (0700 1100 1200 1520 SEG a SaB) para a escala 600 (0940 1300 1400 1800 s0940 1800).
@@ -2664,10 +2613,6 @@ _______________________________________________
 100-102268;Service Request;Resolved-Validation;2025-10-29 11:29:45;TADEU LOPES DA SILVA,FELIPPE;COP-RH-BENEFÍCIOS;5;Alteração de veículo autorizado;"Remover Tracker GJN 4D08
 
 Adicionar T-Cross SFK 1A99"
-100-102300;Service Request;Resolved-Validation;2025-10-29 14:53:24;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;5;adesão ao Plano Odontológico;"Solicito adesão ao Convenio Odontologico
-da Metlife 
-plano Pleno top 
-para mim e um dependente"
 100-102308;Service Request;Resolved-Validation;2025-10-29 15:39:38;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;5;Solicitação de Vale Refeição - RAMILSON SANTOS GOMES;"Solicito Vale Refeição para o colaborador RAMILSON SANTOS GOMES/Operador de Produção I /100401554, conforme abaixo:
 
 
@@ -2699,7 +2644,6 @@ Telefone para contato com o colaborador: (67)99300-3491
 
 100-101779 - Aberto em 23/10/2025 11:07
 Atribuído a LARA DA SILVA GUTIERRES, KARINA | COP-RH-BENEFÍCIOS"
-100-102416;Service Request;Resolved-Validation;2025-10-30 13:17:34;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;4;Exclusão plano odontológico;Solicitação minha exclusão do plano odontológico, Lucas da Silva de Oliveira, Matrícula:121211
 100-102418;Service Request;Resolved-Validation;2025-10-30 14:04:04;KINTZEL OTTONI SORIANO,HANNAY;COP-RH-BENEFÍCIOS;4;Valores da previdencia privada;"Olá,
 
 Estive analisando os descontos referentes à previdência privada na minha folha de pagamento e notei o seguinte:
@@ -2712,12 +2656,10 @@ Gostaria de entender a diferença de R$ 26,35 entre o valor descontado da minha 
 100-102421;Service Request;Resolved-Validation;2025-10-30 14:16:41;GIMENES,IDALINA;COP-RH-HUB;4;Desconto Sindicato;"Gostaria de cancelar o desconto do sindicato. 
 
 Ontem saiu a folha de pagamento e veio o desconto. Não fui informado sobre, gostaria que não fosse mais descontado nos próximos anos."
-100-102428;Service Request;Resolved-Validation;2025-10-30 14:40:14;CRISTINA PINTO SANTOS,GLAUCIA;COP-RH-FACILITIES;4;Solicitação de Cartão de Visita;Gerente de Mercado Empresarial
 100-102470;Service Request;Resolved-Validation;2025-10-30 19:01:31;MACEDO GONCALVES MALARDO,INGRID;COP-RH-REMUNERAÇÃO;4;Colaboradores, Vitor dos Santos Moura matricula 120646, no qual cobriu às férias do Operador de Gás, e Rafael Borges Landucci matricula 120387 no qual esta cobrindo a ausência do Operador de Gás que esta afastado de suas atividades, informaram que não receberam hoje 30/10 os salários substituição.;"Colaboradores, Vitor dos Santos Moura matricula 120646, no qual cobriu às férias do Operador de Gás, e Rafael Borges Landucci matricula 120387 no qual esta cobrindo a ausência do Operador de Gás que esta afastado de suas atividades, informaram que não receberam hoje 30/10 os salários substituição.
 
 Gentileza verificar."
 100-102511;Service Request;Resolved-Validation;2025-10-31 10:13:31;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;3;"Solicito agendamento de férias para DEOLCI DA SILVA, CO CANOAS,  dia 08/12/2025 20 dias;";favor agendar
-100-102543;Service Request;Resolved-Validation;2025-10-31 14:18:54;APARECIDA VIEIRA,SUZANA;COP-RH-HUB;3;desconto indevido na PL - ASSISTENCIAL PR CCT no colaborador  - da chave KV41 - Tatiane Denise Pinati Ribeiro;desconto indevido na PL - ASSISTENCIAL PR CCT no colaborador  - da chave KV41 - Tatiane Denise Pinati Ribeiro
 100-102583;Service Request;Resolved-Validation;2025-10-31 16:52:23;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;3;Cancelamento do vale transporte;Não estou utilizando
 100-102601;Service Request;Resolved-Validation;2025-11-01 11:42:21;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;2;Alteração escala;Alteração escala colaboradores.
 100-102603;Service Request;Resolved-Validation;2025-11-01 15:09:42;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;2;"Não estou conseguindo bandeirar o PAT pela transação, o que está me impedindo de finalizar o faturamento pelo meu acesso.
@@ -2739,11 +2681,3 @@ Sendo
 01/11/2025 - TRABALHO
 08/11/2025 - FOLGA
 15/11/2025 - TRABALHO"
-100-102609;Service Request;Resolved-Validation;2025-11-01 18:17:11;GIMENES,IDALINA;COP-RH-HUB;2;Alteração do sábado de trabalho do colaborador;"Alteração do sábado de trabalho do colaborador JEAN SOARES DE CARVALHO.
-
-SENDO
-25/10/25 - TRABALHO
-01/11/2025 - FOLGA
-08/11/2025 - TRABALHO
-15/11/2025 - FOLGA"
-100-102610;Service Request;Resolved-Validation;2025-11-01 18:21:16;SALES SANTOS FERREIRA,ELACI;COP-RH-HUB;2;Mudança de horário do colaborador Jean Carvalho conforme planilha em anexo.;Mudança de horário do colaborador Jean Carvalho conforme planilha em anexo.
