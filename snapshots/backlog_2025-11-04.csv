@@ -1466,42 +1466,6 @@ Perícia por análise documental.
 Favor emitir a carta DUT e enviar ao colaborador para incluir no meu INSS.
 
 Enviar para o colaborador o termo caso o mesmo queira receber a antecipação e quando receber de volta abrir um novo chamado para que a Jana faça a antecipação."
-300-132303;Incident;Pending;2025-10-13 18:52:06;BASTOS DE SOUZA KLEM,CAMILA;COP-SAP LES;21;"10 CTEs dos dias 06, 07, 08 e 09/10 fora do Notifis.
-
-
-43251043251230002007570010000418111000418115
-43251043251230002007570010000418121000418120
-43251043251230002007570010000418161000418162
-43251043251230002007570010000418191000418199
-43251043251230002007570010000418201000418203
-43251043251230002007570010000418221000418224
-43251043251230002007570010000418441000418442
-43251043251230002007570010000419361000419361
-43251043251230002007570010000419771000419771
-43251043251230002007570010000419831000419833";"Boa noite.
-
-Estamos com 10 CTEs que não estão aparecendo no Notifis.
-CTEs em anexo.
-
-06/10:
-41811-1 - 43251043251230002007570010000418111000418115
-41812-1 - 43251043251230002007570010000418121000418120
-41816-1 - 43251043251230002007570010000418161000418162
-41819-1 - 43251043251230002007570010000418191000418199
-41820-1 - 43251043251230002007570010000418201000418203
-41822-1 - 43251043251230002007570010000418221000418224
-
-07/10:
-41844-1 - 43251043251230002007570010000418441000418442
-
-08/10:
-41936-1 - 43251043251230002007570010000419361000419361
-
-09/10:
-41977-1 - 43251043251230002007570010000419771000419771
-41983-1 - 43251043251230002007570010000419831000419833
-
-Solicito auxílio."
 100-101010;Service Request;Pending;2025-10-15 14:36:30;JOSE BRITO VIEIRA,JAILSON;COP-RH-HUB;19;Afastamento - CO Capuava - Edson Carlos Francelino – 100401915;"Segue anexo histórico de afastamento do colaborador  Edson Carlos Francelino – 100401915
 
 Perícia agendada para o dia 11/12/2025.
@@ -1852,9 +1816,6 @@ ESTAREI NA UNIDADE ATÉ AS 16:00H DO DIA 31/10
 CASO PRECISE IR ATÉ A UNIDADE, AGENDAR O DIA PARA O PROCEDIMENTO."
 100-102524;Service Request;Pending;2025-10-31 11:25:20;NEVES DA SILVA,EDNEA;APOIO-COP-ACESSO;3;Acesso as pastas do financeiro MI;Bom dia, por gentileza, liberar acesso as pastas que estão na rede do financeiro, credito e cobrança. A Suellen solicitou.
 100-102526;Service Request;Pending;2025-10-31 11:51:30;NEVES DA SILVA,EDNEA;APOIO-COP-ACESSO;3;Bom dia, preciso do acesso ao lotus notes e da liberação para esses documentos (imagem em anexo);Bom dia, preciso do acesso ao lotus notes e da liberação para esses documentos (imagem em anexo)
-300-133845;Incident;Pending;2025-10-31 14:05:59;CASSIMIRO MARTINS,RAONI;COP-ORIENTAÇÃO-GRC;3;Transação ZRF não está gerando a lista de clientes para criar os projetos.;"centro 1136
-
-/Anexo!"
 300-133848;Incident;Pending;2025-10-31 14:33:18;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;3;435 Rejeição: NF-e não pode ter o indicativo do intermediador;"Nota: 78727
 Série: 1
 Numdoc: 21346524
@@ -2433,29 +2394,6 @@ O próprio colaborador solicitou perícia e o benefício está em análise.
 Favor emitir a carta DUT (24/07/2025) e enviar ao colaborador para incluir no meu INSS.
 
 Enviar para o colaborador o termo caso o mesmo queira receber a antecipação e quando receber de volta abrir um novo chamado para que a Jana faça a antecipação."
-100-101216;Service Request;Resolved-Validation;2025-10-17 08:41:20;MACEDO GONCALVES MALARDO,INGRID;COP-RH-REMUNERAÇÃO;17;Ajuste de hierarquia na Senior. A hierarquia está errada e precisa ser corrigida, conforme abaixo (campo detalhes):;"Ajustar gestor DE > PARA
-
-102000173 - GERT KOHLER JUNIOR
-DE: ROGERIO MARCOS DE SANTANNA
-PARA: JEFFERSON GOMES MONFARDINI
-
-102000410 - SERGIO MARTINS VILLA NOVA
-DE: GERT KOHLER JUNIOR
-PARA: ROGERIO MARCOS DE SANTANNA
-
-120063 - WERONICA DOS SANTOS CALDAS
-DE: ROGERIO MARCOS DE SANTANNA
-PARA: BRUNO MARCUS ANDRADE NASCIMENTO
-
-112965 - EDSON FERREIRA DE LIMA FILHO
-DE: GERT KOHLER JUNIOR
-PARA:"
-100-101700;Service Request;Resolved-Validation;2025-10-22 14:21:32;GIMENES,IDALINA;COP-RH-ADMPESSOAL;12;Afastamento do funcionário Waldir Oliveira Campos – 100101150.;"Afastamento do funcionário Waldir Oliveira Campos – 100101150.
-
-Anexo ASO de RETORNO AO TRABALHO APTO a partir de 22/10/2025.
-
-CO Campo Grande"
-100-101857;Service Request;Resolved-Validation;2025-10-24 10:07:31;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;10;Solicito vale-transporte do funcionário Douglas Jivago Alves Barbosa, matrícula Nº 115673.;Conforme chamados anteriores, solicito vale-transporte de Douglas Jivago Alves Barbosa - Mat Nº 115673. O funcionário citado encontrava-se em afastamento e retornou às suas atividades desde o dia 10.09.2025.
 100-102075;Service Request;Resolved-Validation;2025-10-27 20:04:52;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-HUB;7;Mudança de escala.;"Solicito a mudança de escala do colaborador LUCIANO VALTER DOS SANTOS, matrícula: 730130, nos seguintes dias.
 
 * 27/10/2025: Mudança da escala atual 132 (0700 1100 1200 1520 SEG a SaB) para a escala 600 (0940 1300 1400 1800 s0940 1800).
@@ -2478,36 +2416,9 @@ _______________________________________________
 100-102268;Service Request;Resolved-Validation;2025-10-29 11:29:45;TADEU LOPES DA SILVA,FELIPPE;COP-RH-BENEFÍCIOS;5;Alteração de veículo autorizado;"Remover Tracker GJN 4D08
 
 Adicionar T-Cross SFK 1A99"
-100-102308;Service Request;Resolved-Validation;2025-10-29 15:39:38;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;5;Solicitação de Vale Refeição - RAMILSON SANTOS GOMES;"Solicito Vale Refeição para o colaborador RAMILSON SANTOS GOMES/Operador de Produção I /100401554, conforme abaixo:
-
-
-RAMILSON SANTOS GOMES
-Novo horário: 526 - 1100 15 16 2000 Sáb Qz 07 16
-Inicio: 27/10/25.
-
-Alteração já consta no Sênior, conforme chamado: 100-101902 : Solicitação de serviço.
-
-Desde já agradeço."
 100-102339;Service Request;Resolved-Validation;2025-10-30 07:56:01;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;4;Solicitação do DUT;"Por gentileza peço a geração do meu DUT, do meu tempo de afastamento ate o meu retorno.
 Estive afastado do dia 20/08/2025 ao dia 22/09/2025.
 Se possível, gerar um DUT do meu retorno."
 100-102352;Service Request;Resolved-Validation;2025-10-30 08:55:14;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;4;justificativa do ponto de entrada;"29/10 entrada mais tarde motivo curso 
 30/10 entrada mais tarde motivo interjornada"
-100-102421;Service Request;Resolved-Validation;2025-10-30 14:16:41;GIMENES,IDALINA;COP-RH-HUB;4;Desconto Sindicato;"Gostaria de cancelar o desconto do sindicato. 
-
-Ontem saiu a folha de pagamento e veio o desconto. Não fui informado sobre, gostaria que não fosse mais descontado nos próximos anos."
-100-102470;Service Request;Resolved-Validation;2025-10-30 19:01:31;MACEDO GONCALVES MALARDO,INGRID;COP-RH-REMUNERAÇÃO;4;Colaboradores, Vitor dos Santos Moura matricula 120646, no qual cobriu às férias do Operador de Gás, e Rafael Borges Landucci matricula 120387 no qual esta cobrindo a ausência do Operador de Gás que esta afastado de suas atividades, informaram que não receberam hoje 30/10 os salários substituição.;"Colaboradores, Vitor dos Santos Moura matricula 120646, no qual cobriu às férias do Operador de Gás, e Rafael Borges Landucci matricula 120387 no qual esta cobrindo a ausência do Operador de Gás que esta afastado de suas atividades, informaram que não receberam hoje 30/10 os salários substituição.
-
-Gentileza verificar."
-100-102603;Service Request;Resolved-Validation;2025-11-01 15:09:42;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;2;"Não estou conseguindo bandeirar o PAT pela transação, o que está me impedindo de finalizar o faturamento pelo meu acesso.
-Deixo o erro em anexo para verificação.
-
-Mensagem do sistema:
-Erro — Documento PAT incompleto: consulte o log ou notificações.";"Não estou conseguindo bandeirar o PAT pela transação, o que está me impedindo de finalizar o faturamento pelo meu acesso.
-Deixo o erro em anexo para verificação.
-
-Mensagem do sistema:
-Erro — Documento PAT incompleto: consulte o log ou notificações."
 100-102605;Service Request;Resolved-Validation;2025-11-01 17:54:11;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;2;Solicito alteração de horário dos colaboradores de Duque de Caxias conforme planilha em anexo.;Solicito alteração de horário dos colaboradores de Duque de Caxias conforme planilha em anexo.
-100-102606;Service Request;Resolved-Validation;2025-11-01 18:10:54;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;2;Alteração de horário dos colaboradores Duque de Caxias conforme planilha em anexo.;Alteração de horário dos colaboradores Duque de Caxias conforme planilha em anexo.
-100-102607;Service Request;Resolved-Validation;2025-11-01 18:14:13;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;2;Alteração de horário equipe Duque de Caxias conforme planilha em anexo;Alteração de horário equipe Duque de Caxias conforme planilha em anexo
