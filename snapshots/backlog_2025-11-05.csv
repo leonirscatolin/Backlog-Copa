@@ -1778,16 +1778,6 @@ Empregado retornou do INSS com restrições para exercer atividade (externa). H�
 100-102508;Service Request;Pending;2025-10-31 10:02:20;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;4;Funcionário ROGER GABRIEL SILVA COUTO , operações, Canoas, solicitou cancelamento de vale transporte em agosto de 2025, após cancelamento continua sendo descontado nos meses de agosto, setembro e outubro;RH local havia informado que em outubro não seria mais decontado.
 300-133821;Incident;Pending;2025-10-31 10:13:35;RODRIGUES DE ALMEIDA,GILSON;PROD-COP-NOC;4;CO GOIÂNIA - SDWAN;"Designação: 08680148
 protocolo algar:  202532752467"
-300-133827;Incident;Pending;2025-10-31 10:45:46;DE BARROS DA SILVA,ERICKSON;APOIO-COP-UNIDADES;4;atualização no notebook;"atualização no notebook
-
-Preciso que seja feita a atualização no notebook pois a ultima atualização não foi concluída pois acredito que o note estava fora da rede.
-
-UNIODADE: SÃO JOSÉ
-CHAVE : F013
-CONTATO: 47 991835981
-ASET:  NCESJ2-11411
-ESTAREI NA UNIDADE ATÉ AS 16:00H DO DIA 31/10
-CASO PRECISE IR ATÉ A UNIDADE, AGENDAR O DIA PARA O PROCEDIMENTO."
 100-102524;Service Request;Pending;2025-10-31 11:25:20;NEVES DA SILVA,EDNEA;APOIO-COP-ACESSO;4;Acesso as pastas do financeiro MI;Bom dia, por gentileza, liberar acesso as pastas que estão na rede do financeiro, credito e cobrança. A Suellen solicitou.
 300-133848;Incident;Pending;2025-10-31 14:33:18;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;4;435 Rejeição: NF-e não pode ter o indicativo do intermediador;"Nota: 78727
 Série: 1
@@ -2210,7 +2200,6 @@ Mudar de:
  
 Para: 
 15/12/2025 - 15 dia"
-300-133864;Incident;Queued;2025-10-31 15:47:20;;COP-ORIENTAÇÃO-GRC;4;Solicito verificação da transação OTAS/FC_LOG_ANALYZE;Solicito verificação da transação OTAS/FC_LOG_ANALYZE, considerando que não está apresentando os dados solicitados. Sairei de férias em breve e o colega Gabriel Vasconcelos Santos está com o mesmo problema. Caso o chamado seja atendido na minha ausência, peço gentileza entrar em contato com ele que pode passar maiores detalhes também
 100-102572;Service Request;Queued;2025-10-31 15:58:30;;COP-RH-FOPAG;4;Ex-empregado possui pensão vitalícia, solicita informações de pagamento.;"Boa Tarde!
 
 O ex-empregado, que possui pensão vitalícia, está solicitando informações sobre o reajuste do dissídio e qual a data do pagamento do décimo terceiro salário.
@@ -2310,7 +2299,6 @@ No dia 21/10 inseri um atestado na plataforma o mesmo foi recusado pois estava c
 
 No dia 21/10 inseri um atestado na plataforma o mesmo foi recusado pois estava cortado inseri novamente em 27/10 por favor verificar."
 100-102144;Service Request;Resolved-Validation;2025-10-28 11:51:53;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;7;Anexei no dia 10/10 no ATESTADO.ME  um atestado médico de acompanhamento da minha filha, porém, entrei de férias e não vi o motivo da recusa (falta de anexar a certidão de nascimento). Ontem (27/10) retornei de férias e anexei o atestado novamente junto com o documento, porém, foi recusado devido ao tempo passado superior ha 2 dias.;Anexei no dia 10/10 no ATESTADO.ME  um atestado médico de acompanhamento da minha filha, porém, entrei de férias e não vi o motivo da recusa (falta de anexar a certidão de nascimento). Ontem (27/10) retornei de férias e anexei o atestado novamente junto com o documento, porém, foi recusado devido ao tempo passado superior ha 2 dias.
-100-102152;Service Request;Resolved-Validation;2025-10-28 12:33:02;DE SOUSA SIMAO,EDILAINE;COP-RH-FOPAG;7;Solicitação de Atualização de Dados Bancários - Amilton Soares Pinheiro Junior;O Amilton Soares Pinheiro Junior, ex-colaborador da manutenção no CO de Paulínia, entrou em contato para informar que a conta bancária que ele utilizava para receber seus pagamentos não está mais ativa. Ele gostaria de fornecer uma nova conta para o recebimento da Participação nos Lucros e Resultados (PLR) referente ao período em que trabalhou na Copa Energia. Como devo proceder para atualizar essas informações?
 100-102212;Service Request;Resolved-Validation;2025-10-28 17:22:36;SOUZA,AMILTON;COP-RH-FOPAG;7;Relação de infração de trânsito para desconto em folha.;Relação de infração de trânsito para desconto em folha dos condutores executivos Copa Energia.
 100-102268;Service Request;Resolved-Validation;2025-10-29 11:29:45;TADEU LOPES DA SILVA,FELIPPE;COP-RH-BENEFÍCIOS;6;Alteração de veículo autorizado;"Remover Tracker GJN 4D08
 
@@ -2327,10 +2315,6 @@ Estive afastado do dia 20/08/2025 ao dia 22/09/2025.
 Se possível, gerar um DUT do meu retorno."
 100-102352;Service Request;Resolved-Validation;2025-10-30 08:55:14;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;5;justificativa do ponto de entrada;"29/10 entrada mais tarde motivo curso 
 30/10 entrada mais tarde motivo interjornada"
-100-102365;Service Request;Resolved-Validation;2025-10-30 09:32:07;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;5;Feriado Municipal em Gurupi - incluir no Sênior;"Centro: 1245 - CO Gurupi
-Sistema: Sênior 
-
-Ação: incluir no Sênior o dia 14/11/2025 como feriado municipal, referente ao aniversário do município de Gurupi, conforme a Lei municipal nº 711 / 1987."
 100-102368;Service Request;Resolved-Validation;2025-10-30 09:41:41;SOUZA DA SILVA,KELLY;COP-RH-FOPAG;5;Estou com duvida em meu salario, hoje caiu R$ 1.367,18, más só de comissão eu teria para receber R$ 1.315,00 e fiquei em duvida com esse valor .;"Estou com duvida em meu salario, hoje caiu R$ 1.367,18, más só de comissão eu teria para receber R$ 1.315,00 e fiquei em duvida com esse valor .
 Nunca caiu menos de 2 mil no dia 30  e  estou achando que ocorreu algum erro, poderiam verificar pra mim por favor ?
 Fiquei em duvida tambem porque sou consultor hunte II e meu salario esta menor que os outros consultores hunter II."
