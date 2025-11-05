@@ -1873,12 +1873,6 @@ Peço verificar e corrigir urgente pois está impactando nos relatórios de marg
 300-131632;Incident;Queued;2025-10-03 15:22:59;;COP-SAP FI-3N;32;"necessário realizar ajuste na transação.
 FEBAN - realizar ajuste entre a dz e juros.";"FEBAN - realizar ajuste entre a dz e juros. 
 Unidade: SEDE"
-300-131738;Incident;Queued;2025-10-06 11:57:48;CARLOS ASSENCIO,FABIO;COP-AUT-SAP-LOGÍSTICA-LES;29;"Estamos tendo problema no portal do transportador Jose do Patrocinio 416616, não estam conseguindo emitir o MDF-e, abriram um chamado no portal, foram informados que a COPA precisa adicionar essas informações para que o MDF-e volte a funcionar.
-
-
-Segue anexos";"Estamos tendo problema no portal do transportador Jose do Patrocinio 416616, não estam conseguindo emitir o MDF-e, abriram um chamado no portal, foram informados que a COPA precisa adicionar essas informações para que o MDF-e volte a funcionar.
-
-Mo momento de iniciar o MDF-e o portal solicita NCM, forma pagamento, valor de frete, quem vai efetuar pagamento do frete, o suporte do portal informou que a COPA precisa alimentar essas informações para liberação."
 300-131827;Incident;Queued;2025-10-07 14:00:14;;COP-SAP LES-3N;28;"O CTE 4648-2 da transportadora TORPEDO TRANSPORTES (700279) não migrou para o monitor de pagamento de fretes (ZLESR004), já o CTE 4616-2 migrou, porém com os valores ""zerados"", do centro 1233;";"O CTE 4648-2 da transportadora TORPEDO TRANSPORTES (700279) não migrou para o monitor de pagamento de fretes (ZLESR004), já o CTE 4616-2 migrou, porém com os valores ""zerados"", do centro 1233;"
 100-100398;Service Request;Queued;2025-10-09 10:35:12;DE OLIVEIRA ROCHA,VANDERLEIA;COP-RH-ADMPESSOAL;26;Exigência INSS;"Bom Dia!
 
@@ -2081,7 +2075,6 @@ Equipe de Treinamentos"
 
 Art.17 O Documento Auxiliar da Nota Fiscal Eletrônica (DANFE) ou a documentação fiscal referente às operações de comercialização realizadas pelo distribuidor de GLP deverão indicar:
 II - o número do boletim de conformidade correspondente ao GLP comercializado que predominar no envasilhamento."
-300-133598;Incident;Queued;2025-10-28 16:44:12;RODRIGUES LURIAL GOMES,FELIPE;COP-RH-SOLUÇÕES;7;O software EVOPE não está registrando os horários do ponto em que inicio o horário de trabalho;"O Evope fica mandando notificações de ""Bom dia! Você não registrou seu ponto ainda"", mesmo estando quase no final do expediente. Este aviso aparece a cada 2 minutos e quando estou próximo de finalizar minhas horas de trabalho. Hoje apareceu 16:40."
 100-102237;Service Request;Queued;2025-10-29 08:47:32;RODRIGUES LURIAL GOMES,FELIPE;COP-RH-SOLUÇÕES;6;O EVOPE está instalado em meu computador, porém, não há opção de seleção. Só aparece as informações sobre o aplicativo.;"Bom dia!
 
 O EVOPE foi instalado em meu computador, porém, só funcionou no primeiro dia, 12/09/2025. 
