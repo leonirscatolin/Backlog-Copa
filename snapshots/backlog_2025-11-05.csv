@@ -1647,16 +1647,6 @@ DUT 21/10/2025.
 Agendada perícia documental em 27/10/2025, n° do requerimento é: 1201263456.
 
 Orientar colaborador e acompanhar afastamento."
-300-133523;Incident;Pending;2025-10-28 09:09:02;FRANCISCO DE CARVALHO SOUSA,JACKSON;COP-TELECOM;7;DAC SERRA - SDWAN;"Nome do Host |
-172.31.207.124
-Endereço IP |
-172.31.207.124
-
-Designação: 08680164
-
-Protocolo: 202532280889
-
-Status:  técnico foi no local e constou problema na rede interna, aguardando TELECOM."
 300-133532;Incident;Pending;2025-10-28 10:00:26;ALVARENGA RANGEL LIANG,ALINE;COP-SAP MOBILE;7;Nota não esta puxando referência;Nota não esta puxando referência, evidência em anexo.
 100-102111;Service Request;Pending;2025-10-28 10:15:04;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;7;Afastamento - CO Duque de Caxias -  EDSON PHILIPPE SILVA PINTO – 101500713;"Telefone para contato: 21 98170-1143
 
@@ -2451,7 +2441,6 @@ Segue comprovante do pagamento do mês da faculdade."
 100-102580;Service Request;Resolved-Validation;2025-10-31 16:33:03;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;4;"Gostaria de informações sobre desconto de coparticipação...
 O que seria esse valor descontado.";Foi descontado Coparticipação e gostaria de mais informações
 100-102585;Service Request;Resolved-Validation;2025-10-31 17:04:48;APARECIDA VIEIRA,SUZANA;COP-RH-HUB;4;Solicitação de horas adicionais para o colaborador Danilo Rodrigues, chave JA23, executar processo de atualização de ordens hoje dia 31/10 às 23hs.;Solicitação de horas adicionais para o colaborador Danilo Rodrigues, chave JA23, executar processo de atualização de ordens hoje dia 31/10 às 23hs.
-100-102586;Service Request;Resolved-Validation;2025-10-31 17:15:33;FERREIRA DIAS DA SILVA,JAKELINE;COP-RH-ADMPESSOAL;4;Atualização do Crachá, colocar o nome:  Bueno;Colocar no Cracha o nome: Bueno
 100-102590;Service Request;Resolved-Validation;2025-10-31 17:32:48;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;4;Alteração de marcação de ponto errado;"Favor Ajusta marcação de ponto  Saída de 18:45 para 17:54 do colaborador Diego Gonçalves de Jesus - matricula: 121953.
 
  Ajusta marcação de ponto  Saída de 18:45 para 17:54 do colaborador Renato Bonfim dos  Santos - matricula: 120394."
