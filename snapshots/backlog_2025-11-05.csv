@@ -1689,15 +1689,6 @@ Viagem: 695660
 NF: 682/ 697/ 684/ 692/ 699/ 694
 
 1230 695660"
-300-133648;Incident;Pending;2025-10-29 11:00:45;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;6;Maquina DCEDC1-25102  não esta reconhecendo a rede de internet do cabo.;"USUÁRIO AFETADO: Marcos
-CHAVE:sy96
-GESTOR:
-TELEFONE: 21 980532511
-LOCALIZAÇÃO: Duque de Caxias
-
-DESCRIÇÃO: Maquina DCEDC1-25102  não esta reconhecendo a rede de internet do cabo.
-
----"
 100-102275;Service Request;Pending;2025-10-29 12:01:35;REGINA ARTUSO DE ANDRADE,CLAUDIA;COP-ORIENTAÇÃO-GRC;6;AUTORIZAÇÃO A TRANSAÇÃO PRFI - CHAVE LHB4;"Bom dia.
 
 Solicito por gentileza autorização da transação PRFI no Sap para a chave LHB4 - Claudia Marli Champan Sardelari.
@@ -2131,11 +2122,6 @@ Foi realizado desconto Assistencial PR CCT indevidamente na Participação nos l
 No estado de MS, estamos com base no Sindicato de SP. Sendo assim o desconto é indevido."
 100-102443;Service Request;Queued;2025-10-30 15:43:19;THOME DA SILVA,ARNANDO;COP-RH-FOPAG;5;DESCONTO DO PLR FEITO INDEVIDAMENTE POIS PERTENCEMOS AO SINDICATO DE SAO PAULO, ONDE FOI AUTORIZADO O DESCONTO DE 3% EM CIMA DO SALÁRIO BASE.;DESCONTO DO PLR FEITO INDEVIDAMENTE POIS PERTENCEMOS AO SINDICATO DE SAO PAULO, ONDE FOI AUTORIZADO O DESCONTO DE 3% EM CIMA DO SALÁRIO BASE.
 100-102444;Service Request;Queued;2025-10-30 15:44:43;THOME DA SILVA,ARNANDO;COP-RH-FOPAG;5;Veio descontado Assistencial PR CCT na minha PLR;Veio descontado Assistencial PR CCT na minha PLR
-100-102452;Service Request;Queued;2025-10-30 16:25:22;;COP-APLIC-NOTES;5;APLICAÇÕES LOTUS NOTES;"Inserir na area d etrabalho 
-
-1- Historico  Manual de Contratos Granel e Envasado
-2-Historico < 2016 Manual de contratos - Granel e Envasado
-3-Manual de Contratos GLP - Granel e Envasad"
 100-102454;Service Request;Queued;2025-10-30 16:38:06;THOME DA SILVA,ARNANDO;COP-RH-FOPAG;5;FOI DESCONTADO O VALOR INDEVIDAMENTE NA PLR ASSISTENCIA PR CCT NO VALOR $162,29, DE ACORDO COM O HOLERITE.;PRINT DO HOLERITE EM ANEXO DEMONSTRANDO O DESCONTO INDEVIDO NA PLR DE ASSISTENCIA PR CCT $162,29
 100-102461;Service Request;Queued;2025-10-30 17:26:39;THOME DA SILVA,ARNANDO;COP-RH-FOPAG;5;"Verifiquei que não recebi o pagamento da PLR. Minha alteração de cargo ocorreu em 02/10/2025, e, conforme informado anteriormente, eu receberia a PLR referente a este ano, ficando sem o benefício apenas a partir do próximo, em razão da mudança de função para Coordenadora.
 
@@ -2158,7 +2144,6 @@ Só que foi descontado agora em outubro os 5%, mas sobre o salário base acresci
 300-133820;Incident;Queued;2025-10-31 10:03:36;;COP-SAP-LES-LOG;4;FOI AUTORIZADA A TRANSAÇÃO VI02, POREM ESTOU SEM AUTORIZAÇÃO PARA EXCLUIR A VI.;FOI AUTORIZADA A TRANSAÇÃO VI02, POREM ESTOU SEM AUTORIZAÇÃO PARA EXCLUIR A VI. SOLICITO AUTORIZAÇÃO
 100-102513;Service Request;Queued;2025-10-31 10:31:25;THOME DA SILVA,ARNANDO;COP-RH-FOPAG;4;Desconto  indevido;Desconto indevido da contribuição sindical ,uma vez que foi solicitado o cancelamento via carta escrita a punho no mês de julho /2025.
 100-102514;Service Request;Queued;2025-10-31 10:48:47;THOME DA SILVA,ARNANDO;COP-RH-ADMPESSOAL;4;DESCONTO INDEVIDO 3% DUAS VEZES (PR CCT);Desconto em Holerite do sindicato no PLR
-100-102526;Service Request;Queued;2025-10-31 11:51:30;;COP-APLIC-NOTES;4;Bom dia, preciso do acesso ao lotus notes e da liberação para esses documentos (imagem em anexo);Bom dia, preciso do acesso ao lotus notes e da liberação para esses documentos (imagem em anexo)
 100-102538;Service Request;Queued;2025-10-31 13:47:13;DE OLIVEIRA ROCHA,VANDERLEIA;COP-RH-FOPAG;4;Desconto em folha pensao;Colabroador ROGERIO CZARNESKI JUNIOR, SOLICITA DESCONTO EM FOLHA DE PENSAO ALIMENTICIA.
 100-102539;Service Request;Queued;2025-10-31 13:58:48;;COP-SAP SD-3N;4;Problema ao analisar projeto na ZRF;Na operação ZRF não está puxando a análise de resultados nos projetos, sendo assim não estamos conseguindo criar ordens de venda para o granel.
 100-102540;Service Request;Queued;2025-10-31 14:12:34;THOME DA SILVA,ARNANDO;COP-RH-FOPAG;4;desconto indevido no holerite do PL (Assistencial PR CCT);desconto indevido no holerite do PL (Assistencial PR CCT)
@@ -2206,41 +2191,10 @@ Sábado: das 07h30 às 11h30
 A alteração deverá entrar em vigor a partir do dia 03/11/2025.
 
 Grato."
-100-102595;Service Request;Queued;2025-11-01 09:15:57;;COP-APLIC-NOTES;3;"CRIAR PERFIL E CAMINHO PARA ACESSO AO LOTUS NOTES.
-NECESSÁRIO PARA REGULARIZAÇÃO DE CONTRATOS DA CIA.
-
-APLICAÇÕES:
-MANUAL DE CONTRATOS GLP - GRANEL E ENVASADO
-HISTÓRICO DO MANUAL DE CONTRATOS GLP - GRANEL E ENVASADO
-HISTÓRICO<2016 - MANUAL DE CONTRATO - GRANEL E ENVASADO";"CRIAR PERFIL E CAMINHO PARA ACESSO AO LOTUS NOTES.
-NECESSÁRIO PARA REGULARIZAÇÃO DE CONTRATOS DA CIA.
-
-APLICAÇÕES:
-MANUAL DE CONTRATOS GLP - GRANEL E ENVASADO
-HISTÓRICO DO MANUAL DE CONTRATOS GLP - GRANEL E ENVASADO
-HISTÓRICO<2016 - MANUAL DE CONTRATO - GRANEL E ENVASADO"
 100-92937;Service Request;Resolved-Validation;2025-07-23 17:11:33;GOMES DE ARRUDA,ROSIMARA;COP-RH-ADMPESSOAL;104;Afastamento WELLINGTON SOARES - Paulinia;"Enviado DUT - Beneficio ate 12/08/25 - Tel. 19 98311-0185
 
 ASO de retorno dia 13/08/2025, conforme anexo."
-100-100938;Service Request;Resolved-Validation;2025-10-15 09:26:00;SOUZA DA SILVA,KELLY;COP-RH-FOPAG;20;"ASO RETORNO AFASTAMENTO 
-EMPREGADO: HENRIQUE BATISTA MORAES FORTES";"SEGUE ASO DE RETORNO DE AFASTAMENTO DO EMPREGADO HENRIQUE BATISTA MORAES FORTES
-INICIO TRABALHO EM 08/10/2025"
 100-101265;Service Request;Resolved-Validation;2025-10-17 12:26:02;GOMES DE ARRUDA,ROSIMARA;COP-RH-ADMPESSOAL;18;retorno de afastamento;tem que agendar o meu retorno com o médico do trabalho
-100-101805;Service Request;Resolved-Validation;2025-10-23 13:51:35;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;12;Solicito acesso as horas extras e banco de horas do CO Paulínia do ano de 2025 desde janeiro.;"A pedido do GEROP II (Antonio Carlos Magalhães Moura), solicito o relatório de hora extra e o que pagamos de banco de horas do CO Paulinia no ano de 2025 para que possamos fazer uma análise das despesas e montar um plano de ação para evitar horas desnecessárias.
-Relatório precisa conter nome do colaborador, data da hora extra e gestor para facilitar a análise e se foi pago via banco de horas ou hora extra direto."
-100-102027;Service Request;Resolved-Validation;2025-10-27 12:46:35;SOUZA,AMILTON;COP-RH-FOPAG;8;Verificação de repasse de desconto de empréstimo consignado – setembro/2025;"Solicito a verificação do repasse referente ao empréstimo consignado descontado em minha folha de pagamento do mês de setembro/2025.
-
-Conforme o holerite anexo, o valor da parcela foi devidamente descontado em folha. No entanto, ao consultar o banco, o pagamento consta como pendente, indicando que o valor ainda não foi repassado à instituição financeira.
-
-Solicito, por gentileza, a verificação da situação e o retorno quanto ao repasse do valor ao banco e prazo para regularização.
-
-Em anexo seguem:
-
-Holerite de setembro/2025, com o desconto em folha;
-
-Comprovante emitido pelo banco constando o status de pagamento pendente.
-
-Agradeço e aguardo retorno."
 100-102075;Service Request;Resolved-Validation;2025-10-27 20:04:52;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-HUB;8;Mudança de escala.;"Solicito a mudança de escala do colaborador LUCIANO VALTER DOS SANTOS, matrícula: 730130, nos seguintes dias.
 
 * 27/10/2025: Mudança da escala atual 132 (0700 1100 1200 1520 SEG a SaB) para a escala 600 (0940 1300 1400 1800 s0940 1800).
@@ -2264,44 +2218,16 @@ _______________________________________________
 
 Prezada,
 Segue anexo o ASO de retorno ao trabalho do colaborador FABIO SOUZA DE ASSIS, mat. 114901."
-100-102100;Service Request;Resolved-Validation;2025-10-28 09:10:25;SOUZA DA SILVA,KELLY;COP-RH-ADMPESSOAL;7;Fiz um empréstimo com o banco Itaú, e o mesmo já veio descontando em folha (não fiz essa solicitação) - o problema é que fui descontada no pagamento e o banco está me cobrando, informando que não foi pago.;Já está quase batendo o segundo pagamento e minha divida está em aberto, preciso de ajuda urgente, pois vão começar me cobrar juros de algo que foi pago.
-100-102109;Service Request;Resolved-Validation;2025-10-28 10:00:19;DA SILVA MOURA GOMES,WILLYKELLE;COP-RH-HUB;7;"DECLARAÇÃO DE ACOMPANHAMENTO RECUSADA 
-PROTOLOCO ABERTO COM DATA DO DIA 24/10/2025 
-Data do atestado: 23/10/2025 
-Empresa: Copa Energia
-Protocolo: jL4mkcXhnb";"Prezados,
-A declaração médica está com data de 23/10/2025 e foi enviada no dia 24/10/2025, dentro do prazo estabelecido.
-Como já havia encaminhado anteriormente uma declaração acompanhada do documento da criança menor de idade, entendi que não seria necessário reenviar. No dia 24/10, às 13h29, recebi retorno referente ao chamado aberto no mesmo dia. No entanto, estava ausente do trabalho após as 13h e, no dia 27/10, não tive acesso ao e-mail corporativo, onde foi informado que o atestado havia sido recusado.
-Hoje, ao retornar à empresa, acessei o e-mail e reenviei o chamado com o documento da criança. Porém, novamente recebi a informação de que o atestado foi recusado.
-Gostaria de reforçar que o envio da documentação foi feito dentro do prazo. Solicitar uma nova declaração médica neste momento representaria uma perda de tempo, pois teria que ir pessoalmente hoje ao médico solicitar essa declaração, mas se  considerado a data da abertura do envio do documento 24/10/2025  não seria necessário ir atrás de outra declaração de horário, segue o atestado da criança. 
-Agradeço a atenção e fico à disposição para quaisquer esclarecimentos adicionais.
-Atenciosamente,
-Daiane Lusimara Costa Ferreira"
-100-102144;Service Request;Resolved-Validation;2025-10-28 11:51:53;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;7;Anexei no dia 10/10 no ATESTADO.ME  um atestado médico de acompanhamento da minha filha, porém, entrei de férias e não vi o motivo da recusa (falta de anexar a certidão de nascimento). Ontem (27/10) retornei de férias e anexei o atestado novamente junto com o documento, porém, foi recusado devido ao tempo passado superior ha 2 dias.;Anexei no dia 10/10 no ATESTADO.ME  um atestado médico de acompanhamento da minha filha, porém, entrei de férias e não vi o motivo da recusa (falta de anexar a certidão de nascimento). Ontem (27/10) retornei de férias e anexei o atestado novamente junto com o documento, porém, foi recusado devido ao tempo passado superior ha 2 dias.
-100-102212;Service Request;Resolved-Validation;2025-10-28 17:22:36;SOUZA,AMILTON;COP-RH-FOPAG;7;Relação de infração de trânsito para desconto em folha.;Relação de infração de trânsito para desconto em folha dos condutores executivos Copa Energia.
 100-102268;Service Request;Resolved-Validation;2025-10-29 11:29:45;TADEU LOPES DA SILVA,FELIPPE;COP-RH-BENEFÍCIOS;6;Alteração de veículo autorizado;"Remover Tracker GJN 4D08
 
 Adicionar T-Cross SFK 1A99"
-100-102332;Service Request;Resolved-Validation;2025-10-29 19:48:06;SOUZA,AMILTON;COP-RH-FOPAG;6;Empréstimo Consignado;Já fiz a quitação do Empréstimo Consignado com o Banco Digio, mas ainda não foi baixado no sistema da Copa Energia e continua sendo descontado do meu salário.
 100-102339;Service Request;Resolved-Validation;2025-10-30 07:56:01;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;5;Solicitação do DUT;"Por gentileza peço a geração do meu DUT, do meu tempo de afastamento ate o meu retorno.
 Estive afastado do dia 20/08/2025 ao dia 22/09/2025.
 Se possível, gerar um DUT do meu retorno."
 100-102352;Service Request;Resolved-Validation;2025-10-30 08:55:14;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;5;justificativa do ponto de entrada;"29/10 entrada mais tarde motivo curso 
 30/10 entrada mais tarde motivo interjornada"
-100-102368;Service Request;Resolved-Validation;2025-10-30 09:41:41;SOUZA DA SILVA,KELLY;COP-RH-FOPAG;5;Estou com duvida em meu salario, hoje caiu R$ 1.367,18, más só de comissão eu teria para receber R$ 1.315,00 e fiquei em duvida com esse valor .;"Estou com duvida em meu salario, hoje caiu R$ 1.367,18, más só de comissão eu teria para receber R$ 1.315,00 e fiquei em duvida com esse valor .
-Nunca caiu menos de 2 mil no dia 30  e  estou achando que ocorreu algum erro, poderiam verificar pra mim por favor ?
-Fiquei em duvida tambem porque sou consultor hunte II e meu salario esta menor que os outros consultores hunter II."
 100-102380;Service Request;Resolved-Validation;2025-10-30 10:19:18;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;5;Solicito revisão do valor deposito no meu ticket restaurante e ticket alimentação.;"O valor do TICKET RESTAURANTE está sendo descontado parcialmente no crédito do TICKET ALIMENTAÇÃO.
 Solicito que os valores do crédito de ambos os cartões sejam inseridos corretamente."
-100-102439;Service Request;Resolved-Validation;2025-10-30 15:31:01;SOUZA,AMILTON;COP-RH-FOPAG;5;desconto empréstimo consiguinado Itaú na folha de outubro;teve a comunicação que o consignado no banco Itaú não ia ser mais descontado em folha, na folha de setembro não houve o desconto e na folha de outubro voltou a descontar. E eu tambem realizei a quitação do empréstimo em 2 de outubro, favor verificar.
-100-102505;Service Request;Resolved-Validation;2025-10-31 09:50:56;SOUZA DA SILVA,KELLY;COP-RH-FOPAG;4;Esclarecimento sobre o pagamento;"Durante meu processo de admissão, e inclusive no primeiro dia, foi posto que haveria um reajuste relacionado ao Acordo Coletivo a ser aplicado já este mês. Contudo, não foi aplicado ao meu salário. Gostaria de entender o que houve.
-Além disso, recebi dois depósitos: um no valor de R$ 2667,91, justificado pelo app Waapi, e outro no valor de R$ 2239,62, que gostaria de entender do que se trata, por favor."
-100-102506;Service Request;Resolved-Validation;2025-10-31 09:52:00;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;4;auxilio creche;auxilio creche
-100-102510;Service Request;Resolved-Validation;2025-10-31 10:11:01;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;4;Solicito alterar as férias de JOÃO MARCELO BRANCALION, matricula 113119, CO Canoas para 29/12/2025 cinco dias e 09/02/2026 15 dias.;alteração de férias
-100-102521;Service Request;Resolved-Validation;2025-10-31 11:13:57;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;4;ADIANTAMENTO DE VIAGEM NÃO ENTROU NA CONTA DO FUNCIONARIO;"Unidade 1226 - DAC Caxias do Sul
-Valor adiantamento viagem R$ 225,00 não entrou na conta do funcionário, tinha previsão dia 26/10;
-Funcionário: Fabio Lourenço Cezar - nº 3919
-nº viagem: 99799"
 100-102549;Service Request;Resolved-Validation;2025-10-31 15:22:35;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;4;"Boa tarde 
 Cancelamento do vale transporte";Detalhe não estou utilizando
 100-102580;Service Request;Resolved-Validation;2025-10-31 16:33:03;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;4;"Gostaria de informações sobre desconto de coparticipação...
