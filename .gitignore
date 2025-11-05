@@ -1,0 +1,10 @@
+# Arquivos de dados
+*.csv
+*.xlsx
+*.parquet
+
+# Pasta de dados do servidor
+/data/
+
+# Segredos
+.streamlit/secrets.toml
