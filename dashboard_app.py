@@ -1,4 +1,4 @@
-# VERSÃO v0.9.63-773 (Limpeza final)
+# VERSÃO v0.9.64-002 (Refatoração Final - Leitura Híbrida)
 
 import streamlit as st
 import pandas as pd
@@ -15,6 +15,7 @@ from urllib.parse import quote
 import json
 import colorsys
 import re
+import os # <<< MUDANÇA: Importa a biblioteca 'os' para checar arquivos
 
 # --- Constantes Globais ---
 GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM-GTR'
@@ -129,11 +130,13 @@ def get_github_repo():
         st.stop()
 
 def update_github_file(_repo, file_path, file_content, commit_message):
+    # Esta função (escrita) está correta. Ela SEMPRE escreve no GitHub.
     try:
         contents = _repo.get_contents(file_path)
         if isinstance(file_content, str):
             file_content = file_content.encode('utf-8')
         _repo.update_file(contents.path, commit_message, file_content, contents.sha)
+        # Não mostre toast para arquivos de estado
         if file_path not in ["contacted_tickets.json", "ticket_observations.json", "datas_referencia.txt", "previous_closed_ids.json"]: 
             st.sidebar.info(f"Arquivo '{file_path}' atualizado.")
     except GithubException as e:
@@ -147,55 +150,65 @@ def update_github_file(_repo, file_path, file_content, commit_message):
             st.sidebar.error(f"Falha ao salvar '{file_path}': {e}")
             raise 
 
+# <<< MUDANÇA: Esta função agora lê do disco local primeiro (para 'socorro')
 @st.cache_data(ttl=300)
 def read_github_file(_repo, file_path):
     try:
-        content_file = _repo.get_contents(file_path)
-        content_bytes = content_file.decoded_content
-
+        # Passo 1: Tentar ler o arquivo do disco local (para o servidor 'socorro')
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"Arquivo local {file_path} não encontrado, tentando GitHub.")
+        
         try:
-            content = content_bytes.decode("utf-8")
+            df = pd.read_csv(file_path, delimiter=';', encoding='utf-8',
+                             dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str}, low_memory=False,
+                             on_bad_lines='warn')
         except UnicodeDecodeError:
-            try:
-                content = content_bytes.decode("latin-1")
-                if file_path == f"{DATA_DIR}dados_fechados.csv": # <<< MUDANÇA
-                    st.sidebar.warning(f"Arquivo '{file_path}' lido com encoding 'latin-1'. Verifique se o arquivo foi salvo corretamente.")
-            except Exception as decode_err:
-                    st.error(f"Não foi possível decodificar o arquivo '{file_path}' com utf-8 ou latin-1: {decode_err}")
-                    return pd.DataFrame()
-
-        if not content.strip():
-            return pd.DataFrame()
-
+            df = pd.read_csv(file_path, delimiter=';', encoding='latin1',
+                             dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str}, low_memory=False,
+                             on_bad_lines='warn')
+            if file_path == f"{DATA_DIR}dados_fechados.csv":
+                 st.sidebar.warning(f"Arquivo '{file_path}' lido com encoding 'latin-1' localmente.")
+        
+    except (FileNotFoundError, pd.errors.ParserError, Exception) as e_local:
+        # Passo 2: Fallback para a API do GitHub (para o Streamlit Cloud)
         try:
-                df = pd.read_csv(StringIO(content), delimiter=';', encoding='utf-8',
-                                 dtype={'ID do ticket': str, 'ID do Ticket': str}, low_memory=False,
-                                 on_bad_lines='warn')
-        except pd.errors.ParserError as parse_err:
-                st.error(f"Erro ao parsear o CSV '{file_path}': {parse_err}. Verifique o delimitador (;) e a estrutura do arquivo.")
-                return pd.DataFrame()
-        except Exception as read_err:
-                st.error(f"Erro inesperado ao ler o conteúdo CSV de '{file_path}': {read_err}")
+            content_file = _repo.get_contents(file_path)
+            content_bytes = content_file.decoded_content
+
+            try:
+                content = content_bytes.decode("utf-8")
+            except UnicodeDecodeError:
+                content = content_bytes.decode("latin-1")
+                if file_path == f"{DATA_DIR}dados_fechados.csv":
+                    st.sidebar.warning(f"Arquivo '{file_path}' lido com encoding 'latin-1' do GitHub.")
+
+            if not content.strip():
                 return pd.DataFrame()
 
-        df.columns = df.columns.str.strip()
-        df.dropna(how='all', inplace=True)
-        return df
-
-    except GithubException as e:
-        if e.status == 404:
+            df = pd.read_csv(StringIO(content), delimiter=';', encoding='utf-8',
+                             dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str}, low_memory=False,
+                             on_bad_lines='warn')
+        
+        except GithubException as e_github:
+            if e_github.status == 404: return pd.DataFrame() # Arquivo não existe em lugar nenhum
+            st.error(f"Erro ao acessar o arquivo do GitHub '{file_path}': {e_github} (Erro local foi: {e_local})")
             return pd.DataFrame()
-        st.error(f"Erro ao acessar o arquivo do GitHub '{file_path}': {e}")
-        return pd.DataFrame()
-    except Exception as e:
-        st.error(f"Erro inesperado ao ler o arquivo '{file_path}': {e}")
-        return pd.DataFrame()
+        except Exception as e_github_read:
+            st.error(f"Erro inesperado ao ler o arquivo '{file_path}' do GitHub: {e_github_read} (Erro local foi: {e_local})")
+            return pd.DataFrame()
 
+    # Processamento padrão
+    df.columns = df.columns.str.strip()
+    df.dropna(how='all', inplace=True)
+    return df
+
+# <<< MUDANÇA: Esta função (de ESTADO) permanece lendo APENAS do GitHub
 @st.cache_data(ttl=300)
 def read_github_text_file(_repo, file_path):
     try:
         content_file = _repo.get_contents(file_path)
         content = content_file.decoded_content.decode("utf-8")
+        
         dates = {}
         for line in content.strip().split('\n'):
             if ':' in line:
@@ -213,23 +226,27 @@ def read_github_text_file(_repo, file_path):
         return {}
 
 
+# <<< MUDANÇA: Esta função (de ESTADO) permanece lendo APENAS do GitHub
 @st.cache_data(ttl=300)
 def read_github_json_file(_repo, file_path, default_return_type='dict'): 
+    default_return = (default_return_type == 'dict' and {} or [])
     try:
-        file_content = _repo.get_contents(file_path).decoded_content.decode("utf-8")
-        return json.loads(file_content) if file_content else (default_return_type == 'dict' and {} or [])
+        file_content_str = _repo.get_contents(file_path).decoded_content.decode("utf-8")
+        return json.loads(file_content_str) if file_content_str else default_return
     except GithubException as e:
-        if e.status == 404: return (default_return_type == 'dict' and {} or [])
-        st.error(f"Erro ao carregar JSON '{file_path}': {e}")
-        return (default_return_type == 'dict' and {} or [])
+        if e.status == 404: return default_return
+        st.error(f"Erro ao carregar JSON '{file_path}' do GitHub: {e}")
+        return default_return
     except json.JSONDecodeError:
-        st.error(f"Erro ao decodificar JSON '{file_path}'. Verifique o conteúdo.")
-        return (default_return_type == 'dict' and {} or [])
+        st.error(f"Erro ao decodificar JSON '{file_path}' do GitHub.")
+        return default_return
     except Exception as e:
         st.error(f"Erro inesperado ao ler JSON '{file_path}': {e}")
-        return (default_return_type == 'dict' and {} or [])
+        return default_return
+
 
 def process_uploaded_file(uploaded_file):
+    # Esta função (leitura de upload) está correta.
     if uploaded_file is None:
         return None
     try:
@@ -300,12 +317,14 @@ def get_status(row):
     elif diferenca == 0: return "Estável / Atenção"
     else: return "Redução de Backlog"
 
+# <<< MUDANÇA: Esta função agora lê do disco local primeiro (para 'socorro')
 def get_image_as_base64(path):
     try:
+        # Passo 1: Tentar ler do disco local
         with open(path, "rb") as image_file:
             return base64.b64encode(image_file.read()).decode()
     except FileNotFoundError:
-        # <<< MUDANÇA: Tenta ler do GitHub se falhar localmente (para deploy no Streamlit Cloud)
+        # Passo 2: Fallback para a API do GitHub
         try:
             repo = get_github_repo()
             content_file = repo.get_contents(path)
@@ -348,12 +367,12 @@ def sync_ticket_data():
                 data_to_save = list(st.session_state.contacted_tickets)
                 json_content = json.dumps(data_to_save, indent=4)
                 commit_msg = f"Atualizando contatos em {now_str}"
-                # <<< MUDANÇA: Arquivos de ESTADO permanecem na raiz
+                # Arquivos de ESTADO permanecem na raiz
                 update_github_file(st.session_state.repo, "contacted_tickets.json", json_content.encode('utf-8'), commit_msg)
             if observation_changed:
                 json_content = json.dumps(st.session_state.observations, indent=4, ensure_ascii=False)
                 commit_msg = f"Atualizando observações em {now_str}"
-                # <<< MUDANÇA: Arquivos de ESTADO permanecem na raiz
+                # Arquivos de ESTADO permanecem na raiz
                 update_github_file(st.session_state.repo, "ticket_observations.json", json_content.encode('utf-8'), commit_msg)
             
             st.toast("Alterações salvas com sucesso!", icon="✅")
@@ -370,23 +389,35 @@ def sync_ticket_data():
     st.session_state.scroll_to_details = True
 
 
+# <<< MUDANÇA: Esta função agora lê do disco local primeiro (para 'socorro')
 @st.cache_data(ttl=3600)
 def carregar_dados_evolucao(_repo, dias_para_analisar=7): 
     try:
-        # <<< MUDANÇA: Aponta para a pasta de snapshots dentro do DATA_DIR
         snapshot_dir = f"{DATA_DIR}snapshots"
-        all_files_content = _repo.get_contents(snapshot_dir)
-        all_files = [f.path for f in all_files_content]
+        
+        # Passo 1: Tentar ler os arquivos do disco local
+        try:
+            local_files = [os.path.join(snapshot_dir, f) for f in os.listdir(snapshot_dir) if f.endswith('.csv')]
+            if not local_files:
+                raise FileNotFoundError("Pasta de snapshots local vazia ou não encontrada.")
+            all_files = local_files
+        except FileNotFoundError:
+            # Passo 2: Fallback para a API do GitHub
+            all_files_content = _repo.get_contents(snapshot_dir)
+            all_files = [f.path for f in all_files_content]
+
         df_evolucao_list = []
         end_date = date.today()
         start_date = end_date - timedelta(days=max(dias_para_analisar, 10))
 
         processed_dates = []
         for file_name in all_files:
-            # <<< MUDANÇA: Verifica o caminho completo
+            # <<< MUDANÇA: Assegura que o prefixo do snapshot_dir esteja no file_name
+            if not file_name.startswith(snapshot_dir):
+                file_name = f"{snapshot_dir}/{file_name.split('/')[-1]}"
+                
             if file_name.startswith(f"{snapshot_dir}/backlog_") and file_name.endswith(".csv"):
                 try:
-                    # <<< MUDANÇA: Remove o prefixo completo do diretório
                     date_str = file_name.replace(f"{snapshot_dir}/backlog_", "").replace(".csv", "")
                     file_date = datetime.strptime(date_str, "%Y-%m-%d").date()
                     if start_date <= file_date <= end_date:
@@ -399,10 +430,9 @@ def carregar_dados_evolucao(_repo, dias_para_analisar=7):
 
         for file_name in files_to_process:
                 try:
-                    # <<< MUDANÇA: Remove o prefixo completo do diretório
                     date_str = file_name.replace(f"{snapshot_dir}/backlog_", "").replace(".csv", "")
                     file_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-                    df_snapshot = read_github_file(_repo, file_name)
+                    df_snapshot = read_github_file(_repo, file_name) # Esta função agora é híbrida
                     if not df_snapshot.empty and 'Atribuir a um grupo' in df_snapshot.columns:
                         
                         df_snapshot_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
@@ -426,22 +456,32 @@ def carregar_dados_evolucao(_repo, dias_para_analisar=7):
         st.error(f"Erro ao carregar evolução: {e}")
         return pd.DataFrame()
 
+# <<< MUDANÇA: Esta função agora lê do disco local primeiro (para 'socorro')
 @st.cache_data(ttl=300)
 def find_closest_snapshot_before(_repo, current_report_date, target_date):
     try:
-        # <<< MUDANÇA: Aponta para a pasta de snapshots dentro do DATA_DIR
         snapshot_dir = f"{DATA_DIR}snapshots"
-        all_files_content = _repo.get_contents(snapshot_dir)
+        
+        # Passo 1: Tentar ler os arquivos do disco local
+        try:
+            local_files = [os.path.join(snapshot_dir, f) for f in os.listdir(snapshot_dir) if f.endswith('.csv')]
+            if not local_files:
+                raise FileNotFoundError("Pasta de snapshots local vazia ou não encontrada.")
+            all_file_paths = local_files
+        except FileNotFoundError:
+            # Passo 2: Fallback para a API do GitHub
+            all_files_content = _repo.get_contents(snapshot_dir)
+            all_file_paths = [f.path for f in all_files_content]
+
         snapshots = []
         search_start_date = target_date - timedelta(days=10)
 
-        for file in all_files_content:
-            # <<< MUDANÇA: Regex agora procura pelo nome do arquivo no final do path
-            match = re.search(r"backlog_(\d{4}-\d{2}-\d{2})\.csv", file.path.split('/')[-1])
+        for file_path in all_file_paths:
+            match = re.search(r"backlog_(\d{4}-\d{2}-\d{2})\.csv", file_path.split('/')[-1])
             if match:
                 snapshot_date = datetime.strptime(match.group(1), "%Y-%m-%d").date()
                 if search_start_date <= snapshot_date <= target_date:
-                    snapshots.append((snapshot_date, file.path))
+                    snapshots.append((snapshot_date, file_path))
 
         if not snapshots:
             return None, None
@@ -453,13 +493,23 @@ def find_closest_snapshot_before(_repo, current_report_date, target_date):
         st.warning(f"Erro ao buscar snapshots: {e}")
         return None, None
 
+# <<< MUDANÇA: Esta função agora lê do disco local primeiro (para 'socorro')
 @st.cache_data(ttl=3600)
 def carregar_evolucao_aging(_repo, dias_para_analisar=90): 
     try:
-        # <<< MUDANÇA: Aponta para a pasta de snapshots dentro do DATA_DIR
         snapshot_dir = f"{DATA_DIR}snapshots"
-        all_files_content = _repo.get_contents(snapshot_dir)
-        all_files = [f.path for f in all_files_content]
+        
+        # Passo 1: Tentar ler os arquivos do disco local
+        try:
+            local_files = [os.path.join(snapshot_dir, f) for f in os.listdir(snapshot_dir) if f.endswith('.csv')]
+            if not local_files:
+                raise FileNotFoundError("Pasta de snapshots local vazia ou não encontrada.")
+            all_files = local_files
+        except FileNotFoundError:
+            # Passo 2: Fallback para a API do GitHub
+            all_files_content = _repo.get_contents(snapshot_dir)
+            all_files = [f.path for f in all_files_content]
+
         lista_historico = []
 
         end_date = date.today() - timedelta(days=1)
@@ -467,10 +517,12 @@ def carregar_evolucao_aging(_repo, dias_para_analisar=90):
 
         processed_files = []
         for file_name in all_files:
-            # <<< MUDANÇA: Verifica o caminho completo
+            # <<< MUDANÇA: Assegura que o prefixo do snapshot_dir esteja no file_name
+            if not file_name.startswith(snapshot_dir):
+                file_name = f"{snapshot_dir}/{file_name.split('/')[-1]}"
+
             if file_name.startswith(f"{snapshot_dir}/backlog_") and file_name.endswith(".csv"):
                 try:
-                    # <<< MUDANÇA: Remove o prefixo completo do diretório
                     date_str = file_name.replace(f"{snapshot_dir}/backlog_", "").replace(".csv", "")
                     file_date = datetime.strptime(date_str, "%Y-%m-%d").date()
                     if start_date <= file_date <= end_date:
@@ -482,14 +534,13 @@ def carregar_evolucao_aging(_repo, dias_para_analisar=90):
 
         for file_date, file_name in processed_files:
             try:
-                df_snapshot = read_github_file(_repo, file_name)
+                df_snapshot = read_github_file(_repo, file_name) # Esta função agora é híbrida
                 if df_snapshot.empty:
                     continue
 
                 df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
 
                 df_final = df_filtrado
-
                 df_final = df_final.copy() 
 
                 date_col_name = next((col for col in ['Data de criação', 'Data de Criacao'] if col in df_final.columns), None)
@@ -559,8 +610,8 @@ def formatar_delta_card(delta_abs, delta_perc, valor_comparacao, data_comparacao
     return delta_text, delta_class
 
 
-logo_copa_b64 = get_image_as_base64(f"{DATA_DIR}logo_sidebar.png") # <<< MUDANÇA
-logo_belago_b64 = get_image_as_base64(f"{DATA_DIR}logo_belago.png") # <<< MUDANÇA
+logo_copa_b64 = get_image_as_base64(f"{DATA_DIR}logo_sidebar.png") 
+logo_belago_b64 = get_image_as_base64(f"{DATA_DIR}logo_belago.png") 
 if logo_copa_b64 and logo_belago_b64:
     st.markdown(f"""<div style="display: flex; justify-content: space-between; align-items: center;"><img src="data:image/png;base64,{logo_copa_b64}" width="150"><h1 style='text-align: center; margin: 0;'>Backlog Copa Energia + Belago</h1><img src="data:image/png;base64,{logo_belago_b64}" width="150"></div>""", unsafe_allow_html=True)
 else:
@@ -587,12 +638,10 @@ if is_admin:
                 content_15dias = process_uploaded_file(uploaded_file_15dias)
                 if content_atual is not None and content_15dias is not None:
                     try:
-                        # <<< MUDANÇA: Salva arquivos de dados na pasta /data
                         update_github_file(repo, f"{DATA_DIR}dados_atuais.csv", content_atual, commit_msg)
                         update_github_file(repo, f"{DATA_DIR}dados_15_dias.csv", content_15dias, commit_msg)
                         
                         today_str = now_sao_paulo.strftime('%Y-%m-%d')
-                        # <<< MUDANÇA: Salva snapshot na pasta /data/snapshots
                         snapshot_path = f"{DATA_DIR}snapshots/backlog_{today_str}.csv"
                         update_github_file(repo, snapshot_path, content_atual, f"Snapshot de {today_str}")
                         
@@ -602,7 +651,6 @@ if is_admin:
                         datas_referencia_content = (f"data_atual:{data_do_upload.strftime('%d/%m/%Y')}\n"
                                                       f"data_15dias:{data_arquivo_15dias.strftime('%d/%m/%Y')}\n"
                                                       f"hora_atualizacao:{hora_atualizacao}")
-                        # <<< MUDANÇA: Arquivo de ESTADO permanece na raiz
                         update_github_file(repo, "datas_referencia.txt", datas_referencia_content.encode('utf-8'), commit_msg)
                         
                         st.cache_data.clear()
@@ -630,8 +678,7 @@ if is_admin:
                     st.stop() 
 
                 try:
-                    # <<< MUDANÇA: Lê arquivo de dados da pasta /data
-                    df_fechados_anterior = read_github_file(repo, f"{DATA_DIR}dados_fechados.csv")
+                    df_fechados_anterior = read_github_file(repo, f"{DATA_DIR}dados_fechados.csv") # Função agora é híbrida
                     previous_closed_ids = set()
                     if not df_fechados_anterior.empty:
                         id_col_anterior = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_anterior.columns), None)
@@ -639,14 +686,10 @@ if is_admin:
                             previous_closed_ids = set(df_fechados_anterior[id_col_anterior].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
                     
                     json_content = json.dumps(list(previous_closed_ids), indent=4)
-                    # <<< MUDANÇA: Arquivo de ESTADO permanece na raiz
                     update_github_file(repo, "previous_closed_ids.json", json_content.encode('utf-8'), "Snapshot dos IDs de fechados anteriores")
-
-                    # <<< MUDANÇA: Salva arquivo de dados na pasta /data
                     update_github_file(repo, f"{DATA_DIR}dados_fechados.csv", content_fechados, commit_msg)
-
-                    # <<< MUDANÇA: Arquivo de ESTADO permanece na raiz
-                    datas_existentes = read_github_text_file(repo, "datas_referencia.txt")
+                    
+                    datas_existentes = read_github_text_file(repo, "datas_referencia.txt") # Função agora é híbrida
                     data_atual_existente = datas_existentes.get('data_atual', 'N/A')
                     data_15dias_existente = datas_existentes.get('data_15dias', 'N/A')
                     hora_atualizacao_nova = now_sao_paulo.strftime('%H:%M')
@@ -654,11 +697,9 @@ if is_admin:
                     datas_referencia_content_novo = (f"data_atual:{data_atual_existente}\n"
                                                        f"data_15dias:{data_15dias_existente}\n"
                                                        f"hora_atualizacao:{hora_atualizacao_nova}")
-                    # <<< MUDANÇA: Arquivo de ESTADO permanece na raiz
                     update_github_file(repo, "datas_referencia.txt", datas_referencia_content_novo.encode('utf-8'), commit_msg)
                     
-                    # <<< MUDANÇA: Lê arquivo de dados da pasta /data
-                    df_atual_base = read_github_file(repo, f"{DATA_DIR}dados_atuais.csv")
+                    df_atual_base = read_github_file(repo, f"{DATA_DIR}dados_atuais.csv") # Função agora é híbrida
                     if df_atual_base.empty:
                         st.sidebar.warning("Não foi possível ler o 'dados_atuais.csv' base para atualizar o snapshot.")
                         raise Exception("Arquivo 'dados_atuais.csv' base não encontrado.")
@@ -686,7 +727,6 @@ if is_admin:
                     content_snapshot_novo = output.getvalue().encode('utf-8')
 
                     today_str = now_sao_paulo.strftime('%Y-%m-%d')
-                    # <<< MUDANÇA: Salva snapshot na pasta /data/snapshots
                     snapshot_path = f"{DATA_DIR}snapshots/backlog_{today_str}.csv"
                     commit_msg_snapshot = f"Atualizando snapshot (rápido) em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
                     
@@ -707,7 +747,7 @@ elif password:
 try:
     if 'contacted_tickets' not in st.session_state:
         try:
-            # <<< MUDANÇA: Arquivo de ESTADO permanece na raiz
+            # Esta função (ESTADO) permanece lendo do GitHub
             file_content = repo.get_contents("contacted_tickets.json").decoded_content.decode("utf-8")
             st.session_state.contacted_tickets = set(json.loads(file_content))
         except GithubException as e:
@@ -715,7 +755,7 @@ try:
             else: st.error(f"Erro ao carregar o estado dos tickets: {e}"); st.session_state.contacted_tickets = set()
 
     if 'observations' not in st.session_state:
-        # <<< MUDANÇA: Arquivo de ESTADO permanece na raiz
+        # Esta função (ESTADO) permanece lendo do GitHub
         st.session_state.observations = read_github_json_file(repo, "ticket_observations.json", default_return_type='dict')
 
     needs_scroll = "scroll" in st.query_params
@@ -727,13 +767,13 @@ try:
     if "scroll" in st.query_params or "faixa" in st.query_params:
         st.query_params.clear()
 
-    # <<< MUDANÇA: Lê arquivos de dados da pasta /data
-    df_atual = read_github_file(repo, f"{DATA_DIR}dados_atuais.csv")
-    df_15dias = read_github_file(repo, f"{DATA_DIR}dados_15_dias.csv")
-    df_fechados = read_github_file(repo, f"{DATA_DIR}dados_fechados.csv")
+    # <<< MUDANÇA: Todas as leituras de DADOS agora usam a função híbrida e o caminho /data
+    df_atual = read_github_file(repo, f"{DATA_DIR}dados_atuais.csv") 
+    df_15dias = read_github_file(repo, f"{DATA_DIR}dados_15_dias.csv") 
+    df_fechados = read_github_file(repo, f"{DATA_DIR}dados_fechados.csv") 
     
-    # <<< MUDANÇA: Arquivos de ESTADO permanecem na raiz
-    datas_referencia = read_github_text_file(repo, "datas_referencia.txt")
+    # <<< MUDANÇA: Arquivos de ESTADO permanecem lendo da raiz (e do GitHub)
+    datas_referencia = read_github_text_file(repo, "datas_referencia.txt") 
     previous_closed_ids = set(read_github_json_file(repo, "previous_closed_ids.json", default_return_type='list'))
     
     data_atual_str = datas_referencia.get('data_atual', 'N/A')
@@ -1304,6 +1344,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.63-773 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v0.9.64-002 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
