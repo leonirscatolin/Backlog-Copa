@@ -1,0 +1,8 @@
+# Segredos
+.streamlit/secrets.toml
+
+# Arquivos de dados e imagens
+data/
+
+# Ambiente Virtual
+venv/
