@@ -1590,8 +1590,6 @@ https://smi.liquigas.com.br/wps/portal/canal-fornecedor";"Canal do fornecedor co
 
 
 https://smi.liquigas.com.br/wps/portal/canal-fornecedor"
-100-101838;Service Request;Pending;2025-10-23 17:41:31;DE MEDEIROS MARIZ NETO,EDGAR;COP-APLIC-NOTES;12;Acesso ao Lotes Notes;"Solicito  a criação de perfil Notes.
-Usarei para a base de contratos."
 100-101875;Service Request;Pending;2025-10-24 11:40:54;APARECIDA VIEIRA,SUZANA;COP-RH-HUB;11;"Solicitação PPP demitido Nilson Antonio dos Santos  - solicitado através do Compliance - Araucária PR
 NILSON ANTONIO DOS SANTOS - fferron83@gmail.com -  (41) 98875-2911";"Solicitação PPP demitido Nilson Antonio dos Santos  - solicitado através do Compliance - Araucária PR.
 
@@ -1891,7 +1889,6 @@ todos da unidade de Capoava estão com esse problema
 CHAVE : CQSE
 CONTATO : 11 45773880"
 300-132379;Incident;Queued;2025-10-14 11:37:55;CARDOSO SOUZA DA SILVA,RONALD;COP-SAP LES-3N;21;Verificar parametro do prazo de pagamento no monitor de fretes ZLESR004;Solicitamos verificar como o monitor de fretes ZLESR004 está parametrizado atualmente, pois estava acertado, contar o prazo de pagamento a partir da data da DT Definitiva, porém, estava verificando muitos casos, pelos quais considera a data do CTE e/ou considera outra data que não faz referência, nem a DT e nem ao CTE. Peço verificar e nos retornar com urgência
-300-132410;Incident;Queued;2025-10-14 15:21:38;;COP-AUT-SAP-LOGÍSTICA-SD/CPR/ZRF;21;ZRF;Boa tarde! Precisamos efetuar a entrega do Gás para o cliente 307168 (MI) e apresenta o seguinte erro (anexo)
 300-132512;Incident;Queued;2025-10-15 13:07:51;CARDOSO SOUZA DA SILVA,RONALD;COP-SAP LES-3N;20;Sem pedido - VT 883140;Sem pedido - VT 883140 - despesas de setembro - aprovado dia 13.10.2025 mas Status consta INCORRETO
 300-132521;Incident;Queued;2025-10-15 13:57:41;;COP-SAP MOBILE-3N;20;"Softmovel: 2537 20.10 
 o SIVA gerou um nota de devolução, ao consultarmos quem efetuou a emissão desta nota foi o próprio SIVA, o setor financeiro e custos estão perguntando do que se trata isso mas eu não sei com responder você poderia me ajudar com isso por favor?";"Nota: nf.00041730-02 devolução vda de com. ou lubr. destinados a cons.
@@ -2241,7 +2238,6 @@ ASO de retorno dia 13/08/2025, conforme anexo."
 EMPREGADO: HENRIQUE BATISTA MORAES FORTES";"SEGUE ASO DE RETORNO DE AFASTAMENTO DO EMPREGADO HENRIQUE BATISTA MORAES FORTES
 INICIO TRABALHO EM 08/10/2025"
 100-101265;Service Request;Resolved-Validation;2025-10-17 12:26:02;GOMES DE ARRUDA,ROSIMARA;COP-RH-ADMPESSOAL;18;retorno de afastamento;tem que agendar o meu retorno com o médico do trabalho
-100-101662;Service Request;Resolved-Validation;2025-10-22 09:19:19;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;13;Sênior horário errado.;"o sênior está com uma hora de atraso hoje cheguei as 08:30 o sênior computou 07;30"
 100-101805;Service Request;Resolved-Validation;2025-10-23 13:51:35;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;12;Solicito acesso as horas extras e banco de horas do CO Paulínia do ano de 2025 desde janeiro.;"A pedido do GEROP II (Antonio Carlos Magalhães Moura), solicito o relatório de hora extra e o que pagamos de banco de horas do CO Paulinia no ano de 2025 para que possamos fazer uma análise das despesas e montar um plano de ação para evitar horas desnecessárias.
 Relatório precisa conter nome do colaborador, data da hora extra e gestor para facilitar a análise e se foi pago via banco de horas ou hora extra direto."
 100-102027;Service Request;Resolved-Validation;2025-10-27 12:46:35;SOUZA,AMILTON;COP-RH-FOPAG;8;Verificação de repasse de desconto de empréstimo consignado – setembro/2025;"Solicito a verificação do repasse referente ao empréstimo consignado descontado em minha folha de pagamento do mês de setembro/2025.
@@ -2293,11 +2289,6 @@ Gostaria de reforçar que o envio da documentação foi feito dentro do prazo. S
 Agradeço a atenção e fico à disposição para quaisquer esclarecimentos adicionais.
 Atenciosamente,
 Daiane Lusimara Costa Ferreira"
-100-102129;Service Request;Resolved-Validation;2025-10-28 11:05:28;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;7;"Bom dia,
-
-No dia 21/10 inseri um atestado na plataforma o mesmo foi recusado pois estava cortado inseri novamente em 27/10 por favor verificar.";"Bom dia,
-
-No dia 21/10 inseri um atestado na plataforma o mesmo foi recusado pois estava cortado inseri novamente em 27/10 por favor verificar."
 100-102144;Service Request;Resolved-Validation;2025-10-28 11:51:53;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;7;Anexei no dia 10/10 no ATESTADO.ME  um atestado médico de acompanhamento da minha filha, porém, entrei de férias e não vi o motivo da recusa (falta de anexar a certidão de nascimento). Ontem (27/10) retornei de férias e anexei o atestado novamente junto com o documento, porém, foi recusado devido ao tempo passado superior ha 2 dias.;Anexei no dia 10/10 no ATESTADO.ME  um atestado médico de acompanhamento da minha filha, porém, entrei de férias e não vi o motivo da recusa (falta de anexar a certidão de nascimento). Ontem (27/10) retornei de férias e anexei o atestado novamente junto com o documento, porém, foi recusado devido ao tempo passado superior ha 2 dias.
 100-102212;Service Request;Resolved-Validation;2025-10-28 17:22:36;SOUZA,AMILTON;COP-RH-FOPAG;7;Relação de infração de trânsito para desconto em folha.;Relação de infração de trânsito para desconto em folha dos condutores executivos Copa Energia.
 100-102268;Service Request;Resolved-Validation;2025-10-29 11:29:45;TADEU LOPES DA SILVA,FELIPPE;COP-RH-BENEFÍCIOS;6;Alteração de veículo autorizado;"Remover Tracker GJN 4D08
@@ -2321,12 +2312,6 @@ Fiquei em duvida tambem porque sou consultor hunte II e meu salario esta menor q
 100-102380;Service Request;Resolved-Validation;2025-10-30 10:19:18;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;5;Solicito revisão do valor deposito no meu ticket restaurante e ticket alimentação.;"O valor do TICKET RESTAURANTE está sendo descontado parcialmente no crédito do TICKET ALIMENTAÇÃO.
 Solicito que os valores do crédito de ambos os cartões sejam inseridos corretamente."
 100-102439;Service Request;Resolved-Validation;2025-10-30 15:31:01;SOUZA,AMILTON;COP-RH-FOPAG;5;desconto empréstimo consiguinado Itaú na folha de outubro;teve a comunicação que o consignado no banco Itaú não ia ser mais descontado em folha, na folha de setembro não houve o desconto e na folha de outubro voltou a descontar. E eu tambem realizei a quitação do empréstimo em 2 de outubro, favor verificar.
-100-102451;Service Request;Resolved-Validation;2025-10-30 16:15:51;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;5;Desconto de dias de férias;"Colaborador BRUNO NUNES DE ASSIS, 121485.
-
-Fui marcar férias do colaborador mas informa que não tem saldo.
-o colaborador aparece que tem direito a 24 dias porque tem 8 faltas.
-Verificando no sistema identifiquei 5 faltas.
-Necessário verificar."
 100-102505;Service Request;Resolved-Validation;2025-10-31 09:50:56;SOUZA DA SILVA,KELLY;COP-RH-FOPAG;4;Esclarecimento sobre o pagamento;"Durante meu processo de admissão, e inclusive no primeiro dia, foi posto que haveria um reajuste relacionado ao Acordo Coletivo a ser aplicado já este mês. Contudo, não foi aplicado ao meu salário. Gostaria de entender o que houve.
 Além disso, recebi dois depósitos: um no valor de R$ 2667,91, justificado pelo app Waapi, e outro no valor de R$ 2239,62, que gostaria de entender do que se trata, por favor."
 100-102506;Service Request;Resolved-Validation;2025-10-31 09:52:00;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;4;auxilio creche;auxilio creche
@@ -2344,7 +2329,6 @@ Cancelamento do vale transporte";Detalhe não estou utilizando
 Segue comprovante do pagamento do mês da faculdade."
 100-102580;Service Request;Resolved-Validation;2025-10-31 16:33:03;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;4;"Gostaria de informações sobre desconto de coparticipação...
 O que seria esse valor descontado.";Foi descontado Coparticipação e gostaria de mais informações
-100-102585;Service Request;Resolved-Validation;2025-10-31 17:04:48;APARECIDA VIEIRA,SUZANA;COP-RH-HUB;4;Solicitação de horas adicionais para o colaborador Danilo Rodrigues, chave JA23, executar processo de atualização de ordens hoje dia 31/10 às 23hs.;Solicitação de horas adicionais para o colaborador Danilo Rodrigues, chave JA23, executar processo de atualização de ordens hoje dia 31/10 às 23hs.
 100-102590;Service Request;Resolved-Validation;2025-10-31 17:32:48;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;4;Alteração de marcação de ponto errado;"Favor Ajusta marcação de ponto  Saída de 18:45 para 17:54 do colaborador Diego Gonçalves de Jesus - matricula: 121953.
 
  Ajusta marcação de ponto  Saída de 18:45 para 17:54 do colaborador Renato Bonfim dos  Santos - matricula: 120394."
