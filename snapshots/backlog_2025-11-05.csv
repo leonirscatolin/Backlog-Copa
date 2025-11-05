@@ -1876,18 +1876,6 @@ COPAJUR - Contencioso e Regulatório
 300-132120;Incident;Queued;2025-10-10 11:50:40;BENEDITO VAZ,FABIO;COP-AUT-SAP-TRIBUTÁRIO-LES/MM/SD;25;Falha ao assinar com certificado digital;Estou em processo de renovação de alvara e preciso assinar um documento com o certificado digital, porem no portal da prefeitura, nao reconhece o nosso certificado.
 300-132158;Incident;Queued;2025-10-11 08:05:36;;COP-SAP MOBILE-3N;24;Usuário informa problemas ao tentar acessar o SAP IDM, o mesmo demora a acessar e em seguida cai.;"Usuário informa problemas ao tentar acessar o SAP IDM, o mesmo demora a acessar e em seguida cai.
 chave: LHJ0"
-300-132362;Incident;Queued;2025-10-14 10:22:33;;COP-SAP MOBILE-3N;21;SAP IDM Envasados com problema;"SAP IDM Envasados com problema
-
-estamos tendo problemas com o acesso ao sap envasados.
-
-Impossibilitando de tirar as notas.
-
-A tela fica travada conforme imagem em anexo.
-
-todos da unidade de Capoava estão com esse problema
-
-CHAVE : CQSE
-CONTATO : 11 45773880"
 300-132379;Incident;Queued;2025-10-14 11:37:55;CARDOSO SOUZA DA SILVA,RONALD;COP-SAP LES-3N;21;Verificar parametro do prazo de pagamento no monitor de fretes ZLESR004;Solicitamos verificar como o monitor de fretes ZLESR004 está parametrizado atualmente, pois estava acertado, contar o prazo de pagamento a partir da data da DT Definitiva, porém, estava verificando muitos casos, pelos quais considera a data do CTE e/ou considera outra data que não faz referência, nem a DT e nem ao CTE. Peço verificar e nos retornar com urgência
 300-132512;Incident;Queued;2025-10-15 13:07:51;CARDOSO SOUZA DA SILVA,RONALD;COP-SAP LES-3N;20;Sem pedido - VT 883140;Sem pedido - VT 883140 - despesas de setembro - aprovado dia 13.10.2025 mas Status consta INCORRETO
 300-132521;Incident;Queued;2025-10-15 13:57:41;;COP-SAP MOBILE-3N;20;"Softmovel: 2537 20.10 
@@ -2294,13 +2282,7 @@ Daiane Lusimara Costa Ferreira"
 100-102268;Service Request;Resolved-Validation;2025-10-29 11:29:45;TADEU LOPES DA SILVA,FELIPPE;COP-RH-BENEFÍCIOS;6;Alteração de veículo autorizado;"Remover Tracker GJN 4D08
 
 Adicionar T-Cross SFK 1A99"
-100-102322;Service Request;Resolved-Validation;2025-10-29 16:59:01;BRITO DA CRUZ,LUCELIA;COP-RH-HUB;6;"Alterar horário do colaborador  Weslley Vinicius Lima Ferreira.
-Cargo: ajudante de motorista
-matricula: 121311";"Horário atual: 06h as 15h.
-Horário para alteração: 11h as 20h.
-A partir do dia 28/10/2025."
 100-102332;Service Request;Resolved-Validation;2025-10-29 19:48:06;SOUZA,AMILTON;COP-RH-FOPAG;6;Empréstimo Consignado;Já fiz a quitação do Empréstimo Consignado com o Banco Digio, mas ainda não foi baixado no sistema da Copa Energia e continua sendo descontado do meu salário.
-100-102333;Service Request;Resolved-Validation;2025-10-29 20:03:42;BRITO DA CRUZ,LUCELIA;COP-RH-HUB;6;Desconto REF atraso;Gostaria de saber qual dia houve atraso para ter sido descontado na folha de Outubro, sendo que todos os dias chego no horário correto e a saída tbm.
 100-102339;Service Request;Resolved-Validation;2025-10-30 07:56:01;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;5;Solicitação do DUT;"Por gentileza peço a geração do meu DUT, do meu tempo de afastamento ate o meu retorno.
 Estive afastado do dia 20/08/2025 ao dia 22/09/2025.
 Se possível, gerar um DUT do meu retorno."
@@ -2316,22 +2298,12 @@ Solicito que os valores do crédito de ambos os cartões sejam inseridos correta
 Além disso, recebi dois depósitos: um no valor de R$ 2667,91, justificado pelo app Waapi, e outro no valor de R$ 2239,62, que gostaria de entender do que se trata, por favor."
 100-102506;Service Request;Resolved-Validation;2025-10-31 09:52:00;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;4;auxilio creche;auxilio creche
 100-102510;Service Request;Resolved-Validation;2025-10-31 10:11:01;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;4;Solicito alterar as férias de JOÃO MARCELO BRANCALION, matricula 113119, CO Canoas para 29/12/2025 cinco dias e 09/02/2026 15 dias.;alteração de férias
-100-102516;Service Request;Resolved-Validation;2025-10-31 10:55:18;DA SILVA CACULA,CLAUDETE;COP-RH-TREINAMENTO&AV.DESEMPENHO;4;SOLICITO REEMBOLSO REFERENTE AO BOLETO COM VENCIMENTO EM 15/11.;SOLICITO REEMBOLSO REFERENTE AO BOLETO COM VENCIMENTO EM 15/11.
 100-102521;Service Request;Resolved-Validation;2025-10-31 11:13:57;BATISTA VIEIRA ALMEIDA,ERIKA;COP-RH-HUB;4;ADIANTAMENTO DE VIAGEM NÃO ENTROU NA CONTA DO FUNCIONARIO;"Unidade 1226 - DAC Caxias do Sul
 Valor adiantamento viagem R$ 225,00 não entrou na conta do funcionário, tinha previsão dia 26/10;
 Funcionário: Fabio Lourenço Cezar - nº 3919
 nº viagem: 99799"
-100-102536;Service Request;Resolved-Validation;2025-10-31 13:42:07;DA SILVA CACULA,CLAUDETE;COP-RH-TREINAMENTO&AV.DESEMPENHO;4;Comprovante de pagamento , mensalidade de faculdade.;Comprovante de pagamento referente  a mensalidade de setembro.
 100-102549;Service Request;Resolved-Validation;2025-10-31 15:22:35;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;4;"Boa tarde 
 Cancelamento do vale transporte";Detalhe não estou utilizando
-100-102578;Service Request;Resolved-Validation;2025-10-31 16:20:56;DA SILVA CACULA,CLAUDETE;COP-RH-HUB;4;Comprovante Faculdade Laerti;"Boa tarde!
-
-Segue comprovante do pagamento do mês da faculdade."
 100-102580;Service Request;Resolved-Validation;2025-10-31 16:33:03;LARA DA SILVA GUTIERRES,KARINA;COP-RH-BENEFÍCIOS;4;"Gostaria de informações sobre desconto de coparticipação...
 O que seria esse valor descontado.";Foi descontado Coparticipação e gostaria de mais informações
-100-102590;Service Request;Resolved-Validation;2025-10-31 17:32:48;FERREIRA SERRA BATISTA,ADALGISA;COP-RH-HUB;4;Alteração de marcação de ponto errado;"Favor Ajusta marcação de ponto  Saída de 18:45 para 17:54 do colaborador Diego Gonçalves de Jesus - matricula: 121953.
-
- Ajusta marcação de ponto  Saída de 18:45 para 17:54 do colaborador Renato Bonfim dos  Santos - matricula: 120394."
 100-102592;Service Request;Resolved-Validation;2025-10-31 17:58:44;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;4;Recibo Auxilio Creche Ref.: mês de Novembro  / 2025;Recibo Auxilio Creche Ref.: mês de Novembro  / 2025
-100-102597;Service Request;Resolved-Validation;2025-11-01 09:33:42;DA SILVA CACULA,CLAUDETE;COP-RH-TREINAMENTO&AV.DESEMPENHO;3;Segue em anexo o boleto e comprovante de pagamento do mês de novembro, para reembolso referente a bolsa de estudos.;Segue em anexo o boleto e comprovante de pagamento do mês de novembro, para reembolso referente a bolsa de estudos.
-100-102613;Service Request;Resolved-Validation;2025-11-02 21:42:52;DA SILVA CACULA,CLAUDETE;COP-RH-TREINAMENTO&AV.DESEMPENHO;2;Segue em anexo boleto e comprovante de pagamento da faculdade referente à outubro de 2025.;Segue em anexo boleto e comprovante de pagamento da faculdade referente à outubro de 2025.
