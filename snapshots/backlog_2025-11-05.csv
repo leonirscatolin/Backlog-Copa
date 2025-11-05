@@ -1737,15 +1737,6 @@ DESCRIÇÃO: IMPRESSORA APRESENTA ERROS
 NOME EQUIPAMENTO: SEC842519045B94
 IP: 172.31.231.190
 NUMERO DE SERIE: Z7NUBQAJ30008TM"
-300-133748;Incident;Pending;2025-10-30 09:55:27;DE OLIVEIRA MANCO,TAMILIS;COP-SAP MOBILE;5;"Toda entrega de gás ,  quando o motorista vai emitir os boletos , os mesmo estão saindo com vencimento no mesmo dia, isso já esta ocorrendo direto.
-
-No Sistema Sales force o boleto esta com vencimento correto. Mas os que deixam pro cliente esta com vencimento no mesmo dia.
-
-você precisa abrir um chamado junto a TI para análise do SIVA PLUS, porque a emissão do caminhão não está seguindo a condição de pagamento do cliente.";"Toda entrega de gás ,  quando o motorista vai emitir os boletos , os mesmo estão saindo com vencimento no mesmo dia, isso já esta ocorrendo direto.
-
-No Sistema Sales force o boleto esta com vencimento correto. Mas os que deixam pro cliente esta com vencimento no mesmo dia.
-
-você precisa abrir um chamado junto a TI para análise do SIVA PLUS, porque a emissão do caminhão não está seguindo a condição de pagamento do cliente."
 300-133757;Incident;Pending;2025-10-30 10:49:04;CASSIMIRO MARTINS,RAONI;COP-ORIENTAÇÃO-GRC;5;Falta de funcionalidade na operação FB60;"Solicito adição do campo ""Tipo de documento"" na operação FB60. Esse campo é indicado no manual de utilização da operação para apontar qual o tipo de documento a ser pago. Contudo, na meu perfil do SAP a operação FB60 está sem a operação citada. 
 
 Em anexo envio o referido manual e printe de como está aparecendo para mim."
@@ -2054,7 +2045,6 @@ favor verificar
 contato: 17 99764 4656
 
 centro: 1206"
-100-102103;Service Request;Queued;2025-10-28 09:37:51;;COP-ACESSO-SAP;7;Estou precisando que o SAP seja configurado para que as notas sejam impressas por uma determinada impressora. Centro 1238.;Estou precisando que o SAP seja configurado para que as notas sejam impressas por uma determinada impressora. Centro 1238.
 100-102112;Service Request;Queued;2025-10-28 10:21:52;;COP-RH-TREINAMENTO&AV.DESEMPENHO;7;"Tenho recebido esse email para ""Avaliações de Eficácia Pendentes – Ação Necessária"", porém, entro na plataforma e não tem nenhuma avaliação pendente para minha avaliação. anexei print da plataforma na aba certificado. Favor cancelar esses envios ou liberar os certificados para minha avaliação.";"Prezado(a) ANDERSON FERNANDO DE FREITAS,
 Identificamos que ainda existem avaliações de eficácia pendentes de sua resposta, referentes aos colaboradores sob sua responsabilidade que participaram de treinamentos nos últimos 90 dias.
 Ressaltamos que a participação na avaliação de eficácia é essencial para o encerramento do processo de capacitação e acompanhamento do desempenho dos colaboradores.
@@ -2281,35 +2271,11 @@ INICIO TRABALHO EM 08/10/2025"
 100-101662;Service Request;Resolved-Validation;2025-10-22 09:19:19;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;13;Sênior horário errado.;"o sênior está com uma hora de atraso hoje cheguei as 08:30 o sênior computou 07;30"
 100-101805;Service Request;Resolved-Validation;2025-10-23 13:51:35;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;12;Solicito acesso as horas extras e banco de horas do CO Paulínia do ano de 2025 desde janeiro.;"A pedido do GEROP II (Antonio Carlos Magalhães Moura), solicito o relatório de hora extra e o que pagamos de banco de horas do CO Paulinia no ano de 2025 para que possamos fazer uma análise das despesas e montar um plano de ação para evitar horas desnecessárias.
 Relatório precisa conter nome do colaborador, data da hora extra e gestor para facilitar a análise e se foi pago via banco de horas ou hora extra direto."
-100-101903;Service Request;Resolved-Validation;2025-10-24 16:09:06;SOUZA DA SILVA,KELLY;COP-RH-FOPAG;11;documentação para envio ao cliente Bracell que exige, condição para equipe granel entrar na empresa e realizar o abastecimento;"BAURU
-1204
-
-FAVOR NOS ENVIAR OS DOCUMENTOS ABAIXO, REFERENTE À SETEMBRO/25:
-
-- COMPROVANTE DISPONIBILZAÇÃO TICKET ALIMENTAÇÃO.
-
-- COMPROVANTES DE PAGAMENTO PJ
-
-- DCTFWEB/GUIA DARF (RECOLHIMENTO PREVIDENCIARIO - INSS)
-
-- FOLHA DE PAGAMENTO COM RESUMO ESPECIFICO DA LOTAÇÃO E RESUMO GERAL DA EMPRESA.
-
-- GFD(GUIA DO FGTS DIFITAL) COM COMPROVANTE BANCARIO + RELATORIO DE DETALHE DA GUIA EMITIDA
-
-- GFIP / SEFIP
-
- - PLANO DE SAUDE
-
-RECIBOS DE PAGAMENTO SALARIAIS E COMPROVANTES DE PAGTOS BANCARIO
-
-
- - SEGURO DE VIDA"
 100-101906;Service Request;Resolved-Validation;2025-10-24 17:02:55;SOUZA DA SILVA,KELLY;COP-RH-FOPAG;11;Informações sobre o pagto da PLR para os colaboradores afastados,;"Boa Tarde!
 
 Gostaria de informações sobre o pagto da PLR para os colaboradores afastados, quais são as regras? terão direito, será proporcional, por favor poderia informar?!
 
 Att;"
-100-101916;Service Request;Resolved-Validation;2025-10-25 09:18:25;DA SILVA CACULA,CLAUDETE;COP-RH-HUB;10;Solicito reset de senha dos apps Marcação de Ponto e app WAAPI;Não consigo acessar aplicativos: Marcação de Ponto e WAAPI
 100-101922;Service Request;Resolved-Validation;2025-10-25 11:23:29;SOUZA,AMILTON;COP-RH-FOPAG;10;Pagamento de PR ano 2023;"Informo que no ano de 2023, não recebi a parcela fixa referente a PR2023, por gentileza, poderiam verificar o que houve?
 
 Segue em anexo, copia do contra cheque e cédula C"
@@ -2373,7 +2339,6 @@ No dia 21/10 inseri um atestado na plataforma o mesmo foi recusado pois estava c
 100-102268;Service Request;Resolved-Validation;2025-10-29 11:29:45;TADEU LOPES DA SILVA,FELIPPE;COP-RH-BENEFÍCIOS;6;Alteração de veículo autorizado;"Remover Tracker GJN 4D08
 
 Adicionar T-Cross SFK 1A99"
-100-102279;Service Request;Resolved-Validation;2025-10-29 12:25:48;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;6;O colaborador VALMIR GOULART DA SILVA -  50842 quer voltar a usar vale transporte. Favor providenciar recarga de créditos em seu cartão de transporte público.;O colaborador VALMIR GOULART DA SILVA -  50842 quer voltar a usar vale transporte. Favor providenciar recarga de créditos em seu cartão de transporte público.
 100-102322;Service Request;Resolved-Validation;2025-10-29 16:59:01;BRITO DA CRUZ,LUCELIA;COP-RH-HUB;6;"Alterar horário do colaborador  Weslley Vinicius Lima Ferreira.
 Cargo: ajudante de motorista
 matricula: 121311";"Horário atual: 06h as 15h.
@@ -2386,19 +2351,11 @@ Estive afastado do dia 20/08/2025 ao dia 22/09/2025.
 Se possível, gerar um DUT do meu retorno."
 100-102352;Service Request;Resolved-Validation;2025-10-30 08:55:14;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;5;justificativa do ponto de entrada;"29/10 entrada mais tarde motivo curso 
 30/10 entrada mais tarde motivo interjornada"
-100-102356;Service Request;Resolved-Validation;2025-10-30 08:59:16;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;5;Gostaria de alterar a condição do vale transporte, para que não fosse mais depositado;Gostaria de alterar a condição do vale transporte, para que não fosse mais depositado
 100-102363;Service Request;Resolved-Validation;2025-10-30 09:26:06;DA SILVA CACULA,CLAUDETE;COP-RH-TREINAMENTO&AV.DESEMPENHO;5;SOLICITAÇÃO DE REEMBOLSO;SOLICITAÇÃO DE REEMBOLSO
 100-102365;Service Request;Resolved-Validation;2025-10-30 09:32:07;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;5;Feriado Municipal em Gurupi - incluir no Sênior;"Centro: 1245 - CO Gurupi
 Sistema: Sênior 
 
 Ação: incluir no Sênior o dia 14/11/2025 como feriado municipal, referente ao aniversário do município de Gurupi, conforme a Lei municipal nº 711 / 1987."
-100-102366;Service Request;Resolved-Validation;2025-10-30 09:36:14;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;5;"Bom dia!
-
-Solicito por gentileza o cancelamento definitivo do cartão vale transporte. 
-MATRÍCULA: 120644";"Bom dia!
-
-Solicito por gentileza o cancelamento definitivo do cartão vale transporte. 
-MATRÍCULA: 120644"
 100-102368;Service Request;Resolved-Validation;2025-10-30 09:41:41;SOUZA DA SILVA,KELLY;COP-RH-FOPAG;5;Estou com duvida em meu salario, hoje caiu R$ 1.367,18, más só de comissão eu teria para receber R$ 1.315,00 e fiquei em duvida com esse valor .;"Estou com duvida em meu salario, hoje caiu R$ 1.367,18, más só de comissão eu teria para receber R$ 1.315,00 e fiquei em duvida com esse valor .
 Nunca caiu menos de 2 mil no dia 30  e  estou achando que ocorreu algum erro, poderiam verificar pra mim por favor ?
 Fiquei em duvida tambem porque sou consultor hunte II e meu salario esta menor que os outros consultores hunter II."
@@ -2409,7 +2366,6 @@ Matricula 120400"
 Solicito que os valores do crédito de ambos os cartões sejam inseridos corretamente."
 100-102390;Service Request;Resolved-Validation;2025-10-30 10:57:32;DA SILVA CACULA,CLAUDETE;COP-RH-TREINAMENTO&AV.DESEMPENHO;5;REEMBOLSO POS GRADUAÇÃO MÊS 10/2025;REEMBOLSO POS GRADUAÇÃO MÊS 10/2025
 100-102397;Service Request;Resolved-Validation;2025-10-30 11:26:43;DA SILVA CACULA,CLAUDETE;COP-RH-TREINAMENTO&AV.DESEMPENHO;5;Comprovante 11/2025;Segue comprovante referente ao mês 11/2025
-100-102411;Service Request;Resolved-Validation;2025-10-30 12:28:05;SOUZA DA SILVA,KELLY;COP-RH-ADMPESSOAL;5;Desconto de saldo devedor na folha de pagamento;No mês de outubro/2025 constou um desconto na minha folha de pagamento referente a um saldo devedor de 48,28. Gostaria de saber se está correto e caso esteja, de onde seria esse saldo devido.
 100-102439;Service Request;Resolved-Validation;2025-10-30 15:31:01;SOUZA,AMILTON;COP-RH-FOPAG;5;desconto empréstimo consiguinado Itaú na folha de outubro;teve a comunicação que o consignado no banco Itaú não ia ser mais descontado em folha, na folha de setembro não houve o desconto e na folha de outubro voltou a descontar. E eu tambem realizei a quitação do empréstimo em 2 de outubro, favor verificar.
 100-102451;Service Request;Resolved-Validation;2025-10-30 16:15:51;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;5;Desconto de dias de férias;"Colaborador BRUNO NUNES DE ASSIS, 121485.
 
