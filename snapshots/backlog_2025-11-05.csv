@@ -1944,10 +1944,6 @@ Print em anexo.
 Solicito auxílio.
 
 702340 - EXPRESSO VIA NORTE EIRELI ME"
-300-133043;Incident;Queued;2025-10-22 08:59:58;CARDOSO SOUZA DA SILVA,RONALD;COP-SAP LES-3N;13;PROBLEMAS COM MONITOR DE FRETES;"Ao efetuar os pagamentos dos CTES via ZLESR004, os mesmos aparecem bandeirados, porem ao sair da transação e entrar novamente os CTES voltam ao status inicial, sem registro de pagamento.
-
-CENTRO: 1208
-CHAVE: bfvs"
 300-133052;Incident;Queued;2025-10-22 09:45:51;;COP-SAP-LES-LOG;13;Transação: ZMM_MOV_COMOD - Erro de Fornecedor/Transportador.;Ao executar a transação: ZMM_MOV_COMOD ele está puxando o mesmo fornecedor para todos os pedidos de transferência.
 100-101701;Service Request;Queued;2025-10-22 14:25:21;PISCIOTTANO LEITAO,LEONARDO;COP-RH-TREINAMENTO&AV.DESEMPENHO;13;Bolsa de estudo;"Tenho recebido mensagens via Whatzapp da Cruzeiro, segunda a mensagem devo realizar uma renovação do beneficio pela Unico Skill. essa informaçãp procede?
 ela informou que caso eu não realize a renovação meu beneficio sera cancelado."
@@ -2125,7 +2121,6 @@ No entanto, neste ano, foi efetuado o desconto sobre a minha PLR, mesmo sem minh
 
 Reforço que em nenhum momento autorizei ou consenti esse desconto,"
 100-102385;Service Request;Queued;2025-10-30 10:42:33;THOME DA SILVA,ARNANDO;COP-RH-FOPAG;5;Cobrança indevida na PLR;Prezados, houve uma cobrança indevida na minha PLR, eu fiz a carta e foi aprovado meu pedido de retirar as cobranças para o sindicato conforme protocolo 100-91104, foi informado que não haveria descontos, podem verificar, por gentileza.
-300-133759;Incident;Queued;2025-10-30 10:54:43;;COP-SAP LES-3N;5;Ao grupo COP SAP LES 3N, para o erro do SAP ao processar o lançamento das NFs de serviço.;Estamos com erro na transação ZLESR004 para efetuar o lançamento da NF de serviço onde aparece a mensagem em anexo.
 100-102394;Service Request;Queued;2025-10-30 11:04:02;THOME DA SILVA,ARNANDO;COP-RH-FOPAG;5;Dúvida em Desconto na Folha de Pagamento;"Gostaria de saber ao que se refere o desconto na folha de Participação de Resultados com a seguinte descrição: Assistencial PR CCT.
 
 Este desconto ocorreu este ano, mas no ano de 2024 não houve."
@@ -2253,10 +2248,6 @@ HISTÓRICO<2016 - MANUAL DE CONTRATO - GRANEL E ENVASADO"
 100-92937;Service Request;Resolved-Validation;2025-07-23 17:11:33;GOMES DE ARRUDA,ROSIMARA;COP-RH-ADMPESSOAL;104;Afastamento WELLINGTON SOARES - Paulinia;"Enviado DUT - Beneficio ate 12/08/25 - Tel. 19 98311-0185
 
 ASO de retorno dia 13/08/2025, conforme anexo."
-100-100631;Service Request;Resolved-Validation;2025-10-13 08:31:49;SOUZA DA SILVA,KELLY;COP-RH-FOPAG;22;ASO RETORNO AO TRABALHO HESLEY DE SOUZA GONZAGA, MAT. 101500622 - CO DUQUE DE CAXIAS;"Bom dia!
-
-Prezada,
-Segue anexo ASO de retorno ao trabalho apto do colaborador  HESLEY DE SOUZA GONZAGA, MAT. 101500622."
 100-100938;Service Request;Resolved-Validation;2025-10-15 09:26:00;SOUZA DA SILVA,KELLY;COP-RH-FOPAG;20;"ASO RETORNO AFASTAMENTO 
 EMPREGADO: HENRIQUE BATISTA MORAES FORTES";"SEGUE ASO DE RETORNO DE AFASTAMENTO DO EMPREGADO HENRIQUE BATISTA MORAES FORTES
 INICIO TRABALHO EM 08/10/2025"
@@ -2264,14 +2255,6 @@ INICIO TRABALHO EM 08/10/2025"
 100-101662;Service Request;Resolved-Validation;2025-10-22 09:19:19;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;13;Sênior horário errado.;"o sênior está com uma hora de atraso hoje cheguei as 08:30 o sênior computou 07;30"
 100-101805;Service Request;Resolved-Validation;2025-10-23 13:51:35;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;12;Solicito acesso as horas extras e banco de horas do CO Paulínia do ano de 2025 desde janeiro.;"A pedido do GEROP II (Antonio Carlos Magalhães Moura), solicito o relatório de hora extra e o que pagamos de banco de horas do CO Paulinia no ano de 2025 para que possamos fazer uma análise das despesas e montar um plano de ação para evitar horas desnecessárias.
 Relatório precisa conter nome do colaborador, data da hora extra e gestor para facilitar a análise e se foi pago via banco de horas ou hora extra direto."
-100-101906;Service Request;Resolved-Validation;2025-10-24 17:02:55;SOUZA DA SILVA,KELLY;COP-RH-FOPAG;11;Informações sobre o pagto da PLR para os colaboradores afastados,;"Boa Tarde!
-
-Gostaria de informações sobre o pagto da PLR para os colaboradores afastados, quais são as regras? terão direito, será proporcional, por favor poderia informar?!
-
-Att;"
-100-101922;Service Request;Resolved-Validation;2025-10-25 11:23:29;SOUZA,AMILTON;COP-RH-FOPAG;10;Pagamento de PR ano 2023;"Informo que no ano de 2023, não recebi a parcela fixa referente a PR2023, por gentileza, poderiam verificar o que houve?
-
-Segue em anexo, copia do contra cheque e cédula C"
 100-102027;Service Request;Resolved-Validation;2025-10-27 12:46:35;SOUZA,AMILTON;COP-RH-FOPAG;8;Verificação de repasse de desconto de empréstimo consignado – setembro/2025;"Solicito a verificação do repasse referente ao empréstimo consignado descontado em minha folha de pagamento do mês de setembro/2025.
 
 Conforme o holerite anexo, o valor da parcela foi devidamente descontado em folha. No entanto, ao consultar o banco, o pagamento consta como pendente, indicando que o valor ainda não foi repassado à instituição financeira.
@@ -2344,7 +2327,6 @@ Estive afastado do dia 20/08/2025 ao dia 22/09/2025.
 Se possível, gerar um DUT do meu retorno."
 100-102352;Service Request;Resolved-Validation;2025-10-30 08:55:14;FRANCISCO DA SILVA AMARAL,ROSANA;COP-RH-HUB;5;justificativa do ponto de entrada;"29/10 entrada mais tarde motivo curso 
 30/10 entrada mais tarde motivo interjornada"
-100-102363;Service Request;Resolved-Validation;2025-10-30 09:26:06;DA SILVA CACULA,CLAUDETE;COP-RH-TREINAMENTO&AV.DESEMPENHO;5;SOLICITAÇÃO DE REEMBOLSO;SOLICITAÇÃO DE REEMBOLSO
 100-102365;Service Request;Resolved-Validation;2025-10-30 09:32:07;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;5;Feriado Municipal em Gurupi - incluir no Sênior;"Centro: 1245 - CO Gurupi
 Sistema: Sênior 
 
@@ -2352,13 +2334,8 @@ Ação: incluir no Sênior o dia 14/11/2025 como feriado municipal, referente ao
 100-102368;Service Request;Resolved-Validation;2025-10-30 09:41:41;SOUZA DA SILVA,KELLY;COP-RH-FOPAG;5;Estou com duvida em meu salario, hoje caiu R$ 1.367,18, más só de comissão eu teria para receber R$ 1.315,00 e fiquei em duvida com esse valor .;"Estou com duvida em meu salario, hoje caiu R$ 1.367,18, más só de comissão eu teria para receber R$ 1.315,00 e fiquei em duvida com esse valor .
 Nunca caiu menos de 2 mil no dia 30  e  estou achando que ocorreu algum erro, poderiam verificar pra mim por favor ?
 Fiquei em duvida tambem porque sou consultor hunte II e meu salario esta menor que os outros consultores hunter II."
-100-102371;Service Request;Resolved-Validation;2025-10-30 09:47:55;DA SILVA CACULA,CLAUDETE;COP-RH-TREINAMENTO&AV.DESEMPENHO;5;Comprovante de Pagamento da Mensalidade.;"Comprovante de Pagamento da Mensalidade.
-
-Matricula 120400"
 100-102380;Service Request;Resolved-Validation;2025-10-30 10:19:18;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;5;Solicito revisão do valor deposito no meu ticket restaurante e ticket alimentação.;"O valor do TICKET RESTAURANTE está sendo descontado parcialmente no crédito do TICKET ALIMENTAÇÃO.
 Solicito que os valores do crédito de ambos os cartões sejam inseridos corretamente."
-100-102390;Service Request;Resolved-Validation;2025-10-30 10:57:32;DA SILVA CACULA,CLAUDETE;COP-RH-TREINAMENTO&AV.DESEMPENHO;5;REEMBOLSO POS GRADUAÇÃO MÊS 10/2025;REEMBOLSO POS GRADUAÇÃO MÊS 10/2025
-100-102397;Service Request;Resolved-Validation;2025-10-30 11:26:43;DA SILVA CACULA,CLAUDETE;COP-RH-TREINAMENTO&AV.DESEMPENHO;5;Comprovante 11/2025;Segue comprovante referente ao mês 11/2025
 100-102439;Service Request;Resolved-Validation;2025-10-30 15:31:01;SOUZA,AMILTON;COP-RH-FOPAG;5;desconto empréstimo consiguinado Itaú na folha de outubro;teve a comunicação que o consignado no banco Itaú não ia ser mais descontado em folha, na folha de setembro não houve o desconto e na folha de outubro voltou a descontar. E eu tambem realizei a quitação do empréstimo em 2 de outubro, favor verificar.
 100-102451;Service Request;Resolved-Validation;2025-10-30 16:15:51;PEGORARO BARBOSA,IAGO;COP-RH-ADMPESSOAL;5;Desconto de dias de férias;"Colaborador BRUNO NUNES DE ASSIS, 121485.
 
@@ -2366,9 +2343,6 @@ Fui marcar férias do colaborador mas informa que não tem saldo.
 o colaborador aparece que tem direito a 24 dias porque tem 8 faltas.
 Verificando no sistema identifiquei 5 faltas.
 Necessário verificar."
-100-102474;Service Request;Resolved-Validation;2025-10-30 19:21:47;DA SILVA CACULA,CLAUDETE;COP-RH-HUB;5;Alteração da folga de trabalho da empregada Magda Merim da Silva - Matrícula n.º 121732.;"Alteração da folga de trabalho da empregada Magda Merim da Silva - Matrícula n.º 121732.
-
-Alteração do sábado de folga."
 100-102505;Service Request;Resolved-Validation;2025-10-31 09:50:56;SOUZA DA SILVA,KELLY;COP-RH-FOPAG;4;Esclarecimento sobre o pagamento;"Durante meu processo de admissão, e inclusive no primeiro dia, foi posto que haveria um reajuste relacionado ao Acordo Coletivo a ser aplicado já este mês. Contudo, não foi aplicado ao meu salário. Gostaria de entender o que houve.
 Além disso, recebi dois depósitos: um no valor de R$ 2667,91, justificado pelo app Waapi, e outro no valor de R$ 2239,62, que gostaria de entender do que se trata, por favor."
 100-102506;Service Request;Resolved-Validation;2025-10-31 09:52:00;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;4;auxilio creche;auxilio creche
@@ -2381,9 +2355,6 @@ nº viagem: 99799"
 100-102536;Service Request;Resolved-Validation;2025-10-31 13:42:07;DA SILVA CACULA,CLAUDETE;COP-RH-TREINAMENTO&AV.DESEMPENHO;4;Comprovante de pagamento , mensalidade de faculdade.;Comprovante de pagamento referente  a mensalidade de setembro.
 100-102549;Service Request;Resolved-Validation;2025-10-31 15:22:35;DE BARROS ALONSO BATISTA,GISELE;COP-RH-BENEFÍCIOS;4;"Boa tarde 
 Cancelamento do vale transporte";Detalhe não estou utilizando
-100-102575;Service Request;Resolved-Validation;2025-10-31 16:06:11;SOUZA DA SILVA,KELLY;COP-RH-FOPAG;4;SOLICITAÇÃO DE ANTECIPAÇÃO AUXILIO DOENÇA-JANAINA DE BARROS FERREIRA AMADOR;"SOLICITO PROGRAMAÇÃO DE PAGAMENTO DA  ANTECIPAÇÃO AUXILIO-DOENÇA, DA COLABORADORA JANAINA DE BARROS FERREIRA AMADOR/115131.
-
-DESDE JÁ AGRADEÇO."
 100-102578;Service Request;Resolved-Validation;2025-10-31 16:20:56;DA SILVA CACULA,CLAUDETE;COP-RH-HUB;4;Comprovante Faculdade Laerti;"Boa tarde!
 
 Segue comprovante do pagamento do mês da faculdade."
