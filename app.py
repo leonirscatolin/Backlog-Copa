@@ -9,13 +9,10 @@ st.set_page_config(page_title="Redirecionando...", layout="centered")
 
 st.warning("### Você está sendo redirecionado...")
 st.markdown(f"""
-O nosso sistema de dashboard foi movido para um novo servidor mais rápido.
-
-Por favor, aguarde enquanto redirecionamos você.
-""")
+O dashboard foi movido para um novo servidor.
 
 # Link para o usuário clicar (fallback)
-st.markdown(f"Se você não for redirecionado em 3 segundos, [clique aqui]({REDIRECT_URL}).")
+st.markdown(f"Acesse o novo dashboard [aqui]({REDIRECT_URL}).")
 
 # O novo "truque" de redirecionamento (JavaScript)
 js_redirect = f"""
