@@ -1755,7 +1755,6 @@ Anexo, informações complementares."
 100-102502;Service Request;Pending;2025-10-31 09:23:46;CASSIMIRO MARTINS,RAONI;COP-ORIENTAÇÃO-GRC;5;solicitação de acesso ao SAP para jovem aprendiz na chave 3HWL;solicitação de acesso ao SAP para jovem aprendiz na chave 3HWL
 300-133821;Incident;Pending;2025-10-31 10:13:35;RODRIGUES DE ALMEIDA,GILSON;PROD-COP-NOC;5;CO GOIÂNIA - SDWAN;"Designação: 08680148
 protocolo algar:  202532752467"
-100-102524;Service Request;Pending;2025-10-31 11:25:20;NEVES DA SILVA,EDNEA;APOIO-COP-ACESSO;5;Acesso as pastas do financeiro MI;Bom dia, por gentileza, liberar acesso as pastas que estão na rede do financeiro, credito e cobrança. A Suellen solicitou.
 300-133848;Incident;Pending;2025-10-31 14:33:18;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;5;435 Rejeição: NF-e não pode ter o indicativo do intermediador;"Nota: 78727
 Série: 1
 Numdoc: 21346524
@@ -1802,16 +1801,6 @@ Pediram para abrir chamado - suporte@opensisbr.com"
 300-133946;Incident;Pending;2025-11-03 10:26:37;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;2;não estamos conseguindo fazer o estorno do Ctes, segue anexo o erros apresentados;falar ao cancelar alguns CTe do romaneio  vt 894807, anexo os prints
 100-102658;Service Request;Pending;2025-11-03 11:36:12;NEVES DA SILVA GONCALVES,DARCI;APOIO-COP-ACESSO;2;Acesso a pasta da rede do Planejamento Logístico.;"Acesso a pasta da rede do Planejamento Logístico.
 Endereço: \\sdc-vfssd01\fssd01\LOGISTICA\COORD_PLAN_LOGISTICO\APOIO\"
-100-102667;Service Request;Pending;2025-11-03 11:57:51;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP FI;2;Os títulos da relação anexa não estão sendo registradas em bancos para cobrança bancária por boleto. Mesmo já tendo sido trocados os bancos para registro;"Os títulos da relação anexa não estão sendo registradas em bancos para cobrança por boleto.
-
-Mesmo já tendo sido trocados os bancos para registro.
-
-NOTAS FISCAIS em anexo
-
-Referência	Nº documento
-6858-20	          1603737999
-9265-26	          1603738445
-4725-11	           1603753785"
 300-133971;Incident;Pending;2025-11-03 12:20:56;DE OLIVEIRA GONCALVES,ARIEL;COP-SAP MM;2;"Ao tentarmos fazer uma MIRO de crédito para o fornecedor 441677 - (REFINARIA MATARIPE), uma mensagem aparece após a simulação: ""Entrar tipo, função, ID do parceiro"", precisamos fazer essa MIRO pois o fornecedor está aguardando a nota fiscal para dar prosseguimento à situação;";"Ao tentarmos fazer uma MIRO de crédito para o fornecedor 441677 - (REFINARIA MATARIPE), uma mensagem aparece após a simulação: ""Entrar tipo, função, ID do parceiro"", precisamos fazer essa MIRO pois o fornecedor está aguardando a nota fiscal para dar prosseguimento à situação;"
 300-133988;Incident;Pending;2025-11-03 15:46:04;VICTOR PEREIRA SOARES,JOAO;APOIO-COP-SEDE;2;teams nao abre;"Descrição: usuário informa que aplicativo do Teams não abre no computador!
 
