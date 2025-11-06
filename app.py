@@ -13,16 +13,3 @@ O dashboard foi movido para um novo servidor.
 
 # Link para o usuário clicar (fallback)
 st.markdown(f"Acesse o novo dashboard [aqui]({REDIRECT_URL}).")
-
-# O novo "truque" de redirecionamento (JavaScript)
-js_redirect = f"""
-    <script>
-        setTimeout(function() {{
-            window.location.href = "{REDIRECT_URL}";
-        }}, 3000); // 3000 milissegundos = 3 segundos
-    </script>
-"""
-components.html(js_redirect, height=0)
-
-# Prende o app por um tempo para o usuário ler a mensagem
-time.sleep(10)
