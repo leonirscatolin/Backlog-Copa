@@ -120,18 +120,22 @@ a.metric-box:hover {
 # <<< MUDANÇA: Esta função agora salva no DISCO LOCAL.
 def save_local_file(file_path, file_content, is_binary=False):
     try:
-        # Garante que o diretório exista (ex: data/snapshots/)
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        
+        # <<< INÍCIO DA CORREÇÃO
+        # Só tenta criar o diretório se houver um diretório no caminho
+        directory = os.path.dirname(file_path)
+        if directory: # Só roda o makedirs se o 'directory' não for uma string vazia
+            os.makedirs(directory, exist_ok=True)
+        # >>> FIM DA CORREÇÃO
+
         mode = 'wb' if is_binary else 'w'
         encoding = None if is_binary else 'utf-8'
-        
+
         with open(file_path, mode, encoding=encoding) as f:
             f.write(file_content)
-            
+
         if file_path not in [STATE_FILE_CONTACTS, STATE_FILE_OBSERVATIONS, STATE_FILE_REF_DATES, STATE_FILE_PREV_CLOSED]:
             st.sidebar.info(f"Arquivo '{file_path}' salvo localmente.")
-            
+
     except Exception as e:
         st.sidebar.error(f"Falha ao salvar '{file_path}' localmente: {e}")
         raise
