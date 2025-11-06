@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import time
 
 # URL do seu novo servidor 'socorro'
@@ -16,8 +17,15 @@ Por favor, aguarde enquanto redirecionamos você.
 # Link para o usuário clicar (fallback)
 st.markdown(f"Se você não for redirecionado em 3 segundos, [clique aqui]({REDIRECT_URL}).")
 
-# O código de "magia" do redirecionamento (Meta Refresh)
-st.markdown(f'<meta http-equiv="refresh" content="3; url={REDIRECT_URL}">', unsafe_allow_html=True)
+# O novo "truque" de redirecionamento (JavaScript)
+js_redirect = f"""
+    <script>
+        setTimeout(function() {{
+            window.location.href = "{REDIRECT_URL}";
+        }}, 3000); // 3000 milissegundos = 3 segundos
+    </script>
+"""
+components.html(js_redirect, height=0)
 
 # Prende o app por um tempo para o usuário ler a mensagem
 time.sleep(10)
