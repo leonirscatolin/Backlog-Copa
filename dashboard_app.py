@@ -160,7 +160,6 @@ def read_github_file(_repo, file_path):
                              dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str}, low_memory=False,
                              on_bad_lines='warn')
         except UnicodeDecodeError:
-<<<<<<< HEAD
             df = pd.read_csv(file_path, delimiter=';', encoding='latin1',
                              dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str}, low_memory=False,
                              on_bad_lines='warn')
@@ -181,7 +180,6 @@ def read_github_file(_repo, file_path):
                     st.sidebar.warning(f"Arquivo '{file_path}' lido com encoding 'latin-1' do GitHub.")
 
             if not content.strip():
-=======
             try:
                 content = content_bytes.decode("latin-1")
                 if file_path == "dados_fechados.csv":
@@ -202,7 +200,6 @@ def read_github_file(_repo, file_path):
                 return pd.DataFrame()
         except Exception as read_err:
                 st.error(f"Erro inesperado ao ler o conteúdo CSV de '{file_path}': {read_err}")
->>>>>>> 7703db103d2a5669c7c2271545b51ffbacce3a7b
                 return pd.DataFrame()
 
             df = pd.read_csv(StringIO(content), delimiter=';', encoding='utf-8',
