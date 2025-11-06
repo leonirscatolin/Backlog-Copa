@@ -1,4 +1,4 @@
-# VERSÃO v1.0.0 (Refatoração 100% Local - Limpa)
+# VERSÃO v1.0.19
 
 import streamlit as st
 import pandas as pd
@@ -1298,6 +1298,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v1.0.0 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v1.0.19 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
