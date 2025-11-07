@@ -1,5 +1,3 @@
-# VERSÃO v1.0.19
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -7,8 +5,6 @@ import numpy as np
 import base64
 from datetime import datetime, date, timedelta
 from zoneinfo import ZoneInfo
-# <<< MUDANÇA: PyGithub não é mais necessário
-# from github import Github, Auth, GithubException 
 from io import StringIO, BytesIO
 import streamlit.components.v1 as components
 from PIL import Image
@@ -16,9 +12,8 @@ from urllib.parse import quote
 import json
 import colorsys
 import re
-import os # Importa a biblioteca 'os' para checar arquivos
+import os
 
-# --- Constantes Globais ---
 GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM-GTR'
 GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou 'RDM-GTR'"
 
@@ -27,15 +22,11 @@ GRUPOS_DE_AVISO_TEXTO = "'Service Desk (L1)' ou 'LIQ-SUTEL'"
 
 GRUPOS_EXCLUSAO_TOTAL_REGEX = f"{GRUPOS_EXCLUSAO_PERMANENTE_REGEX}|{GRUPOS_DE_AVISO_REGEX}"
 
-# --- Caminhos dos Dados ---
 DATA_DIR = "data/" 
-# <<< MUDANÇA: Definimos caminhos locais para arquivos de ESTADO
-# Esses arquivos ficam na RAIZ do projeto, e NÃO na pasta /data
 STATE_FILE_CONTACTS = "contacted_tickets.json"
 STATE_FILE_OBSERVATIONS = "ticket_observations.json"
 STATE_FILE_REF_DATES = "datas_referencia.txt"
 STATE_FILE_PREV_CLOSED = "previous_closed_ids.json"
-# --- FIM - Constantes Globais ---
 
 st.set_page_config(
     layout="wide",
@@ -54,12 +45,12 @@ st.html("""
     text-align: center;
     box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
     margin-bottom: 10px;
-    height: 120px; /* Altura fixa para alinhar */
-    display: flex; /* Para centralizar verticalmente */
-    flex-direction: column; /* Organiza os spans verticalmente */
-    justify-content: center; /* Centraliza verticalmente */
+    height: 120px; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
 }
-a.metric-box { /* Estilo para os cards clicáveis da Tab1 */
+a.metric-box { 
     display: block;
     color: inherit;
     text-decoration: none !important;
@@ -68,84 +59,74 @@ a.metric-box:hover {
     background-color: #f0f2f6;
     text-decoration: none !important;
 }
-.metric-box span { /* Aplica a todos os spans dentro de metric-box */
+.metric-box span { 
     display: block;
     width: 100%;
     text-decoration: none !important;
 }
-.metric-box .label { /* Label (Nome da faixa) */
+.metric-box .label { 
     font-size: 1em;
     color: #666666;
-    margin-bottom: 5px; /* Espaço entre label e value */
+    margin-bottom: 5px; 
 }
-.metric-box .value { /* Número principal */
+.metric-box .value { 
     font-size: 2.5em;
     font-weight: bold;
     color: #375623; 
 }
-.metric-box .delta { /* Texto de comparação (delta) */
+.metric-box .delta { 
     font-size: 0.9em;
-    margin-top: 5px; /* Espaço entre value e delta */
+    margin-top: 5px; 
 }
-/* Classes para colorir o delta */
-.delta-positive { color: #d9534f; } /* Vermelho para aumento */
-.delta-negative { color: #5cb85c; } /* Verde para redução */
-.delta-neutral { color: #666666; } /* Cinza para sem mudança ou N/A */
+.delta-positive { color: #d9534f; } 
+.delta-negative { color: #5cb85c; } 
+.delta-neutral { color: #666666; } 
 
-/* Estiliza os botões de Salvar no Admin Sidebar */
 [data-testid="stSidebar"] [data-testid="stButton"] button {
     background-color: #f28801;
     color: white;
     border: 1px solid #f28801;
 }
 [data-testid="stSidebar"] [data-testid="stButton"] button:hover {
-    background-color: #d97900; /* Laranja mais escuro no hover */
+    background-color: #d97900; 
     color: white;
     border-color: #d97900;
 }
 [data-testid="stSidebar"] [data-testid="stButton"] button:active {
-    background-color: #b86700; /* Laranja ainda mais escuro no clique */
+    background-color: #b86700; 
     color: white;
     border-color: #b86700;
 }
 [data-testid="stSidebar"] [data-testid="stButton"] button:focus:not(:active) {
     border-color: #f28801;
-    box-shadow: 0 0 0 0.2rem rgba(242, 136, 1, 0.5); /* Anel de foco laranja */
+    box-shadow: 0 0 0 0.2rem rgba(242, 136, 1, 0.5); 
 }
 </style>
 """)
 
-# <<< MUDANÇA: Função get_github_repo REMOVIDA. Não é mais necessária.
-
-# <<< MUDANÇA: Esta função agora salva no DISCO LOCAL.
 def save_local_file(file_path, file_content, is_binary=False):
     try:
-        # <<< INÍCIO DA CORREÇÃO
-        # Só tenta criar o diretório se houver um diretório no caminho
         directory = os.path.dirname(file_path)
-        if directory: # Só roda o makedirs se o 'directory' não for uma string vazia
+        if directory: 
             os.makedirs(directory, exist_ok=True)
-        # >>> FIM DA CORREÇÃO
-
+            
         mode = 'wb' if is_binary else 'w'
         encoding = None if is_binary else 'utf-8'
-
+        
         with open(file_path, mode, encoding=encoding) as f:
             f.write(file_content)
-
+            
         if file_path not in [STATE_FILE_CONTACTS, STATE_FILE_OBSERVATIONS, STATE_FILE_REF_DATES, STATE_FILE_PREV_CLOSED]:
             st.sidebar.info(f"Arquivo '{file_path}' salvo localmente.")
-
+            
     except Exception as e:
         st.sidebar.error(f"Falha ao salvar '{file_path}' localmente: {e}")
         raise
 
-# <<< MUDANÇA: Esta função agora lê CSVs do DISCO LOCAL.
 @st.cache_data(ttl=300)
 def read_local_csv(file_path):
-    # Esta função só lê CSVs (da pasta data/)
     if not os.path.exists(file_path):
-        return pd.DataFrame() # Retorna vazio se o arquivo não existe
+        return pd.DataFrame() 
     
     try:
         try:
@@ -170,11 +151,10 @@ def read_local_csv(file_path):
         st.error(f"Erro inesperado ao ler o arquivo '{file_path}': {e}")
         return pd.DataFrame()
 
-# <<< MUDANÇA: Esta função agora lê o .txt de ESTADO do DISCO LOCAL.
 @st.cache_data(ttl=300)
 def read_local_text_file(file_path):
     if not os.path.exists(file_path):
-        return {} # Retorna vazio se o arquivo não existe
+        return {} 
 
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -190,12 +170,11 @@ def read_local_text_file(file_path):
         st.warning(f"Erro inesperado ao ler {file_path}: {e}")
         return {}
 
-# <<< MUDANÇA: Esta função agora lê os JSONs de ESTADO do DISCO LOCAL.
 @st.cache_data(ttl=300)
 def read_local_json_file(file_path, default_return_type='dict'): 
     default_return = (default_return_type == 'dict' and {} or [])
     if not os.path.exists(file_path):
-        return default_return # Retorna vazio se o arquivo não existe
+        return default_return 
         
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -210,7 +189,6 @@ def read_local_json_file(file_path, default_return_type='dict'):
 
 
 def process_uploaded_file(uploaded_file):
-    # Esta função (leitura de upload) está correta.
     if uploaded_file is None:
         return None
     try:
@@ -229,13 +207,12 @@ def process_uploaded_file(uploaded_file):
 
         output = StringIO()
         df.to_csv(output, index=False, sep=';', encoding='utf-8')
-        return output.getvalue().encode('utf-8') # Retorna como bytes
+        return output.getvalue().encode('utf-8') 
     except Exception as e:
         st.sidebar.error(f"Erro ao ler o arquivo {uploaded_file.name}: {e}")
         return None
 
 def processar_dados_comparativos(df_atual, df_15dias):
-    # Esta função não muda
     contagem_atual = df_atual.groupby('Atribuir a um grupo').size().reset_index(name='Atual')
     contagem_15dias = df_15dias.groupby('Atribuir a um grupo').size().reset_index(name='15 Dias Atrás')
     df_comparativo = pd.merge(contagem_atual, contagem_15dias, on='Atribuir a um grupo', how='outer').fillna(0)
@@ -245,7 +222,6 @@ def processar_dados_comparativos(df_atual, df_15dias):
 
 @st.cache_data
 def categorizar_idade_vetorizado(dias_series):
-    # Esta função não muda
     condicoes = [
         dias_series >= 30, (dias_series >= 21) & (dias_series <= 29),
         (dias_series >= 11) & (dias_series <= 20), (dias_series >= 6) & (dias_series <= 10),
@@ -256,7 +232,6 @@ def categorizar_idade_vetorizado(dias_series):
 
 @st.cache_data
 def analisar_aging(_df_atual):
-    # Esta função não muda
     df = _df_atual.copy()
     date_col_name = None
     if 'Data de criação' in df.columns: date_col_name = 'Data de criação'
@@ -279,13 +254,11 @@ def analisar_aging(_df_atual):
     return df
 
 def get_status(row):
-    # Esta função não muda
     diferenca = row['Diferença']
     if diferenca > 0: return "Alta Demanda"
     elif diferenca == 0: return "Estável / Atenção"
     else: return "Redução de Backlog"
 
-# <<< MUDANÇA: Esta função agora lê SOMENTE do disco local.
 def get_image_as_base64(path):
     if not os.path.exists(path):
         return None
@@ -328,11 +301,9 @@ def sync_ticket_data():
             if contact_changed:
                 data_to_save = list(st.session_state.contacted_tickets)
                 json_content = json.dumps(data_to_save, indent=4)
-                # <<< MUDANÇA: Salva ESTADO localmente
                 save_local_file(STATE_FILE_CONTACTS, json_content)
             if observation_changed:
                 json_content = json.dumps(st.session_state.observations, indent=4, ensure_ascii=False)
-                # <<< MUDANÇA: Salva ESTADO localmente
                 save_local_file(STATE_FILE_OBSERVATIONS, json_content)
             
             st.toast("Alterações salvas com sucesso!", icon="✅")
@@ -349,20 +320,18 @@ def sync_ticket_data():
     st.session_state.scroll_to_details = True
 
 
-# <<< MUDANÇA: Esta função agora lê SOMENTE do disco local.
 @st.cache_data(ttl=3600)
 def carregar_dados_evolucao(dias_para_analisar=7): 
     try:
         snapshot_dir = f"{DATA_DIR}snapshots"
         
-        # Passo 1: Tentar ler os arquivos do disco local
         try:
             local_files = [os.path.join(snapshot_dir, f) for f in os.listdir(snapshot_dir) if f.endswith('.csv')]
             if not local_files:
                 raise FileNotFoundError("Pasta de snapshots local vazia ou não encontrada.")
             all_files = local_files
         except FileNotFoundError:
-             return pd.DataFrame() # Falha silenciosa se a pasta não existir
+             return pd.DataFrame() 
 
         df_evolucao_list = []
         end_date = date.today()
@@ -386,7 +355,7 @@ def carregar_dados_evolucao(dias_para_analisar=7):
                 try:
                     date_str = file_name.replace(f"{snapshot_dir}/backlog_", "").replace(".csv", "")
                     file_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-                    df_snapshot = read_local_csv(file_name) # <<< MUDANÇA
+                    df_snapshot = read_local_csv(file_name) 
                     if not df_snapshot.empty and 'Atribuir a um grupo' in df_snapshot.columns:
                         
                         df_snapshot_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
@@ -406,20 +375,18 @@ def carregar_dados_evolucao(dias_para_analisar=7):
         st.error(f"Erro ao carregar evolução: {e}")
         return pd.DataFrame()
 
-# <<< MUDANÇA: Esta função agora lê SOMENTE do disco local.
 @st.cache_data(ttl=300)
 def find_closest_snapshot_before(current_report_date, target_date):
     try:
         snapshot_dir = f"{DATA_DIR}snapshots"
         
-        # Passo 1: Tentar ler os arquivos do disco local
         try:
             local_files = [os.path.join(snapshot_dir, f) for f in os.listdir(snapshot_dir) if f.endswith('.csv')]
             if not local_files:
                 raise FileNotFoundError("Pasta de snapshots local vazia ou não encontrada.")
             all_file_paths = local_files
         except FileNotFoundError:
-            return None, None # Falha silenciosa
+            return None, None 
 
         snapshots = []
         search_start_date = target_date - timedelta(days=10)
@@ -441,20 +408,18 @@ def find_closest_snapshot_before(current_report_date, target_date):
         st.warning(f"Erro ao buscar snapshots: {e}")
         return None, None
 
-# <<< MUDANÇA: Esta função agora lê SOMENTE do disco local.
 @st.cache_data(ttl=3600)
 def carregar_evolucao_aging(dias_para_analisar=90): 
     try:
         snapshot_dir = f"{DATA_DIR}snapshots"
         
-        # Passo 1: Tentar ler os arquivos do disco local
         try:
             local_files = [os.path.join(snapshot_dir, f) for f in os.listdir(snapshot_dir) if f.endswith('.csv')]
             if not local_files:
                 raise FileNotFoundError("Pasta de snapshots local vazia ou não encontrada.")
             all_files = local_files
         except FileNotFoundError:
-            return pd.DataFrame() # Falha silenciosa
+            return pd.DataFrame() 
 
         lista_historico = []
 
@@ -463,7 +428,6 @@ def carregar_evolucao_aging(dias_para_analisar=90):
 
         processed_files = []
         for file_name in all_files:
-            # <<< MUDANÇA: Assegura que o prefixo do snapshot_dir esteja no file_name
             if not file_name.startswith(snapshot_dir):
                 file_name = f"{snapshot_dir}/{file_name.split('/')[-1]}"
 
@@ -480,7 +444,7 @@ def carregar_evolucao_aging(dias_para_analisar=90):
 
         for file_date, file_name in processed_files:
             try:
-                df_snapshot = read_local_csv(file_name) # <<< MUDANÇA
+                df_snapshot = read_local_csv(file_name) 
                 if df_snapshot.empty:
                     continue
 
@@ -535,7 +499,6 @@ def carregar_evolucao_aging(dias_para_analisar=90):
 
 
 def formatar_delta_card(delta_abs, delta_perc, valor_comparacao, data_comparacao_str):
-    # Esta função não muda
     delta_abs = int(delta_abs)
     if valor_comparacao > 0:
         delta_perc_str = f"{delta_perc * 100:.1f}%"
@@ -564,13 +527,9 @@ if logo_copa_b64 and logo_belago_b64:
 else:
     st.error("Arquivos de logo não encontrados.")
 
-# <<< MUDANÇA: Não precisamos mais do 'repo' para ler dados.
-# repo = get_github_repo()
-# st.session_state.repo = repo
-
 st.sidebar.header("Área do Administrador")
 password = st.sidebar.text_input("Senha para atualizar dados:", type="password")
-is_admin = password == st.secrets.get("ADMIN_PASSWORD", "") # Ainda precisamos de st.secrets para a SENHA
+is_admin = password == st.secrets.get("ADMIN_PASSWORD", "") 
 
 if is_admin:
     st.sidebar.success("Acesso de administrador liberado.")
@@ -586,12 +545,10 @@ if is_admin:
                 content_15dias = process_uploaded_file(uploaded_file_15dias)
                 if content_atual is not None and content_15dias is not None:
                     try:
-                        # <<< MUDANÇA: Salva arquivos de dados localmente
                         save_local_file(f"{DATA_DIR}dados_atuais.csv", content_atual, is_binary=True)
                         save_local_file(f"{DATA_DIR}dados_15_dias.csv", content_15dias, is_binary=True)
                         
                         today_str = now_sao_paulo.strftime('%Y-%m-%d')
-                        # <<< MUDANÇA: Salva snapshot localmente
                         snapshot_path = f"{DATA_DIR}snapshots/backlog_{today_str}.csv"
                         save_local_file(snapshot_path, content_atual, is_binary=True)
                         
@@ -601,7 +558,6 @@ if is_admin:
                         datas_referencia_content = (f"data_atual:{data_do_upload.strftime('%d/%m/%Y')}\n"
                                                       f"data_15dias:{data_arquivo_15dias.strftime('%d/%m/%Y')}\n"
                                                       f"hora_atualizacao:{hora_atualizacao}")
-                        # <<< MUDANÇA: Salva ESTADO localmente
                         save_local_file(STATE_FILE_REF_DATES, datas_referencia_content)
                         
                         st.cache_data.clear()
@@ -629,7 +585,6 @@ if is_admin:
                     st.stop() 
 
                 try:
-                    # <<< MUDANÇA: Lê arquivo de dados localmente
                     df_fechados_anterior = read_local_csv(f"{DATA_DIR}dados_fechados.csv")
                     previous_closed_ids = set()
                     if not df_fechados_anterior.empty:
@@ -638,13 +593,10 @@ if is_admin:
                             previous_closed_ids = set(df_fechados_anterior[id_col_anterior].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
                     
                     json_content = json.dumps(list(previous_closed_ids), indent=4)
-                    # <<< MUDANÇA: Salva ESTADO localmente
                     save_local_file(STATE_FILE_PREV_CLOSED, json_content)
 
-                    # <<< MUDANÇA: Salva arquivo de dados localmente
                     save_local_file(f"{DATA_DIR}dados_fechados.csv", content_fechados, is_binary=True)
 
-                    # <<< MUDANÇA: Lê ESTADO localmente
                     datas_existentes = read_local_text_file(STATE_FILE_REF_DATES)
                     data_atual_existente = datas_existentes.get('data_atual', 'N/A')
                     data_15dias_existente = datas_existentes.get('data_15dias', 'N/A')
@@ -653,10 +605,8 @@ if is_admin:
                     datas_referencia_content_novo = (f"data_atual:{data_atual_existente}\n"
                                                        f"data_15dias:{data_15dias_existente}\n"
                                                        f"hora_atualizacao:{hora_atualizacao_nova}")
-                    # <<< MUDANÇA: Salva ESTADO localmente
                     save_local_file(STATE_FILE_REF_DATES, datas_referencia_content_novo)
                     
-                    # <<< MUDANÇA: Lê arquivo de dados localmente
                     df_atual_base = read_local_csv(f"{DATA_DIR}dados_atuais.csv")
                     if df_atual_base.empty:
                         st.sidebar.warning("Não foi possível ler o 'dados_atuais.csv' base para atualizar o snapshot.")
@@ -685,7 +635,6 @@ if is_admin:
                     content_snapshot_novo = output.getvalue().encode('utf-8')
 
                     today_str = now_sao_paulo.strftime('%Y-%m-%d')
-                    # <<< MUDANÇA: Salva snapshot localmente
                     snapshot_path = f"{DATA_DIR}snapshots/backlog_{today_str}.csv"
                     commit_msg_snapshot = f"Atualizando snapshot (rápido) em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
                     
@@ -705,11 +654,9 @@ elif password:
 
 try:
     if 'contacted_tickets' not in st.session_state:
-        # <<< MUDANÇA: Lê ESTADO localmente
         st.session_state.contacted_tickets = set(read_local_json_file(STATE_FILE_CONTACTS, default_return_type='list'))
 
     if 'observations' not in st.session_state:
-        # <<< MUDANÇA: Lê ESTADO localmente
         st.session_state.observations = read_local_json_file(STATE_FILE_OBSERVATIONS, default_return_type='dict')
 
     needs_scroll = "scroll" in st.query_params
@@ -721,12 +668,10 @@ try:
     if "scroll" in st.query_params or "faixa" in st.query_params:
         st.query_params.clear()
 
-    # <<< MUDANÇA: Todas as leituras de DADOS agora usam a função local e o caminho /data
     df_atual = read_local_csv(f"{DATA_DIR}dados_atuais.csv") 
     df_15dias = read_local_csv(f"{DATA_DIR}dados_15_dias.csv") 
     df_fechados = read_local_csv(f"{DATA_DIR}dados_fechados.csv") 
     
-    # <<< MUDANÇA: Arquivos de ESTADO permanecem lendo da raiz (localmente)
     datas_referencia = read_local_text_file(STATE_FILE_REF_DATES) 
     previous_closed_ids = set(read_local_json_file(STATE_FILE_PREV_CLOSED, default_return_type='list'))
     
@@ -924,7 +869,7 @@ try:
             st.selectbox("Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", 
                          options=ordem_faixas, 
                          key='faixa_selecionada',
-                         on_change=sync_ticket_data) # v0.9.42: Salva ao trocar de faixa
+                         on_change=sync_ticket_data)
             
             faixa_atual = st.session_state.faixa_selecionada
             filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].copy()
@@ -946,20 +891,35 @@ try:
                     'Data de criação': 'Data de criação',
                     'Observações': 'Observações'
                 }
-
+                
+                # --- INÍCIO DA MUDANÇA (Trava de Admin) ---
+                colunas_desabilitadas_fixas = [
+                    'ID do ticket', 'Descrição', 'Grupo Atribuído', 
+                    'Dias em Aberto', 'Data de criação'
+                ]
+                colunas_editaveis_admin = [
+                    'Contato', 'Observações'
+                ]
+                if is_admin:
+                    colunas_desabilitadas_final = colunas_desabilitadas_fixas
+                else:
+                    colunas_desabilitadas_final = colunas_desabilitadas_fixas + colunas_editaveis_admin
+                
                 st.data_editor(
                     st.session_state.last_filtered_df.rename(columns=colunas_para_exibir_renomeadas)[list(colunas_para_exibir_renomeadas.values())].style.apply(highlight_row, axis=1),
                     use_container_width=True,
                     hide_index=True,
-                    disabled=['ID do ticket', 'Descrição', 'Grupo Atribuído', 'Dias em Aberto', 'Data de criação'],
+                    disabled=colunas_desabilitadas_final, 
                     key='ticket_editor'
                 )
                 
                 st.button(
                     "Salvar Contatos e Observações",
                     on_click=sync_ticket_data,
-                    type="primary"
+                    type="primary",
+                    disabled=not is_admin 
                 )
+                # --- FIM DA MUDANÇA ---
                 
                 if st.session_state.ticket_editor.get('edited_rows'):
                     js_code = """
@@ -1045,7 +1005,7 @@ try:
         st.subheader("Evolução do Backlog")
         dias_evolucao = st.slider("Ver evolução dos últimos dias:", min_value=7, max_value=30, value=7, key="slider_evolucao")
 
-        df_evolucao_tab3 = carregar_dados_evolucao(dias_para_analisar=dias_evolucao) # <<< MUDANÇA
+        df_evolucao_tab3 = carregar_dados_evolucao(dias_para_analisar=dias_evolucao) 
 
         if not df_evolucao_tab3.empty:
 
@@ -1110,7 +1070,7 @@ try:
         st.info("Esta visualização ainda está coletando dados históricos. Utilize as outras abas como referência principal por enquanto.")
 
         try:
-            df_hist = carregar_evolucao_aging(dias_para_analisar=90) # <<< MUDANÇA
+            df_hist = carregar_evolucao_aging(dias_para_analisar=90) 
 
             ordem_faixas_scaffold = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
             hoje_data = None
@@ -1172,7 +1132,7 @@ try:
 
             if hoje_data:
                 target_comp_date = hoje_data.date() - timedelta(days=periodo_comp_opts[periodo_comp_selecionado])
-                data_comparacao_encontrada, _ = find_closest_snapshot_before(hoje_data.date(), target_comp_date) # <<< MUDANÇA
+                data_comparacao_encontrada, _ = find_closest_snapshot_before(hoje_data.date(), target_comp_date) 
 
                 if data_comparacao_encontrada:
                     data_comparacao_final = pd.to_datetime(data_comparacao_encontrada)
@@ -1298,6 +1258,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>v1.0.19 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.21 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
