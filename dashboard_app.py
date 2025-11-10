@@ -1,4 +1,4 @@
-# VERSÃO v1.0.22 (Feature: Gráfico de Evolução Duplo)
+# VERSÃO v1.0.23 (Hotfix: Corrige KeyError na Tab3)
 
 import streamlit as st
 import pandas as pd
@@ -325,12 +325,9 @@ def sync_ticket_data():
     st.session_state.scroll_to_details = True
 
 
-# --- INÍCIO DA MUDANÇA (V1.0.22) ---
-# Esta função foi reescrita para ler AMBOS os históricos (Abertos e Fechados)
 @st.cache_data(ttl=3600)
 def carregar_dados_evolucao(dias_para_analisar=7): 
     try:
-        # 1. Carregar dados de snapshots ABERTOS
         snapshot_dir_open = f"{DATA_DIR}snapshots"
         try:
             open_files_local = [os.path.join(snapshot_dir_open, f) for f in os.listdir(snapshot_dir_open) if f.startswith('backlog_') and f.endswith('.csv')]
@@ -367,7 +364,6 @@ def carregar_dados_evolucao(dias_para_analisar=7):
         
         df_open_daily = pd.DataFrame(df_evolucao_open_list)
 
-        # 2. Carregar dados de snapshots FECHADOS
         snapshot_dir_closed = f"{DATA_DIR}closed_snapshots"
         try:
             closed_files_local = [os.path.join(snapshot_dir_closed, f) for f in os.listdir(snapshot_dir_closed) if f.startswith('closed_') and f.endswith('.csv')]
@@ -387,7 +383,6 @@ def carregar_dados_evolucao(dias_para_analisar=7):
                     processed_dates_closed.append((file_date, file_name))
             except Exception: continue
         
-        # Aqui nós não pegamos os "últimos 7", pegamos todos que batem com as datas dos abertos
         if not df_open_daily.empty:
             datas_dos_abertos = set(df_open_daily['Data'])
             files_to_process_closed = [f[1] for f in processed_dates_closed if pd.to_datetime(f[0]) in datas_dos_abertos]
@@ -406,7 +401,6 @@ def carregar_dados_evolucao(dias_para_analisar=7):
         
         df_closed_daily = pd.DataFrame(df_evolucao_closed_list)
 
-        # 3. Juntar os dois
         if df_open_daily.empty and df_closed_daily.empty:
             return pd.DataFrame()
         elif df_open_daily.empty:
@@ -416,7 +410,6 @@ def carregar_dados_evolucao(dias_para_analisar=7):
 
         df_consolidado = pd.merge(df_open_daily, df_closed_daily, on='Data', how='outer').fillna(0)
         
-        # Converte para int se não houver NaNs
         if 'Total Abertos' in df_consolidado.columns:
             df_consolidado['Total Abertos'] = df_consolidado['Total Abertos'].astype(int)
         if 'Total Fechados' in df_consolidado.columns:
@@ -428,8 +421,6 @@ def carregar_dados_evolucao(dias_para_analisar=7):
     except Exception as e:
         st.error(f"Erro ao carregar evolução: {e}")
         return pd.DataFrame()
-
-# --- FIM DA MUDANÇA (V1.0.22) ---
 
 
 @st.cache_data(ttl=300)
@@ -654,12 +645,9 @@ if is_admin:
 
                     save_local_file(f"{DATA_DIR}dados_fechados.csv", content_fechados, is_binary=True)
 
-                    # --- INÍCIO DA MUDANÇA (V1.0.22) ---
-                    # Salva um snapshot histórico dos arquivos fechados
                     today_str_closed = now_sao_paulo.strftime('%Y-%m-%d')
                     closed_snapshot_path = f"{DATA_DIR}closed_snapshots/closed_{today_str_closed}.csv"
                     save_local_file(closed_snapshot_path, content_fechados, is_binary=True)
-                    # --- FIM DA MUDANÇA (V1.0.22) ---
 
                     datas_existentes = read_local_text_file(STATE_FILE_REF_DATES)
                     data_atual_existente = datas_existentes.get('data_atual', 'N/A')
@@ -1063,7 +1051,6 @@ try:
         else:
             st.warning("Nenhum dado para gerar o report visual.")
 
-    # --- INÍCIO DA MUDANÇA (V1.0.22) ---
     with tab3:
         st.subheader("Evolução do Backlog (Abertos vs. Fechados)")
         dias_evolucao = st.slider("Ver evolução dos últimos dias:", min_value=7, max_value=30, value=7, key="slider_evolucao")
@@ -1084,37 +1071,49 @@ try:
                 df_total_diario['Data (Eixo)'] = df_total_diario['Data'].dt.strftime('%d/%m')
                 ordem_datas_total = df_total_diario['Data (Eixo)'].tolist()
 
-                df_melted = df_total_diario.melt(
-                    id_vars=['Data (Eixo)'], 
-                    value_vars=['Total Abertos', 'Total Fechados'], 
-                    var_name='Métrica', 
-                    value_name='Total'
-                )
-
-                fig_total_evolucao = px.line(
-                    df_melted,
-                    x='Data (Eixo)',
-                    y='Total',
-                    color='Métrica', 
-                    title='Evolução de Chamados Abertos vs. Fechados (Apenas Dias de Semana)',
-                    markers=True,
-                    labels={"Data (Eixo)": "Data", "Total": "Total de Chamados", "Métrica": "Status"},
-                    category_orders={'Data (Eixo)': ordem_datas_total},
-                    color_discrete_map={ 
-                        'Total Abertos': '#d9534f', 
-                        'Total Fechados': '#5cb85c' 
-                    }
-                )
+                # --- INÍCIO DA CORREÇÃO (V1.0.23) ---
+                metricas_disponiveis = []
+                cores_disponiveis = {}
                 
-                fig_total_evolucao.update_layout(height=400)
-                st.plotly_chart(fig_total_evolucao, use_container_width=True)
+                if 'Total Abertos' in df_total_diario.columns:
+                    metricas_disponiveis.append('Total Abertos')
+                    cores_disponiveis['Total Abertos'] = '#d9534f' 
+                
+                if 'Total Fechados' in df_total_diario.columns:
+                    metricas_disponiveis.append('Total Fechados')
+                    cores_disponiveis['Total Fechados'] = '#5cb85c' 
+                
+                if not metricas_disponiveis:
+                    st.warning("Ainda não há dados históricos de Abertos ou Fechados para plotar.")
+                else:
+                    df_melted = df_total_diario.melt(
+                        id_vars=['Data (Eixo)'], 
+                        value_vars=metricas_disponiveis, 
+                        var_name='Métrica', 
+                        value_name='Total'
+                    )
+
+                    fig_total_evolucao = px.line(
+                        df_melted,
+                        x='Data (Eixo)',
+                        y='Total',
+                        color='Métrica', 
+                        title='Evolução de Chamados Abertos vs. Fechados (Apenas Dias de Semana)',
+                        markers=True,
+                        labels={"Data (Eixo)": "Data", "Total": "Total de Chamados", "Métrica": "Status"},
+                        category_orders={'Data (Eixo)': ordem_datas_total},
+                        color_discrete_map=cores_disponiveis 
+                    )
+                    
+                    fig_total_evolucao.update_layout(height=400)
+                    st.plotly_chart(fig_total_evolucao, use_container_width=True)
+                # --- FIM DA CORREÇÃO (V1.0.23) ---
 
             else:
                 st.info("Ainda não há dados históricos suficientes (considerando apenas dias de semana).")
 
         else:
             st.info("Ainda não há dados históricos suficientes. (Nota: os dados de fechados só começarão a ser coletados a partir de hoje).")
-    # --- FIM DA MUDANÇA (V1.0.22) ---
 
     with tab4:
         st.subheader("Evolução do Aging do Backlog")
