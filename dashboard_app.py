@@ -22,16 +22,17 @@ GRUPOS_DE_AVISO_TEXTO = "'Service Desk (L1)' ou 'LIQ-SUTEL'"
 
 GRUPOS_EXCLUSAO_TOTAL_REGEX = f"{GRUPOS_EXCLUSAO_PERMANENTE_REGEX}|{GRUPOS_DE_AVISO_REGEX}"
 
-DATA_DIR = "data/" 
+DATA_DIR = "data/"
 STATE_FILE_CONTACTS = "contacted_tickets.json"
 STATE_FILE_OBSERVATIONS = "ticket_observations.json"
 STATE_FILE_REF_DATES = "datas_referencia.txt"
 STATE_FILE_PREV_CLOSED = "previous_closed_ids.json"
+STATE_FILE_CLOSED_HISTORY = "closed_tickets_history.json"
 
 st.set_page_config(
     layout="wide",
     page_title="Backlog Copa Energia + Belago",
-    page_icon=f"{DATA_DIR}minilogo.png", 
+    page_icon=f"{DATA_DIR}minilogo.png",
     initial_sidebar_state="collapsed"
 )
 
@@ -116,7 +117,7 @@ def save_local_file(file_path, file_content, is_binary=False):
         with open(file_path, mode, encoding=encoding) as f:
             f.write(file_content)
             
-        if file_path not in [STATE_FILE_CONTACTS, STATE_FILE_OBSERVATIONS, STATE_FILE_REF_DATES, STATE_FILE_PREV_CLOSED]:
+        if file_path not in [STATE_FILE_CONTACTS, STATE_FILE_OBSERVATIONS, STATE_FILE_REF_DATES, STATE_FILE_PREV_CLOSED, STATE_FILE_CLOSED_HISTORY]:
             st.sidebar.info(f"Arquivo '{file_path}' salvo localmente.")
             
     except Exception as e:
@@ -616,15 +617,39 @@ if is_admin:
                     
                     id_col_fechados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_novo.columns), None)
                     if not id_col_fechados:
-                         st.sidebar.warning("Não foi possível encontrar coluna de ID no arquivo de fechados.")
-                         raise Exception("Coluna de ID não encontrada nos fechados.")
+                             st.sidebar.warning("Não foi possível encontrar coluna de ID no arquivo de fechados.")
+                             raise Exception("Coluna de ID não encontrada nos fechados.")
 
                     closed_ids_set = set(df_fechados_novo[id_col_fechados].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
 
                     id_col_atual = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_atual_base.columns), None)
                     if not id_col_atual:
-                         st.sidebar.warning("Não foi possível encontrar coluna de ID no 'dados_atuais.csv' base.")
-                         raise Exception("Coluna de ID não encontrada no 'dados_atuais.csv' base.")
+                             st.sidebar.warning("Não foi possível encontrar coluna de ID no 'dados_atuais.csv' base.")
+                             raise Exception("Coluna de ID não encontrada no 'dados_atuais.csv' base.")
+                    
+                    try:
+                        df_atual_base_copy = df_atual_base.copy()
+                        df_atual_base_copy[id_col_atual] = df_atual_base_copy[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
+                        df_encerrados_do_dia = df_atual_base_copy[df_atual_base_copy[id_col_atual].isin(closed_ids_set)]
+                        
+                        if not df_encerrados_do_dia.empty and 'Atribuir a um grupo' in df_encerrados_do_dia.columns:
+                            df_encerrados_do_dia_filtrado = df_encerrados_do_dia[~df_encerrados_do_dia['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
+                            count_fechados_filtrado = len(df_encerrados_do_dia_filtrado)
+                        else:
+                            count_fechados_filtrado = 0
+                        
+                        history_data = read_local_json_file(STATE_FILE_CLOSED_HISTORY, default_return_type='dict')
+                        if not isinstance(history_data, dict):
+                            history_data = {}
+                            
+                        today_str_history = now_sao_paulo.strftime('%Y-%m-%d')
+                        history_data[today_str_history] = count_fechados_filtrado
+                        
+                        history_json_content = json.dumps(history_data, indent=4)
+                        save_local_file(STATE_FILE_CLOSED_HISTORY, history_json_content)
+                        
+                    except Exception as hist_e:
+                        st.sidebar.warning(f"Não foi possível salvar o histórico de fechados: {hist_e}")
                     
                     df_atual_base[id_col_atual] = df_atual_base[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
                     
@@ -892,7 +917,6 @@ try:
                     'Observações': 'Observações'
                 }
                 
-                # --- INÍCIO DA MUDANÇA (Trava de Admin) ---
                 colunas_desabilitadas_fixas = [
                     'ID do ticket', 'Descrição', 'Grupo Atribuído', 
                     'Dias em Aberto', 'Data de criação'
@@ -919,7 +943,6 @@ try:
                     type="primary",
                     disabled=not is_admin 
                 )
-                # --- FIM DA MUDANÇA ---
                 
                 if st.session_state.ticket_editor.get('edited_rows'):
                     js_code = """
@@ -1016,21 +1039,52 @@ try:
 
                 st.info("Esta visualização ainda está coletando dados históricos. Utilize as outras abas como referência principal por enquanto.")
 
-                df_total_diario = df_evolucao_tab3.groupby('Data')['Total Chamados'].sum().reset_index()
-                df_total_diario = df_total_diario.sort_values('Data')
+                df_total_abertos = df_evolucao_tab3.groupby('Data')['Total Chamados'].sum().reset_index()
+                df_total_abertos = df_total_abertos.sort_values('Data')
+                df_total_abertos['Tipo'] = 'Abertos (Backlog)'
 
-                df_total_diario['Data (Eixo)'] = df_total_diario['Data'].dt.strftime('%d/%m')
-                ordem_datas_total = df_total_diario['Data (Eixo)'].tolist()
+                closed_history_data = read_local_json_file(STATE_FILE_CLOSED_HISTORY, default_return_type='dict')
+                df_fechados_list = []
+                
+                end_date_tab3 = date.today()
+                start_date_tab3 = end_date_tab3 - timedelta(days=dias_evolucao)
 
-                fig_total_evolucao = px.area(
-                    df_total_diario,
+                if isinstance(closed_history_data, dict):
+                    for date_str, count in closed_history_data.items():
+                        try:
+                            file_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+                            if start_date_tab3 <= file_date <= end_date_tab3:
+                                df_fechados_list.append({'Data': pd.to_datetime(file_date), 'Total Chamados': count, 'Tipo': 'Fechados (no Dia)'})
+                        except ValueError:
+                            continue
+                
+                df_total_fechados = pd.DataFrame(df_fechados_list)
+                
+                if not df_total_fechados.empty:
+                    df_total_diario_combinado = pd.concat([df_total_abertos, df_total_fechados], ignore_index=True)
+                else:
+                    df_total_diario_combinado = df_total_abertos
+                    
+                df_total_diario_combinado = df_total_diario_combinado.sort_values('Data')
+                
+                df_total_diario_combinado['Data (Eixo)'] = df_total_diario_combinado['Data'].dt.strftime('%d/%m')
+                ordem_datas_total = df_total_diario_combinado['Data (Eixo)'].unique().tolist()
+                
+                fig_total_evolucao = px.line(
+                    df_total_diario_combinado,
                     x='Data (Eixo)',
                     y='Total Chamados',
-                    title='Evolução do Total Geral de Chamados Abertos (Apenas Dias de Semana)',
+                    color='Tipo',
+                    title='Evolução Total de Chamados: Backlog vs. Fechados (Dias de Semana)',
                     markers=True,
-                    labels={"Data (Eixo)": "Data", "Total Chamados": "Total Geral de Chamados"},
-                    category_orders={'Data (Eixo)': ordem_datas_total}
+                    labels={"Data (Eixo)": "Data", "Total Chamados": "Total Geral de Chamados", "Tipo": "Métrica"},
+                    category_orders={'Data (Eixo)': ordem_datas_total},
+                    color_discrete_map={
+                        'Abertos (Backlog)': '#375623', 
+                        'Fechados (no Dia)': '#d9534f'
+                    }
                 )
+
                 fig_total_evolucao.update_layout(height=400)
                 st.plotly_chart(fig_total_evolucao, use_container_width=True)
 
