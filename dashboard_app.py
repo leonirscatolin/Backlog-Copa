@@ -56,9 +56,10 @@ a.metric-box {
     color: inherit;
     text-decoration: none !important;
 }
-a.metric-box:hover {
+/* Esta é a nova classe que o componente usará */
+.metric-box-clickable:hover {
     background-color: #f0f2f6;
-    text-decoration: none !important;
+    cursor: pointer;
 }
 .metric-box span { 
     display: block;
@@ -265,7 +266,7 @@ def get_image_as_base64(path):
         return None
     try:
         with open(path, "rb") as image_file:
-            return base64.b64encode(image_file.read()).decode()
+            return base664.b64encode(image_file.read()).decode()
     except Exception:
         return None
 
@@ -684,11 +685,12 @@ try:
     if 'observations' not in st.session_state:
         st.session_state.observations = read_local_json_file(STATE_FILE_OBSERVATIONS, default_return_type='dict')
 
-    # <<< MUDANÇA 1: REMOVIDA LÓGICA DE 'query_params' DAQUI >>>
-    # (Trocamos 'needs_scroll' pela flag do session_state)
+    # <<< MUDANÇA 1: LÓGICA DE 'query_params' REMOVIDA >>>
+    # Assegura que 'faixa_selecionada' existe no estado
     if 'faixa_selecionada' not in st.session_state:
         st.session_state.faixa_selecionada = "0-2 dias" 
     
+    # Verifica se a flag de rolagem foi setada (por um clique de card)
     needs_scroll = st.session_state.get('scroll_to_details', False)
 
 
@@ -732,10 +734,40 @@ try:
     df_aging = analisar_aging(df_atual_filtrado)
     df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
 
-    # <<< MUDANÇA 2: ADICIONADA FUNÇÃO 'on_click' PARA OS CARDS >>>
-    def handle_card_click(faixa_clicada):
-        st.session_state.faixa_selecionada = faixa_clicada
-        st.session_state.scroll_to_details = True
+    # <<< MUDANÇA 2: FUNÇÃO DO CARD CLICÁVEL >>>
+    # Esta função cria um componente HTML que se parece com seu card e
+    # retorna o valor 'faixa' para o Python quando clicado.
+    def clickable_metric_card(faixa, quantidade):
+        # ID seguro para HTML (ex: '0-2-dias')
+        faixa_id = re.sub(r'\W+', '-', faixa) 
+        
+        card_html = f"""
+        <body style="margin: 0;"> <div class="metric-box metric-box-clickable" id="card-{faixa_id}" style="margin-bottom: 0px;">
+                <span class="label">{faixa}</span>
+                <span class="value">{quantidade}</span>
+            </div>
+            
+            <script>
+            const cardElement = document.getElementById("card-{faixa_id}");
+            
+            if (cardElement) {{
+                // Ao clicar, envia o valor da 'faixa' de volta ao Python
+                cardElement.onclick = function() {{
+                    Streamlit.setComponentValue("{faixa}");
+                }};
+            }}
+            </script>
+        </body>
+        """
+        
+        # components.html retorna 'None' a menos que 'setComponentValue' seja chamado
+        clicked_faixa = components.html(
+            card_html,
+            height=120, # Altura exata do seu metric-box
+            key=f"card_comp_{faixa_id}" # Key única para o Streamlit
+        )
+        return clicked_faixa
+    # <<< FIM DA MUDANÇA 2 >>>
 
 
     tab1, tab2, tab3, tab4 = st.tabs(["Dashboard Completo", "Report Visual", "Evolução Semanal", "Evolução Aging"])
@@ -758,7 +790,7 @@ try:
             
             st.warning("\n".join(aviso_str_lista))
 
-        info_messages = ["**Filtros e Regras Aplicadas:**", 
+        info_messages = ["**Filtros e Regras AplicADAS:**", 
                          f"- Grupos contendo {GRUPOS_EXCLUSAO_PERMANENTE_TEXTO} foram desconsiderados da análise.", 
                          "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
         
@@ -790,51 +822,28 @@ try:
             aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
             aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
 
-            # <<< MUDANÇA 3: SUBSTITUÍDOS OS LINKS <A> POR BOTÕES ESTILIZADOS >>>
+            # <<< MUDANÇA 3: USANDO O NOVO COMPONENTE CLICÁVEL >>>
             cols = st.columns(len(ordem_faixas))
+            clicked_faixa_result = None # Armazena o resultado do clique
+            
             for i, row in aging_counts.iterrows():
-                faixa = row['Faixa de Antiguidade']
-                quantidade = row['Quantidade']
-                
                 with cols[i]:
-                    # 1. Cria um st.button com uma label de placeholder e a função on_click
-                    st.button(
-                        label=f"placeholder_{faixa}", 
-                        on_click=handle_card_click,
-                        args=(faixa,),
-                        use_container_width=True,
-                        key=f"card_btn_{i}" # Key única para o JavaScript encontrar
-                    )
+                    faixa = row['Faixa de Antiguidade']
+                    quantidade = row['Quantidade']
                     
-                    # 2. Define o HTML do seu card
-                    card_html = f"""
-                    <div class="metric-box" style="margin-bottom: 0px;">
-                        <span class="label">{faixa}</span>
-                        <span class="value">{quantidade}</span>
-                    </div>
-                    """
+                    # Chama o novo componente
+                    result = clickable_metric_card(faixa, quantidade)
                     
-                    # 3. Usa JavaScript para encontrar o botão pela "key" e injetar o HTML
-                    components.html(
-                        f"""
-                        <script>
-                        // Encontra o botão baseado na key que definimos
-                        const btn = window.parent.document.querySelector('button[data-testid="stButton-card_btn_{i}"]');
-                        if (btn) {{
-                            // Substitui o "placeholder" pelo seu HTML
-                            btn.innerHTML = `{card_html}`;
-                            
-                            // Remove o estilo de botão padrão
-                            btn.style.padding = '0px';
-                            btn.style.border = 'none';
-                            btn.style.background = 'transparent';
-                            // Adiciona o cursor de clique
-                            btn.style.cursor = 'pointer'; 
-                        }}
-                        </script>
-                        """,
-                        height=120 # Garante que o componente tenha a altura do card
-                    )
+                    # Se este card foi clicado, 'result' não será 'None'
+                    if result:
+                        clicked_faixa_result = result
+            
+            # Fora do loop, processa o clique (se houver)
+            if clicked_faixa_result:
+                st.session_state.faixa_selecionada = clicked_faixa_result
+                st.session_state.scroll_to_details = True
+                # Força um re-run para atualizar o selectbox e rolar a tela
+                st.rerun()
             # <<< FIM DA MUDANÇA 3 >>>
             
         else:
