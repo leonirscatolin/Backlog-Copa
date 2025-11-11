@@ -56,9 +56,10 @@ a.metric-box {
     color: inherit;
     text-decoration: none !important;
 }
-a.metric-box:hover {
+/* Esta é a nova classe que o componente usará */
+.metric-box-clickable:hover {
     background-color: #f0f2f6;
-    text-decoration: none !important;
+    cursor: pointer;
 }
 .metric-box span { 
     display: block;
@@ -684,14 +685,14 @@ try:
     if 'observations' not in st.session_state:
         st.session_state.observations = read_local_json_file(STATE_FILE_OBSERVATIONS, default_return_type='dict')
 
-    needs_scroll = "scroll" in st.query_params
-    if "faixa" in st.query_params:
-        faixa_from_url = st.query_params.get("faixa")
-        ordem_faixas_validas = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
-        if faixa_from_url in ordem_faixas_validas:
-                st.session_state.faixa_selecionada = faixa_from_url
-    if "scroll" in st.query_params or "faixa" in st.query_params:
-        st.query_params.clear()
+    # <<< MUDANÇA 1: LÓGICA DE 'query_params' REMOVIDA >>>
+    # Assegura que 'faixa_selecionada' existe no estado
+    if 'faixa_selecionada' not in st.session_state:
+        st.session_state.faixa_selecionada = "0-2 dias" 
+    
+    # Verifica se a flag de rolagem foi setada (por um clique de card)
+    needs_scroll = st.session_state.get('scroll_to_details', False)
+
 
     df_atual = read_local_csv(f"{DATA_DIR}dados_atuais.csv") 
     df_15dias = read_local_csv(f"{DATA_DIR}dados_15_dias.csv") 
@@ -732,6 +733,40 @@ try:
     df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
     df_aging = analisar_aging(df_atual_filtrado)
     df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
+
+    # <<< MUDANÇA 2: FUNÇÃO DO CARD CLICÁVEL (SEM O 'key' PROBLEMÁTICO) >>>
+    # Esta é a versão que não dá TypeError e tem a lógica para não travar
+    def clickable_metric_card(faixa, quantidade):
+        # ID seguro para HTML (ex: '0-2-dias')
+        faixa_id = re.sub(r'\W+', '-', faixa) 
+        
+        card_html = f"""
+        <body style="margin: 0;"> <div class="metric-box metric-box-clickable" id="card-{faixa_id}" style="margin-bottom: 0px;">
+                <span class="label">{faixa}</span>
+                <span class="value">{quantidade}</span>
+            </div>
+            
+            <script>
+            const cardElement = window.parent.document.getElementById("card-{faixa_id}");
+            
+            if (cardElement) {{
+                // Ao clicar, envia o valor da 'faixa' de volta ao Python
+                cardElement.onclick = function() {{
+                    Streamlit.setComponentValue("{faixa}");
+                }};
+            }}
+            </script>
+        </body>
+        """
+        
+        # A 'key' FOI REMOVIDA. Este é o local da correção do TypeError.
+        # O 'faixa_id' único no HTML previne o cache de componentes.
+        clicked_faixa = components.html(
+            card_html,
+            height=120 # Altura exata do seu metric-box
+        )
+        return clicked_faixa
+    # <<< FIM DA MUDANÇA 2 >>>
 
 
     tab1, tab2, tab3, tab4 = st.tabs(["Dashboard Completo", "Report Visual", "Evolução Semanal", "Evolução Aging"])
@@ -785,14 +820,34 @@ try:
             aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
             aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
             aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
-            if 'faixa_selecionada' not in st.session_state:
-                st.session_state.faixa_selecionada = "0-2 dias"
+
+            # <<< MUDANÇA 3: LÓGICA DE CLIQUE CORRIGIDA (SEM LOOP INFINITO) >>>
             cols = st.columns(len(ordem_faixas))
+            
+            clicked_faixa_result = None # Armazena o resultado do clique
+            
             for i, row in aging_counts.iterrows():
                 with cols[i]:
-                    faixa_encoded = quote(row['Faixa de Antiguidade'])
-                    card_html = f"""<a href="?faixa={faixa_encoded}&scroll=true" target="_self" class="metric-box"><span class="label">{row['Faixa de Antiguidade']}</span><span class="value">{row['Quantidade']}</span></a>"""
-                    st.markdown(card_html, unsafe_allow_html=True)
+                    faixa = row['Faixa de Antiguidade']
+                    quantidade = row['Quantidade']
+                    
+                    # Chama o novo componente
+                    result = clickable_metric_card(faixa, quantidade)
+                    
+                    # Se este card foi clicado, 'result' não será 'None'
+                    if result:
+                        clicked_faixa_result = result
+            
+            # Processa o clique DEPOIS do loop
+            # Esta é a lógica que quebra o loop: só processamos se for um NOVO valor
+            if clicked_faixa_result and st.session_state.faixa_selecionada != clicked_faixa_result:
+                st.session_state.faixa_selecionada = clicked_faixa_result
+                st.session_state.scroll_to_details = True
+                # O st.rerun() é NECESSÁRIO para a rolagem funcionar
+                # mas a lógica do IF previne o loop.
+                st.rerun() 
+            # <<< FIM DA MUDANÇA >>>
+            
         else:
             st.warning("Nenhum dado válido para a análise de antiguidade.")
         st.markdown(f"<h3>Comparativo de Backlog: Atual vs. 15 Dias Atrás <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_15dias_str})</span></h3>", unsafe_allow_html=True)
@@ -886,10 +941,11 @@ try:
 
             if 'scroll_to_details' not in st.session_state:
                 st.session_state.scroll_to_details = False
-            if needs_scroll or st.session_state.get('scroll_to_details', False):
+                
+            if needs_scroll: # A 'flag' que verificamos no início
                 js_code = """<script> setTimeout(() => { const element = window.parent.document.getElementById('detalhar-e-buscar-chamados'); if (element) { element.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 250); </script>"""
                 components.html(js_code, height=0)
-                st.session_state.scroll_to_details = False
+                st.session_state.scroll_to_details = False # Reseta a flag
 
             st.selectbox("Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", 
                          options=ordem_faixas, 
@@ -1286,7 +1342,7 @@ try:
                 else:
                     fig_aging_all = px.area(
                         df_grafico,
-                        x='Data (EBixo)',
+                        x='Data (Eixo)',
                         y='total',
                         color='Faixa de Antiguidade',
                         title='Composição da Evolução por Antiguidade',
