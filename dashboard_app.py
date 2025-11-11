@@ -1,4 +1,4 @@
-# VERSÃO v1.0.23 (Hotfix: Corrige KeyError na Tab3)
+# VERSÃO v1.0.24 (Hotfix: Corrige lógica de snapshots de Fechados)
 
 import streamlit as st
 import pandas as pd
@@ -633,21 +633,52 @@ if is_admin:
                     st.stop() 
 
                 try:
+                    # --- INÍCIO DA MUDANÇA (V1.0.24) ---
+                    # 1. Carrega o DF de fechados ANTERIOR
                     df_fechados_anterior = read_local_csv(f"{DATA_DIR}dados_fechados.csv")
-                    previous_closed_ids = set()
-                    if not df_fechados_anterior.empty:
-                        id_col_anterior = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_anterior.columns), None)
-                        if id_col_anterior:
-                            previous_closed_ids = set(df_fechados_anterior[id_col_anterior].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
                     
+                    # 2. Carrega o DF de fechados NOVO (que foi upado)
+                    df_fechados_novo = pd.read_csv(BytesIO(content_fechados), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
+
+                    # 3. Encontra as colunas de ID
+                    id_col_anterior = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_anterior.columns), None)
+                    id_col_novo = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_novo.columns), None)
+
+                    if not id_col_novo:
+                         st.sidebar.warning("Não foi possível encontrar coluna de ID no arquivo de fechados.")
+                         raise Exception("Coluna de ID não encontrada nos fechados.")
+
+                    # 4. Pega os sets de IDs
+                    previous_closed_ids = set()
+                    if not df_fechados_anterior.empty and id_col_anterior:
+                        previous_closed_ids = set(df_fechados_anterior[id_col_anterior].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
+                    
+                    current_closed_ids = set(df_fechados_novo[id_col_novo].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
+                    
+                    # 5. Calcula a DIFERENÇA
+                    newly_closed_ids_set = current_closed_ids - previous_closed_ids
+                    
+                    # 6. Cria o DataFrame da DIFERENÇA (para o snapshot)
+                    df_novos_fechados = df_fechados_novo[df_fechados_novo[id_col_novo].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().isin(newly_closed_ids_set)]
+
+                    # 7. Salva o snapshot dos IDs ANTERIORES (para o cálculo da Tab 1)
                     json_content = json.dumps(list(previous_closed_ids), indent=4)
                     save_local_file(STATE_FILE_PREV_CLOSED, json_content)
 
+                    # 8. Salva o arquivo COMPLETO de fechados (para o próximo cálculo)
                     save_local_file(f"{DATA_DIR}dados_fechados.csv", content_fechados, is_binary=True)
 
+                    # 9. Salva o snapshot diário APENAS COM OS NOVOS
                     today_str_closed = now_sao_paulo.strftime('%Y-%m-%d')
                     closed_snapshot_path = f"{DATA_DIR}closed_snapshots/closed_{today_str_closed}.csv"
-                    save_local_file(closed_snapshot_path, content_fechados, is_binary=True)
+                    
+                    output_novos_fechados = StringIO()
+                    df_novos_fechados.to_csv(output_novos_fechados, index=False, sep=';', encoding='utf-8')
+                    content_novos_fechados = output_novos_fechados.getvalue().encode('utf-8')
+                    
+                    save_local_file(closed_snapshot_path, content_novos_fechados, is_binary=True)
+                    
+                    # --- FIM DA MUDANÇA (V1.0.24) ---
 
                     datas_existentes = read_local_text_file(STATE_FILE_REF_DATES)
                     data_atual_existente = datas_existentes.get('data_atual', 'N/A')
@@ -663,15 +694,8 @@ if is_admin:
                     if df_atual_base.empty:
                         st.sidebar.warning("Não foi possível ler o 'dados_atuais.csv' base para atualizar o snapshot.")
                         raise Exception("Arquivo 'dados_atuais.csv' base não encontrado.")
-
-                    df_fechados_novo = pd.read_csv(BytesIO(content_fechados), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
                     
-                    id_col_fechados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_novo.columns), None)
-                    if not id_col_fechados:
-                         st.sidebar.warning("Não foi possível encontrar coluna de ID no arquivo de fechados.")
-                         raise Exception("Coluna de ID não encontrada nos fechados.")
-
-                    closed_ids_set = set(df_fechados_novo[id_col_fechados].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
+                    closed_ids_set = current_closed_ids # Usa o set de IDs atuais que já calculamos
 
                     id_col_atual = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_atual_base.columns), None)
                     if not id_col_atual:
@@ -694,7 +718,7 @@ if is_admin:
                     
                     st.cache_data.clear()
                     st.cache_resource.clear()
-                    st.sidebar.success("Arquivo de fechados salvo e snapshot diário atualizado! Recarregando...")
+                    st.sidebar.success(f"Arquivo de fechados salvo. {len(df_novos_fechados)} novos chamados movidos para o histórico. Recarregando...")
                     st.rerun()
 
                 except Exception as e:
@@ -1071,7 +1095,6 @@ try:
                 df_total_diario['Data (Eixo)'] = df_total_diario['Data'].dt.strftime('%d/%m')
                 ordem_datas_total = df_total_diario['Data (Eixo)'].tolist()
 
-                # --- INÍCIO DA CORREÇÃO (V1.0.23) ---
                 metricas_disponiveis = []
                 cores_disponiveis = {}
                 
@@ -1107,7 +1130,6 @@ try:
                     
                     fig_total_evolucao.update_layout(height=400)
                     st.plotly_chart(fig_total_evolucao, use_container_width=True)
-                # --- FIM DA CORREÇÃO (V1.0.23) ---
 
             else:
                 st.info("Ainda não há dados históricos suficientes (considerando apenas dias de semana).")
@@ -1309,6 +1331,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.22 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.24 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
