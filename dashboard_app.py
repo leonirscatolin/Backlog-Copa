@@ -1,4 +1,4 @@
-# VERSÃO v1.0.28 (Hotfix Final: Corrige lógica de Abertos vs. Fechados na Tab3)
+# VERSÃO v1.0.29 (Hotfix: Corrige lógica de snapshots na Atualização Rápida)
 
 import streamlit as st
 import pandas as pd
@@ -325,7 +325,6 @@ def sync_ticket_data():
     st.session_state.scroll_to_details = True
 
 
-# --- INÍCIO DA MUDANÇA (V1.0.28) ---
 @st.cache_data(ttl=3600)
 def carregar_dados_evolucao(dias_para_analisar=7): 
     try:
@@ -343,7 +342,7 @@ def carregar_dados_evolucao(dias_para_analisar=7):
             closed_files_local = [] 
 
         end_date = date.today()
-        start_date = end_date - timedelta(days=max(dias_para_analisar, 30)) # Aumenta a janela de busca
+        start_date = end_date - timedelta(days=max(dias_para_analisar, 30))
         
         open_files_map = {}
         for file_name in open_files_local:
@@ -363,9 +362,8 @@ def carregar_dados_evolucao(dias_para_analisar=7):
                     closed_files_map[file_date] = os.path.join(snapshot_dir_closed, file_name)
             except Exception: continue
 
-        # Pega todas as datas únicas de AMBOS os diretórios
         datas_unicas = sorted(list(set(open_files_map.keys()) | set(closed_files_map.keys())), reverse=True)
-        datas_unicas = datas_unicas[:dias_para_analisar] # Pega os X dias mais recentes
+        datas_unicas = datas_unicas[:dias_para_analisar] 
 
         if not datas_unicas:
             return pd.DataFrame()
@@ -377,7 +375,6 @@ def carregar_dados_evolucao(dias_para_analisar=7):
                 path_total = open_files_map.get(file_date)
                 path_fechados = closed_files_map.get(file_date)
 
-                # Se não tiver o backlog TOTAL do dia, não podemos calcular
                 if not path_total:
                     continue
                     
@@ -394,7 +391,6 @@ def carregar_dados_evolucao(dias_para_analisar=7):
                         id_col_fechados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_bruto.columns), None)
                         if id_col_fechados:
                             closed_ids_set = set(df_fechados_bruto[id_col_fechados].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
-                        # Lógica Correta: O total de fechados é o tamanho do arquivo de fechados daquele dia
                         total_fechados_count = len(closed_ids_set) 
                 
                 id_col_total = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_total_bruto.columns), None)
@@ -402,7 +398,6 @@ def carregar_dados_evolucao(dias_para_analisar=7):
                     total_abertos_count = 0 
                 else:
                     df_total_bruto[id_col_total] = df_total_bruto[id_col_total].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-                    # Lógica Correta: Abertos = Total - Fechados
                     df_abertos_bruto = df_total_bruto[~df_total_bruto[id_col_total].isin(closed_ids_set)]
                     df_abertos_filtrado = df_abertos_bruto[~df_abertos_bruto['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
                     total_abertos_count = len(df_abertos_filtrado)
@@ -431,7 +426,6 @@ def carregar_dados_evolucao(dias_para_analisar=7):
     except Exception as e:
         st.error(f"Erro ao carregar evolução: {e}")
         return pd.DataFrame()
-# --- FIM DA MUDANÇA (V1.0.28) ---
 
 
 @st.cache_data(ttl=300)
@@ -644,7 +638,6 @@ if is_admin:
                     st.stop() 
 
                 try:
-                    # --- INÍCIO DA MUDANÇA (V1.0.28) ---
                     # 1. Salva o arquivo COMPLETO de fechados (para o cálculo da Tab 1)
                     save_local_file(f"{DATA_DIR}dados_fechados.csv", content_fechados, is_binary=True)
 
@@ -661,16 +654,15 @@ if is_admin:
                     if not df_fechados_anterior.empty:
                         id_col_anterior = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_anterior.columns), None)
                         if id_col_anterior:
-                             df_fechados_anterior[id_col_anterior] = df_fechados_anterior[id_col_anterior].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-                             df_fechados_novo_temp = pd.read_csv(BytesIO(content_fechados), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
-                             id_col_novo = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_novo_temp.columns), None)
-                             current_closed_ids = set(df_fechados_novo_temp[id_col_novo].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
-                             
-                             previous_closed_ids = set(df_fechados_anterior[id_col_anterior].dropna().unique()) - current_closed_ids
+                            df_fechados_anterior[id_col_anterior] = df_fechados_anterior[id_col_anterior].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
+                            df_fechados_novo_temp = pd.read_csv(BytesIO(content_fechados), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
+                            id_col_novo = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_novo_temp.columns), None)
+                            current_closed_ids = set(df_fechados_novo_temp[id_col_novo].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
+                            
+                            previous_closed_ids = set(df_fechados_anterior[id_col_anterior].dropna().unique()) - current_closed_ids
                     
                     json_content = json.dumps(list(previous_closed_ids), indent=4)
                     save_local_file(STATE_FILE_PREV_CLOSED, json_content)
-                    # --- FIM DA MUDANÇA (V1.0.28) ---
 
                     datas_existentes = read_local_text_file(STATE_FILE_REF_DATES)
                     data_atual_existente = datas_existentes.get('data_atual', 'N/A')
@@ -687,33 +679,18 @@ if is_admin:
                         st.sidebar.warning("Não foi possível ler o 'dados_atuais.csv' base para atualizar o snapshot.")
                         raise Exception("Arquivo 'dados_atuais.csv' base não encontrado.")
 
-                    df_fechados_novo = pd.read_csv(BytesIO(content_fechados), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
-                    
-                    id_col_fechados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_novo.columns), None)
-                    if not id_col_fechados:
-                         st.sidebar.warning("Não foi possível encontrar coluna de ID no arquivo de fechados.")
-                         raise Exception("Coluna de ID não encontrada nos fechados.")
-
-                    closed_ids_set = set(df_fechados_novo[id_col_fechados].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
-
-                    id_col_atual = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_atual_base.columns), None)
-                    if not id_col_atual:
-                         st.sidebar.warning("Não foi possível encontrar coluna de ID no 'dados_atuais.csv' base.")
-                         raise Exception("Coluna de ID não encontrada no 'dados_atuais.csv' base.")
-                    
-                    df_atual_base[id_col_atual] = df_atual_base[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-                    
-                    df_atualizado_filtrado = df_atual_base[~df_atual_base[id_col_atual].isin(closed_ids_set)]
-
-                    output = StringIO()
-                    df_atualizado_filtrado.to_csv(output, index=False, sep=';', encoding='utf-8')
-                    content_snapshot_novo = output.getvalue().encode('utf-8')
+                    # --- INÍCIO DA CORREÇÃO (V1.0.29) ---
+                    # Salva o snapshot TOTAL (sem subtração) para a Tab 3
+                    output_total = StringIO()
+                    df_atual_base.to_csv(output_total, index=False, sep=';', encoding='utf-8')
+                    content_snapshot_total = output_total.getvalue().encode('utf-8')
 
                     today_str = now_sao_paulo.strftime('%Y-%m-%d')
                     snapshot_path = f"{DATA_DIR}snapshots/backlog_{today_str}.csv"
                     commit_msg_snapshot = f"Atualizando snapshot (rápido) em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
                     
-                    save_local_file(snapshot_path, content_snapshot_novo, is_binary=True)
+                    save_local_file(snapshot_path, content_snapshot_total, is_binary=True)
+                    # --- FIM DA CORREÇÃO (V1.0.29) ---
                     
                     st.cache_data.clear()
                     st.cache_resource.clear()
@@ -1097,7 +1074,6 @@ try:
                 metricas_disponiveis = []
                 cores_disponiveis = {}
                 
-                # --- INÍCIO DA MUDANÇA (V1.0.28) ---
                 if 'Abertos' in df_total_diario.columns:
                     metricas_disponiveis.append('Abertos')
                     cores_disponiveis['Abertos'] = '#5cb85c' # Verde
@@ -1105,7 +1081,6 @@ try:
                 if 'Fechados' in df_total_diario.columns:
                     metricas_disponiveis.append('Fechados')
                     cores_disponiveis['Fechados'] = '#f0ad4e' # Amarelo/Laranja
-                # --- FIM DA MUDANÇA (V1.0.28) ---
                 
                 if not metricas_disponiveis:
                     st.warning("Ainda não há dados históricos de Abertos ou Fechados para plotar.")
@@ -1332,6 +1307,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.28 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.29 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
