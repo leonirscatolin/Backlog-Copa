@@ -266,7 +266,7 @@ def get_image_as_base64(path):
         return None
     try:
         with open(path, "rb") as image_file:
-            return base664.b64encode(image_file.read()).decode()
+            return base64.b64encode(image_file.read()).decode()
     except Exception:
         return None
 
@@ -685,7 +685,7 @@ try:
     if 'observations' not in st.session_state:
         st.session_state.observations = read_local_json_file(STATE_FILE_OBSERVATIONS, default_return_type='dict')
 
-    # <<< MUDANÇA 1: LÓGICA DE 'query_params' REMOVIDA >>>
+    # LÓGICA DE 'query_params' REMOVIDA
     # Assegura que 'faixa_selecionada' existe no estado
     if 'faixa_selecionada' not in st.session_state:
         st.session_state.faixa_selecionada = "0-2 dias" 
@@ -734,9 +734,7 @@ try:
     df_aging = analisar_aging(df_atual_filtrado)
     df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
 
-    # <<< MUDANÇA 2: FUNÇÃO DO CARD CLICÁVEL >>>
-    # Esta função cria um componente HTML que se parece com seu card e
-    # retorna o valor 'faixa' para o Python quando clicado.
+    # --- CORREÇÃO: AQUI É A FUNÇÃO DO CARD CLICÁVEL ---
     def clickable_metric_card(faixa, quantidade):
         # ID seguro para HTML (ex: '0-2-dias')
         faixa_id = re.sub(r'\W+', '-', faixa) 
@@ -748,7 +746,7 @@ try:
             </div>
             
             <script>
-            const cardElement = document.getElementById("card-{faixa_id}");
+            const cardElement = window.parent.document.getElementById("card-{faixa_id}");
             
             if (cardElement) {{
                 // Ao clicar, envia o valor da 'faixa' de volta ao Python
@@ -760,14 +758,13 @@ try:
         </body>
         """
         
-        # components.html retorna 'None' a menos que 'setComponentValue' seja chamado
+        # A 'key' FOI REMOVIDA. Este é o local da correção.
         clicked_faixa = components.html(
             card_html,
-            height=120, # Altura exata do seu metric-box
-            key=f"card_comp_{faixa_id}" # Key única para o Streamlit
+            height=120 # Altura exata do seu metric-box
         )
         return clicked_faixa
-    # <<< FIM DA MUDANÇA 2 >>>
+    # --- FIM DA CORREÇÃO ---
 
 
     tab1, tab2, tab3, tab4 = st.tabs(["Dashboard Completo", "Report Visual", "Evolução Semanal", "Evolução Aging"])
@@ -790,7 +787,7 @@ try:
             
             st.warning("\n".join(aviso_str_lista))
 
-        info_messages = ["**Filtros e Regras AplicADAS:**", 
+        info_messages = ["**Filtros e Regras Aplicadas:**", 
                          f"- Grupos contendo {GRUPOS_EXCLUSAO_PERMANENTE_TEXTO} foram desconsiderados da análise.", 
                          "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
         
@@ -822,7 +819,7 @@ try:
             aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
             aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
 
-            # <<< MUDANÇA 3: USANDO O NOVO COMPONENTE CLICÁVEL >>>
+            # USANDO O NOVO COMPONENTE CLICÁVEL
             cols = st.columns(len(ordem_faixas))
             clicked_faixa_result = None # Armazena o resultado do clique
             
@@ -844,7 +841,6 @@ try:
                 st.session_state.scroll_to_details = True
                 # Força um re-run para atualizar o selectbox e rolar a tela
                 st.rerun()
-            # <<< FIM DA MUDANÇA 3 >>>
             
         else:
             st.warning("Nenhum dado válido para a análise de antiguidade.")
