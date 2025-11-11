@@ -824,6 +824,9 @@ try:
             # <<< MUDANÇA: LÓGICA DE CLIQUE CORRIGIDA (SEM LOOP INFINITO) >>>
             cols = st.columns(len(ordem_faixas))
             
+            # Precisamos capturar o resultado do clique UMA VEZ
+            clicked_faixa_result = None
+            
             for i, row in aging_counts.iterrows():
                 with cols[i]:
                     faixa = row['Faixa de Antiguidade']
@@ -832,12 +835,18 @@ try:
                     # Chama o novo componente
                     result = clickable_metric_card(faixa, quantidade)
                     
-                    # Processa o clique SOMENTE se for um NOVO valor
-                    # Esta verificação quebra o loop infinito
-                    if result and st.session_state.faixa_selecionada != result:
-                        st.session_state.faixa_selecionada = result
-                        st.session_state.scroll_to_details = True
-                        st.rerun() # Força um único re-run para a rolagem funcionar
+                    # Se este card foi clicado, 'result' não será 'None'
+                    if result:
+                        clicked_faixa_result = result
+            
+            # Processa o clique DEPOIS do loop
+            # Esta é a lógica que quebra o loop: só processamos se for um NOVO valor
+            if clicked_faixa_result and st.session_state.faixa_selecionada != clicked_faixa_result:
+                st.session_state.faixa_selecionada = clicked_faixa_result
+                st.session_state.scroll_to_details = True
+                # st.rerun() # <<< REMOVIDO! Esta era a causa do loop.
+                # O Streamlit vai re-rodar sozinho porque o session_state mudou.
+                st.rerun() # Adicionado de volta, mas agora a lógica de IF previne o loop
             # <<< FIM DA MUDANÇA >>>
             
         else:
