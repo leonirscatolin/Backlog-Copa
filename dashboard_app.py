@@ -759,6 +759,7 @@ try:
         """
         
         # A 'key' FOI REMOVIDA. Este é o local da correção do TypeError.
+        # O 'faixa_id' único no HTML previne o cache de componentes.
         clicked_faixa = components.html(
             card_html,
             height=120 # Altura exata do seu metric-box
