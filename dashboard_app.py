@@ -684,14 +684,13 @@ try:
     if 'observations' not in st.session_state:
         st.session_state.observations = read_local_json_file(STATE_FILE_OBSERVATIONS, default_return_type='dict')
 
-    needs_scroll = "scroll" in st.query_params
-    if "faixa" in st.query_params:
-        faixa_from_url = st.query_params.get("faixa")
-        ordem_faixas_validas = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
-        if faixa_from_url in ordem_faixas_validas:
-                st.session_state.faixa_selecionada = faixa_from_url
-    if "scroll" in st.query_params or "faixa" in st.query_params:
-        st.query_params.clear()
+    # <<< MUDANÇA 1: REMOVIDA LÓGICA DE 'query_params' DAQUI >>>
+    # (Trocamos 'needs_scroll' pela flag do session_state)
+    if 'faixa_selecionada' not in st.session_state:
+        st.session_state.faixa_selecionada = "0-2 dias" 
+    
+    needs_scroll = st.session_state.get('scroll_to_details', False)
+
 
     df_atual = read_local_csv(f"{DATA_DIR}dados_atuais.csv") 
     df_15dias = read_local_csv(f"{DATA_DIR}dados_15_dias.csv") 
@@ -732,6 +731,11 @@ try:
     df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
     df_aging = analisar_aging(df_atual_filtrado)
     df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
+
+    # <<< MUDANÇA 2: ADICIONADA FUNÇÃO 'on_click' PARA OS CARDS >>>
+    def handle_card_click(faixa_clicada):
+        st.session_state.faixa_selecionada = faixa_clicada
+        st.session_state.scroll_to_details = True
 
 
     tab1, tab2, tab3, tab4 = st.tabs(["Dashboard Completo", "Report Visual", "Evolução Semanal", "Evolução Aging"])
@@ -785,14 +789,54 @@ try:
             aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
             aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
             aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
-            if 'faixa_selecionada' not in st.session_state:
-                st.session_state.faixa_selecionada = "0-2 dias"
+
+            # <<< MUDANÇA 3: SUBSTITUÍDOS OS LINKS <A> POR BOTÕES ESTILIZADOS >>>
             cols = st.columns(len(ordem_faixas))
             for i, row in aging_counts.iterrows():
+                faixa = row['Faixa de Antiguidade']
+                quantidade = row['Quantidade']
+                
                 with cols[i]:
-                    faixa_encoded = quote(row['Faixa de Antiguidade'])
-                    card_html = f"""<a href="?faixa={faixa_encoded}&scroll=true" target="_self" class="metric-box"><span class="label">{row['Faixa de Antiguidade']}</span><span class="value">{row['Quantidade']}</span></a>"""
-                    st.markdown(card_html, unsafe_allow_html=True)
+                    # 1. Cria um st.button com uma label de placeholder e a função on_click
+                    st.button(
+                        label=f"placeholder_{faixa}", 
+                        on_click=handle_card_click,
+                        args=(faixa,),
+                        use_container_width=True,
+                        key=f"card_btn_{i}" # Key única para o JavaScript encontrar
+                    )
+                    
+                    # 2. Define o HTML do seu card
+                    card_html = f"""
+                    <div class="metric-box" style="margin-bottom: 0px;">
+                        <span class="label">{faixa}</span>
+                        <span class="value">{quantidade}</span>
+                    </div>
+                    """
+                    
+                    # 3. Usa JavaScript para encontrar o botão pela "key" e injetar o HTML
+                    components.html(
+                        f"""
+                        <script>
+                        // Encontra o botão baseado na key que definimos
+                        const btn = window.parent.document.querySelector('button[data-testid="stButton-card_btn_{i}"]');
+                        if (btn) {{
+                            // Substitui o "placeholder" pelo seu HTML
+                            btn.innerHTML = `{card_html}`;
+                            
+                            // Remove o estilo de botão padrão
+                            btn.style.padding = '0px';
+                            btn.style.border = 'none';
+                            btn.style.background = 'transparent';
+                            // Adiciona o cursor de clique
+                            btn.style.cursor = 'pointer'; 
+                        }}
+                        </script>
+                        """,
+                        height=120 # Garante que o componente tenha a altura do card
+                    )
+            # <<< FIM DA MUDANÇA 3 >>>
+            
         else:
             st.warning("Nenhum dado válido para a análise de antiguidade.")
         st.markdown(f"<h3>Comparativo de Backlog: Atual vs. 15 Dias Atrás <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_15dias_str})</span></h3>", unsafe_allow_html=True)
@@ -886,10 +930,11 @@ try:
 
             if 'scroll_to_details' not in st.session_state:
                 st.session_state.scroll_to_details = False
-            if needs_scroll or st.session_state.get('scroll_to_details', False):
+                
+            if needs_scroll: # A 'flag' que verificamos no início
                 js_code = """<script> setTimeout(() => { const element = window.parent.document.getElementById('detalhar-e-buscar-chamados'); if (element) { element.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 250); </script>"""
                 components.html(js_code, height=0)
-                st.session_state.scroll_to_details = False
+                st.session_state.scroll_to_details = False # Reseta a flag
 
             st.selectbox("Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", 
                          options=ordem_faixas, 
@@ -1081,7 +1126,7 @@ try:
                     category_orders={'Data (Eixo)': ordem_datas_total},
                     color_discrete_map={
                         'Abertos (Backlog)': '#375623', 
-                        'Fechados (no Dia)': '#d9534f'
+                        'Fechados (no Dia)': '#f28801'
                     }
                 )
 
