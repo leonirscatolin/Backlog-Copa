@@ -51,11 +51,6 @@ st.html("""
     flex-direction: column; 
     justify-content: center; 
 }
-a.metric-box { 
-    display: block;
-    color: inherit;
-    text-decoration: none !important;
-}
 /* Esta é a nova classe que o componente usará */
 .metric-box-clickable:hover {
     background-color: #f0f2f6;
@@ -104,6 +99,13 @@ a.metric-box {
     box-shadow: 0 0 0 0.2rem rgba(242, 136, 1, 0.5); 
 }
 </style>
+
+<script>
+function setStreamlitValue(value) {
+    // Envia o valor para o componente "ouvinte" do Streamlit
+    window.parent.document.dispatchEvent(new CustomEvent("setStreamlitValue", { detail: value }));
+}
+</script>
 """)
 
 def save_local_file(file_path, file_content, is_binary=False):
@@ -685,7 +687,7 @@ try:
     if 'observations' not in st.session_state:
         st.session_state.observations = read_local_json_file(STATE_FILE_OBSERVATIONS, default_return_type='dict')
 
-    # <<< MUDANÇA 1: LÓGICA DE 'query_params' REMOVIDA >>>
+    # <<< MUDANÇA 2: REMOÇÃO DA LÓGICA DE 'query_params' >>>
     # Assegura que 'faixa_selecionada' existe no estado
     if 'faixa_selecionada' not in st.session_state:
         st.session_state.faixa_selecionada = "0-2 dias" 
@@ -733,40 +735,6 @@ try:
     df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
     df_aging = analisar_aging(df_atual_filtrado)
     df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
-
-    # <<< MUDANÇA 2: FUNÇÃO DO CARD CLICÁVEL (SEM O 'key' PROBLEMÁTICO) >>>
-    # Esta é a versão que não dá TypeError e tem a lógica para não travar
-    def clickable_metric_card(faixa, quantidade):
-        # ID seguro para HTML (ex: '0-2-dias')
-        faixa_id = re.sub(r'\W+', '-', faixa) 
-        
-        card_html = f"""
-        <body style="margin: 0;"> <div class="metric-box metric-box-clickable" id="card-{faixa_id}" style="margin-bottom: 0px;">
-                <span class="label">{faixa}</span>
-                <span class="value">{quantidade}</span>
-            </div>
-            
-            <script>
-            const cardElement = window.parent.document.getElementById("card-{faixa_id}");
-            
-            if (cardElement) {{
-                // Ao clicar, envia o valor da 'faixa' de volta ao Python
-                cardElement.onclick = function() {{
-                    Streamlit.setComponentValue("{faixa}");
-                }};
-            }}
-            </script>
-        </body>
-        """
-        
-        # A 'key' FOI REMOVIDA. Este é o local da correção do TypeError.
-        # O 'faixa_id' único no HTML previne o cache de componentes.
-        clicked_faixa = components.html(
-            card_html,
-            height=120 # Altura exata do seu metric-box
-        )
-        return clicked_faixa
-    # <<< FIM DA MUDANÇA 2 >>>
 
 
     tab1, tab2, tab3, tab4 = st.tabs(["Dashboard Completo", "Report Visual", "Evolução Semanal", "Evolução Aging"])
@@ -821,36 +789,49 @@ try:
             aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
             aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
 
-            # <<< MUDANÇA 3: LÓGICA DE CLIQUE CORRIGIDA (SEM LOOP INFINITO) >>>
+            # <<< MUDANÇA 3: LÓGICA DE CLIQUE ESTÁVEL E COM VISUAL CORRETO >>>
+            
+            # 1. O "OUVINTE" - Fica invisível e espera por um valor do JS
+            clicked_faixa_result = components.html(
+                """
+                <script>
+                // Define um valor padrão (null)
+                Streamlit.setComponentValue(null);
+                
+                // Ouve o evento "setStreamlitValue" disparado pelo 'onclick' do card
+                window.parent.document.addEventListener("setStreamlitValue", function(e) {
+                    Streamlit.setComponentValue(e.detail);
+                });
+                </script>
+                """,
+                height=0 # Invisível
+            )
+            
+            # 2. OS CARDS (VISUAL)
             cols = st.columns(len(ordem_faixas))
-            
-            clicked_faixa_result = None # Armazena o resultado do clique
-            
             for i, row in aging_counts.iterrows():
                 with cols[i]:
                     faixa = row['Faixa de Antiguidade']
                     quantidade = row['Quantidade']
                     
-                    # Chama o novo componente
-                    result = clickable_metric_card(faixa, quantidade)
-                    
-                    # Se este card foi clicado, 'result' não será 'None'
-                    if result:
-                        clicked_faixa_result = result
-            
-            # Processa o clique DEPOIS do loop
-            # Esta é a lógica que quebra o loop: só processamos se for um NOVO valor
+                    # Este é o seu visual, mas agora com 'onclick'
+                    card_html = f"""
+                    <div class="metric-box metric-box-clickable" onclick="setStreamlitValue('{faixa}')">
+                        <span class="label">{faixa}</span>
+                        <span class="value">{quantidade}</span>
+                    </div>
+                    """
+                    st.markdown(card_html, unsafe_allow_html=True)
+
+            # 3. A LÓGICA (SEM LOOP)
+            # Esta lógica agora é segura. Ela só roda UMA VEZ por clique.
             if clicked_faixa_result and st.session_state.faixa_selecionada != clicked_faixa_result:
                 st.session_state.faixa_selecionada = clicked_faixa_result
                 st.session_state.scroll_to_details = True
-                # A LINHA 'st.rerun()' FOI REMOVIDA DAQUI.
-                # O Streamlit vai recarregar sozinho porque o session_state mudou.
-                # Isso impede o loop infinito e o travamento.
                 
-                # Nós AINDA precisamos de um rerun para a rolagem funcionar,
-                # mas esta lógica impede o loop.
+                # O st.rerun() AINDA é necessário para a rolagem, mas a lógica
+                # do IF o impede de causar um loop infinito.
                 st.rerun() 
-            # <<< FIM DA MUDANÇA >>>
             
         else:
             st.warning("Nenhum dado válido para a análise de antiguidade.")
