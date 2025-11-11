@@ -56,9 +56,10 @@ a.metric-box {
     color: inherit;
     text-decoration: none !important;
 }
-a.metric-box:hover {
+/* Esta é a nova classe que o componente usará */
+.metric-box-clickable:hover {
     background-color: #f0f2f6;
-    text-decoration: none !important;
+    cursor: pointer;
 }
 .metric-box span { 
     display: block;
@@ -83,38 +84,10 @@ a.metric-box:hover {
 .delta-negative { color: #5cb85c; } 
 .delta-neutral { color: #666666; } 
 
-/* <<< MUDANÇA: CSS PARA OS NOVOS BOTÕES >>> */
-[data-testid="stColumn"] [data-testid="stButton"] button {
-    height: 120px;
-    font-size: 1.1em;
-    font-weight: bold;
-    border: 1px solid #CCCCCC;
-    background-color: #FFFFFF;
-}
-[data-testid="stColumn"] [data-testid="stButton"] button:hover {
-    background-color: #f0f2f6;
-    border-color: #375623;
-    color: #375623;
-}
-[data-testid="stColumn"] [data-testid="stButton"] button p {
-    font-size: 0.9em; /* Label (faixa) */
-    color: #666666;
-    font-weight: normal;
-}
-[data-testid="stColumn"] [data-testid="stButton"] button h1 {
-    font-size: 2.5em; /* Valor (quantidade) */
-    color: #375623; 
-    margin: 0;
-    padding: 0;
-    line-height: 1;
-}
-/* <<< FIM DA MUDANÇA >>> */
-
 [data-testid="stSidebar"] [data-testid="stButton"] button {
     background-color: #f28801;
     color: white;
     border: 1px solid #f28801;
-    height: auto; /* Reseta a altura para os botões da sidebar */
 }
 [data-testid="stSidebar"] [data-testid="stButton"] button:hover {
     background-color: #d97900; 
@@ -761,14 +734,39 @@ try:
     df_aging = analisar_aging(df_atual_filtrado)
     df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
 
-    # <<< MUDANÇA: FUNÇÃO 'on_click' PARA OS BOTÕES (VERSÃO RÁPIDA) >>>
-    # Esta função é chamada quando um botão de card é clicado
-    def handle_card_click(faixa_clicada):
-        # Só faz algo se a faixa for DIFERENTE da atual
-        if st.session_state.faixa_selecionada != faixa_clicada:
-            st.session_state.faixa_selecionada = faixa_clicada
-            st.session_state.scroll_to_details = True
-            # NÃO PRECISA de st.rerun() aqui, o próprio clique do botão já causa isso.
+    # <<< MUDANÇA: FUNÇÃO DO CARD CLICÁVEL (SEM O 'key' PROBLEMÁTICO) >>>
+    # Esta é a versão que não dá TypeError e tem a lógica para não travar
+    def clickable_metric_card(faixa, quantidade):
+        # ID seguro para HTML (ex: '0-2-dias')
+        faixa_id = re.sub(r'\W+', '-', faixa) 
+        
+        card_html = f"""
+        <body style="margin: 0;"> <div class="metric-box metric-box-clickable" id="card-{faixa_id}" style="margin-bottom: 0px;">
+                <span class="label">{faixa}</span>
+                <span class="value">{quantidade}</span>
+            </div>
+            
+            <script>
+            const cardElement = window.parent.document.getElementById("card-{faixa_id}");
+            
+            if (cardElement) {{
+                // Ao clicar, envia o valor da 'faixa' de volta ao Python
+                cardElement.onclick = function() {{
+                    Streamlit.setComponentValue("{faixa}");
+                }};
+            }}
+            </script>
+        </body>
+        """
+        
+        # A 'key' FOI REMOVIDA. Este é o local da correção do TypeError.
+        # O 'faixa_id' único no HTML previne o cache de componentes.
+        clicked_faixa = components.html(
+            card_html,
+            height=120 # Altura exata do seu metric-box
+        )
+        return clicked_faixa
+    # <<< FIM DA MUDANÇA >>>
 
 
     tab1, tab2, tab3, tab4 = st.tabs(["Dashboard Completo", "Report Visual", "Evolução Semanal", "Evolução Aging"])
@@ -823,7 +821,7 @@ try:
             aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
             aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
 
-            # <<< MUDANÇA: REVERTENDO PARA ST.BUTTON (VERSÃO RÁPIDA E ESTÁVEL) >>>
+            # <<< MUDANÇA: LÓGICA DE CLIQUE CORRIGIDA (SEM LOOP INFINITO) >>>
             cols = st.columns(len(ordem_faixas))
             
             for i, row in aging_counts.iterrows():
@@ -831,15 +829,15 @@ try:
                     faixa = row['Faixa de Antiguidade']
                     quantidade = row['Quantidade']
                     
-                    # Usando st.button simples. 
-                    # A label usa Markdown para criar duas linhas (Faixa e Quantidade)
-                    st.button(
-                        label=f"<p>{faixa}</p> <h1>{quantidade}</h1>",
-                        on_click=handle_card_click,
-                        args=(faixa,),
-                        use_container_width=True,
-                        key=f"card_btn_{i}"
-                    )
+                    # Chama o novo componente
+                    result = clickable_metric_card(faixa, quantidade)
+                    
+                    # Processa o clique SOMENTE se for um NOVO valor
+                    # Esta verificação quebra o loop infinito
+                    if result and st.session_state.faixa_selecionada != result:
+                        st.session_state.faixa_selecionada = result
+                        st.session_state.scroll_to_details = True
+                        st.rerun() # Força um único re-run para a rolagem funcionar
             # <<< FIM DA MUDANÇA >>>
             
         else:
