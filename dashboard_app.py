@@ -685,7 +685,7 @@ try:
     if 'observations' not in st.session_state:
         st.session_state.observations = read_local_json_file(STATE_FILE_OBSERVATIONS, default_return_type='dict')
 
-    # LÓGICA DE 'query_params' REMOVIDA
+    # <<< MUDANÇA 1: LÓGICA DE 'query_params' REMOVIDA >>>
     # Assegura que 'faixa_selecionada' existe no estado
     if 'faixa_selecionada' not in st.session_state:
         st.session_state.faixa_selecionada = "0-2 dias" 
@@ -734,7 +734,7 @@ try:
     df_aging = analisar_aging(df_atual_filtrado)
     df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
 
-    # --- CORREÇÃO: AQUI É A FUNÇÃO DO CARD CLICÁVEL ---
+    # <<< MUDANÇA 2: FUNÇÃO DO CARD CLICÁVEL (SEM O 'key' PROBLEMÁTICO) >>>
     def clickable_metric_card(faixa, quantidade):
         # ID seguro para HTML (ex: '0-2-dias')
         faixa_id = re.sub(r'\W+', '-', faixa) 
@@ -758,13 +758,13 @@ try:
         </body>
         """
         
-        # A 'key' FOI REMOVIDA. Este é o local da correção.
+        # A 'key' FOI REMOVIDA. Este é o local da correção do TypeError.
         clicked_faixa = components.html(
             card_html,
             height=120 # Altura exata do seu metric-box
         )
         return clicked_faixa
-    # --- FIM DA CORREÇÃO ---
+    # <<< FIM DA MUDANÇA 2 >>>
 
 
     tab1, tab2, tab3, tab4 = st.tabs(["Dashboard Completo", "Report Visual", "Evolução Semanal", "Evolução Aging"])
@@ -819,9 +819,8 @@ try:
             aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
             aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
 
-            # USANDO O NOVO COMPONENTE CLICÁVEL
+            # <<< MUDANÇA 3: LÓGICA DE CLIQUE CORRIGIDA (SEM LOOP) >>>
             cols = st.columns(len(ordem_faixas))
-            clicked_faixa_result = None # Armazena o resultado do clique
             
             for i, row in aging_counts.iterrows():
                 with cols[i]:
@@ -831,16 +830,13 @@ try:
                     # Chama o novo componente
                     result = clickable_metric_card(faixa, quantidade)
                     
-                    # Se este card foi clicado, 'result' não será 'None'
-                    if result:
-                        clicked_faixa_result = result
-            
-            # Fora do loop, processa o clique (se houver)
-            if clicked_faixa_result:
-                st.session_state.faixa_selecionada = clicked_faixa_result
-                st.session_state.scroll_to_details = True
-                # Força um re-run para atualizar o selectbox e rolar a tela
-                st.rerun()
+                    # Processa o clique SOMENTE se for um NOVO valor
+                    # Esta verificação quebra o loop infinito
+                    if result and st.session_state.faixa_selecionada != result:
+                        st.session_state.faixa_selecionada = result
+                        st.session_state.scroll_to_details = True
+                        st.rerun() # Força um único re-run para a rolagem funcionar
+            # <<< FIM DA MUDANÇA 3 >>>
             
         else:
             st.warning("Nenhum dado válido para a análise de antiguidade.")
