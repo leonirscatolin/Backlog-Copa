@@ -1,4 +1,4 @@
-# VERSÃO v1.0.30 (Hotfix: Corrige cálculo de 'newly closed' na Atualização Rápida)
+# VERSÃO v1.0.31 (Hotfix: Corrige cálculo de 'newly closed' na Atualização Rápida)
 
 import streamlit as st
 import pandas as pd
