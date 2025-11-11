@@ -1,5 +1,3 @@
-# VERSÃO v1.0.31 (Hotfix: Corrige cálculo de 'newly closed' na Atualização Rápida)
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -16,7 +14,6 @@ import colorsys
 import re
 import os
 
-# --- Constantes Globais ---
 GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM-GTR'
 GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou 'RDM-GTR'"
 
@@ -25,13 +22,11 @@ GRUPOS_DE_AVISO_TEXTO = "'Service Desk (L1)' ou 'LIQ-SUTEL'"
 
 GRUPOS_EXCLUSAO_TOTAL_REGEX = f"{GRUPOS_EXCLUSAO_PERMANENTE_REGEX}|{GRUPOS_DE_AVISO_REGEX}"
 
-# --- Caminhos dos Dados ---
 DATA_DIR = "data/" 
 STATE_FILE_CONTACTS = "contacted_tickets.json"
 STATE_FILE_OBSERVATIONS = "ticket_observations.json"
 STATE_FILE_REF_DATES = "datas_referencia.txt"
 STATE_FILE_PREV_CLOSED = "previous_closed_ids.json"
-# --- FIM - Constantes Globais ---
 
 st.set_page_config(
     layout="wide",
@@ -328,105 +323,57 @@ def sync_ticket_data():
 @st.cache_data(ttl=3600)
 def carregar_dados_evolucao(dias_para_analisar=7): 
     try:
-        snapshot_dir_open = f"{DATA_DIR}snapshots" 
-        snapshot_dir_closed = f"{DATA_DIR}closed_snapshots"
+        snapshot_dir = f"{DATA_DIR}snapshots"
         
         try:
-            open_files_local = [f for f in os.listdir(snapshot_dir_open) if f.startswith('backlog_') and f.endswith('.csv')]
+            local_files = [os.path.join(snapshot_dir, f) for f in os.listdir(snapshot_dir) if f.endswith('.csv')]
+            if not local_files:
+                raise FileNotFoundError("Pasta de snapshots local vazia ou não encontrada.")
+            all_files = local_files
         except FileNotFoundError:
-            open_files_local = [] 
-            
-        try:
-            closed_files_local = [f for f in os.listdir(snapshot_dir_closed) if f.startswith('closed_') and f.endswith('.csv')]
-        except FileNotFoundError:
-            closed_files_local = [] 
+             return pd.DataFrame() 
 
+        df_evolucao_list = []
         end_date = date.today()
-        start_date = end_date - timedelta(days=max(dias_para_analisar, 30))
-        
-        open_files_map = {}
-        for file_name in open_files_local:
-            try:
-                date_str = file_name.replace("backlog_", "").replace(".csv", "")
-                file_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-                if start_date <= file_date <= end_date:
-                    open_files_map[file_date] = os.path.join(snapshot_dir_open, file_name)
-            except Exception: continue
-            
-        closed_files_map = {}
-        for file_name in closed_files_local:
-            try:
-                date_str = file_name.replace("closed_", "").replace(".csv", "")
-                file_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-                if start_date <= file_date <= end_date:
-                    closed_files_map[file_date] = os.path.join(snapshot_dir_closed, file_name)
-            except Exception: continue
+        start_date = end_date - timedelta(days=max(dias_para_analisar, 10))
 
-        datas_unicas = sorted(list(set(open_files_map.keys()) | set(closed_files_map.keys())), reverse=True)
-        datas_unicas = datas_unicas[:dias_para_analisar] 
+        processed_dates = []
+        for file_name in all_files:
+            if file_name.startswith(f"{snapshot_dir}/backlog_") and file_name.endswith(".csv"):
+                try:
+                    date_str = file_name.replace(f"{snapshot_dir}/backlog_", "").replace(".csv", "")
+                    file_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+                    if start_date <= file_date <= end_date:
+                        processed_dates.append((file_date, file_name))
+                except ValueError: continue
+                except Exception: continue
 
-        if not datas_unicas:
-            return pd.DataFrame()
+        processed_dates.sort(key=lambda x: x[0], reverse=True)
+        files_to_process = [f[1] for f in processed_dates[:dias_para_analisar]]
 
-        lista_evolucao = []
+        for file_name in files_to_process:
+                try:
+                    date_str = file_name.replace(f"{snapshot_dir}/backlog_", "").replace(".csv", "")
+                    file_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+                    df_snapshot = read_local_csv(file_name) 
+                    if not df_snapshot.empty and 'Atribuir a um grupo' in df_snapshot.columns:
+                        
+                        df_snapshot_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
+                        
+                        df_snapshot_final = df_snapshot_filtrado
+                        
+                        contagem_diaria = df_snapshot_final.groupby('Atribuir a um grupo').size().reset_index(name='Total Chamados')
+                        contagem_diaria['Data'] = pd.to_datetime(file_date)
+                        df_evolucao_list.append(contagem_diaria)
+                except Exception: continue
 
-        for file_date in datas_unicas:
-            try:
-                path_total = open_files_map.get(file_date)
-                path_fechados = closed_files_map.get(file_date)
+        if not df_evolucao_list: return pd.DataFrame()
 
-                if not path_total:
-                    continue
-                    
-                df_total_bruto = read_local_csv(path_total)
-                if df_total_bruto.empty:
-                    continue
-
-                total_fechados_count = 0
-                closed_ids_set = set()
-                
-                if path_fechados:
-                    df_fechados_bruto = read_local_csv(path_fechados)
-                    if not df_fechados_bruto.empty:
-                        id_col_fechados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_bruto.columns), None)
-                        if id_col_fechados:
-                            closed_ids_set = set(df_fechados_bruto[id_col_fechados].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
-                        total_fechados_count = len(closed_ids_set) 
-                
-                id_col_total = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_total_bruto.columns), None)
-                if not id_col_total:
-                    total_abertos_count = 0 
-                else:
-                    df_total_bruto[id_col_total] = df_total_bruto[id_col_total].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-                    df_abertos_bruto = df_total_bruto[~df_total_bruto[id_col_total].isin(closed_ids_set)]
-                    df_abertos_filtrado = df_abertos_bruto[~df_abertos_bruto['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
-                    total_abertos_count = len(df_abertos_filtrado)
-
-                lista_evolucao.append({
-                    'Data': pd.to_datetime(file_date), 
-                    'Abertos': total_abertos_count,
-                    'Fechados': total_fechados_count
-                })
-
-            except Exception: 
-                continue
-
-        if not lista_evolucao: 
-            return pd.DataFrame()
-
-        df_consolidado = pd.DataFrame(lista_evolucao)
-        df_consolidado = df_consolidado.fillna(0)
-        
-        df_consolidado['Abertos'] = df_consolidado['Abertos'].astype(int)
-        df_consolidado['Fechados'] = df_consolidado['Fechados'].astype(int)
-            
-        df_consolidado = df_consolidado.sort_values(by='Data')
-        return df_consolidado
-
+        df_consolidado = pd.concat(df_evolucao_list, ignore_index=True)
+        return df_consolidado.sort_values(by=['Data', 'Atribuir a um grupo'])
     except Exception as e:
         st.error(f"Erro ao carregar evolução: {e}")
         return pd.DataFrame()
-
 
 @st.cache_data(ttl=300)
 def find_closest_snapshot_before(current_report_date, target_date):
@@ -625,13 +572,12 @@ if is_admin:
             
     st.sidebar.markdown("---")
     st.sidebar.subheader("Atualização Rápida (Manual)")
-    st.sidebar.info("Este botão espera o arquivo ACUMULADO de fechados (todos até hoje).")
-    uploaded_file_fechados = st.sidebar.file_uploader("Arquivo de Fechados (Acumulado)", type=["csv", "xlsx"], key="uploader_fechados")
+    uploaded_file_fechados = st.sidebar.file_uploader("Apenas Chamados FECHADOS no dia", type=["csv", "xlsx"], key="uploader_fechados")
     if st.sidebar.button("Salvar Apenas Chamados Fechados"):
         if uploaded_file_fechados:
             with st.spinner("Salvando arquivo de fechados e atualizando snapshot diário..."):
                 now_sao_paulo = datetime.now(ZoneInfo('America/Sao_Paulo'))
-                today_str = now_sao_paulo.strftime('%Y-%m-%d')
+                commit_msg = f"Atualizando chamados fechados em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
                 
                 content_fechados = process_uploaded_file(uploaded_file_fechados)
                 if content_fechados is None:
@@ -639,47 +585,18 @@ if is_admin:
                     st.stop() 
 
                 try:
-                    # --- INÍCIO DA LÓGICA (V1.0.30) ---
-                    # 1. Ler o NOVO arquivo (acumulado) que o usuário subiu
-                    df_fechados_novo = pd.read_csv(BytesIO(content_fechados), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
-                    id_col_novo = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_novo.columns), None)
-                    if not id_col_novo:
-                         raise Exception("Coluna de ID não encontrada no arquivo de fechados novo.")
-                    df_fechados_novo[id_col_novo] = df_fechados_novo[id_col_novo].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-                    current_closed_ids = set(df_fechados_novo[id_col_novo].dropna().unique())
-
-                    # 2. Ler o arquivo ANTERIOR (acumulado) que já estava salvo
                     df_fechados_anterior = read_local_csv(f"{DATA_DIR}dados_fechados.csv")
                     previous_closed_ids = set()
                     if not df_fechados_anterior.empty:
                         id_col_anterior = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_anterior.columns), None)
                         if id_col_anterior:
-                            df_fechados_anterior[id_col_anterior] = df_fechados_anterior[id_col_anterior].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-                            previous_closed_ids = set(df_fechados_anterior[id_col_anterior].dropna().unique())
-
-                    # 3. Calcular a DIFERENÇA (os que foram fechados HOJE)
-                    newly_closed_ids_set = current_closed_ids - previous_closed_ids
+                            previous_closed_ids = set(df_fechados_anterior[id_col_anterior].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
                     
-                    # 4. Criar o conteúdo do arquivo DIÁRIO (apenas os novos)
-                    df_newly_closed = df_fechados_novo[df_fechados_novo[id_col_novo].isin(newly_closed_ids_set)]
-                    output_daily = StringIO()
-                    df_newly_closed.to_csv(output_daily, index=False, sep=';', encoding='utf-8')
-                    content_daily_closed = output_daily.getvalue().encode('utf-8')
-                    
-                    # 5. Salvar o arquivo ACUMULADO (novo) em dados_fechados.csv (para amanhã)
-                    save_local_file(f"{DATA_DIR}dados_fechados.csv", content_fechados, is_binary=True)
-
-                    # 6. Salvar o arquivo DIÁRIO (diferença) no snapshot (para a Tab 3)
-                    closed_snapshot_path = f"{DATA_DIR}closed_snapshots/closed_{today_str}.csv"
-                    save_local_file(closed_snapshot_path, content_daily_closed, is_binary=True)
-                    
-                    # 7. Salvar os IDs ANTERIORES (para a Tab 1 "Status: Novo")
                     json_content = json.dumps(list(previous_closed_ids), indent=4)
                     save_local_file(STATE_FILE_PREV_CLOSED, json_content)
-                    
-                    # --- FIM DA LÓGICA (V1.0.30) ---
 
-                    # 8. Atualizar a hora e o snapshot de ABERTOS
+                    save_local_file(f"{DATA_DIR}dados_fechados.csv", content_fechados, is_binary=True)
+
                     datas_existentes = read_local_text_file(STATE_FILE_REF_DATES)
                     data_atual_existente = datas_existentes.get('data_atual', 'N/A')
                     data_15dias_existente = datas_existentes.get('data_15dias', 'N/A')
@@ -695,16 +612,37 @@ if is_admin:
                         st.sidebar.warning("Não foi possível ler o 'dados_atuais.csv' base para atualizar o snapshot.")
                         raise Exception("Arquivo 'dados_atuais.csv' base não encontrado.")
 
-                    output_total = StringIO()
-                    df_atual_base.to_csv(output_total, index=False, sep=';', encoding='utf-8')
-                    content_snapshot_total = output_total.getvalue().encode('utf-8')
+                    df_fechados_novo = pd.read_csv(BytesIO(content_fechados), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
                     
+                    id_col_fechados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_novo.columns), None)
+                    if not id_col_fechados:
+                         st.sidebar.warning("Não foi possível encontrar coluna de ID no arquivo de fechados.")
+                         raise Exception("Coluna de ID não encontrada nos fechados.")
+
+                    closed_ids_set = set(df_fechados_novo[id_col_fechados].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
+
+                    id_col_atual = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_atual_base.columns), None)
+                    if not id_col_atual:
+                         st.sidebar.warning("Não foi possível encontrar coluna de ID no 'dados_atuais.csv' base.")
+                         raise Exception("Coluna de ID não encontrada no 'dados_atuais.csv' base.")
+                    
+                    df_atual_base[id_col_atual] = df_atual_base[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
+                    
+                    df_atualizado_filtrado = df_atual_base[~df_atual_base[id_col_atual].isin(closed_ids_set)]
+
+                    output = StringIO()
+                    df_atualizado_filtrado.to_csv(output, index=False, sep=';', encoding='utf-8')
+                    content_snapshot_novo = output.getvalue().encode('utf-8')
+
+                    today_str = now_sao_paulo.strftime('%Y-%m-%d')
                     snapshot_path = f"{DATA_DIR}snapshots/backlog_{today_str}.csv"
-                    save_local_file(snapshot_path, content_snapshot_total, is_binary=True)
+                    commit_msg_snapshot = f"Atualizando snapshot (rápido) em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
+                    
+                    save_local_file(snapshot_path, content_snapshot_novo, is_binary=True)
                     
                     st.cache_data.clear()
                     st.cache_resource.clear()
-                    st.sidebar.success(f"Arquivos de Fechados (Diário e Acumulado) e Snapshot de Abertos atualizados! Recarregando...")
+                    st.sidebar.success("Arquivo de fechados salvo e snapshot diário atualizado! Recarregando...")
                     st.rerun()
 
                 except Exception as e:
@@ -732,10 +670,10 @@ try:
 
     df_atual = read_local_csv(f"{DATA_DIR}dados_atuais.csv") 
     df_15dias = read_local_csv(f"{DATA_DIR}dados_15_dias.csv") 
-    df_fechados = read_local_csv(f"{DATA_DIR}dados_fechados.csv") # Este é o ACUMULADO
+    df_fechados = read_local_csv(f"{DATA_DIR}dados_fechados.csv") 
     
     datas_referencia = read_local_text_file(STATE_FILE_REF_DATES) 
-    previous_closed_ids = set(read_local_json_file(STATE_FILE_PREV_CLOSED, default_return_type='list')) # Este é o ACUMULADO de ontem
+    previous_closed_ids = set(read_local_json_file(STATE_FILE_PREV_CLOSED, default_return_type='list'))
     
     data_atual_str = datas_referencia.get('data_atual', 'N/A')
     data_15dias_str = datas_referencia.get('data_15dias', 'N/A')
@@ -755,10 +693,10 @@ try:
         if id_col_name:
             df_fechados[id_col_name] = df_fechados[id_col_name].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
             current_closed_ids = set(df_fechados[id_col_name].dropna().unique())
-            closed_ticket_ids = list(current_closed_ids) # Lista acumulada
+            closed_ticket_ids = list(current_closed_ids) 
     
     if previous_closed_ids: 
-        newly_closed_ids = current_closed_ids - previous_closed_ids # Lista diária
+        newly_closed_ids = current_closed_ids - previous_closed_ids
     else:
         newly_closed_ids = current_closed_ids
     
@@ -768,10 +706,7 @@ try:
     df_atual_filtrado = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
     df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
     df_aging = analisar_aging(df_atual_filtrado)
-    
-    # Esta é a principal mudança: A Tab 1 mostra os DIÁRIOS, não os acumulados.
-    df_encerrados_filtrado = df_atual[df_atual['ID do ticket'].isin(newly_closed_ids)]
-    df_encerrados_filtrado = df_encerrados_filtrado[~df_encerrados_filtrado['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
+    df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
 
 
     tab1, tab2, tab3, tab4 = st.tabs(["Dashboard Completo", "Report Visual", "Evolução Semanal", "Evolução Aging"])
@@ -809,7 +744,7 @@ try:
         if not df_aging.empty:
 
             total_chamados = len(df_aging)
-            total_fechados = len(df_encerrados_filtrado) # Agora reflete os diários
+            total_fechados = len(df_encerrados_filtrado)
             col_spacer1, col_total, col_fechados, col_spacer2 = st.columns([1, 1.5, 1.5, 1])
             with col_total:
                 st.markdown(f"""<div class="metric-box"><span class="label">Total de Chamados Abertos</span><span class="value">{total_chamados}</span></div>""", unsafe_allow_html=True)
@@ -861,14 +796,16 @@ try:
             
             id_col_encerrados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_encerrados_para_exibir.columns), None)
             if id_col_encerrados:
-                 df_encerrados_para_exibir['Status'] = "Novo" # Todos aqui são "Novos" por definição
+                 df_encerrados_para_exibir['Status'] = df_encerrados_para_exibir[id_col_encerrados].apply(
+                     lambda x: "Novo" if x in newly_closed_ids else ""
+                 )
             else:
                 df_encerrados_para_exibir['Status'] = ""
             
-            id_col_fechados_acumulado = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados.columns), None)
+            id_col_fechados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados.columns), None)
             
-            if id_col_fechados_acumulado and analista_col_name_origem in df_fechados.columns:
-                df_analistas_lookup = df_fechados[[id_col_fechados_acumulado, analista_col_name_origem]].drop_duplicates(subset=[id_col_fechados_acumulado]).copy()
+            if id_col_fechados and analista_col_name_origem in df_fechados.columns:
+                df_analistas_lookup = df_fechados[[id_col_fechados, analista_col_name_origem]].drop_duplicates(subset=[id_col_fechados]).copy()
                 
                 df_analistas_lookup[analista_col_name_origem] = df_analistas_lookup[analista_col_name_origem].astype(str).replace(r'\s+', ' ', regex=True).str.strip()
                 
@@ -876,7 +813,7 @@ try:
                     df_encerrados_para_exibir,
                     df_analistas_lookup,
                     left_on='ID do ticket',
-                    right_on=id_col_fechados_acumulado,
+                    right_on=id_col_fechados,
                     how='left'
                 )
                 
@@ -915,7 +852,7 @@ try:
             )
             
         else:
-            st.info("Nenhum chamado fechado no dia.")
+            st.info("O arquivo de chamados encerrados do dia ainda não foi carregado.")
 
         if not df_aging.empty:
             st.markdown("---")
@@ -955,6 +892,7 @@ try:
                     'Observações': 'Observações'
                 }
                 
+                # --- INÍCIO DA MUDANÇA (Trava de Admin) ---
                 colunas_desabilitadas_fixas = [
                     'ID do ticket', 'Descrição', 'Grupo Atribuído', 
                     'Dias em Aberto', 'Data de criação'
@@ -981,6 +919,7 @@ try:
                     type="primary",
                     disabled=not is_admin 
                 )
+                # --- FIM DA MUDANÇA ---
                 
                 if st.session_state.ticket_editor.get('edited_rows'):
                     js_code = """
@@ -1063,7 +1002,7 @@ try:
             st.warning("Nenhum dado para gerar o report visual.")
 
     with tab3:
-        st.subheader("Evolução do Backlog (Abertos vs. Fechados)")
+        st.subheader("Evolução do Backlog")
         dias_evolucao = st.slider("Ver evolução dos últimos dias:", min_value=7, max_value=30, value=7, key="slider_evolucao")
 
         df_evolucao_tab3 = carregar_dados_evolucao(dias_para_analisar=dias_evolucao) 
@@ -1071,58 +1010,59 @@ try:
         if not df_evolucao_tab3.empty:
 
             df_evolucao_tab3['Data'] = pd.to_datetime(df_evolucao_tab3['Data'])
-            df_evolucao_tab3 = df_evolucao_tab3[df_evolucao_tab3['Data'].dt.dayofweek < 5].copy() 
+            df_evolucao_tab3 = df_evolucao_tab3[df_evolucao_tab3['Data'].dt.dayofweek < 5].copy()
 
             if not df_evolucao_tab3.empty:
 
-                st.info("Esta visualização compara o total de chamados Abertos (filtrados) vs. o total de Fechados (bruto, apenas no dia) no dia do upload.")
+                st.info("Esta visualização ainda está coletando dados históricos. Utilize as outras abas como referência principal por enquanto.")
 
-                df_total_diario = df_evolucao_tab3.copy()
+                df_total_diario = df_evolucao_tab3.groupby('Data')['Total Chamados'].sum().reset_index()
                 df_total_diario = df_total_diario.sort_values('Data')
+
                 df_total_diario['Data (Eixo)'] = df_total_diario['Data'].dt.strftime('%d/%m')
                 ordem_datas_total = df_total_diario['Data (Eixo)'].tolist()
 
-                metricas_disponiveis = []
-                cores_disponiveis = {}
-                
-                if 'Abertos' in df_total_diario.columns:
-                    metricas_disponiveis.append('Abertos')
-                    cores_disponiveis['Abertos'] = '#5cb85c' # Verde
-                
-                if 'Fechados' in df_total_diario.columns:
-                    metricas_disponiveis.append('Fechados')
-                    cores_disponiveis['Fechados'] = '#f0ad4e' # Amarelo/Laranja
-                
-                if not metricas_disponiveis:
-                    st.warning("Ainda não há dados históricos de Abertos ou Fechados para plotar.")
-                else:
-                    df_melted = df_total_diario.melt(
-                        id_vars=['Data (Eixo)'], 
-                        value_vars=metricas_disponiveis, 
-                        var_name='Métrica', 
-                        value_name='Total'
-                    )
+                fig_total_evolucao = px.area(
+                    df_total_diario,
+                    x='Data (Eixo)',
+                    y='Total Chamados',
+                    title='Evolução do Total Geral de Chamados Abertos (Apenas Dias de Semana)',
+                    markers=True,
+                    labels={"Data (Eixo)": "Data", "Total Chamados": "Total Geral de Chamados"},
+                    category_orders={'Data (Eixo)': ordem_datas_total}
+                )
+                fig_total_evolucao.update_layout(height=400)
+                st.plotly_chart(fig_total_evolucao, use_container_width=True)
 
-                    fig_total_evolucao = px.line(
-                        df_melted,
-                        x='Data (Eixo)',
-                        y='Total',
-                        color='Métrica', 
-                        title='Evolução de Chamados Abertos vs. Fechados (Apenas Dias de Semana)',
-                        markers=True,
-                        labels={"Data (Eixo)": "Data", "Total": "Total de Chamados", "Métrica": "Status"},
-                        category_orders={'Data (Eixo)': ordem_datas_total},
-                        color_discrete_map=cores_disponiveis 
-                    )
-                    
-                    fig_total_evolucao.update_layout(height=400)
-                    st.plotly_chart(fig_total_evolucao, use_container_width=True)
+                st.markdown("---")
+
+                st.info("Esta visualização já filtra os chamados fechados e permite filtrar grupos clicando 2x na legenda.")
+
+                df_evolucao_tab3_sorted = df_evolucao_tab3.sort_values('Data')
+                df_evolucao_tab3_sorted['Data (Eixo)'] = df_evolucao_tab3_sorted['Data'].dt.strftime('%d/%m')
+
+                ordem_datas_grupo = df_evolucao_tab3_sorted['Data (Eixo)'].unique().tolist()
+
+                df_filtrado_display = df_evolucao_tab3_sorted.rename(columns={'Atribuir a um grupo': 'Grupo Atribuído'})
+
+                fig_evolucao_grupo = px.line(
+                    df_filtrado_display,
+                    x='Data (Eixo)',
+                    y='Total Chamados',
+                    color='Grupo Atribuído',
+                    title='Evolução por Grupo (Apenas Dias de Semana)',
+                    markers=True,
+                    labels={ "Data (Eixo)": "Data", "Total Chamados": "Nº de Chamados", "Grupo Atribuído": "Grupo" },
+                    category_orders={'Data (Eixo)': ordem_datas_grupo}
+                )
+                fig_evolucao_grupo.update_layout(height=600)
+                st.plotly_chart(fig_evolucao_grupo, use_container_width=True)
 
             else:
                 st.info("Ainda não há dados históricos suficientes (considerando apenas dias de semana).")
 
         else:
-            st.info("Ainda não há dados históricos suficientes. (Nota: os dados de fechados só começarão a ser coletados a partir de hoje).")
+            st.info("Ainda não há dados históricos suficientes.")
 
     with tab4:
         st.subheader("Evolução do Aging do Backlog")
@@ -1318,6 +1258,6 @@ except Exception as e:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.30 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.21 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
