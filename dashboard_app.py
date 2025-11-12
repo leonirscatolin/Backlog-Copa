@@ -28,6 +28,7 @@ STATE_FILE_OBSERVATIONS = "ticket_observations.json"
 STATE_FILE_REF_DATES = "datas_referencia.txt"
 STATE_FILE_PREV_CLOSED = "previous_closed_ids.json"
 STATE_FILE_CLOSED_HISTORY = "closed_tickets_history.json"
+STATE_FILE_MASTER_CLOSED_CSV = f"{DATA_DIR}historico_fechados_master.csv"
 
 st.set_page_config(
     layout="wide",
@@ -117,7 +118,7 @@ def save_local_file(file_path, file_content, is_binary=False):
         with open(file_path, mode, encoding=encoding) as f:
             f.write(file_content)
             
-        if file_path not in [STATE_FILE_CONTACTS, STATE_FILE_OBSERVATIONS, STATE_FILE_REF_DATES, STATE_FILE_PREV_CLOSED, STATE_FILE_CLOSED_HISTORY]:
+        if file_path not in [STATE_FILE_CONTACTS, STATE_FILE_OBSERVATIONS, STATE_FILE_REF_DATES, STATE_FILE_PREV_CLOSED, STATE_FILE_CLOSED_HISTORY, STATE_FILE_MASTER_CLOSED_CSV]:
             st.sidebar.info(f"Arquivo '{file_path}' salvo localmente.")
             
     except Exception as e:
@@ -138,7 +139,7 @@ def read_local_csv(file_path):
             df = pd.read_csv(file_path, delimiter=';', encoding='latin1',
                              dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str}, low_memory=False,
                              on_bad_lines='warn')
-            if file_path == f"{DATA_DIR}dados_fechados.csv":
+            if file_path in [f"{DATA_DIR}dados_fechados.csv", STATE_FILE_MASTER_CLOSED_CSV]:
                  st.sidebar.warning(f"Arquivo '{file_path}' lido com encoding 'latin-1' localmente.")
         
         df.columns = df.columns.str.strip()
@@ -602,6 +603,7 @@ if is_admin:
                     data_atual_existente = datas_existentes.get('data_atual', 'N/A')
                     data_15dias_existente = datas_existentes.get('data_15dias', 'N/A')
                     hora_atualizacao_nova = now_sao_paulo.strftime('%H:%M')
+                    today_str_history = now_sao_paulo.strftime('%Y-%m-%d') 
 
                     datas_referencia_content_novo = (f"data_atual:{data_atual_existente}\n"
                                                        f"data_15dias:{data_15dias_existente}\n"
@@ -627,11 +629,47 @@ if is_admin:
                                 st.sidebar.warning("Não foi possível encontrar coluna de ID no 'dados_atuais.csv' base.")
                                 raise Exception("Coluna de ID não encontrada no 'dados_atuais.csv' base.")
                     
+                    # <<< INÍCIO DA LÓGICA DE HISTÓRICO (COM CORREÇÃO) >>>
                     try:
                         df_atual_base_copy = df_atual_base.copy()
                         df_atual_base_copy[id_col_atual] = df_atual_base_copy[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
                         df_encerrados_do_dia = df_atual_base_copy[df_atual_base_copy[id_col_atual].isin(closed_ids_set)]
                         
+                        # <<< CORREÇÃO >>> Faz o merge com o analista ANTES de salvar no histórico
+                        analista_col_name_origem = "Analista atribuído"
+                        if id_col_fechados in df_fechados_novo.columns and analista_col_name_origem in df_fechados_novo.columns:
+                            df_analistas_lookup = df_fechados_novo[[id_col_fechados, analista_col_name_origem]].drop_duplicates(subset=[id_col_fechados])
+                            # Limpa o nome do analista
+                            df_analistas_lookup[analista_col_name_origem] = df_analistas_lookup[analista_col_name_origem].astype(str).replace(r'\s+', ' ', regex=True).str.strip()
+                            # Faz o merge
+                            df_encerrados_do_dia = pd.merge(
+                                df_encerrados_do_dia,
+                                df_analistas_lookup,
+                                left_on=id_col_atual,
+                                right_on=id_col_fechados,
+                                how='left'
+                            )
+                        
+                        if not df_encerrados_do_dia.empty:
+                            df_encerrados_do_dia_com_data = df_encerrados_do_dia.copy()
+                            df_encerrados_do_dia_com_data['Data de Fechamento'] = today_str_history
+                            
+                            df_historico_base = pd.DataFrame()
+                            if os.path.exists(STATE_FILE_MASTER_CLOSED_CSV):
+                                df_historico_base = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV)
+                                if id_col_atual in df_historico_base.columns:
+                                     df_historico_base[id_col_atual] = df_historico_base[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
+                            
+                            df_historico_atualizado = pd.concat([df_historico_base, df_encerrados_do_dia_com_data], ignore_index=True)
+                            
+                            df_historico_atualizado[id_col_atual] = df_historico_atualizado[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
+                            df_historico_atualizado.drop_duplicates(subset=[id_col_atual], keep='last', inplace=True)
+                            
+                            output_hist = StringIO()
+                            df_historico_atualizado.to_csv(output_hist, index=False, sep=';', encoding='utf-8')
+                            save_local_file(STATE_FILE_MASTER_CLOSED_CSV, output_hist.getvalue().encode('utf-8'), is_binary=True)
+                        
+                        # Lógica de contagem (para Tab 3)
                         if not df_encerrados_do_dia.empty and 'Atribuir a um grupo' in df_encerrados_do_dia.columns:
                             df_encerrados_do_dia_filtrado = df_encerrados_do_dia[~df_encerrados_do_dia['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
                             count_fechados_filtrado = len(df_encerrados_do_dia_filtrado)
@@ -642,7 +680,6 @@ if is_admin:
                         if not isinstance(history_data, dict):
                             history_data = {}
                             
-                        today_str_history = now_sao_paulo.strftime('%Y-%m-%d')
                         history_data[today_str_history] = count_fechados_filtrado
                         
                         history_json_content = json.dumps(history_data, indent=4)
@@ -650,6 +687,7 @@ if is_admin:
                         
                     except Exception as hist_e:
                         st.sidebar.warning(f"Não foi possível salvar o histórico de fechados: {hist_e}")
+                    # <<< FIM DA LÓGICA DE HISTÓRICO >>>
                     
                     df_atual_base[id_col_atual] = df_atual_base[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
                     
@@ -695,7 +733,8 @@ try:
 
     df_atual = read_local_csv(f"{DATA_DIR}dados_atuais.csv") 
     df_15dias = read_local_csv(f"{DATA_DIR}dados_15_dias.csv") 
-    df_fechados = read_local_csv(f"{DATA_DIR}dados_fechados.csv") 
+    df_fechados_do_dia = read_local_csv(f"{DATA_DIR}dados_fechados.csv") 
+    df_historico_fechados = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV)
     
     datas_referencia = read_local_text_file(STATE_FILE_REF_DATES) 
     previous_closed_ids = set(read_local_json_file(STATE_FILE_PREV_CLOSED, default_return_type='list'))
@@ -709,29 +748,34 @@ try:
     if 'ID do ticket' in df_atual.columns:
         df_atual['ID do ticket'] = df_atual['ID do ticket'].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
 
-    closed_ticket_ids = []
     current_closed_ids = set()
     newly_closed_ids = set() 
 
-    if not df_fechados.empty:
-        id_col_name = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados.columns), None)
+    if not df_fechados_do_dia.empty:
+        id_col_name = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_do_dia.columns), None)
         if id_col_name:
-            df_fechados[id_col_name] = df_fechados[id_col_name].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-            current_closed_ids = set(df_fechados[id_col_name].dropna().unique())
-            closed_ticket_ids = list(current_closed_ids) 
+            df_fechados_do_dia[id_col_name] = df_fechados_do_dia[id_col_name].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
+            current_closed_ids = set(df_fechados_do_dia[id_col_name].dropna().unique())
     
     if previous_closed_ids: 
         newly_closed_ids = current_closed_ids - previous_closed_ids
     else:
         newly_closed_ids = current_closed_ids
     
-    df_encerrados = df_atual[df_atual['ID do ticket'].isin(closed_ticket_ids)]
-    df_abertos = df_atual[~df_atual['ID do ticket'].isin(closed_ticket_ids)]
+    all_closed_ids_historico = set()
+    id_col_historico = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_historico_fechados.columns), None)
+    if id_col_historico:
+        all_closed_ids_historico = set(df_historico_fechados[id_col_historico].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
+    
+    df_abertos = df_atual[~df_atual['ID do ticket'].isin(all_closed_ids_historico)]
     
     df_atual_filtrado = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
     df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
     df_aging = analisar_aging(df_atual_filtrado)
-    df_encerrados_filtrado = df_encerrados[~df_encerrados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
+    
+    df_encerrados_filtrado = pd.DataFrame()
+    if not df_historico_fechados.empty:
+        df_encerrados_filtrado = df_historico_fechados[~df_historico_fechados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
 
 
     tab1, tab2, tab3, tab4 = st.tabs(["Dashboard Completo", "Report Visual", "Evolução Semanal", "Evolução Aging"])
@@ -758,8 +802,8 @@ try:
                          f"- Grupos contendo {GRUPOS_EXCLUSAO_PERMANENTE_TEXTO} foram desconsiderados da análise.", 
                          "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
         
-        if not df_encerrados.empty:
-            info_messages.append(f"- **{len(df_encerrados_filtrado)} chamados fechados no dia** (exceto os grupos filtrados acima) foram deduzidos das contagens principais.")
+        total_fechados_historico = len(df_encerrados_filtrado)
+        info_messages.append(f"- **{total_fechados_historico} chamados no histórico de fechados** (exceto os grupos filtrados acima).")
         
         st.info("\n".join(info_messages))
         
@@ -769,12 +813,12 @@ try:
         if not df_aging.empty:
 
             total_chamados = len(df_aging)
-            total_fechados = len(df_encerrados_filtrado)
+            total_fechados_hoje = len(newly_closed_ids)
             col_spacer1, col_total, col_fechados, col_spacer2 = st.columns([1, 1.5, 1.5, 1])
             with col_total:
                 st.markdown(f"""<div class="metric-box"><span class="label">Total de Chamados Abertos</span><span class="value">{total_chamados}</span></div>""", unsafe_allow_html=True)
             with col_fechados:
-                valor_fechados = total_fechados if total_fechados > 0 else "N/A"
+                valor_fechados = total_fechados_hoje if total_fechados_hoje > 0 else "N/A"
                 st.markdown(f"""<div class="metric-box"><span class="label">Chamados Fechados no Dia</span><span class="value">{valor_fechados}</span></div>""", unsafe_allow_html=True)
 
             st.markdown("---")
@@ -804,21 +848,74 @@ try:
         df_comparativo = df_comparativo[['Grupo', '15 Dias Atrás', 'Atual', 'Diferença', 'Status']]
         st.dataframe(df_comparativo.set_index('Grupo').style.map(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
         st.markdown("---")
-        st.markdown(f"<h3>Chamados Encerrados no Dia <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_atual_str})</span></h3>", unsafe_allow_html=True)
+        
+        st.markdown(f"<h3>Histórico de Chamados Encerrados</h3>", unsafe_allow_html=True)
 
-        if df_fechados.empty:
-            st.info("O arquivo de chamados encerrados ainda não foi carregado.")
+        if df_historico_fechados.empty:
+            st.info("O histórico de chamados encerrados ainda não possui dados. Faça uma 'Atualização Rápida' para começar a popular.")
         elif not df_encerrados_filtrado.empty:
             
             df_encerrados_para_exibir = df_encerrados_filtrado.copy()
             
+            # --- Define colunas e nomes ---
             date_col_name = next((col for col in ['Data de criação', 'Data de Criacao'] if col in df_encerrados_para_exibir.columns), None)
-            
             colunas_para_exibir_fechados = ['Status', 'ID do ticket', 'Descrição']
-            
             novo_nome_analista = "Analista de Resolução" 
-            analista_col_name_origem = "Analista atribuído" 
+            analista_col_name_origem = "Analista atribuído" # Este é o nome que vem do CSV salvo
+            novo_nome_grupo = "Grupo Atribuído"
+            grupo_col_name_origem = "Atribuir a um grupo"
+
+            # --- Renomeia Analista (lido do master file) ---
+            if analista_col_name_origem in df_encerrados_para_exibir.columns:
+                df_encerrados_para_exibir.rename(columns={analista_col_name_origem: novo_nome_analista}, inplace=True)
+                colunas_para_exibir_fechados.append(novo_nome_analista)
             
+            # --- Renomeia Grupo ---
+            if grupo_col_name_origem in df_encerrados_para_exibir.columns:
+                df_encerrados_para_exibir.rename(columns={grupo_col_name_origem: novo_nome_grupo}, inplace=True)
+                colunas_para_exibir_fechados.append(novo_nome_grupo)
+
+            # --- CORREÇÃO: Calcula Dias em Aberto (Fechamento - Criação) ---
+            if date_col_name and 'Data de Fechamento' in df_encerrados_para_exibir.columns:
+                try:
+                    # Converte ambas as colunas para datetime
+                    data_criacao = pd.to_datetime(df_encerrados_para_exibir[date_col_name], errors='coerce').dt.normalize()
+                    # A data é salva como YYYY-MM-DD, então a leitura é direta
+                    data_fechamento = pd.to_datetime(df_encerrados_para_exibir['Data de Fechamento'], errors='coerce').dt.normalize()
+                    
+                    # Calcula a diferença
+                    dias_calculados = (data_fechamento - data_criacao).dt.days
+                    df_encerrados_para_exibir['Dias em Aberto'] = (dias_calculados - 1).clip(lower=0)
+                    colunas_para_exibir_fechados.append('Dias em Aberto')
+                except Exception as e:
+                    st.warning(f"Não foi possível calcular 'Dias em Aberto' para o histórico: {e}")
+            
+            # --- Lógica do Selectbox (Filtragem por Data de Fechamento) ---
+            try:
+                # Cria uma coluna de datetime para ordenação e filtro
+                df_encerrados_para_exibir['Data de Fechamento_dt'] = pd.to_datetime(df_encerrados_para_exibir['Data de Fechamento'])
+                # Cria as opções formatadas para o usuário
+                datas_disponiveis = sorted(df_encerrados_para_exibir['Data de Fechamento_dt'].dt.strftime('%d/%m/%Y').unique(), reverse=True)
+                
+                if not datas_disponiveis:
+                    st.warning("Não há datas de fechamento válidas no histórico.")
+                else:
+                    opcoes_filtro = ["Todos"] + datas_disponiveis
+                    data_selecionada = st.selectbox("Filtrar por Data de Fechamento:", options=opcoes_filtro, key="filtro_data_fechados")
+                    
+                    # Filtra o dataframe se uma data for selecionada
+                    if data_selecionada != "Todos":
+                        data_dt_filtro = datetime.strptime(data_selecionada, '%d/%m/%Y').date()
+                        df_encerrados_para_exibir = df_encerrados_para_exibir[df_encerrados_para_exibir['Data de Fechamento_dt'].dt.date == data_dt_filtro]
+                
+                # Formata a data de fechamento para exibição APÓS o filtro
+                df_encerrados_para_exibir['Data de Fechamento'] = df_encerrados_para_exibir['Data de Fechamento_dt'].dt.strftime('%d/%m/%Y')
+                colunas_para_exibir_fechados.append('Data de Fechamento')
+            
+            except Exception as e:
+                st.error(f"Erro ao processar datas de fechamento: {e}")
+            
+            # --- Lógica de Status (Apenas para os "Novos" de hoje) ---
             id_col_encerrados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_encerrados_para_exibir.columns), None)
             if id_col_encerrados:
                  df_encerrados_para_exibir['Status'] = df_encerrados_para_exibir[id_col_encerrados].apply(
@@ -827,45 +924,11 @@ try:
             else:
                 df_encerrados_para_exibir['Status'] = ""
             
-            id_col_fechados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados.columns), None)
-            
-            if id_col_fechados and analista_col_name_origem in df_fechados.columns:
-                df_analistas_lookup = df_fechados[[id_col_fechados, analista_col_name_origem]].drop_duplicates(subset=[id_col_fechados]).copy()
-                
-                df_analistas_lookup[analista_col_name_origem] = df_analistas_lookup[analista_col_name_origem].astype(str).replace(r'\s+', ' ', regex=True).str.strip()
-                
-                df_encerrados_para_exibir = pd.merge(
-                    df_encerrados_para_exibir,
-                    df_analistas_lookup,
-                    left_on='ID do ticket',
-                    right_on=id_col_fechados,
-                    how='left'
-                )
-                
-                df_encerrados_para_exibir.rename(columns={analista_col_name_origem: novo_nome_analista}, inplace=True)
-                colunas_para_exibir_fechados.append(novo_nome_analista)
-            
-            colunas_para_exibir_fechados.append('Atribuir a um grupo')
-
-            if date_col_name:
-                try:
-                    df_encerrados_para_exibir[date_col_name] = pd.to_datetime(df_encerrados_para_exibir[date_col_name], errors='coerce')
-                    
-                    hoje = pd.to_datetime('today').normalize()
-                    
-                    data_criacao_normalizada = df_encerrados_para_exibir[date_col_name].dt.normalize()
-                    
-                    dias_calculados = (hoje - data_criacao_normalizada).dt.days
-                    
-                    df_encerrados_para_exibir['Dias em Aberto'] = (dias_calculados - 1).clip(lower=0)
-                    
-                    colunas_para_exibir_fechados.append('Dias em Aberto')
-                    
-                except Exception as e:
-                    st.warning(f"Não foi possível calcular os 'Dias em Aberto' para os chamados fechados: {e}")
+            # Garante que as colunas existem antes de tentar exibi-las
+            colunas_finais = [col for col in colunas_para_exibir_fechados if col in df_encerrados_para_exibir.columns]
             
             st.data_editor(
-                df_encerrados_para_exibir[colunas_para_exibir_fechados], 
+                df_encerrados_para_exibir[colunas_finais], 
                 hide_index=True, 
                 disabled=True, 
                 use_container_width=True,
@@ -943,8 +1006,6 @@ try:
                     type="primary",
                     disabled=not is_admin 
                 )
-                
-                # <<< BLOCO DO AVISO 'onbeforeunload' REMOVIDO DAQUI >>>
                 
             else:
                 st.info("Não há chamados nesta categoria.")
@@ -1295,9 +1356,6 @@ except Exception as e:
     st.error(f"Ocorreu um erro ao carregar os dados: {e}")
     st.exception(e)
 
-# <<< INÍCIO DO BLOCO DE AVISO GLOBAL >>>
-# Esta verificação agora está fora das abas, rodando globalmente.
-# Ela também verifica se 'ticket_editor' já existe no session_state para evitar erros.
 if 'ticket_editor' in st.session_state and st.session_state.ticket_editor.get('edited_rows'):
     js_code = """
     <script>
@@ -1314,7 +1372,6 @@ else:
     </script>
     """
     components.html(js_code, height=0)
-# <<< FIM DO BLOCO DE AVISO GLOBAL >>>
 
 st.markdown("---")
 st.markdown("""
