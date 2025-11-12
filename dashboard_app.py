@@ -944,22 +944,7 @@ try:
                     disabled=not is_admin 
                 )
                 
-                if st.session_state.ticket_editor.get('edited_rows'):
-                    js_code = """
-                    <script>
-                    window.onbeforeunload = function() {
-                        return "Você tem alterações não salvas. Deseja realmente sair?";
-                    };
-                    </script>
-                    """
-                    components.html(js_code, height=0)
-                else:
-                    js_code = """
-                    <script>
-                    window.onbeforeunload = null;
-                    </script>
-                    """
-                    components.html(js_code, height=0)
+                # <<< BLOCO DO AVISO 'onbeforeunload' REMOVIDO DAQUI >>>
                 
             else:
                 st.info("Não há chamados nesta categoria.")
@@ -1309,6 +1294,27 @@ try:
 except Exception as e:
     st.error(f"Ocorreu um erro ao carregar os dados: {e}")
     st.exception(e)
+
+# <<< INÍCIO DO BLOCO DE AVISO GLOBAL >>>
+# Esta verificação agora está fora das abas, rodando globalmente.
+# Ela também verifica se 'ticket_editor' já existe no session_state para evitar erros.
+if 'ticket_editor' in st.session_state and st.session_state.ticket_editor.get('edited_rows'):
+    js_code = """
+    <script>
+    window.onbeforeunload = function() {
+        return "Você tem alterações não salvas. Deseja realmente sair?";
+    };
+    </script>
+    """
+    components.html(js_code, height=0)
+else:
+    js_code = """
+    <script>
+    window.onbeforeunload = null;
+    </script>
+    """
+    components.html(js_code, height=0)
+# <<< FIM DO BLOCO DE AVISO GLOBAL >>>
 
 st.markdown("---")
 st.markdown("""
