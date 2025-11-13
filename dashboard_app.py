@@ -548,8 +548,22 @@ if is_admin:
                 
                 if content_atual_raw is not None and content_15dias is not None:
                     try:
+                        # <<< CORREÇÃO >>> DELETA OS ARQUIVOS DE HISTÓRICO PRIMEIRO
+                        st.sidebar.warning("Iniciando nova contagem: Removendo histórico de fechados...")
+                        try:
+                            if os.path.exists(STATE_FILE_MASTER_CLOSED_CSV):
+                                os.remove(STATE_FILE_MASTER_CLOSED_CSV)
+                                st.sidebar.info("Arquivo 'historico_fechados_master.csv' removido.")
+                            if os.path.exists(STATE_FILE_CLOSED_HISTORY):
+                                os.remove(STATE_FILE_CLOSED_HISTORY)
+                                st.sidebar.info("Arquivo 'closed_tickets_history.json' removido.")
+                        except Exception as del_e:
+                            st.sidebar.error(f"Não foi possível remover arquivos de histórico: {del_e}")
+                        # <<< FIM DA CORREÇÃO >>>
+
                         df_novo_atual_raw = pd.read_csv(BytesIO(content_atual_raw), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
                         
+                        # Esta função agora lerá um arquivo VAZIO, como esperado.
                         df_hist_fechados = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV)
                         all_closed_ids_historico = set()
                         id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_hist_fechados.columns), None)
@@ -560,7 +574,7 @@ if is_admin:
                         
                         df_novo_atual_filtrado = df_novo_atual_raw 
                         
-                        if id_col_atual and all_closed_ids_historico:
+                        if id_col_atual and all_closed_ids_historico: # Esta condição será 'False' agora
                             df_novo_atual_raw[id_col_atual] = df_novo_atual_raw[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
                             df_novo_atual_filtrado = df_novo_atual_raw[~df_novo_atual_raw[id_col_atual].isin(all_closed_ids_historico)]
                             st.sidebar.info(f"{len(df_novo_atual_raw) - len(df_novo_atual_filtrado)} chamados fechados (do histórico) foram removidos do novo arquivo 'Atual'.")
@@ -587,7 +601,7 @@ if is_admin:
                         
                         st.cache_data.clear()
                         st.cache_resource.clear()
-                        st.sidebar.success("Arquivos salvos! Forçando recarregamento...")
+                        st.sidebar.success("Arquivos salvos! Histórico zerado. Recarregando...")
                         st.rerun()
                     except Exception as e:
                         st.sidebar.error(f"Erro durante a atualização completa: {e}")
@@ -782,13 +796,13 @@ try:
     total_fechados_hoje = 0
     ids_fechados_hoje = set()
     hoje_referencia_dt = None
-    data_mais_recente_fechado_str = "" # Para o default do selectbox
+    data_mais_recente_fechado_str = "" 
 
     try:
         # 1. Define "hoje" usando a data de referência
         hoje_referencia_dt = datetime.strptime(data_atual_str, '%d/%m/%Y').date()
     except ValueError:
-        hoje_referencia_dt = None # Não há data de referência, o card será N/A
+        hoje_referencia_dt = None 
 
     if not df_encerrados_filtrado.empty and 'Data de Fechamento' in df_encerrados_filtrado.columns:
         try:
@@ -840,9 +854,8 @@ try:
                          f"- Grupos contendo {GRUPOS_EXCLUSAO_PERMANENTE_TEXTO} foram desconsiderados da análise.", 
                          "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
         
+        # <<< CORREÇÃO >>> A contagem agora é dinâmica e a mensagem é condicional
         total_fechados_historico = len(df_encerrados_filtrado)
-        
-        # <<< CORREÇÃO >>> Mensagem agora é dinâmica
         if total_fechados_historico > 0:
             info_messages.append(f"- **{total_fechados_historico} chamados no histórico de fechados** (exceto os grupos filtrados acima).")
         
