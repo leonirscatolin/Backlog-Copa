@@ -1120,6 +1120,23 @@ try:
                         list_items.append(f"    {i}.  **{group}** ({count} chamados)")
                     summary_text.append("\n".join(list_items))
                     
+                    summary_text.append(f"\n**Análise por Categoria:**\n")
+                    
+                    try:
+                        total_sap = group_totals[group_totals.index.str.contains('SAP', case=False, na=False)].sum()
+                        total_3n = group_totals[group_totals.index.str.contains('3N', case=False, na=False)].sum()
+                        total_outros = group_totals[~group_totals.index.str.contains('SAP|3N', case=False, na=False)].sum()
+                        
+                        summary_text.append(f"* Grupos contendo 'SAP' representam **{total_sap}** chamados ({total_sap/total_backlog_geral:.0%}).")
+                        summary_text.append(f"* Grupos contendo '3N' representam **{total_3n}** chamados ({total_3n/total_backlog_geral:.0%}).")
+                        summary_text.append(f"* Os demais grupos (sem 'SAP' ou '3N') somam **{total_outros}** chamados ({total_outros/total_backlog_geral:.0%}).")
+                        
+                        if (total_sap + total_3n + total_outros) != total_backlog_geral:
+                             summary_text.append(f"\n*(Nota: Pode haver sobreposição nos totais acima se um grupo contiver 'SAP' e '3N'.)*")
+                    
+                    except Exception as e:
+                        summary_text.append(f"*Ocorreu um erro ao gerar a análise por categoria: {e}*")
+
                     st.info("\n".join(summary_text))
         else:
             st.warning("Nenhum dado para gerar o report visual.")
