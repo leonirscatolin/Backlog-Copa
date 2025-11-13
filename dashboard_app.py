@@ -26,7 +26,6 @@ DATA_DIR = "data/"
 STATE_FILE_CONTACTS = "contacted_tickets.json"
 STATE_FILE_OBSERVATIONS = "ticket_observations.json"
 STATE_FILE_REF_DATES = "datas_referencia.txt"
-STATE_FILE_CLOSED_HISTORY = "closed_tickets_history.json"
 STATE_FILE_MASTER_CLOSED_CSV = f"{DATA_DIR}historico_fechados_master.csv"
 STATE_FILE_PREV_CLOSED = "previous_closed_ids.json"
 
@@ -118,7 +117,7 @@ def save_local_file(file_path, file_content, is_binary=False):
         with open(file_path, mode, encoding=encoding) as f:
             f.write(file_content)
            
-        if file_path not in [STATE_FILE_CONTACTS, STATE_FILE_OBSERVATIONS, STATE_FILE_REF_DATES, STATE_FILE_CLOSED_HISTORY, STATE_FILE_MASTER_CLOSED_CSV, STATE_FILE_PREV_CLOSED]:
+        if file_path not in [STATE_FILE_CONTACTS, STATE_FILE_OBSERVATIONS, STATE_FILE_REF_DATES, STATE_FILE_MASTER_CLOSED_CSV, STATE_FILE_PREV_CLOSED]:
             st.sidebar.info(f"Arquivo '{file_path}' salvo localmente.")
            
     except Exception as e:
@@ -718,19 +717,6 @@ if is_admin:
                     snapshot_path = f"{DATA_DIR}snapshots/backlog_{today_snapshot_str}.csv"
                     commit_msg_snapshot = f"Atualizando snapshot (rápido) em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
                     save_local_file(snapshot_path, content_snapshot_novo, is_binary=True)
-
-                    df_encerrados_filtrado_json = df_encerrados_para_atualizar[~df_encerrados_para_atualizar['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
-                    history_data = read_local_json_file(STATE_FILE_CLOSED_HISTORY, default_return_type='dict')
-                    if not isinstance(history_data, dict): history_data = {}
-                   
-                    if not df_encerrados_filtrado_json.empty and 'Data de Fechamento' in df_encerrados_filtrado_json.columns:
-                        counts_por_data = df_encerrados_filtrado_json.groupby('Data de Fechamento').size()
-                        for data_str, count in counts_por_data.items():
-                            if data_str and pd.notna(data_str):
-                                history_data[data_str] = history_data.get(data_str, 0) + count
-                   
-                    history_json_content = json.dumps(history_data, indent=4)
-                    save_local_file(STATE_FILE_CLOSED_HISTORY, history_json_content)
                    
                     st.cache_data.clear()
                     st.cache_resource.clear()
@@ -1156,23 +1142,27 @@ try:
                 df_total_abertos = df_evolucao_tab3.groupby('Data')['Total Chamados'].sum().reset_index()
                 df_total_abertos = df_total_abertos.sort_values('Data')
                 df_total_abertos['Tipo'] = 'Abertos (Backlog)'
-
-                closed_history_data = read_local_json_file(STATE_FILE_CLOSED_HISTORY, default_return_type='dict')
-                df_fechados_list = []
-               
+                
                 end_date_tab3 = date.today()
                 start_date_tab3 = end_date_tab3 - timedelta(days=dias_evolucao)
-
-                if isinstance(closed_history_data, dict):
-                    for date_str, count in closed_history_data.items():
-                        try:
-                            file_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-                            if start_date_tab3 <= file_date <= end_date_tab3:
-                                df_fechados_list.append({'Data': pd.to_datetime(file_date), 'Total Chamados': count, 'Tipo': 'Fechados HOJE'})
-                        except ValueError:
-                            continue
-               
-                df_total_fechados = pd.DataFrame(df_fechados_list)
+                
+                df_total_fechados = pd.DataFrame()
+                if not df_encerrados_filtrado.empty and 'Data de Fechamento' in df_encerrados_filtrado.columns:
+                    df_fechados_hist = df_encerrados_filtrado[['Data de Fechamento']].copy()
+                    df_fechados_hist['Data'] = pd.to_datetime(df_fechados_hist['Data de Fechamento'], format='%Y-%m-%d', errors='coerce')
+                    
+                    df_fechados_hist = df_fechados_hist.dropna(subset=['Data'])
+                    
+                    df_fechados_hist = df_fechados_hist[
+                        (df_fechados_hist['Data'].dt.date >= start_date_tab3) &
+                        (df_fechados_hist['Data'].dt.date <= end_date_tab3)
+                    ]
+                    
+                    if not df_fechados_hist.empty:
+                        counts_por_data = df_fechados_hist.groupby(df_fechados_hist['Data'].dt.date).size()
+                        df_total_fechados = counts_por_data.reset_index(name='Total Chamados')
+                        df_total_fechados['Data'] = pd.to_datetime(df_total_fechados['Data'])
+                        df_total_fechados['Tipo'] = 'Fechados HOJE'
                
                 if not df_total_fechados.empty:
                     df_total_diario_combinado = pd.concat([df_total_abertos, df_total_fechados], ignore_index=True)
