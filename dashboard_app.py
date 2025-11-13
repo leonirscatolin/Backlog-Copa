@@ -548,7 +548,6 @@ if is_admin:
                 
                 if content_atual_raw is not None and content_15dias is not None:
                     try:
-                        # <<< INÍCIO DA LÓGICA DE FILTRAGEM >>>
                         df_novo_atual_raw = pd.read_csv(BytesIO(content_atual_raw), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
                         
                         df_hist_fechados = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV)
@@ -569,7 +568,6 @@ if is_admin:
                         output_atual_filtrado = StringIO()
                         df_novo_atual_filtrado.to_csv(output_atual_filtrado, index=False, sep=';', encoding='utf-8')
                         content_atual = output_atual_filtrado.getvalue().encode('utf-8') 
-                        # <<< FIM DA LÓGICA DE FILTRAGEM >>>
                         
                         save_local_file(f"{DATA_DIR}dados_atuais.csv", content_atual, is_binary=True)
                         save_local_file(f"{DATA_DIR}dados_15_dias.csv", content_15dias, is_binary=True)
@@ -612,8 +610,6 @@ if is_admin:
                     st.stop() 
 
                 try:
-                    # <<< REMOVIDO >>> A lógica de 'previous_closed_ids' foi removida.
-                    
                     save_local_file(f"{DATA_DIR}dados_fechados.csv", content_fechados, is_binary=True)
 
                     datas_existentes = read_local_text_file(STATE_FILE_REF_DATES)
@@ -621,8 +617,6 @@ if is_admin:
                     data_15dias_existente = datas_existentes.get('data_15dias', 'N/A')
                     hora_atualizacao_nova = now_sao_paulo.strftime('%H:%M')
                     
-                    # <<< CORREÇÃO >>> A data de fechamento agora é a 'data_atual_existente'
-                    # que veio da "Atualização Completa".
                     try:
                         hoje_referencia_dt = datetime.strptime(data_atual_existente, '%d/%m/%Y').date()
                         today_str_history = hoje_referencia_dt.strftime('%Y-%m-%d')
@@ -673,7 +667,6 @@ if is_admin:
                         
                         if not df_encerrados_do_dia.empty:
                             df_encerrados_do_dia_com_data = df_encerrados_do_dia.copy()
-                            # <<< CORREÇÃO >>> Usa a data de referência como data de fechamento
                             df_encerrados_do_dia_com_data['Data de Fechamento'] = today_str_history 
                             
                             df_historico_base = pd.DataFrame()
@@ -722,8 +715,7 @@ if is_admin:
                     df_atualizado_filtrado.to_csv(output, index=False, sep=';', encoding='utf-8')
                     content_snapshot_novo = output.getvalue().encode('utf-8')
 
-                    today_str = now_sao_paulo.strftime('%Y-%m-%d')
-                    snapshot_path = f"{DATA_DIR}snapshots/backlog_{today_str}.csv"
+                    snapshot_path = f"{DATA_DIR}snapshots/backlog_{today_str_history}.csv"
                     commit_msg_snapshot = f"Atualizando snapshot (rápido) em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
                     
                     save_local_file(snapshot_path, content_snapshot_novo, is_binary=True)
@@ -849,7 +841,10 @@ try:
                          "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
         
         total_fechados_historico = len(df_encerrados_filtrado)
-        info_messages.append(f"- **{total_fechados_historico} chamados no histórico de fechados** (exceto os grupos filtrados acima).")
+        
+        # <<< CORREÇÃO >>> Mensagem agora é dinâmica
+        if total_fechados_historico > 0:
+            info_messages.append(f"- **{total_fechados_historico} chamados no histórico de fechados** (exceto os grupos filtrados acima).")
         
         st.info("\n".join(info_messages))
         
@@ -864,9 +859,8 @@ try:
             with col_total:
                 st.markdown(f"""<div class="metric-box"><span class="label">Total de Chamados Abertos</span><span class="value">{total_chamados}</span></div>""", unsafe_allow_html=True)
             with col_fechados:
-                # <<< CORREÇÃO >>> Lógica de "N/A" se for zero, como pedido
                 valor_fechados = total_fechados_hoje if total_fechados_hoje > 0 else "N/A"
-                st.markdown(f"""<div class="metric-box"><span class="label">Chamados Fechados no Dia</span><span class="value">{valor_fechados}</span></div>""", unsafe_allow_html=True)
+                st.markdown(f"""<div class="metric-box"><span class="label">Chamados Fechados HOJE</span><span class="value">{valor_fechados}</span></div>""", unsafe_allow_html=True)
 
             st.markdown("---")
             aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
@@ -940,11 +934,8 @@ try:
                 if not datas_disponiveis:
                     st.warning("Não há datas de fechamento válidas no histórico.")
                 else:
-                    # <<< CORREÇÃO >>> Remove "Todos"
                     opcoes_filtro = datas_disponiveis
                     
-                    # <<< CORREÇÃO DO DEFAULT >>>
-                    # Tenta encontrar o índice da data mais recente (que calculamos para o card)
                     try:
                         # data_mais_recente_fechado_str foi calculado na lógica global
                         default_index = opcoes_filtro.index(data_mais_recente_fechado_str)
@@ -955,14 +946,12 @@ try:
                         "Filtrar por Data de Fechamento:", 
                         options=opcoes_filtro, 
                         key="filtro_data_fechados",
-                        index=default_index # <<< ALTERADO
+                        index=default_index 
                     )
                     
-                    # Filtra o dataframe
                     data_dt_filtro = datetime.strptime(data_selecionada, '%d/%m/%Y').date()
                     df_encerrados_para_exibir = df_encerrados_para_exibir[df_encerrados_para_exibir['Data de Fechamento_dt_comp'].dt.date == data_dt_filtro]
                 
-                # Formata a data para exibição
                 df_encerrados_para_exibir['Data de Fechamento'] = df_encerrados_para_exibir['Data de Fechamento_dt_comp'].dt.strftime('%d/%m/%Y')
                 colunas_para_exibir_fechados.append('Data de Fechamento')
             
@@ -970,7 +959,6 @@ try:
                 st.error(f"Erro ao processar datas de fechamento: {e}")
             
             # --- Lógica de Status (CORRIGIDA) ---
-            # Usa o set 'ids_fechados_hoje' calculado globalmente (baseado na data de REFERÊNCIA)
             id_col_encerrados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_encerrados_para_exibir.columns), None)
             if id_col_encerrados:
                  df_encerrados_para_exibir['Status'] = df_encerrados_para_exibir[id_col_encerrados].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().apply(
@@ -1154,7 +1142,7 @@ try:
                         try:
                             file_date = datetime.strptime(date_str, "%Y-%m-%d").date()
                             if start_date_tab3 <= file_date <= end_date_tab3:
-                                df_fechados_list.append({'Data': pd.to_datetime(file_date), 'Total Chamados': count, 'Tipo': 'Fechados (no Dia)'})
+                                df_fechados_list.append({'Data': pd.to_datetime(file_date), 'Total Chamados': count, 'Tipo': 'Fechados HOJE'})
                         except ValueError:
                             continue
                 
@@ -1181,7 +1169,7 @@ try:
                     category_orders={'Data (Eixo)': ordem_datas_total},
                     color_discrete_map={
                         'Abertos (Backlog)': '#375623', 
-                        'Fechados (no Dia)': '#f28801'
+                        'Fechados HOJE': '#f28801' 
                     }
                 )
 
