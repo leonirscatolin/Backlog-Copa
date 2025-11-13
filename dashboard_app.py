@@ -549,8 +549,6 @@ if is_admin:
                 if content_atual_raw is not None and content_15dias is not None:
                     try:
                         # <<< CORREÇÃO >>> Lógica de apagar o histórico foi REMOVIDA.
-                        # st.sidebar.warning("Iniciando nova contagem: Removendo histórico de fechados...")
-                        # ... (código de remoção deletado) ...
                         
                         df_novo_atual_raw = pd.read_csv(BytesIO(content_atual_raw), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
                         
@@ -644,13 +642,12 @@ if is_admin:
                     # <<< FIM DA CORREÇÃO >>>
                         
                     id_col_upload = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_novo_upload.columns), None)
-                    col_fechamento_upload = "Data de Fechamento" # Coluna REAL do arquivo
+                    # <<< CORREÇÃO >>> Nome da coluna no arquivo de upload (Report...)
+                    col_fechamento_upload = "Data de Fechamento" 
                     analista_col_name_origem = "Analista atribuído"
                     
                     if not id_col_upload:
                         raise Exception("Coluna de ID não encontrada no arquivo de fechados.")
-                    # <<< CORREÇÃO >>> A coluna Data de Fechamento PODE NÃO EXISTIR (ex: se for upload antigo)
-                    # Vamos usar a data de referência se ela não existir
                     
                     df_fechados_novo_upload[id_col_upload] = df_fechados_novo_upload[id_col_upload].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
                     
@@ -662,6 +659,7 @@ if is_admin:
                         st.sidebar.warning(f"Coluna '{col_fechamento_upload}' não encontrada. Usando data de referência: {data_atual_existente}")
                         df_fechados_novo_upload['Data de Fechamento_dt'] = pd.to_datetime(data_atual_existente, format='%d/%m/%Y', errors='coerce')
                     
+                    # Formata para o padrão YYYY-MM-DD
                     df_fechados_novo_upload['Data de Fechamento_str'] = df_fechados_novo_upload['Data de Fechamento_dt'].dt.strftime('%Y-%m-%d')
                     
                     df_historico_base = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV)
@@ -671,11 +669,13 @@ if is_admin:
                         id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_historico_base.columns), id_col_padrao)
                         df_historico_base[id_col_hist] = df_historico_base[id_col_hist].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
                     
+                    # O 'df_universo' é o backlog ATUAL (já filtrado) + o histórico (o que já foi fechado)
                     df_universo = pd.concat([df_atual_base, df_historico_base], ignore_index=True).drop_duplicates(subset=[id_col_atual], keep='last')
                     df_universo[id_col_atual] = df_universo[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
                     
                     closed_ids_set_upload = set(df_fechados_novo_upload[id_col_upload].dropna().unique())
                     
+                    # Encontra os chamados do upload no nosso universo
                     df_encerrados_do_dia = df_universo[df_universo[id_col_atual].isin(closed_ids_set_upload)].copy()
                     
                     cols_para_merge = [id_col_upload, 'Data de Fechamento_str']
@@ -695,7 +695,6 @@ if is_admin:
                         how='left'
                     )
                     
-                    # Renomeia a coluna de data para o padrão do histórico
                     df_encerrados_com_dados.rename(columns={'Data de Fechamento_str': 'Data de Fechamento'}, inplace=True)
                     
                     df_historico_atualizado = pd.concat([df_historico_base, df_encerrados_com_dados], ignore_index=True)
