@@ -28,6 +28,8 @@ STATE_FILE_OBSERVATIONS = "ticket_observations.json"
 STATE_FILE_REF_DATES = "datas_referencia.txt"
 STATE_FILE_CLOSED_HISTORY = "closed_tickets_history.json"
 STATE_FILE_MASTER_CLOSED_CSV = f"{DATA_DIR}historico_fechados_master.csv"
+# <<< CORREÇÃO >>> Reintroduzindo o arquivo de "lista anterior"
+STATE_FILE_PREV_CLOSED = "previous_closed_ids.json" 
 
 st.set_page_config(
     layout="wide",
@@ -117,7 +119,7 @@ def save_local_file(file_path, file_content, is_binary=False):
         with open(file_path, mode, encoding=encoding) as f:
             f.write(file_content)
             
-        if file_path not in [STATE_FILE_CONTACTS, STATE_FILE_OBSERVATIONS, STATE_FILE_REF_DATES, STATE_FILE_CLOSED_HISTORY, STATE_FILE_MASTER_CLOSED_CSV]:
+        if file_path not in [STATE_FILE_CONTACTS, STATE_FILE_OBSERVATIONS, STATE_FILE_REF_DATES, STATE_FILE_CLOSED_HISTORY, STATE_FILE_MASTER_CLOSED_CSV, STATE_FILE_PREV_CLOSED]:
             st.sidebar.info(f"Arquivo '{file_path}' salvo localmente.")
             
     except Exception as e:
@@ -548,6 +550,8 @@ if is_admin:
                 
                 if content_atual_raw is not None and content_15dias is not None:
                     try:
+                        # <<< CORREÇÃO >>> Lógica de apagar o histórico foi REMOVIDA.
+                        
                         df_novo_atual_raw = pd.read_csv(BytesIO(content_atual_raw), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
                         
                         df_hist_fechados = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV)
@@ -632,12 +636,10 @@ if is_admin:
                     
                     df_fechados_novo_upload = pd.read_csv(BytesIO(content_fechados), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
                     
-                    # <<< CORREÇÃO >>> Adicionando a definição de id_col_atual que faltava
                     id_col_atual = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_atual_base.columns), None)
                     if not id_col_atual:
                         st.sidebar.warning("Não foi possível encontrar coluna de ID no 'dados_atuais.csv' base.")
                         raise Exception("Coluna de ID não encontrada no 'dados_atuais.csv' base.")
-                    # <<< FIM DA CORREÇÃO >>>
                         
                     id_col_upload = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_novo_upload.columns), None)
                     col_fechamento_upload = "Data de Fechamento" 
@@ -658,14 +660,20 @@ if is_admin:
                     df_fechados_novo_upload['Data de Fechamento_str'] = df_fechados_novo_upload['Data de Fechamento_dt'].dt.strftime('%Y-%m-%d')
                     
                     df_historico_base = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV)
-                    id_col_padrao = 'ID do ticket' 
                     
+                    # <<< CORREÇÃO "NOVO" >>> Salva a lista de IDs ANTES de adicionar os novos
+                    previous_closed_ids = set()
                     if not df_historico_base.empty:
-                        id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_historico_base.columns), id_col_atual) # Usa id_col_atual como fallback
+                        id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_historico_base.columns), id_col_atual)
                         if id_col_hist != id_col_atual:
                             df_historico_base = df_historico_base.rename(columns={id_col_hist: id_col_atual})
                         df_historico_base[id_col_atual] = df_historico_base[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
+                        previous_closed_ids = set(df_historico_base[id_col_atual].dropna().unique())
                     
+                    json_content = json.dumps(list(previous_closed_ids), indent=4)
+                    save_local_file(STATE_FILE_PREV_CLOSED, json_content)
+                    # <<< FIM CORREÇÃO "NOVO" >>>
+
                     df_universo = pd.concat([df_atual_base, df_historico_base], ignore_index=True)
                     df_universo[id_col_atual] = df_universo[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
                     df_universo = df_universo.drop_duplicates(subset=[id_col_atual], keep='last')
@@ -688,7 +696,7 @@ if is_admin:
                         'Data de Fechamento_str': 'Data de Fechamento'
                     })
                     
-                    # <<< CORREÇÃO >>> Usando .update() para evitar conflitos de coluna
+                    # <<< CORREÇÃO InvalidIndexError >>> Usando .set_index() para alinhar antes de atualizar
                     df_encerrados_para_atualizar = df_encerrados_para_atualizar.set_index(id_col_atual)
                     df_lookup_indexed = df_lookup.set_index(id_col_atual)
 
@@ -696,6 +704,8 @@ if is_admin:
                     df_encerrados_para_atualizar = df_encerrados_para_atualizar.reset_index()
                     # <<< FIM DA CORREÇÃO >>>
                     
+                    # Agora o concat é seguro, pois estamos juntando o histórico antigo (df_historico_base)
+                    # com os chamados que acabamos de atualizar (df_encerrados_para_atualizar)
                     df_historico_atualizado = pd.concat([df_historico_base, df_encerrados_para_atualizar], ignore_index=True)
                     
                     df_historico_atualizado[id_col_atual] = df_historico_atualizado[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
@@ -706,6 +716,7 @@ if is_admin:
                     df_historico_atualizado.to_csv(output_hist, index=False, sep=';', encoding='utf-8')
                     save_local_file(STATE_FILE_MASTER_CLOSED_CSV, output_hist.getvalue().encode('utf-8'), is_binary=True)
                     
+                    # Atualiza o JSON de contagem (para Tab 3)
                     df_encerrados_filtrado_json = df_encerrados_para_atualizar[~df_encerrados_para_atualizar['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
                     history_data = read_local_json_file(STATE_FILE_CLOSED_HISTORY, default_return_type='dict')
                     if not isinstance(history_data, dict): history_data = {}
@@ -719,6 +730,7 @@ if is_admin:
                     history_json_content = json.dumps(history_data, indent=4)
                     save_local_file(STATE_FILE_CLOSED_HISTORY, history_json_content)
 
+                    # Atualiza o snapshot diário (dados_atuais - historico_atualizado)
                     ids_hist_recente = set(df_historico_atualizado[id_col_atual].dropna().unique())
                     df_atualizado_filtrado = df_atual_base[~df_atual_base[id_col_atual].isin(ids_hist_recente)]
 
@@ -765,6 +777,8 @@ try:
     df_historico_fechados = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV)
     
     datas_referencia = read_local_text_file(STATE_FILE_REF_DATES) 
+    # <<< CORREÇÃO "NOVO" >>> Lendo a "lista anterior"
+    previous_closed_ids = set(read_local_json_file(STATE_FILE_PREV_CLOSED, default_return_type='list'))
     
     data_atual_str = datas_referencia.get('data_atual', 'N/A')
     data_15dias_str = datas_referencia.get('data_15dias', 'N/A')
@@ -790,37 +804,23 @@ try:
     if not df_historico_fechados.empty:
         df_encerrados_filtrado = df_historico_fechados[~df_historico_fechados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
 
-    total_fechados_hoje = 0
-    ids_fechados_hoje = set()
-    hoje_referencia_dt = None
-    data_mais_recente_fechado_str = "" 
-
-    try:
-        hoje_referencia_dt = datetime.strptime(data_atual_str, '%d/%m/%Y').date()
-    except ValueError:
-        hoje_referencia_dt = None 
+    # <<< CORREÇÃO "NOVO" >>> A lógica agora é a diferença das listas
+    ids_fechados_hoje = all_closed_ids_historico - previous_closed_ids
+    total_fechados_hoje = len(ids_fechados_hoje)
+    
+    data_mais_recente_fechado_str = "" # Para o default do selectbox
 
     if not df_encerrados_filtrado.empty and 'Data de Fechamento' in df_encerrados_filtrado.columns:
         try:
             df_encerrados_filtrado['Data de Fechamento_dt_comp'] = pd.to_datetime(df_encerrados_filtrado['Data de Fechamento'], format='%Y-%m-%d', errors='coerce')
             
             if not df_encerrados_filtrado['Data de Fechamento_dt_comp'].isnull().all():
+                # Encontra a data mais recente (para o FILTRO)
                 data_mais_recente_fechado_dt = df_encerrados_filtrado['Data de Fechamento_dt_comp'].max().date()
                 data_mais_recente_fechado_str = data_mais_recente_fechado_dt.strftime('%d/%m/%Y') 
-                
-                if hoje_referencia_dt:
-                    df_fechados_de_hoje = df_encerrados_filtrado[
-                        df_encerrados_filtrado['Data de Fechamento_dt_comp'].dt.date == hoje_referencia_dt
-                    ]
-                    
-                    total_fechados_hoje = len(df_fechados_de_hoje)
-                    
-                    id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_de_hoje.columns), None)
-                    if id_col_hist:
-                        ids_fechados_hoje = set(df_fechados_de_hoje[id_col_hist].astype(str).str.replace(r'\.0$', '', regex=True).str.strip())
-            
         except Exception as e:
-            st.warning(f"Não foi possível processar o card de fechados do dia: {e}")
+            st.warning(f"Não foi possível processar datas de fechamento: {e}")
+    # <<< FIM DA LÓGICA >>>
 
 
     tab1, tab2, tab3, tab4 = st.tabs(["Dashboard Completo", "Report Visual", "Evolução Semanal", "Evolução Aging"])
@@ -864,6 +864,7 @@ try:
             with col_total:
                 st.markdown(f"""<div class="metric-box"><span class="label">Total de Chamados Abertos</span><span class="value">{total_chamados}</span></div>""", unsafe_allow_html=True)
             with col_fechados:
+                # <<< CORREÇÃO "NOVO" >>> O card agora usa a contagem da lista
                 valor_fechados = total_fechados_hoje if total_fechados_hoje > 0 else "N/A"
                 st.markdown(f"""<div class="metric-box"><span class="label">Chamados Fechados HOJE</span><span class="value">{valor_fechados}</span></div>""", unsafe_allow_html=True)
 
