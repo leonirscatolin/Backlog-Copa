@@ -30,6 +30,7 @@ STATE_FILE_REF_DATES = "datas_referencia.txt"
 STATE_FILE_MASTER_CLOSED_CSV = f"{DATA_DIR}historico_fechados_master.csv"
 STATE_FILE_PREV_CLOSED = "previous_closed_ids.json"
 
+# --- SETUP DA PÁGINA ---
 st.set_page_config(
     layout="wide",
     page_title="Backlog Copa Energia + Belago",
@@ -37,6 +38,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# --- CSS PERSONALIZADO ---
 st.html("""
 <style>
 #GithubIcon { visibility: hidden; }
@@ -101,7 +103,10 @@ a.metric-box:hover {
 </style>
 """)
 
+# --- FUNÇÕES UTILITÁRIAS ---
+
 def get_file_mtime(file_path):
+    """Retorna o tempo de modificação do arquivo para forçar a atualização do cache (Cache-Busting)."""
     if os.path.exists(file_path):
         return os.path.getmtime(file_path)
     return 0
@@ -360,7 +365,6 @@ def carregar_dados_evolucao(dias_para_analisar, df_historico_fechados):
             df_hist = df_hist[['Ticket ID', 'Data de Fechamento_dt']]
         else:
             df_hist = pd.DataFrame()
-
 
         for file_name in files_to_process:
                 try:
@@ -1154,6 +1158,7 @@ try:
         st.subheader("Evolução do Backlog")
         dias_evolucao = st.slider("Ver evolução dos últimos dias:", min_value=7, max_value=30, value=7, key="slider_evolucao")
 
+        
         df_evolucao_tab3 = carregar_dados_evolucao(dias_evolucao, df_historico_fechados.copy()) 
 
         if not df_evolucao_tab3.empty:
@@ -1166,12 +1171,19 @@ try:
                 st.info("Esta visualização agora é a **Evolução Líquida** do Backlog: os chamados fechados até o dia do snapshot são deduzidos da contagem.")
                 
                 try:
-                    latest_date_in_chart = df_evolucao_tab3['Data'].max()
-                    
+                    if data_atual_str and data_atual_str != 'N/A':
+                         data_ref_dt = pd.to_datetime(datetime.strptime(data_atual_str, "%d/%m/%Y"))
+                    else:
+                         data_ref_dt = pd.to_datetime(date.today())
+                except:
+                    data_ref_dt = pd.to_datetime(date.today())
+
+                
+                try:
                     agregado_agora = df_aging.groupby('Atribuir a um grupo').size().reset_index(name='Total Chamados')
-                    agregado_agora['Data'] = latest_date_in_chart
+                    agregado_agora['Data'] = data_ref_dt
                     
-                    df_evolucao_tab3 = df_evolucao_tab3[df_evolucao_tab3['Data'] != latest_date_in_chart]
+                    df_evolucao_tab3 = df_evolucao_tab3[df_evolucao_tab3['Data'] != data_ref_dt]
                     
                     df_evolucao_tab3 = pd.concat([df_evolucao_tab3, agregado_agora], ignore_index=True)
                     
@@ -1181,6 +1193,7 @@ try:
                     
                 except Exception as e:
                     pass
+                
 
                 df_total_abertos = df_evolucao_tab3.groupby('Data')['Total Chamados'].sum().reset_index()
                 df_total_abertos = df_total_abertos.sort_values('Data')
@@ -1214,6 +1227,7 @@ try:
                     df_total_diario_combinado = df_total_abertos
                     
                 df_total_diario_combinado = df_total_diario_combinado.sort_values('Data')
+                
                 
                 if not df_total_diario_combinado.empty and 'Fechados HOJE' in df_total_diario_combinado['Tipo'].unique():
                     latest_date = df_total_diario_combinado['Data'].max()
