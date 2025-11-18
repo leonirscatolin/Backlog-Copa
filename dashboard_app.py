@@ -14,7 +14,6 @@ import colorsys
 import re
 import os
 
-# --- CONFIGURAÇÕES E CONSTANTES ---
 GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM-GTR'
 GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou 'RDM-GTR'"
 
@@ -30,7 +29,6 @@ STATE_FILE_REF_DATES = "datas_referencia.txt"
 STATE_FILE_MASTER_CLOSED_CSV = f"{DATA_DIR}historico_fechados_master.csv"
 STATE_FILE_PREV_CLOSED = "previous_closed_ids.json"
 
-# --- SETUP DA PÁGINA ---
 st.set_page_config(
     layout="wide",
     page_title="Backlog Copa Energia + Belago",
@@ -38,7 +36,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- CSS PERSONALIZADO ---
 st.html("""
 <style>
 #GithubIcon { visibility: hidden; }
@@ -103,8 +100,6 @@ a.metric-box:hover {
 </style>
 """)
 
-# --- FUNÇÕES UTILITÁRIAS ---
-
 def get_file_mtime(file_path):
     """Retorna o tempo de modificação do arquivo para forçar a atualização do cache (Cache-Busting)."""
     if os.path.exists(file_path):
@@ -131,7 +126,7 @@ def save_local_file(file_path, file_content, is_binary=False):
         raise
 
 @st.cache_data
-def read_local_csv(file_path, file_mtime): # ADDED file_mtime AS CACHE BUSTER
+def read_local_csv(file_path, file_mtime):
     if not os.path.exists(file_path):
         return pd.DataFrame() 
     
@@ -355,7 +350,7 @@ def carregar_dados_evolucao(dias_para_analisar, df_historico_fechados):
         processed_dates.sort(key=lambda x: x[0], reverse=True)
         files_to_process = [f[1] for f in processed_dates[:dias_para_analisar]]
 
-        # Prepara IDs fechados para deduções
+        
         df_hist = df_historico_fechados.copy()
         id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_hist.columns), None)
         
@@ -380,18 +375,18 @@ def carregar_dados_evolucao(dias_para_analisar, df_historico_fechados):
                         
                         snap_id_col = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_snapshot_filtrado.columns), None)
 
-                        # --- FIX: Subtração Dinâmica no Snapshot ---
+                        
                         if snap_id_col and not df_hist.empty:
                             
-                            # IDs fechados ATÉ A DATA DO SNAPSHOT
+                            
                             closed_up_to_date = df_hist[df_hist['Data de Fechamento_dt'].dt.date <= file_date]['Ticket ID'].unique()
                             
-                            # Filtra o snapshot, removendo IDs já fechados
+                            
                             df_snapshot_filtrado = df_snapshot_filtrado[
                                 ~df_snapshot_filtrado[snap_id_col].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().isin(closed_up_to_date)
                             ]
 
-                        # --- FIM FIX ---
+                        
                         
                         contagem_diaria = df_snapshot_filtrado.groupby('Atribuir a um grupo').size().reset_index(name='Total Chamados')
                         contagem_diaria['Data'] = pd.to_datetime(file_date)
@@ -431,7 +426,7 @@ def find_closest_snapshot_before(current_report_date, target_date):
 
 @st.cache_data
 def carregar_evolucao_aging(dias_para_analisar=90): 
-    # NOTE: Esta função deve ser revisada posteriormente com a nova lógica de dedução líquida
+    
     try:
         snapshot_dir = f"{DATA_DIR}snapshots"
         try:
@@ -532,14 +527,13 @@ if is_admin:
     if st.sidebar.button("Salvar Novos Dados no Site"):
         if uploaded_file_atual and uploaded_file_15dias:
             with st.spinner("Processando e salvando atualização completa..."):
-                # <<< NOVA FUNCIONALIDADE: ZERAR HISTÓRICO >>>
+                
                 if os.path.exists(STATE_FILE_MASTER_CLOSED_CSV):
                     try: os.remove(STATE_FILE_MASTER_CLOSED_CSV)
                     except Exception: pass
                 if os.path.exists(STATE_FILE_PREV_CLOSED):
                     try: os.remove(STATE_FILE_PREV_CLOSED)
                     except Exception: pass
-                # <<< FIM NOVA FUNCIONALIDADE >>>
 
                 now_sao_paulo = datetime.now(ZoneInfo('America/Sao_Paulo'))
                 
@@ -550,15 +544,13 @@ if is_admin:
                     try:
                         df_novo_atual_raw = pd.read_csv(BytesIO(content_atual_raw), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
                         
-                        # Note: Ao fazer uma atualização completa, não precisamos ler o histórico anterior para filtrar, 
-                        # pois o arquivo ATUAL deve ser o estado limpo do backlog. No entanto, mantemos a leitura
-                        # para garantir que as variáveis sejam preenchidas corretamente no escopo.
+                        
                         df_hist_fechados = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV, get_file_mtime(STATE_FILE_MASTER_CLOSED_CSV))
                         
                         all_closed_ids_historico = set()
                         id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_hist_fechados.columns), None)
                         
-                        # Se houver histórico, filtramos os duplicados do novo upload.
+                        
                         if id_col_hist and not df_hist_fechados.empty:
                             all_closed_ids_historico = set(df_hist_fechados[id_col_hist].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
 
@@ -566,7 +558,7 @@ if is_admin:
                         
                         df_novo_atual_filtrado = df_novo_atual_raw 
                         
-                        # O filtro aqui é redundante se o histórico foi zerado, mas protege se o processo de zerar falhar.
+                        
                         if id_col_atual and all_closed_ids_historico: 
                             df_novo_atual_raw[id_col_atual] = df_novo_atual_raw[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
                             df_novo_atual_filtrado = df_novo_atual_raw[~df_novo_atual_raw[id_col_atual].isin(all_closed_ids_historico)]
@@ -597,7 +589,7 @@ if is_admin:
                         save_local_file(STATE_FILE_REF_DATES, datas_referencia_content)
                         
                         st.sidebar.success("Arquivos salvos e histórico zerado! Recarregando...")
-                        st.rerun() # Forces reload, mtime guarantees fresh data.
+                        st.rerun() 
                     except Exception as e:
                         st.sidebar.error(f"Erro durante a atualização completa: {e}")
 
@@ -609,7 +601,7 @@ if is_admin:
     uploaded_file_fechados = st.sidebar.file_uploader("Apenas Chamados FECHADOS no dia", type=["csv", "xlsx"], key="uploader_fechados")
     if st.sidebar.button("Salvar Apenas Chamados Fechados"):
         if uploaded_file_fechados:
-            with st.spinner("Salvando arquivo de fechados e atualizando snapshot diário..."):
+            with st.spinner("Processando e salvando atualização completa..."):
                 now_sao_paulo = datetime.now(ZoneInfo('America/Sao_Paulo'))
                 
                 content_fechados = process_uploaded_file(uploaded_file_fechados)
@@ -650,7 +642,7 @@ if is_admin:
                     
                     df_fechados_novo_upload['Data de Fechamento_str'] = df_fechados_novo_upload['Data de Fechamento_dt'].dt.strftime('%Y-%m-%d')
                     
-                    # Read current closed history (now with mtime cache-busting)
+                    
                     df_historico_base = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV, get_file_mtime(STATE_FILE_MASTER_CLOSED_CSV))
                     
                     id_col_hist = "ID do ticket"
@@ -701,11 +693,11 @@ if is_admin:
                     output_hist = StringIO()
                     df_historico_final.to_csv(output_hist, index=False, sep=';', encoding='utf-8')
                     
-                    # Write the updated history file (this changes mtime)
+                    
                     save_local_file(STATE_FILE_MASTER_CLOSED_CSV, output_hist.getvalue().encode('utf-8'), is_binary=True)
                     
                     st.sidebar.success("Arquivo de fechados adicionado ao histórico com sucesso! Recarregando...")
-                    st.rerun() # Forces reload, mtime guarantees fresh data.
+                    st.rerun() 
 
                 except Exception as e:
                     st.sidebar.error(f"Erro durante a atualização rápida: {e}")
@@ -733,7 +725,7 @@ try:
     if "scroll" in st.query_params or "faixa" in st.query_params:
         st.query_params.clear()
 
-    # --- LEITURA PRINCIPAL (USANDO MTIME PARA CACHE BUSTING) ---
+    
     mtime_atual = get_file_mtime(f"{DATA_DIR}dados_atuais.csv")
     df_atual = read_local_csv(f"{DATA_DIR}dados_atuais.csv", mtime_atual) 
     
@@ -742,8 +734,8 @@ try:
     
     mtime_hist = get_file_mtime(STATE_FILE_MASTER_CLOSED_CSV)
     df_historico_fechados = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV, mtime_hist)
-    # -----------------------------------------------------------
     
+
     datas_referencia = read_local_text_file(STATE_FILE_REF_DATES) 
     
     data_atual_str = datas_referencia.get('data_atual', 'N/A')
@@ -763,15 +755,15 @@ try:
     
     df_abertos = df_atual
     
-    # Base de Abandono (173 tickets) - para usar no cálculo da redução real de HOJE
+    
     df_abertos_base_para_reducao = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)].copy()
 
     df_atual_filtrado = df_abertos_base_para_reducao.copy()
     
-    # <<< FIX: CROSS-REFERENCE WITH CLOSED HISTORY (FILTRO DINÂMICO) >>>
+    
     if all_closed_ids_historico:
          df_atual_filtrado = df_atual_filtrado[~df_atual_filtrado['ID do ticket'].isin(all_closed_ids_historico)]
-    # <<< END FIX >>>
+    
 
     df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
     df_aging = analisar_aging(df_atual_filtrado)
@@ -788,13 +780,13 @@ try:
 
         df_encerrados_filtrado = df_historico_fechados[~df_historico_fechados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
 
-    # --- CÁLCULO TOTAL FECHADOS HOJE (COM LÓGICA DE INTERSEÇÃO) ---
+    
     total_fechados_hoje = 0
     hoje_sp = datetime.now(ZoneInfo('America/Sao_Paulo')).date()
     
     if not df_encerrados_filtrado.empty and 'Data de Fechamento' in df_encerrados_filtrado.columns:
         
-        # 1. Filtra Fechados HOJE (Todos os 101 tickets)
+        
         df_encerrados_filtrado['Data de Fechamento_dt_comp'] = pd.to_datetime(
             df_encerrados_filtrado['Data de Fechamento'], 
             dayfirst=True, 
@@ -804,17 +796,17 @@ try:
             df_encerrados_filtrado['Data de Fechamento_dt_comp'].dt.date == hoje_sp
         ].copy()
         
-        # 2. Identifica IDs de TUDO que estava aberto (Base 173)
+        
         id_col_backlog = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_abertos_base_para_reducao.columns), 'ID do ticket')
         open_ids_base = set(df_abertos_base_para_reducao[id_col_backlog].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().unique())
         
-        # 3. Identifica IDs Fechados HOJE
+        
         id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in fechados_hoje_df.columns), None)
         closed_today_ids = set(fechados_hoje_df[id_col_hist].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().unique())
         
-        # 4. FIX: Calcula a Interseção (Tickets fechados HOJE que estavam na lista de 173)
+        
         total_fechados_hoje = len(open_ids_base.intersection(closed_today_ids))
-    # --------------------------------------------------------------------------
+    
 
     data_mais_recente_fechado_str = "" 
 
@@ -833,6 +825,7 @@ try:
     tab1, tab2, tab3, tab4 = st.tabs(["Dashboard Completo", "Report Visual", "Evolução Semanal", "Evolução Aging"])
 
     with tab1:
+        
         
         df_para_aviso = df_atual_filtrado[
             df_atual_filtrado['Atribuir a um grupo'].str.contains(
@@ -864,7 +857,7 @@ try:
         texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
         st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
         
-        # --- FIX: CARD TOTAL DE CHAMADOS (AGORA JÁ FILTRADO PELOS FECHADOS) ---
+        
         total_chamados = len(df_atual_filtrado)
 
         col_spacer1, col_total, col_fechados, col_spacer2 = st.columns([1, 1.5, 1.5, 1])
@@ -1082,7 +1075,7 @@ try:
     with tab2:
         st.subheader("Resumo do Backlog Atual")
         if not df_aging.empty:
-            # Usa a contagem do dataframe filtrado bruto (já filtrado dos fechados)
+            
             total_chamados_tab2 = len(df_atual_filtrado)
             _, col_total_tab2, _ = st.columns([2, 1.5, 2])
             with col_total_tab2: st.markdown( f"""<div class="metric-box"><span class="label">Total de Chamados</span><span class="value">{total_chamados_tab2}</span></div>""", unsafe_allow_html=True )
@@ -1194,7 +1187,7 @@ try:
         st.subheader("Evolução do Backlog")
         dias_evolucao = st.slider("Ver evolução dos últimos dias:", min_value=7, max_value=30, value=7, key="slider_evolucao")
 
-        # FIX: Passando df_historico_fechados para carregar_dados_evolucao
+        
         df_evolucao_tab3 = carregar_dados_evolucao(dias_evolucao, df_historico_fechados.copy()) 
 
         if not df_evolucao_tab3.empty:
@@ -1216,7 +1209,7 @@ try:
                 df_total_fechados = pd.DataFrame()
                 if not df_encerrados_filtrado.empty and 'Data de Fechamento' in df_encerrados_filtrado.columns:
                     df_fechados_hist = df_encerrados_filtrado[['Data de Fechamento']].copy()
-                    # Usa dayfirst=True para consistência no histórico também
+                    
                     df_fechados_hist['Data'] = pd.to_datetime(df_fechados_hist['Data de Fechamento'], dayfirst=True, errors='coerce')
                     
                     df_fechados_hist = df_fechados_hist.dropna(subset=['Data'])
