@@ -359,7 +359,7 @@ def carregar_dados_evolucao(dias_para_analisar=7):
                 try:
                     date_str = file_name.split("backlog_")[1].replace(".csv", "")
                     file_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-                    # AQUI: Não precisamos de mtime, pois o cache busting é feito no caller.
+                    # Using mtime for cache bust
                     df_snapshot = read_local_csv(file_name, get_file_mtime(file_name)) 
                     if not df_snapshot.empty and 'Atribuir a um grupo' in df_snapshot.columns:
                         df_snapshot_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
@@ -426,7 +426,7 @@ def carregar_evolucao_aging(dias_para_analisar=90):
 
         for file_date, file_name in processed_files:
             try:
-                df_snapshot = read_local_csv(file_name, get_file_mtime(file_name)) # ADDED mtime
+                df_snapshot = read_local_csv(file_name, get_file_mtime(file_name)) # Added mtime
                 if df_snapshot.empty: continue
 
                 df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
@@ -706,18 +706,23 @@ try:
     mtime_atual = get_file_mtime(f"{DATA_DIR}dados_atuais.csv")
     df_atual = read_local_csv(f"{DATA_DIR}dados_atuais.csv", mtime_atual) 
     
+    # FIX: Inserindo a leitura de df_15dias que estava faltando
+    mtime_15dias = get_file_mtime(f"{DATA_DIR}dados_15_dias.csv")
+    df_15dias = read_local_csv(f"{DATA_DIR}dados_15_dias.csv", mtime_15dias) 
+    
     mtime_hist = get_file_mtime(STATE_FILE_MASTER_CLOSED_CSV)
     df_historico_fechados = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV, mtime_hist)
     # -----------------------------------------------------------
-
+    
     datas_referencia = read_local_text_file(STATE_FILE_REF_DATES) 
     
     data_atual_str = datas_referencia.get('data_atual', 'N/A')
     data_15dias_str = datas_referencia.get('data_15dias', 'N/A')
     hora_atualizacao_str = datas_referencia.get('hora_atualizacao', '')
-    if df_atual.empty or df_15dias.empty:
+    if df_atual.empty or df_15dias.empty: 
         st.warning("Ainda não há dados para exibir. Por favor, carregue os arquivos na área do administrador.")
         st.stop()
+
     if 'ID do ticket' in df_atual.columns:
         df_atual['ID do ticket'] = df_atual['ID do ticket'].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
 
