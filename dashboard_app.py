@@ -585,7 +585,6 @@ if is_admin:
                         data_arquivo_15dias = data_do_upload - timedelta(days=15)
                         date_15_str = data_arquivo_15dias.strftime('%Y-%m-%d')
                         
-                        # Salva snapshot retroativo para gerar gráfico inicial
                         snapshot_path_15 = f"{DATA_DIR}snapshots/backlog_{date_15_str}.csv"
                         save_local_file(snapshot_path_15, content_15dias, is_binary=True)
                         
@@ -711,11 +710,9 @@ if is_admin:
                     df_universo = df_universo.reset_index()
 
                     df_universo = df_universo.drop_duplicates(subset=[id_col_atual], keep='last')
-                    
-                    # <<< CORREÇÃO CRASH: GARANTIA DA COLUNA DE FECHAMENTO >>>
+
                     if 'Data de Fechamento' not in df_universo.columns:
                          df_universo['Data de Fechamento'] = np.nan 
-                    # <<< FIM CORREÇÃO >>>
                    
                     df_historico_final = df_universo[pd.notna(df_universo['Data de Fechamento'])]
                     output_hist = StringIO()
@@ -756,9 +753,6 @@ try:
     if 'editor_key_counter' not in st.session_state:
         st.session_state.editor_key_counter = 0
         
-    if 'sort_config' not in st.session_state:
-        st.session_state.sort_config = "Padrão (Dias em Aberto)"
-
     needs_scroll = "scroll" in st.query_params
     if "faixa" in st.query_params:
         faixa_from_url = st.query_params.get("faixa")
@@ -799,20 +793,14 @@ try:
     if not df_historico_fechados.empty:
         df_encerrados_filtrado = df_historico_fechados[~df_historico_fechados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
 
-    # <<< CORREÇÃO LÓGICA "CONTADOR DO DIA" >>>
-    # Não usa mais 'ids_fechados_hoje' baseado em diferença de arquivos.
-    # Usa a data de fechamento real comparada com a data de hoje (timezone BR).
     total_fechados_hoje = 0
     hoje_sp = datetime.now(ZoneInfo('America/Sao_Paulo')).date()
     
     if not df_encerrados_filtrado.empty and 'Data de Fechamento' in df_encerrados_filtrado.columns:
-        # Converter para datetime de forma segura
         df_encerrados_filtrado['Data de Fechamento_dt_comp'] = pd.to_datetime(df_encerrados_filtrado['Data de Fechamento'], format='%Y-%m-%d', errors='coerce')
         
-        # Filtrar apenas os que tem data igual a "hoje"
         fechados_hoje_df = df_encerrados_filtrado[df_encerrados_filtrado['Data de Fechamento_dt_comp'].dt.date == hoje_sp]
         total_fechados_hoje = len(fechados_hoje_df)
-    # <<< FIM DA CORREÇÃO >>>
    
     data_mais_recente_fechado_str = "" 
 
@@ -869,7 +857,6 @@ try:
             with col_total:
                 st.markdown(f"""<div class="metric-box"><span class="label">Total de Chamados Abertos</span><span class="value">{total_chamados}</span></div>""", unsafe_allow_html=True)
             with col_fechados:
-                # <<< CORREÇÃO CARD: Usa a variável calculada com a data de hoje >>>
                 st.markdown(f"""<div class="metric-box"><span class="label">Chamados Fechados HOJE</span><span class="value">{total_fechados_hoje}</span></div>""", unsafe_allow_html=True)
 
             st.markdown("---")
@@ -964,7 +951,6 @@ try:
            
             id_col_encerrados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_encerrados_para_exibir.columns), None)
             if id_col_encerrados:
-                 # Marca como "Novo" apenas se a data de fechamento for HOJE
                  df_encerrados_para_exibir['Status'] = df_encerrados_para_exibir['Data de Fechamento_dt_comp'].dt.date.apply(
                      lambda d: "Novo" if d == hoje_sp else ""
                  )
@@ -1038,22 +1024,6 @@ try:
                 else:
                     colunas_desabilitadas_final = colunas_desabilitadas_fixas + colunas_editaveis_admin
                
-                sort_options = {
-                    "Padrão (Dias em Aberto)": "Dias em Aberto",
-                    "Data de Criação (Mais antigo primeiro)": "Data de criação",
-                    "Grupo Atribuído": "Atribuir a um grupo"
-                }
-                st.selectbox("Ordenar tabela por:", options=list(sort_options.keys()), key='sort_config')
-                
-                col_sort = sort_options[st.session_state.sort_config]
-                ascending_order = False 
-                if st.session_state.sort_config == "Data de Criação (Mais antigo primeiro)":
-                    ascending_order = True
-                elif st.session_state.sort_config == "Grupo Atribuído":
-                    ascending_order = True
-                
-                st.session_state.last_filtered_df = st.session_state.last_filtered_df.sort_values(by=col_sort, ascending=ascending_order).reset_index(drop=True)
-
                 st.data_editor(
                     st.session_state.last_filtered_df.rename(columns=colunas_para_exibir_renomeadas)[list(colunas_para_exibir_renomeadas.values())].style.apply(highlight_row, axis=1),
                     use_container_width=True,
