@@ -14,6 +14,7 @@ import colorsys
 import re
 import os
 
+# --- CONFIGURAÇÕES E CONSTANTES ---
 GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM-GTR'
 GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou 'RDM-GTR'"
 
@@ -29,6 +30,7 @@ STATE_FILE_REF_DATES = "datas_referencia.txt"
 STATE_FILE_MASTER_CLOSED_CSV = f"{DATA_DIR}historico_fechados_master.csv"
 STATE_FILE_PREV_CLOSED = "previous_closed_ids.json"
 
+# --- SETUP DA PÁGINA ---
 st.set_page_config(
     layout="wide",
     page_title="Backlog Copa Energia + Belago",
@@ -36,6 +38,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# --- CSS PERSONALIZADO ---
 st.html("""
 <style>
 #GithubIcon { visibility: hidden; }
@@ -99,6 +102,8 @@ a.metric-box:hover {
 }
 </style>
 """)
+
+# --- FUNÇÕES UTILITÁRIAS ---
 
 def get_file_mtime(file_path):
     if os.path.exists(file_path):
@@ -230,8 +235,19 @@ def analisar_aging(_df_atual):
     elif 'Data de Criacao' in df.columns: date_col_name = 'Data de Criacao'
     if not date_col_name:
         return pd.DataFrame()
-    df[date_col_name] = pd.to_datetime(df[date_col_name], errors='coerce')
     
+    # Tenta converter, usando dayfirst=True para garantir leitura correta de DD/MM
+    df[date_col_name] = pd.to_datetime(df[date_col_name], dayfirst=True, errors='coerce')
+    
+    # --- CHECK DE INTEGRIDADE ---
+    # Verifica se existem linhas onde a data não pode ser lida (NaT)
+    linhas_sem_data = df[df[date_col_name].isna()]
+    if not linhas_sem_data.empty:
+        st.warning(f"⚠️ **Atenção:** Foram encontrados **{len(linhas_sem_data)}** tickets com 'Data de Criação' inválida ou vazia. Eles não serão contabilizados no Aging.")
+        with st.expander("Visualizar Tickets sem Data"):
+            st.dataframe(linhas_sem_data)
+    # ---------------------------
+
     df = df.dropna(subset=[date_col_name])
     
     hoje = pd.to_datetime('today').normalize()
@@ -823,7 +839,8 @@ try:
         texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
         st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
         
-        total_chamados = len(df_atual_filtrado)
+        # CORREÇÃO DA MATEMÁTICA: TOTAL = SOMA DOS CARDS (df_aging)
+        total_chamados = len(df_aging)
 
         col_spacer1, col_total, col_fechados, col_spacer2 = st.columns([1, 1.5, 1.5, 1])
         with col_total:
@@ -1167,12 +1184,19 @@ try:
                 st.info("Esta visualização agora é a **Evolução Líquida** do Backlog: os chamados fechados até o dia do snapshot são deduzidos da contagem.")
                 
                 try:
-                    latest_date_in_chart = df_evolucao_tab3['Data'].max()
-                    
+                    if data_atual_str and data_atual_str != 'N/A':
+                         data_ref_dt = pd.to_datetime(datetime.strptime(data_atual_str, "%d/%m/%Y"))
+                    else:
+                         data_ref_dt = pd.to_datetime(date.today())
+                except:
+                    data_ref_dt = pd.to_datetime(date.today())
+
+                
+                try:
                     agregado_agora = df_aging.groupby('Atribuir a um grupo').size().reset_index(name='Total Chamados')
-                    agregado_agora['Data'] = latest_date_in_chart
+                    agregado_agora['Data'] = data_ref_dt
                     
-                    df_evolucao_tab3 = df_evolucao_tab3[df_evolucao_tab3['Data'] != latest_date_in_chart]
+                    df_evolucao_tab3 = df_evolucao_tab3[df_evolucao_tab3['Data'] != data_ref_dt]
                     
                     df_evolucao_tab3 = pd.concat([df_evolucao_tab3, agregado_agora], ignore_index=True)
                     
@@ -1490,6 +1514,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.24 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.26 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
