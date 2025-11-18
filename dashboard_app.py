@@ -543,8 +543,17 @@ if is_admin:
     if st.sidebar.button("Salvar Novos Dados no Site"):
         if uploaded_file_atual and uploaded_file_15dias:
             with st.spinner("Processando e salvando atualização completa..."):
-                # <<< CORREÇÃO: REMOVIDA A LÓGICA QUE ZERAVA O HISTÓRICO >>>
-                
+                # <<< NOVA FUNCIONALIDADE: ZERAR HISTÓRICO >>>
+                if os.path.exists(STATE_FILE_MASTER_CLOSED_CSV):
+                    try:
+                        os.remove(STATE_FILE_MASTER_CLOSED_CSV)
+                    except Exception: pass
+                if os.path.exists(STATE_FILE_PREV_CLOSED):
+                    try:
+                        os.remove(STATE_FILE_PREV_CLOSED)
+                    except Exception: pass
+                # <<< FIM NOVA FUNCIONALIDADE >>>
+
                 now_sao_paulo = datetime.now(ZoneInfo('America/Sao_Paulo'))
                 commit_msg = f"Dados atualizados em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
                
@@ -662,7 +671,7 @@ if is_admin:
                         id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_historico_base.columns), "ID do ticket")
                         df_historico_base[id_col_hist] = df_historico_base[id_col_hist].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
                     
-                    # <<< CORREÇÃO IMPORTANTE: Salva snapshot ANTES do merge para saber o que é "Novo" >>>
+                    # <<< CORREÇÃO: CAPTURAR ESTADO ANTERIOR (SNAPSHOT PARA "NOVO") >>>
                     previous_closed_ids = set()
                     if not df_historico_base.empty:
                         previous_closed_ids = set(df_historico_base[id_col_hist].dropna().unique())
@@ -673,27 +682,25 @@ if is_admin:
                     except Exception: pass
                     # <<< FIM CORREÇÃO >>>
 
-                    # Padroniza nome das colunas do upload para bater com o histórico
                     df_upload_padronizado = df_fechados_novo_upload.rename(columns={
                         id_col_upload: id_col_hist, 
                         'Data de Fechamento_str': 'Data de Fechamento'
                     })
                     
-                    # Concatena histórico antigo + upload novo
+                    # <<< CORREÇÃO DUPLICIDADE DE COLUNAS >>>
+                    # Remove colunas duplicadas no DataFrame de upload antes do concat
+                    df_upload_padronizado = df_upload_padronizado.loc[:, ~df_upload_padronizado.columns.duplicated()]
+                    if not df_historico_base.empty:
+                        df_historico_base = df_historico_base.loc[:, ~df_historico_base.columns.duplicated()]
+
                     df_historico_final = pd.concat([df_historico_base, df_upload_padronizado], ignore_index=True)
                     
-                    # Remove duplicatas (mantendo a versão mais recente/upload)
                     if id_col_hist in df_historico_final.columns:
                         df_historico_final = df_historico_final.drop_duplicates(subset=[id_col_hist], keep='last')
 
-                    # Salva o histórico mestre atualizado
                     output_hist = StringIO()
                     df_historico_final.to_csv(output_hist, index=False, sep=';', encoding='utf-8')
                     save_local_file(STATE_FILE_MASTER_CLOSED_CSV, output_hist.getvalue().encode('utf-8'), is_binary=True)
-                   
-                    # Atualiza snapshot do dia (opcional, mas bom para consistência)
-                    # Aqui só salvamos os dados do arquivo atual para o snapshot de hoje se necessário
-                    # Mas como o snapshot é de BACKLOG, não precisamos mexer nele aqui.
                    
                     st.cache_data.clear()
                     st.cache_resource.clear()
@@ -735,6 +742,7 @@ try:
     df_historico_fechados = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV)
    
     datas_referencia = read_local_text_file(STATE_FILE_REF_DATES) 
+    previous_closed_ids = set(read_local_json_file(STATE_FILE_PREV_CLOSED, default_return_type='list'))
    
     data_atual_str = datas_referencia.get('data_atual', 'N/A')
     data_15dias_str = datas_referencia.get('data_15dias', 'N/A')
