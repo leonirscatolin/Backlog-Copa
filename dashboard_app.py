@@ -330,7 +330,7 @@ def sync_ticket_data():
     st.session_state.scroll_to_details = True
 
 @st.cache_data
-def carregar_dados_evolucao(dias_para_analisar=7): 
+def carregar_dados_evolucao(dias_para_analisar, df_historico_fechados): 
     try:
         snapshot_dir = f"{DATA_DIR}snapshots"
         try:
@@ -355,14 +355,44 @@ def carregar_dados_evolucao(dias_para_analisar=7):
         processed_dates.sort(key=lambda x: x[0], reverse=True)
         files_to_process = [f[1] for f in processed_dates[:dias_para_analisar]]
 
+        # Prepara IDs fechados para deduções
+        df_hist = df_historico_fechados.copy()
+        id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_hist.columns), None)
+        
+        if id_col_hist and not df_hist.empty:
+            df_hist['Data de Fechamento_dt'] = pd.to_datetime(df_hist['Data de Fechamento'], dayfirst=True, errors='coerce').dt.normalize()
+            df_hist = df_hist.dropna(subset=['Data de Fechamento_dt', id_col_hist])
+            df_hist = df_hist[[id_col_hist, 'Data de Fechamento_dt']].rename(columns={id_col_hist: 'Ticket ID'})
+        else:
+            df_hist = pd.DataFrame()
+
+
         for file_name in files_to_process:
                 try:
                     date_str = file_name.split("backlog_")[1].replace(".csv", "")
                     file_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-                    # Using mtime for cache bust
+                    
                     df_snapshot = read_local_csv(file_name, get_file_mtime(file_name)) 
+                    
                     if not df_snapshot.empty and 'Atribuir a um grupo' in df_snapshot.columns:
-                        df_snapshot_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
+                        
+                        df_snapshot_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)].copy()
+                        
+                        snap_id_col = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_snapshot_filtrado.columns), None)
+
+                        # --- FIX: Subtração Dinâmica no Snapshot ---
+                        if snap_id_col and not df_hist.empty:
+                            
+                            # IDs fechados ATÉ A DATA DO SNAPSHOT
+                            closed_up_to_date = df_hist[df_hist['Data de Fechamento_dt'].dt.date <= file_date]['Ticket ID'].unique()
+                            
+                            # Filtra o snapshot, removendo IDs já fechados
+                            df_snapshot_filtrado = df_snapshot_filtrado[
+                                ~df_snapshot_filtrado[snap_id_col].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().isin(closed_up_to_date)
+                            ]
+
+                        # --- FIM FIX ---
+                        
                         contagem_diaria = df_snapshot_filtrado.groupby('Atribuir a um grupo').size().reset_index(name='Total Chamados')
                         contagem_diaria['Data'] = pd.to_datetime(file_date)
                         df_evolucao_list.append(contagem_diaria)
@@ -401,6 +431,7 @@ def find_closest_snapshot_before(current_report_date, target_date):
 
 @st.cache_data
 def carregar_evolucao_aging(dias_para_analisar=90): 
+    # NOTE: Esta função deve ser revisada posteriormente com a nova lógica de dedução líquida
     try:
         snapshot_dir = f"{DATA_DIR}snapshots"
         try:
@@ -426,7 +457,7 @@ def carregar_evolucao_aging(dias_para_analisar=90):
 
         for file_date, file_name in processed_files:
             try:
-                df_snapshot = read_local_csv(file_name, get_file_mtime(file_name)) # Added mtime
+                df_snapshot = read_local_csv(file_name, get_file_mtime(file_name)) 
                 if df_snapshot.empty: continue
 
                 df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
@@ -706,7 +737,6 @@ try:
     mtime_atual = get_file_mtime(f"{DATA_DIR}dados_atuais.csv")
     df_atual = read_local_csv(f"{DATA_DIR}dados_atuais.csv", mtime_atual) 
     
-    # FIX: Inserindo a leitura de df_15dias que estava faltando
     mtime_15dias = get_file_mtime(f"{DATA_DIR}dados_15_dias.csv")
     df_15dias = read_local_csv(f"{DATA_DIR}dados_15_dias.csv", mtime_15dias) 
     
@@ -733,10 +763,12 @@ try:
     
     df_abertos = df_atual
     
-    df_atual_filtrado = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
+    # Base de Abandono (173 tickets) - para usar no cálculo da redução real de HOJE
+    df_abertos_base_para_reducao = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)].copy()
+
+    df_atual_filtrado = df_abertos_base_para_reducao.copy()
     
     # <<< FIX: CROSS-REFERENCE WITH CLOSED HISTORY (FILTRO DINÂMICO) >>>
-    # Se existem chamados no histórico de fechados, remove eles da visualização de abertos imediatamente.
     if all_closed_ids_historico:
          df_atual_filtrado = df_atual_filtrado[~df_atual_filtrado['ID do ticket'].isin(all_closed_ids_historico)]
     # <<< END FIX >>>
@@ -756,24 +788,34 @@ try:
 
         df_encerrados_filtrado = df_historico_fechados[~df_historico_fechados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
 
-    # --- CÁLCULO TOTAL FECHADOS HOJE (COM ROBUST DATE PARSING) ---
+    # --- CÁLCULO TOTAL FECHADOS HOJE (COM LÓGICA DE INTERSEÇÃO) ---
     total_fechados_hoje = 0
     hoje_sp = datetime.now(ZoneInfo('America/Sao_Paulo')).date()
     
     if not df_encerrados_filtrado.empty and 'Data de Fechamento' in df_encerrados_filtrado.columns:
-        # FIX: Converte usando dayfirst=True para garantir leitura correta de DD/MM/YYYY
+        
+        # 1. Filtra Fechados HOJE (Todos os 101 tickets)
         df_encerrados_filtrado['Data de Fechamento_dt_comp'] = pd.to_datetime(
             df_encerrados_filtrado['Data de Fechamento'], 
             dayfirst=True, 
             errors='coerce'
         )
-        
-        # Filtra comparando apenas a DATA (sem hora)
         fechados_hoje_df = df_encerrados_filtrado[
             df_encerrados_filtrado['Data de Fechamento_dt_comp'].dt.date == hoje_sp
-        ]
-        total_fechados_hoje = len(fechados_hoje_df)
-    
+        ].copy()
+        
+        # 2. Identifica IDs de TUDO que estava aberto (Base 173)
+        id_col_backlog = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_abertos_base_para_reducao.columns), 'ID do ticket')
+        open_ids_base = set(df_abertos_base_para_reducao[id_col_backlog].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().unique())
+        
+        # 3. Identifica IDs Fechados HOJE
+        id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in fechados_hoje_df.columns), None)
+        closed_today_ids = set(fechados_hoje_df[id_col_hist].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().unique())
+        
+        # 4. FIX: Calcula a Interseção (Tickets fechados HOJE que estavam na lista de 173)
+        total_fechados_hoje = len(open_ids_base.intersection(closed_today_ids))
+    # --------------------------------------------------------------------------
+
     data_mais_recente_fechado_str = "" 
 
     if not df_encerrados_filtrado.empty and 'Data de Fechamento' in df_encerrados_filtrado.columns:
@@ -1152,7 +1194,8 @@ try:
         st.subheader("Evolução do Backlog")
         dias_evolucao = st.slider("Ver evolução dos últimos dias:", min_value=7, max_value=30, value=7, key="slider_evolucao")
 
-        df_evolucao_tab3 = carregar_dados_evolucao(dias_para_analisar=dias_evolucao) 
+        # FIX: Passando df_historico_fechados para carregar_dados_evolucao
+        df_evolucao_tab3 = carregar_dados_evolucao(dias_evolucao, df_historico_fechados.copy()) 
 
         if not df_evolucao_tab3.empty:
 
@@ -1161,7 +1204,7 @@ try:
 
             if not df_evolucao_tab3.empty:
 
-                st.info("Esta visualização ainda está coletando dados históricos. Utilize as outras abas como referência principal por enquanto.")
+                st.info("Esta visualização ainda está coletando dados históricos. Utilize as outras abas como referência principal por enquanto. A linha de Backlog agora é líquida.")
 
                 df_total_abertos = df_evolucao_tab3.groupby('Data')['Total Chamados'].sum().reset_index()
                 df_total_abertos = df_total_abertos.sort_values('Data')
@@ -1204,7 +1247,7 @@ try:
                     x='Data (Eixo)',
                     y='Total Chamados',
                     color='Tipo',
-                    title='Evolução Total de Chamados: Backlog vs. Fechados (Dias de Semana)',
+                    title='Evolução Total de Chamados: Backlog Líquido vs. Fechados (Dias de Semana)',
                     markers=True,
                     labels={"Data (Eixo)": "Data", "Total Chamados": "Total Geral de Chamados", "Tipo": "Métrica"},
                     category_orders={'Data (Eixo)': ordem_datas_total},
