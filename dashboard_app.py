@@ -857,9 +857,7 @@ try:
                          f"- Grupos contendo {GRUPOS_EXCLUSAO_PERMANENTE_TEXTO} foram desconsiderados da análise.", 
                          "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
         
-        total_fechados_historico = len(df_encerrados_filtrado)
-        if total_fechados_historico > 0:
-            info_messages.append(f"- **{total_fechados_historico} chamados no histórico de fechados** (exceto os grupos filtrados acima).")
+        
         
         st.info("\n".join(info_messages))
         
@@ -1207,7 +1205,7 @@ try:
 
             if not df_evolucao_tab3.empty:
 
-                st.info("Esta visualização ainda está coletando dados históricos. Utilize as outras abas como referência principal por enquanto. A linha de Backlog agora é líquida.")
+                st.info("Esta visualização agora é a **Evolução Líquida** do Backlog: os chamados fechados até o dia do snapshot são deduzidos da contagem.")
 
                 df_total_abertos = df_evolucao_tab3.groupby('Data')['Total Chamados'].sum().reset_index()
                 df_total_abertos = df_total_abertos.sort_values('Data')
