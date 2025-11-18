@@ -1240,6 +1240,17 @@ try:
                     
                 df_total_diario_combinado = df_total_diario_combinado.sort_values('Data')
                 
+                # --- FIX: FORÇAR O PONTO DE HOJE PARA O VALOR LÍQUIDO (26) ---
+                if not df_total_diario_combinado.empty and 'Fechados HOJE' in df_total_diario_combinado['Tipo'].unique():
+                    latest_date = df_total_diario_combinado['Data'].max()
+
+                    df_total_diario_combinado.loc[
+                        (df_total_diario_combinado['Data'] == latest_date) & 
+                        (df_total_diario_combinado['Tipo'] == 'Fechados HOJE'), 
+                        'Total Chamados'
+                    ] = total_fechados_hoje
+                # --- FIM FIX ---
+
                 df_total_diario_combinado['Data (Eixo)'] = df_total_diario_combinado['Data'].dt.strftime('%d/%m')
                 ordem_datas_total = df_total_diario_combinado['Data (Eixo)'].unique().tolist()
                 
