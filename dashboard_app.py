@@ -712,6 +712,14 @@ try:
     df_abertos = df_atual
     
     df_atual_filtrado = df_abertos[~df_abertos['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
+    
+    # <<< FIX: CROSS-REFERENCE WITH CLOSED HISTORY (FILTRO DINÂMICO) >>>
+    # Se existem chamados no histórico de fechados, remove eles da visualização de abertos imediatamente.
+    # Isso faz com que a "Atualização Rápida" reflita no saldo total em tempo real.
+    if all_closed_ids_historico:
+         df_atual_filtrado = df_atual_filtrado[~df_atual_filtrado['ID do ticket'].isin(all_closed_ids_historico)]
+    # <<< END FIX >>>
+
     df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
     df_aging = analisar_aging(df_atual_filtrado)
     
@@ -727,12 +735,12 @@ try:
 
         df_encerrados_filtrado = df_historico_fechados[~df_historico_fechados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
 
-    # --- CORREÇÃO LÓGICA DOS CARDS DE HOJE (GLOBAL) ---
+    # --- CÁLCULO TOTAL FECHADOS HOJE (COM ROBUST DATE PARSING) ---
     total_fechados_hoje = 0
     hoje_sp = datetime.now(ZoneInfo('America/Sao_Paulo')).date()
     
     if not df_encerrados_filtrado.empty and 'Data de Fechamento' in df_encerrados_filtrado.columns:
-        # Converte usando dayfirst=True para garantir leitura correta de DD/MM/YYYY
+        # FIX: Converte usando dayfirst=True para garantir leitura correta de DD/MM/YYYY
         df_encerrados_filtrado['Data de Fechamento_dt_comp'] = pd.to_datetime(
             df_encerrados_filtrado['Data de Fechamento'], 
             dayfirst=True, 
@@ -793,8 +801,7 @@ try:
         texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
         st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
         
-        # --- CORREÇÃO CARD TOTAL DE CHAMADOS ---
-        # Usa a contagem do dataframe filtrado bruto, não do dataframe de aging (que exclui datas inválidas)
+        # --- FIX: CARD TOTAL DE CHAMADOS (AGORA JÁ FILTRADO PELOS FECHADOS) ---
         total_chamados = len(df_atual_filtrado)
 
         col_spacer1, col_total, col_fechados, col_spacer2 = st.columns([1, 1.5, 1.5, 1])
@@ -1012,7 +1019,7 @@ try:
     with tab2:
         st.subheader("Resumo do Backlog Atual")
         if not df_aging.empty:
-            # Também corrige aqui para usar o total real
+            # Usa a contagem do dataframe filtrado bruto (já filtrado dos fechados)
             total_chamados_tab2 = len(df_atual_filtrado)
             _, col_total_tab2, _ = st.columns([2, 1.5, 2])
             with col_total_tab2: st.markdown( f"""<div class="metric-box"><span class="label">Total de Chamados</span><span class="value">{total_chamados_tab2}</span></div>""", unsafe_allow_html=True )
@@ -1430,6 +1437,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.21 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.22 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
