@@ -715,6 +715,11 @@ if is_admin:
                     df_universo = df_universo.reset_index()
 
                     df_universo = df_universo.drop_duplicates(subset=[id_col_atual], keep='last')
+
+                    # <<< CORREÇÃO CRASH: GARANTIA DA COLUNA DE FECHAMENTO >>>
+                    if 'Data de Fechamento' not in df_universo.columns:
+                         df_universo['Data de Fechamento'] = np.nan 
+                    # <<< FIM CORREÇÃO >>>
                    
                     df_historico_final = df_universo[pd.notna(df_universo['Data de Fechamento'])]
                     output_hist = StringIO()
