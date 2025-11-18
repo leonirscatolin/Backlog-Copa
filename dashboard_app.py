@@ -14,7 +14,6 @@ import colorsys
 import re
 import os
 
-# --- CONFIGURAÇÕES E CONSTANTES ---
 GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM-GTR'
 GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou 'RDM-GTR'"
 
@@ -30,7 +29,6 @@ STATE_FILE_REF_DATES = "datas_referencia.txt"
 STATE_FILE_MASTER_CLOSED_CSV = f"{DATA_DIR}historico_fechados_master.csv"
 STATE_FILE_PREV_CLOSED = "previous_closed_ids.json"
 
-# --- SETUP DA PÁGINA ---
 st.set_page_config(
     layout="wide",
     page_title="Backlog Copa Energia + Belago",
@@ -38,7 +36,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- CSS PERSONALIZADO ---
 st.html("""
 <style>
 #GithubIcon { visibility: hidden; }
@@ -102,8 +99,6 @@ a.metric-box:hover {
 }
 </style>
 """)
-
-# --- FUNÇÕES UTILITÁRIAS ---
 
 def get_file_mtime(file_path):
     if os.path.exists(file_path):
@@ -983,16 +978,7 @@ try:
             
             faixa_atual = st.session_state.faixa_selecionada
             filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].copy()
-
-            search_term = st.text_input("🔍 Buscar ticket (ID ou Descrição):", placeholder="Digite para filtrar...")
-
             if not filtered_df.empty:
-                if search_term:
-                    filtered_df = filtered_df[
-                        filtered_df['ID do ticket'].astype(str).str.contains(search_term, case=False, na=False) |
-                        filtered_df['Descrição'].astype(str).str.contains(search_term, case=False, na=False)
-                    ]
-
                 if 'Data de criação' in filtered_df.columns:
                      filtered_df['Data de criação'] = filtered_df['Data de criação'].dt.strftime('%d/%m/%Y')
 
@@ -1042,8 +1028,7 @@ try:
                 )
                 
             else:
-                st.info("Não há chamados nesta categoria (ou correspondentes à busca).")
-            
+                st.info("Não há chamados nesta categoria.")
             st.subheader("Buscar Chamados por Grupo")
             lista_grupos = sorted(df_aging['Atribuir a um grupo'].dropna().unique())
             grupo_selecionado = st.selectbox("Busca de chamados por grupo:", options=lista_grupos)
@@ -1051,7 +1036,6 @@ try:
                 resultados_busca = df_aging[df_aging['Atribuir a um grupo'] == grupo_selecionado].copy()
                 if 'Data de criação' in resultados_busca.columns:
                     resultados_busca['Data de criação'] = resultados_busca['Data de criação'].dt.strftime('%d/%m/%Y')
-                
                 st.write(f"Encontrados {len(resultados_busca)} chamados para o grupo '{grupo_selecionado}':")
                 colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
                 st.data_editor(resultados_busca[[col for col in colunas_para_exibir_busca if col in resultados_busca.columns]], use_container_width=True, hide_index=True, disabled=True)
@@ -1183,19 +1167,12 @@ try:
                 st.info("Esta visualização agora é a **Evolução Líquida** do Backlog: os chamados fechados até o dia do snapshot são deduzidos da contagem.")
                 
                 try:
-                    if data_atual_str and data_atual_str != 'N/A':
-                         data_ref_dt = pd.to_datetime(datetime.strptime(data_atual_str, "%d/%m/%Y"))
-                    else:
-                         data_ref_dt = pd.to_datetime(date.today())
-                except:
-                    data_ref_dt = pd.to_datetime(date.today())
-
-                
-                try:
-                    agregado_agora = df_aging.groupby('Atribuir a um grupo').size().reset_index(name='Total Chamados')
-                    agregado_agora['Data'] = data_ref_dt
+                    latest_date_in_chart = df_evolucao_tab3['Data'].max()
                     
-                    df_evolucao_tab3 = df_evolucao_tab3[df_evolucao_tab3['Data'] != data_ref_dt]
+                    agregado_agora = df_aging.groupby('Atribuir a um grupo').size().reset_index(name='Total Chamados')
+                    agregado_agora['Data'] = latest_date_in_chart
+                    
+                    df_evolucao_tab3 = df_evolucao_tab3[df_evolucao_tab3['Data'] != latest_date_in_chart]
                     
                     df_evolucao_tab3 = pd.concat([df_evolucao_tab3, agregado_agora], ignore_index=True)
                     
@@ -1239,6 +1216,7 @@ try:
                     df_total_diario_combinado = df_total_abertos
                     
                 df_total_diario_combinado = df_total_diario_combinado.sort_values('Data')
+                
                 
                 if not df_total_diario_combinado.empty and 'Fechados HOJE' in df_total_diario_combinado['Tipo'].unique():
                     latest_date = df_total_diario_combinado['Data'].max()
@@ -1512,6 +1490,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.23 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.24 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
