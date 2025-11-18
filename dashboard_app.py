@@ -270,10 +270,12 @@ def get_image_as_base64(path):
         return None
 
 def sync_ticket_data():
-    if 'ticket_editor' not in st.session_state or not st.session_state.ticket_editor.get('edited_rows'):
+    editor_key = f'ticket_editor_{st.session_state.editor_key_counter}'
+    
+    if editor_key not in st.session_state or not st.session_state[editor_key].get('edited_rows'):
         return
        
-    edited_rows = st.session_state.ticket_editor['edited_rows']
+    edited_rows = st.session_state[editor_key]['edited_rows']
     contact_changed = False
     observation_changed = False
    
@@ -317,8 +319,9 @@ def sync_ticket_data():
     else:
         pass 
 
-    st.session_state.ticket_editor['edited_rows'] = {}
+    st.session_state.editor_key_counter += 1
     st.session_state.scroll_to_details = True
+    st.rerun()
 
 
 @st.cache_data
@@ -540,6 +543,17 @@ if is_admin:
     if st.sidebar.button("Salvar Novos Dados no Site"):
         if uploaded_file_atual and uploaded_file_15dias:
             with st.spinner("Processando e salvando atualização completa..."):
+                # <<< NOVA FUNCIONALIDADE: ZERAR HISTÓRICO >>>
+                if os.path.exists(STATE_FILE_MASTER_CLOSED_CSV):
+                    try:
+                        os.remove(STATE_FILE_MASTER_CLOSED_CSV)
+                    except Exception: pass
+                if os.path.exists(STATE_FILE_PREV_CLOSED):
+                    try:
+                        os.remove(STATE_FILE_PREV_CLOSED)
+                    except Exception: pass
+                # <<< FIM NOVA FUNCIONALIDADE >>>
+
                 now_sao_paulo = datetime.now(ZoneInfo('America/Sao_Paulo'))
                 commit_msg = f"Dados atualizados em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
                
@@ -587,7 +601,7 @@ if is_admin:
                        
                         st.cache_data.clear()
                         st.cache_resource.clear()
-                        st.sidebar.success("Arquivos salvos! Recarregando...")
+                        st.sidebar.success("Arquivos salvos e histórico zerado! Recarregando...")
                         st.rerun()
                     except Exception as e:
                         st.sidebar.error(f"Erro durante a atualização completa: {e}")
@@ -737,6 +751,13 @@ try:
 
     if 'observations' not in st.session_state:
         st.session_state.observations = read_local_json_file(STATE_FILE_OBSERVATIONS, default_return_type='dict')
+
+    if 'editor_key_counter' not in st.session_state:
+        st.session_state.editor_key_counter = 0
+        
+    # <<< NOVA FUNCIONALIDADE: PERSISTÊNCIA DE ORDENAÇÃO >>>
+    if 'sort_config' not in st.session_state:
+        st.session_state.sort_config = "Padrão (Dias em Aberto)"
 
     needs_scroll = "scroll" in st.query_params
     if "faixa" in st.query_params:
@@ -1003,12 +1024,30 @@ try:
                 else:
                     colunas_desabilitadas_final = colunas_desabilitadas_fixas + colunas_editaveis_admin
                
+                # <<< NOVA FUNCIONALIDADE: PERSISTÊNCIA DE ORDENAÇÃO >>>
+                sort_options = {
+                    "Padrão (Dias em Aberto)": "Dias em Aberto",
+                    "Data de Criação (Mais antigo primeiro)": "Data de criação",
+                    "Grupo Atribuído": "Atribuir a um grupo"
+                }
+                st.selectbox("Ordenar tabela por:", options=list(sort_options.keys()), key='sort_config')
+                
+                col_sort = sort_options[st.session_state.sort_config]
+                ascending_order = False 
+                if st.session_state.sort_config == "Data de Criação (Mais antigo primeiro)":
+                    ascending_order = True
+                elif st.session_state.sort_config == "Grupo Atribuído":
+                    ascending_order = True
+                
+                st.session_state.last_filtered_df = st.session_state.last_filtered_df.sort_values(by=col_sort, ascending=ascending_order).reset_index(drop=True)
+                # <<< FIM NOVA FUNCIONALIDADE >>>
+
                 st.data_editor(
                     st.session_state.last_filtered_df.rename(columns=colunas_para_exibir_renomeadas)[list(colunas_para_exibir_renomeadas.values())].style.apply(highlight_row, axis=1),
                     use_container_width=True,
                     hide_index=True,
                     disabled=colunas_desabilitadas_final, 
-                    key='ticket_editor'
+                    key=f'ticket_editor_{st.session_state.editor_key_counter}'
                 )
                
                 st.button(
@@ -1431,7 +1470,9 @@ except Exception as e:
     st.error(f"Ocorreu um erro ao carregar os dados: {e}")
     st.exception(e)
 
-if 'ticket_editor' in st.session_state and st.session_state.ticket_editor.get('edited_rows'):
+# <<< CORREÇÃO CHAVE DINÂMICA >>>
+editor_key = f'ticket_editor_{st.session_state.editor_key_counter}'
+if editor_key in st.session_state and st.session_state[editor_key].get('edited_rows'):
     js_code = """
     <script>
     window.onbeforeunload = function() {
