@@ -543,17 +543,7 @@ if is_admin:
     if st.sidebar.button("Salvar Novos Dados no Site"):
         if uploaded_file_atual and uploaded_file_15dias:
             with st.spinner("Processando e salvando atualização completa..."):
-                # <<< NOVA FUNCIONALIDADE: ZERAR HISTÓRICO >>>
-                if os.path.exists(STATE_FILE_MASTER_CLOSED_CSV):
-                    try:
-                        os.remove(STATE_FILE_MASTER_CLOSED_CSV)
-                    except Exception: pass
-                if os.path.exists(STATE_FILE_PREV_CLOSED):
-                    try:
-                        os.remove(STATE_FILE_PREV_CLOSED)
-                    except Exception: pass
-                # <<< FIM NOVA FUNCIONALIDADE >>>
-
+                
                 now_sao_paulo = datetime.now(ZoneInfo('America/Sao_Paulo'))
                 commit_msg = f"Dados atualizados em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
                
@@ -646,6 +636,11 @@ if is_admin:
                    
                     df_fechados_novo_upload = pd.read_csv(BytesIO(content_fechados), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
                    
+                    id_col_atual = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_atual_base.columns), "ID do ticket")
+                    if id_col_atual not in df_atual_base.columns:
+                        # Se não achar no df_atual, tenta achar no próprio upload, pois o histórico independe do atual
+                        pass 
+                           
                     id_col_upload = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_novo_upload.columns), "ID do Ticket")
                     if id_col_upload not in df_fechados_novo_upload.columns:
                         raise Exception("Coluna de ID não encontrada no arquivo de fechados.")
@@ -682,18 +677,38 @@ if is_admin:
                     except Exception: pass
                     # <<< FIM CORREÇÃO >>>
 
-                    df_upload_padronizado = df_fechados_novo_upload.rename(columns={
+                    cols_para_merge = [id_col_upload, 'Data de Fechamento_str']
+                    if analista_col_name_origem in df_fechados_novo_upload.columns:
+                        cols_para_merge.append(analista_col_name_origem)
+                    
+                    # <<< CORREÇÃO CRUCIAL: ADICIONAR COLUNA DE GRUPO NO MERGE >>>
+                    group_col_name_upload = next((col for col in ['Atribuir a um grupo', 'Grupo Atribuído', 'Grupo'] if col in df_fechados_novo_upload.columns), None)
+                    if group_col_name_upload:
+                         cols_para_merge.append(group_col_name_upload)
+                    # <<< FIM CORREÇÃO >>>
+
+                    df_lookup = df_fechados_novo_upload[cols_para_merge].drop_duplicates(subset=[id_col_upload])
+                   
+                    if analista_col_name_origem in df_lookup.columns:
+                         df_lookup[analista_col_name_origem] = df_lookup[analista_col_name_origem].astype(str).replace(r'\s+', ' ', regex=True).str.strip()
+
+                    # <<< CORREÇÃO: RENOMEAR COLUNA DE GRUPO PARA PADRÃO >>>
+                    rename_dict = {
                         id_col_upload: id_col_hist, 
                         'Data de Fechamento_str': 'Data de Fechamento'
-                    })
+                    }
+                    if group_col_name_upload:
+                         rename_dict[group_col_name_upload] = 'Atribuir a um grupo'
+                         
+                    df_lookup = df_lookup.rename(columns=rename_dict)
+                    # <<< FIM CORREÇÃO >>>
                     
-                    # <<< CORREÇÃO DUPLICIDADE DE COLUNAS >>>
                     # Remove colunas duplicadas no DataFrame de upload antes do concat
-                    df_upload_padronizado = df_upload_padronizado.loc[:, ~df_upload_padronizado.columns.duplicated()]
+                    df_lookup = df_lookup.loc[:, ~df_lookup.columns.duplicated()]
                     if not df_historico_base.empty:
                         df_historico_base = df_historico_base.loc[:, ~df_historico_base.columns.duplicated()]
 
-                    df_historico_final = pd.concat([df_historico_base, df_upload_padronizado], ignore_index=True)
+                    df_historico_final = pd.concat([df_historico_base, df_lookup], ignore_index=True)
                     
                     if id_col_hist in df_historico_final.columns:
                         df_historico_final = df_historico_final.drop_duplicates(subset=[id_col_hist], keep='last')
@@ -765,8 +780,19 @@ try:
     df_aging = analisar_aging(df_atual_filtrado)
    
     df_encerrados_filtrado = pd.DataFrame()
+    
+    # <<< CORREÇÃO ANTI-CRASH: Se a coluna de grupo não existir no histórico, cria ela >>>
     if not df_historico_fechados.empty:
+        if 'Atribuir a um grupo' not in df_historico_fechados.columns:
+            # Tenta achar um sinônimo
+            found_col = next((col for col in ['Grupo Atribuído', 'Grupo'] if col in df_historico_fechados.columns), None)
+            if found_col:
+                df_historico_fechados.rename(columns={found_col: 'Atribuir a um grupo'}, inplace=True)
+            else:
+                df_historico_fechados['Atribuir a um grupo'] = 'Desconhecido' # Fallback seguro
+
         df_encerrados_filtrado = df_historico_fechados[~df_historico_fechados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
+    # <<< FIM CORREÇÃO >>>
 
     total_fechados_hoje = 0
     hoje_sp = datetime.now(ZoneInfo('America/Sao_Paulo')).date()
@@ -926,7 +952,7 @@ try:
            
             id_col_encerrados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_encerrados_para_exibir.columns), None)
             
-            # <<< CORREÇÃO: STATUS USA COMPARATIVO DE LISTA (PREVIOUS) >>>
+            # <<< STATUS USA COMPARATIVO DE LISTA (PREVIOUS) >>>
             previous_closed_ids = set()
             if os.path.exists(STATE_FILE_PREV_CLOSED):
                  with open(STATE_FILE_PREV_CLOSED, 'r') as f:
@@ -940,7 +966,6 @@ try:
                  )
             else:
                 df_encerrados_para_exibir['Status'] = ""
-            # <<< FIM CORREÇÃO >>>
 
             colunas_finais = [col for col in colunas_para_exibir_fechados if col in df_encerrados_para_exibir.columns]
            
