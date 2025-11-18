@@ -105,6 +105,12 @@ a.metric-box:hover {
 
 # --- FUNÇÕES UTILITÁRIAS ---
 
+def get_file_mtime(file_path):
+    """Retorna o tempo de modificação do arquivo para forçar a atualização do cache (Cache-Busting)."""
+    if os.path.exists(file_path):
+        return os.path.getmtime(file_path)
+    return 0
+
 def save_local_file(file_path, file_content, is_binary=False):
     try:
         directory = os.path.dirname(file_path)
@@ -125,7 +131,7 @@ def save_local_file(file_path, file_content, is_binary=False):
         raise
 
 @st.cache_data
-def read_local_csv(file_path):
+def read_local_csv(file_path, file_mtime): # ADDED file_mtime AS CACHE BUSTER
     if not os.path.exists(file_path):
         return pd.DataFrame() 
     
@@ -353,7 +359,8 @@ def carregar_dados_evolucao(dias_para_analisar=7):
                 try:
                     date_str = file_name.split("backlog_")[1].replace(".csv", "")
                     file_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-                    df_snapshot = read_local_csv(file_name) 
+                    # AQUI: Não precisamos de mtime, pois o cache busting é feito no caller.
+                    df_snapshot = read_local_csv(file_name, get_file_mtime(file_name)) 
                     if not df_snapshot.empty and 'Atribuir a um grupo' in df_snapshot.columns:
                         df_snapshot_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
                         contagem_diaria = df_snapshot_filtrado.groupby('Atribuir a um grupo').size().reset_index(name='Total Chamados')
@@ -419,7 +426,7 @@ def carregar_evolucao_aging(dias_para_analisar=90):
 
         for file_date, file_name in processed_files:
             try:
-                df_snapshot = read_local_csv(file_name) 
+                df_snapshot = read_local_csv(file_name, get_file_mtime(file_name)) # ADDED mtime
                 if df_snapshot.empty: continue
 
                 df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
@@ -512,9 +519,15 @@ if is_admin:
                     try:
                         df_novo_atual_raw = pd.read_csv(BytesIO(content_atual_raw), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
                         
-                        df_hist_fechados = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV)
+                        # Note: Ao fazer uma atualização completa, não precisamos ler o histórico anterior para filtrar, 
+                        # pois o arquivo ATUAL deve ser o estado limpo do backlog. No entanto, mantemos a leitura
+                        # para garantir que as variáveis sejam preenchidas corretamente no escopo.
+                        df_hist_fechados = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV, get_file_mtime(STATE_FILE_MASTER_CLOSED_CSV))
+                        
                         all_closed_ids_historico = set()
                         id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_hist_fechados.columns), None)
+                        
+                        # Se houver histórico, filtramos os duplicados do novo upload.
                         if id_col_hist and not df_hist_fechados.empty:
                             all_closed_ids_historico = set(df_hist_fechados[id_col_hist].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
 
@@ -522,6 +535,7 @@ if is_admin:
                         
                         df_novo_atual_filtrado = df_novo_atual_raw 
                         
+                        # O filtro aqui é redundante se o histórico foi zerado, mas protege se o processo de zerar falhar.
                         if id_col_atual and all_closed_ids_historico: 
                             df_novo_atual_raw[id_col_atual] = df_novo_atual_raw[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
                             df_novo_atual_filtrado = df_novo_atual_raw[~df_novo_atual_raw[id_col_atual].isin(all_closed_ids_historico)]
@@ -551,10 +565,8 @@ if is_admin:
                                                     f"hora_atualizacao:{hora_atualizacao}")
                         save_local_file(STATE_FILE_REF_DATES, datas_referencia_content)
                         
-                        st.cache_data.clear()
-                        st.cache_resource.clear()
                         st.sidebar.success("Arquivos salvos e histórico zerado! Recarregando...")
-                        st.rerun()
+                        st.rerun() # Forces reload, mtime guarantees fresh data.
                     except Exception as e:
                         st.sidebar.error(f"Erro durante a atualização completa: {e}")
 
@@ -607,7 +619,8 @@ if is_admin:
                     
                     df_fechados_novo_upload['Data de Fechamento_str'] = df_fechados_novo_upload['Data de Fechamento_dt'].dt.strftime('%Y-%m-%d')
                     
-                    df_historico_base = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV)
+                    # Read current closed history (now with mtime cache-busting)
+                    df_historico_base = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV, get_file_mtime(STATE_FILE_MASTER_CLOSED_CSV))
                     
                     id_col_hist = "ID do ticket"
                     if not df_historico_base.empty:
@@ -656,12 +669,12 @@ if is_admin:
 
                     output_hist = StringIO()
                     df_historico_final.to_csv(output_hist, index=False, sep=';', encoding='utf-8')
+                    
+                    # Write the updated history file (this changes mtime)
                     save_local_file(STATE_FILE_MASTER_CLOSED_CSV, output_hist.getvalue().encode('utf-8'), is_binary=True)
                     
-                    st.cache_data.clear()
-                    st.cache_resource.clear()
                     st.sidebar.success("Arquivo de fechados adicionado ao histórico com sucesso! Recarregando...")
-                    st.rerun()
+                    st.rerun() # Forces reload, mtime guarantees fresh data.
 
                 except Exception as e:
                     st.sidebar.error(f"Erro durante a atualização rápida: {e}")
@@ -689,10 +702,14 @@ try:
     if "scroll" in st.query_params or "faixa" in st.query_params:
         st.query_params.clear()
 
-    df_atual = read_local_csv(f"{DATA_DIR}dados_atuais.csv") 
-    df_15dias = read_local_csv(f"{DATA_DIR}dados_15_dias.csv") 
-    df_historico_fechados = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV)
+    # --- LEITURA PRINCIPAL (USANDO MTIME PARA CACHE BUSTING) ---
+    mtime_atual = get_file_mtime(f"{DATA_DIR}dados_atuais.csv")
+    df_atual = read_local_csv(f"{DATA_DIR}dados_atuais.csv", mtime_atual) 
     
+    mtime_hist = get_file_mtime(STATE_FILE_MASTER_CLOSED_CSV)
+    df_historico_fechados = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV, mtime_hist)
+    # -----------------------------------------------------------
+
     datas_referencia = read_local_text_file(STATE_FILE_REF_DATES) 
     
     data_atual_str = datas_referencia.get('data_atual', 'N/A')
@@ -715,7 +732,6 @@ try:
     
     # <<< FIX: CROSS-REFERENCE WITH CLOSED HISTORY (FILTRO DINÂMICO) >>>
     # Se existem chamados no histórico de fechados, remove eles da visualização de abertos imediatamente.
-    # Isso faz com que a "Atualização Rápida" reflita no saldo total em tempo real.
     if all_closed_ids_historico:
          df_atual_filtrado = df_atual_filtrado[~df_atual_filtrado['ID do ticket'].isin(all_closed_ids_historico)]
     # <<< END FIX >>>
