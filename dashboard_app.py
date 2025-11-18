@@ -142,6 +142,10 @@ def read_local_csv(file_path):
                  st.sidebar.warning(f"Arquivo '{file_path}' lido com encoding 'latin-1' localmente.")
        
         df.columns = df.columns.str.strip()
+        
+        # <<< CORREÇÃO DUPLICIDADE NO LEITURA >>>
+        df = df.loc[:, ~df.columns.duplicated()]
+        
         df.dropna(how='all', inplace=True)
         return df
        
@@ -543,7 +547,17 @@ if is_admin:
     if st.sidebar.button("Salvar Novos Dados no Site"):
         if uploaded_file_atual and uploaded_file_15dias:
             with st.spinner("Processando e salvando atualização completa..."):
-                
+                # <<< NOVA FUNCIONALIDADE: ZERAR HISTÓRICO >>>
+                if os.path.exists(STATE_FILE_MASTER_CLOSED_CSV):
+                    try:
+                        os.remove(STATE_FILE_MASTER_CLOSED_CSV)
+                    except Exception: pass
+                if os.path.exists(STATE_FILE_PREV_CLOSED):
+                    try:
+                        os.remove(STATE_FILE_PREV_CLOSED)
+                    except Exception: pass
+                # <<< FIM NOVA FUNCIONALIDADE >>>
+
                 now_sao_paulo = datetime.now(ZoneInfo('America/Sao_Paulo'))
                 commit_msg = f"Dados atualizados em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
                
@@ -596,7 +610,7 @@ if is_admin:
                        
                         st.cache_data.clear()
                         st.cache_resource.clear()
-                        st.sidebar.success("Arquivos salvos! Recarregando...")
+                        st.sidebar.success("Arquivos salvos e histórico zerado! Recarregando...")
                         st.rerun()
                     except Exception as e:
                         st.sidebar.error(f"Erro durante a atualização completa: {e}")
@@ -636,11 +650,6 @@ if is_admin:
                    
                     df_fechados_novo_upload = pd.read_csv(BytesIO(content_fechados), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
                    
-                    id_col_atual = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_atual_base.columns), "ID do ticket")
-                    if id_col_atual not in df_atual_base.columns:
-                        # Se não achar no df_atual, tenta achar no próprio upload, pois o histórico independe do atual
-                        pass 
-                           
                     id_col_upload = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_novo_upload.columns), "ID do Ticket")
                     if id_col_upload not in df_fechados_novo_upload.columns:
                         raise Exception("Coluna de ID não encontrada no arquivo de fechados.")
@@ -740,9 +749,6 @@ try:
     if 'editor_key_counter' not in st.session_state:
         st.session_state.editor_key_counter = 0
         
-    if 'sort_config' not in st.session_state:
-        st.session_state.sort_config = "Padrão (Dias em Aberto)"
-
     needs_scroll = "scroll" in st.query_params
     if "faixa" in st.query_params:
         faixa_from_url = st.query_params.get("faixa")
@@ -757,7 +763,6 @@ try:
     df_historico_fechados = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV)
    
     datas_referencia = read_local_text_file(STATE_FILE_REF_DATES) 
-    previous_closed_ids = set(read_local_json_file(STATE_FILE_PREV_CLOSED, default_return_type='list'))
    
     data_atual_str = datas_referencia.get('data_atual', 'N/A')
     data_15dias_str = datas_referencia.get('data_15dias', 'N/A')
@@ -858,6 +863,7 @@ try:
             with col_total:
                 st.markdown(f"""<div class="metric-box"><span class="label">Total de Chamados Abertos</span><span class="value">{total_chamados}</span></div>""", unsafe_allow_html=True)
             with col_fechados:
+                # <<< CORREÇÃO CARD: Usa a variável calculada com a data de hoje >>>
                 st.markdown(f"""<div class="metric-box"><span class="label">Chamados Fechados HOJE</span><span class="value">{total_fechados_hoje}</span></div>""", unsafe_allow_html=True)
 
             st.markdown("---")
@@ -952,7 +958,7 @@ try:
            
             id_col_encerrados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_encerrados_para_exibir.columns), None)
             
-            # <<< STATUS USA COMPARATIVO DE LISTA (PREVIOUS) >>>
+            # <<< CORREÇÃO: STATUS USA COMPARATIVO DE LISTA (PREVIOUS) >>>
             previous_closed_ids = set()
             if os.path.exists(STATE_FILE_PREV_CLOSED):
                  with open(STATE_FILE_PREV_CLOSED, 'r') as f:
@@ -966,7 +972,11 @@ try:
                  )
             else:
                 df_encerrados_para_exibir['Status'] = ""
-
+            # <<< FIM CORREÇÃO >>>
+            
+            # <<< CORREÇÃO: REMOVE DUPLICATAS DO DATAFRAME DE EXIBIÇÃO >>>
+            df_encerrados_para_exibir = df_encerrados_para_exibir.loc[:, ~df_encerrados_para_exibir.columns.duplicated()]
+            
             colunas_finais = [col for col in colunas_para_exibir_fechados if col in df_encerrados_para_exibir.columns]
            
             st.data_editor(
@@ -1462,9 +1472,7 @@ except Exception as e:
     st.error(f"Ocorreu um erro ao carregar os dados: {e}")
     st.exception(e)
 
-# <<< CORREÇÃO CHAVE DINÂMICA >>>
-editor_key = f'ticket_editor_{st.session_state.editor_key_counter}'
-if editor_key in st.session_state and st.session_state[editor_key].get('edited_rows'):
+if 'ticket_editor' in st.session_state and st.session_state.ticket_editor.get('edited_rows'):
     js_code = """
     <script>
     window.onbeforeunload = function() {
