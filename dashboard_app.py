@@ -14,6 +14,7 @@ import colorsys
 import re
 import os
 
+# --- CONFIGURAÇÕES E CONSTANTES ---
 GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM-GTR'
 GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou 'RDM-GTR'"
 
@@ -29,6 +30,7 @@ STATE_FILE_REF_DATES = "datas_referencia.txt"
 STATE_FILE_MASTER_CLOSED_CSV = f"{DATA_DIR}historico_fechados_master.csv"
 STATE_FILE_PREV_CLOSED = "previous_closed_ids.json"
 
+# --- SETUP DA PÁGINA ---
 st.set_page_config(
     layout="wide",
     page_title="Backlog Copa Energia + Belago",
@@ -36,6 +38,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# --- CSS PERSONALIZADO ---
 st.html("""
 <style>
 #GithubIcon { visibility: hidden; }
@@ -99,6 +102,8 @@ a.metric-box:hover {
 }
 </style>
 """)
+
+# --- FUNÇÕES UTILITÁRIAS ---
 
 def get_file_mtime(file_path):
     if os.path.exists(file_path):
@@ -359,7 +364,6 @@ def carregar_dados_evolucao(dias_para_analisar, df_historico_fechados):
             df_hist = df_hist[['Ticket ID', 'Data de Fechamento_dt']]
         else:
             df_hist = pd.DataFrame()
-
 
         for file_name in files_to_process:
                 try:
@@ -1153,7 +1157,6 @@ try:
         st.subheader("Evolução do Backlog")
         dias_evolucao = st.slider("Ver evolução dos últimos dias:", min_value=7, max_value=30, value=7, key="slider_evolucao")
 
-        
         df_evolucao_tab3 = carregar_dados_evolucao(dias_evolucao, df_historico_fechados.copy()) 
 
         if not df_evolucao_tab3.empty:
@@ -1164,17 +1167,33 @@ try:
             if not df_evolucao_tab3.empty:
 
                 st.info("Esta visualização agora é a **Evolução Líquida** do Backlog: os chamados fechados até o dia do snapshot são deduzidos da contagem.")
-
-                current_group_counts = df_aging.groupby('Atribuir a um grupo').size()
-                latest_date_tab3 = df_evolucao_tab3['Data'].max()
-
-                for group, count in current_group_counts.items():
-                    df_evolucao_tab3.loc[
-                        (df_evolucao_tab3['Data'] == latest_date_tab3) & 
-                        (df_evolucao_tab3['Atribuir a um grupo'] == group), 
-                        'Total Chamados'
-                    ] = count
                 
+                # --- SYNC FIX: Sincronização forçada com a Tab 2 para o dia atual ---
+                try:
+                    # 1. Obtém a data do último relatório (normalmente hoje ou a data do upload)
+                    latest_date_in_chart = df_evolucao_tab3['Data'].max()
+                    
+                    # 2. Calcula os totais por grupo diretamente do df_aging (fonte da verdade da Tab 2)
+                    current_group_counts = df_aging['Atribuir a um grupo'].value_counts().reset_index()
+                    current_group_counts.columns = ['Atribuir a um grupo', 'Total Chamados']
+                    current_group_counts['Data'] = latest_date_in_chart
+                    
+                    # 3. Remove os dados antigos dessa data específica para evitar duplicidade ou erro de cálculo
+                    df_evolucao_tab3 = df_evolucao_tab3[df_evolucao_tab3['Data'] != latest_date_in_chart]
+                    
+                    # 4. Adiciona os dados calculados na hora (garante que 14 = 14)
+                    df_evolucao_tab3 = pd.concat([df_evolucao_tab3, current_group_counts], ignore_index=True)
+                    
+                    # 5. Reordena
+                    df_evolucao_tab3 = df_evolucao_tab3.sort_values(by=['Data', 'Atribuir a um grupo'])
+
+                    # 6. Reaplica o filtro visual da Tab 3 para manter consistência (remove avisos se necessário)
+                    df_evolucao_tab3 = df_evolucao_tab3[~df_evolucao_tab3['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
+                    
+                except Exception as e:
+                    # Se falhar a sincronização, segue com o dado histórico padrão
+                    pass
+                # --------------------------------------------------------------------
 
                 df_total_abertos = df_evolucao_tab3.groupby('Data')['Total Chamados'].sum().reset_index()
                 df_total_abertos = df_total_abertos.sort_values('Data')
