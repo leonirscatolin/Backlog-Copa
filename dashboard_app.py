@@ -14,6 +14,7 @@ import colorsys
 import re
 import os
 
+# --- CONFIGURAÇÕES E CONSTANTES ---
 GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM-GTR'
 GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou 'RDM-GTR'"
 
@@ -29,6 +30,7 @@ STATE_FILE_REF_DATES = "datas_referencia.txt"
 STATE_FILE_MASTER_CLOSED_CSV = f"{DATA_DIR}historico_fechados_master.csv"
 STATE_FILE_PREV_CLOSED = "previous_closed_ids.json"
 
+# --- SETUP DA PÁGINA ---
 st.set_page_config(
     layout="wide",
     page_title="Backlog Copa Energia + Belago",
@@ -36,6 +38,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# --- CSS PERSONALIZADO ---
 st.html("""
 <style>
 #GithubIcon { visibility: hidden; }
@@ -99,6 +102,8 @@ a.metric-box:hover {
 }
 </style>
 """)
+
+# --- FUNÇÕES UTILITÁRIAS ---
 
 def get_file_mtime(file_path):
     """Retorna o tempo de modificação do arquivo para forçar a atualização do cache (Cache-Busting)."""
@@ -357,7 +362,8 @@ def carregar_dados_evolucao(dias_para_analisar, df_historico_fechados):
         if id_col_hist and not df_hist.empty:
             df_hist['Data de Fechamento_dt'] = pd.to_datetime(df_hist['Data de Fechamento'], dayfirst=True, errors='coerce').dt.normalize()
             df_hist = df_hist.dropna(subset=['Data de Fechamento_dt', id_col_hist])
-            df_hist = df_hist[[id_col_hist, 'Data de Fechamento_dt']].rename(columns={id_col_hist: 'Ticket ID'})
+            df_hist['Ticket ID'] = df_hist[id_col_hist].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
+            df_hist = df_hist[['Ticket ID', 'Data de Fechamento_dt']]
         else:
             df_hist = pd.DataFrame()
 
@@ -378,13 +384,17 @@ def carregar_dados_evolucao(dias_para_analisar, df_historico_fechados):
                         
                         if snap_id_col and not df_hist.empty:
                             
+                            df_snapshot_filtrado['Clean ID'] = df_snapshot_filtrado[snap_id_col].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
+                            
                             
                             closed_up_to_date = df_hist[df_hist['Data de Fechamento_dt'].dt.date <= file_date]['Ticket ID'].unique()
                             
                             
                             df_snapshot_filtrado = df_snapshot_filtrado[
-                                ~df_snapshot_filtrado[snap_id_col].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().isin(closed_up_to_date)
+                                ~df_snapshot_filtrado['Clean ID'].isin(closed_up_to_date)
                             ]
+
+                            df_snapshot_filtrado = df_snapshot_filtrado.drop(columns=['Clean ID'])
 
                         
                         
