@@ -543,17 +543,7 @@ if is_admin:
     if st.sidebar.button("Salvar Novos Dados no Site"):
         if uploaded_file_atual and uploaded_file_15dias:
             with st.spinner("Processando e salvando atualização completa..."):
-                # <<< NOVA FUNCIONALIDADE: ZERAR HISTÓRICO >>>
-                if os.path.exists(STATE_FILE_MASTER_CLOSED_CSV):
-                    try:
-                        os.remove(STATE_FILE_MASTER_CLOSED_CSV)
-                    except Exception: pass
-                if os.path.exists(STATE_FILE_PREV_CLOSED):
-                    try:
-                        os.remove(STATE_FILE_PREV_CLOSED)
-                    except Exception: pass
-                # <<< FIM NOVA FUNCIONALIDADE >>>
-
+                
                 now_sao_paulo = datetime.now(ZoneInfo('America/Sao_Paulo'))
                 commit_msg = f"Dados atualizados em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
                
@@ -593,6 +583,12 @@ if is_admin:
                        
                         data_do_upload = now_sao_paulo.date()
                         data_arquivo_15dias = data_do_upload - timedelta(days=15)
+                        date_15_str = data_arquivo_15dias.strftime('%Y-%m-%d')
+                        
+                        # Salva snapshot retroativo para gerar gráfico inicial
+                        snapshot_path_15 = f"{DATA_DIR}snapshots/backlog_{date_15_str}.csv"
+                        save_local_file(snapshot_path_15, content_15dias, is_binary=True)
+                        
                         hora_atualizacao = now_sao_paulo.strftime('%H:%M')
                         datas_referencia_content = (f"data_atual:{data_do_upload.strftime('%d/%m/%Y')}\n"
                                                   f"data_15dias:{data_arquivo_15dias.strftime('%d/%m/%Y')}\n"
@@ -601,7 +597,7 @@ if is_admin:
                        
                         st.cache_data.clear()
                         st.cache_resource.clear()
-                        st.sidebar.success("Arquivos salvos e histórico zerado! Recarregando...")
+                        st.sidebar.success("Arquivos salvos! Recarregando...")
                         st.rerun()
                     except Exception as e:
                         st.sidebar.error(f"Erro durante a atualização completa: {e}")
@@ -715,7 +711,7 @@ if is_admin:
                     df_universo = df_universo.reset_index()
 
                     df_universo = df_universo.drop_duplicates(subset=[id_col_atual], keep='last')
-
+                    
                     # <<< CORREÇÃO CRASH: GARANTIA DA COLUNA DE FECHAMENTO >>>
                     if 'Data de Fechamento' not in df_universo.columns:
                          df_universo['Data de Fechamento'] = np.nan 
@@ -760,7 +756,6 @@ try:
     if 'editor_key_counter' not in st.session_state:
         st.session_state.editor_key_counter = 0
         
-    # <<< NOVA FUNCIONALIDADE: PERSISTÊNCIA DE ORDENAÇÃO >>>
     if 'sort_config' not in st.session_state:
         st.session_state.sort_config = "Padrão (Dias em Aberto)"
 
@@ -804,14 +799,27 @@ try:
     if not df_historico_fechados.empty:
         df_encerrados_filtrado = df_historico_fechados[~df_historico_fechados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
 
-    ids_fechados_hoje = all_closed_ids_historico - previous_closed_ids
-    total_fechados_hoje = len(ids_fechados_hoje)
+    # <<< CORREÇÃO LÓGICA "CONTADOR DO DIA" >>>
+    # Não usa mais 'ids_fechados_hoje' baseado em diferença de arquivos.
+    # Usa a data de fechamento real comparada com a data de hoje (timezone BR).
+    total_fechados_hoje = 0
+    hoje_sp = datetime.now(ZoneInfo('America/Sao_Paulo')).date()
+    
+    if not df_encerrados_filtrado.empty and 'Data de Fechamento' in df_encerrados_filtrado.columns:
+        # Converter para datetime de forma segura
+        df_encerrados_filtrado['Data de Fechamento_dt_comp'] = pd.to_datetime(df_encerrados_filtrado['Data de Fechamento'], format='%Y-%m-%d', errors='coerce')
+        
+        # Filtrar apenas os que tem data igual a "hoje"
+        fechados_hoje_df = df_encerrados_filtrado[df_encerrados_filtrado['Data de Fechamento_dt_comp'].dt.date == hoje_sp]
+        total_fechados_hoje = len(fechados_hoje_df)
+    # <<< FIM DA CORREÇÃO >>>
    
     data_mais_recente_fechado_str = "" 
 
     if not df_encerrados_filtrado.empty and 'Data de Fechamento' in df_encerrados_filtrado.columns:
         try:
-            df_encerrados_filtrado['Data de Fechamento_dt_comp'] = pd.to_datetime(df_encerrados_filtrado['Data de Fechamento'], format='%Y-%m-%d', errors='coerce')
+            if 'Data de Fechamento_dt_comp' not in df_encerrados_filtrado.columns:
+                 df_encerrados_filtrado['Data de Fechamento_dt_comp'] = pd.to_datetime(df_encerrados_filtrado['Data de Fechamento'], format='%Y-%m-%d', errors='coerce')
            
             if not df_encerrados_filtrado['Data de Fechamento_dt_comp'].isnull().all():
                 data_mais_recente_fechado_dt = df_encerrados_filtrado['Data de Fechamento_dt_comp'].max().date()
@@ -861,8 +869,8 @@ try:
             with col_total:
                 st.markdown(f"""<div class="metric-box"><span class="label">Total de Chamados Abertos</span><span class="value">{total_chamados}</span></div>""", unsafe_allow_html=True)
             with col_fechados:
-                valor_fechados = total_fechados_historico if total_fechados_historico > 0 else 0
-                st.markdown(f"""<div class="metric-box"><span class="label">Total no Histórico de Fechados</span><span class="value">{valor_fechados}</span></div>""", unsafe_allow_html=True)
+                # <<< CORREÇÃO CARD: Usa a variável calculada com a data de hoje >>>
+                st.markdown(f"""<div class="metric-box"><span class="label">Chamados Fechados HOJE</span><span class="value">{total_fechados_hoje}</span></div>""", unsafe_allow_html=True)
 
             st.markdown("---")
             aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
@@ -956,8 +964,9 @@ try:
            
             id_col_encerrados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_encerrados_para_exibir.columns), None)
             if id_col_encerrados:
-                 df_encerrados_para_exibir['Status'] = df_encerrados_para_exibir[id_col_encerrados].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().apply(
-                     lambda x: "Novo" if x in ids_fechados_hoje else ""
+                 # Marca como "Novo" apenas se a data de fechamento for HOJE
+                 df_encerrados_para_exibir['Status'] = df_encerrados_para_exibir['Data de Fechamento_dt_comp'].dt.date.apply(
+                     lambda d: "Novo" if d == hoje_sp else ""
                  )
             else:
                 df_encerrados_para_exibir['Status'] = ""
@@ -1029,7 +1038,6 @@ try:
                 else:
                     colunas_desabilitadas_final = colunas_desabilitadas_fixas + colunas_editaveis_admin
                
-                # <<< NOVA FUNCIONALIDADE: PERSISTÊNCIA DE ORDENAÇÃO >>>
                 sort_options = {
                     "Padrão (Dias em Aberto)": "Dias em Aberto",
                     "Data de Criação (Mais antigo primeiro)": "Data de criação",
@@ -1045,7 +1053,6 @@ try:
                     ascending_order = True
                 
                 st.session_state.last_filtered_df = st.session_state.last_filtered_df.sort_values(by=col_sort, ascending=ascending_order).reset_index(drop=True)
-                # <<< FIM NOVA FUNCIONALIDADE >>>
 
                 st.data_editor(
                     st.session_state.last_filtered_df.rename(columns=colunas_para_exibir_renomeadas)[list(colunas_para_exibir_renomeadas.values())].style.apply(highlight_row, axis=1),
