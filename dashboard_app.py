@@ -27,7 +27,6 @@ STATE_FILE_CONTACTS = "contacted_tickets.json"
 STATE_FILE_OBSERVATIONS = "ticket_observations.json"
 STATE_FILE_REF_DATES = "datas_referencia.txt"
 STATE_FILE_MASTER_CLOSED_CSV = f"{DATA_DIR}historico_fechados_master.csv"
-# <<< REINTRODUZIDO >>> Arquivo para guardar o estado anterior e calcular o delta ("Novo")
 STATE_FILE_PREV_CLOSED = "previous_closed_ids.json"
 
 st.set_page_config(
@@ -544,17 +543,8 @@ if is_admin:
     if st.sidebar.button("Salvar Novos Dados no Site"):
         if uploaded_file_atual and uploaded_file_15dias:
             with st.spinner("Processando e salvando atualização completa..."):
-                # <<< NOVA FUNCIONALIDADE: ZERAR HISTÓRICO >>>
-                if os.path.exists(STATE_FILE_MASTER_CLOSED_CSV):
-                    try:
-                        os.remove(STATE_FILE_MASTER_CLOSED_CSV)
-                    except Exception: pass
-                if os.path.exists(STATE_FILE_PREV_CLOSED):
-                    try:
-                        os.remove(STATE_FILE_PREV_CLOSED)
-                    except Exception: pass
-                # <<< FIM NOVA FUNCIONALIDADE >>>
-
+                # <<< CORREÇÃO: REMOVIDA A LÓGICA QUE ZERAVA O HISTÓRICO >>>
+                
                 now_sao_paulo = datetime.now(ZoneInfo('America/Sao_Paulo'))
                 commit_msg = f"Dados atualizados em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
                
@@ -644,18 +634,9 @@ if is_admin:
                     save_local_file(STATE_FILE_REF_DATES, datas_referencia_content_novo)
                    
                     df_atual_base = read_local_csv(f"{DATA_DIR}dados_atuais.csv")
-                    if df_atual_base.empty:
-                        st.sidebar.warning("Não foi possível ler o 'dados_atuais.csv' base para atualizar o snapshot.")
-                        raise Exception("Arquivo 'dados_atuais.csv' base não encontrado.")
-                   
                    
                     df_fechados_novo_upload = pd.read_csv(BytesIO(content_fechados), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
                    
-                    id_col_atual = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_atual_base.columns), "ID do ticket")
-                    if id_col_atual not in df_atual_base.columns:
-                        st.sidebar.warning("Não foi possível encontrar coluna de ID no 'dados_atuais.csv' base.")
-                        raise Exception("Coluna de ID não encontrada no 'dados_atuais.csv' base.")
-                           
                     id_col_upload = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_novo_upload.columns), "ID do Ticket")
                     if id_col_upload not in df_fechados_novo_upload.columns:
                         raise Exception("Coluna de ID não encontrada no arquivo de fechados.")
@@ -675,82 +656,48 @@ if is_admin:
                     df_fechados_novo_upload['Data de Fechamento_str'] = df_fechados_novo_upload['Data de Fechamento_dt'].dt.strftime('%Y-%m-%d')
                    
                     df_historico_base = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV)
-                   
-                    # <<< CORREÇÃO: CAPTURAR ESTADO ANTERIOR (SNAPSHOT PARA "NOVO") >>>
-                    # Antes de mesclar, salvamos o que já existia. Isso é a nossa "memória".
-                    ids_antes = set()
-                    if not df_historico_base.empty:
-                        id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_historico_base.columns), id_col_atual)
-                        if id_col_hist != id_col_atual:
-                            df_historico_base = df_historico_base.rename(columns={id_col_hist: id_col_atual})
-                        df_historico_base[id_col_atual] = df_historico_base[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-                        
-                        # Salva IDs pré-update para comparação de "Novo"
-                        ids_antes = set(df_historico_base[id_col_atual].dropna().unique())
                     
+                    id_col_hist = "ID do ticket"
+                    if not df_historico_base.empty:
+                        id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_historico_base.columns), "ID do ticket")
+                        df_historico_base[id_col_hist] = df_historico_base[id_col_hist].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
+                    
+                    # <<< CORREÇÃO IMPORTANTE: Salva snapshot ANTES do merge para saber o que é "Novo" >>>
+                    previous_closed_ids = set()
+                    if not df_historico_base.empty:
+                        previous_closed_ids = set(df_historico_base[id_col_hist].dropna().unique())
+
                     try:
                         with open(STATE_FILE_PREV_CLOSED, 'w') as f:
-                            json.dump(list(ids_antes), f)
+                            json.dump(list(previous_closed_ids), f)
                     except Exception: pass
                     # <<< FIM CORREÇÃO >>>
 
-                    df_universo = pd.concat([df_atual_base, df_historico_base], ignore_index=True)
-                    df_universo[id_col_atual] = df_universo[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-                    df_universo = df_universo.drop_duplicates(subset=[id_col_atual], keep='last')
-                   
-                    closed_ids_set_upload = set(df_fechados_novo_upload[id_col_upload].dropna().unique())
-                   
-                    df_encerrados_para_atualizar = df_universo[df_universo[id_col_atual].isin(closed_ids_set_upload)].copy()
-                   
-                    cols_para_merge = [id_col_upload, 'Data de Fechamento_str']
-                    if analista_col_name_origem in df_fechados_novo_upload.columns:
-                        cols_para_merge.append(analista_col_name_origem)
-
-                    df_lookup = df_fechados_novo_upload[cols_para_merge].drop_duplicates(subset=[id_col_upload])
-                   
-                    if analista_col_name_origem in df_lookup.columns:
-                         df_lookup[analista_col_name_origem] = df_lookup[analista_col_name_origem].astype(str).replace(r'\s+', ' ', regex=True).str.strip()
-
-                    df_lookup = df_lookup.rename(columns={
-                        id_col_upload: id_col_atual, 
+                    # Padroniza nome das colunas do upload para bater com o histórico
+                    df_upload_padronizado = df_fechados_novo_upload.rename(columns={
+                        id_col_upload: id_col_hist, 
                         'Data de Fechamento_str': 'Data de Fechamento'
                     })
-                   
-                    if not df_encerrados_para_atualizar.empty:
-                        df_encerrados_para_atualizar = df_encerrados_para_atualizar.set_index(id_col_atual)
-                        df_lookup_indexed = df_lookup.set_index(id_col_atual)
+                    
+                    # Concatena histórico antigo + upload novo
+                    df_historico_final = pd.concat([df_historico_base, df_upload_padronizado], ignore_index=True)
+                    
+                    # Remove duplicatas (mantendo a versão mais recente/upload)
+                    if id_col_hist in df_historico_final.columns:
+                        df_historico_final = df_historico_final.drop_duplicates(subset=[id_col_hist], keep='last')
 
-                        df_encerrados_para_atualizar.update(df_lookup_indexed)
-                        df_encerrados_para_atualizar = df_encerrados_para_atualizar.reset_index()
-                   
-                    df_universo = df_universo.set_index(id_col_atual)
-                    df_universo.update(df_encerrados_para_atualizar.set_index(id_col_atual))
-                    df_universo = df_universo.reset_index()
-
-                    df_universo = df_universo.drop_duplicates(subset=[id_col_atual], keep='last')
-
-                    if 'Data de Fechamento' not in df_universo.columns:
-                         df_universo['Data de Fechamento'] = np.nan 
-                   
-                    df_historico_final = df_universo[pd.notna(df_universo['Data de Fechamento'])]
+                    # Salva o histórico mestre atualizado
                     output_hist = StringIO()
                     df_historico_final.to_csv(output_hist, index=False, sep=';', encoding='utf-8')
                     save_local_file(STATE_FILE_MASTER_CLOSED_CSV, output_hist.getvalue().encode('utf-8'), is_binary=True)
                    
-                    df_abertos_final = df_universo[pd.isna(df_universo['Data de Fechamento'])]
-                    output_abertos = StringIO()
-                    df_abertos_final.to_csv(output_abertos, index=False, sep=';', encoding='utf-8')
-                    content_snapshot_novo = output_abertos.getvalue().encode('utf-8')
-                   
-                    save_local_file(f"{DATA_DIR}dados_atuais.csv", content_snapshot_novo, is_binary=True)
-                   
-                    snapshot_path = f"{DATA_DIR}snapshots/backlog_{today_snapshot_str}.csv"
-                    commit_msg_snapshot = f"Atualizando snapshot (rápido) em {now_sao_paulo.strftime('%d/%m/%Y %H:%M')}"
-                    save_local_file(snapshot_path, content_snapshot_novo, is_binary=True)
+                    # Atualiza snapshot do dia (opcional, mas bom para consistência)
+                    # Aqui só salvamos os dados do arquivo atual para o snapshot de hoje se necessário
+                    # Mas como o snapshot é de BACKLOG, não precisamos mexer nele aqui.
                    
                     st.cache_data.clear()
                     st.cache_resource.clear()
-                    st.sidebar.success("Arquivo de fechados salvo e snapshot diário atualizado! Recarregando...")
+                    st.sidebar.success("Arquivo de fechados adicionado ao histórico com sucesso! Recarregando...")
                     st.rerun()
 
                 except Exception as e:
@@ -877,7 +824,6 @@ try:
             with col_total:
                 st.markdown(f"""<div class="metric-box"><span class="label">Total de Chamados Abertos</span><span class="value">{total_chamados}</span></div>""", unsafe_allow_html=True)
             with col_fechados:
-                # Card usa a DATA DE HOJE para a meta
                 st.markdown(f"""<div class="metric-box"><span class="label">Chamados Fechados HOJE</span><span class="value">{total_fechados_hoje}</span></div>""", unsafe_allow_html=True)
 
             st.markdown("---")
