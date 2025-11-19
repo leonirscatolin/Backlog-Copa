@@ -140,7 +140,6 @@ def read_local_csv(file_path, file_mtime):
     if not os.path.exists(file_path):
         return pd.DataFrame() 
     
-    # Tenta ler com diferentes separadores e encodings
     separators = [';', ',']
     encodings = ['utf-8', 'latin1']
     
@@ -206,11 +205,9 @@ def process_uploaded_file(uploaded_file):
             except UnicodeDecodeError:
                 content = uploaded_file.getvalue().decode('latin1')
             
-            # Lógica robusta: Deixa o motor 'python' do pandas detectar o separador
             try:
                 df = pd.read_csv(StringIO(content), sep=None, engine='python', dtype=dtype_spec)
             except:
-                # Fallback para separador manual se o auto falhar
                 if ';' in content.split('\n')[0]:
                     df = pd.read_csv(StringIO(content), sep=';', dtype=dtype_spec)
                 else:
@@ -220,7 +217,6 @@ def process_uploaded_file(uploaded_file):
         df.dropna(how='all', inplace=True)
 
         output = StringIO()
-        # Salva padronizado com ponto e vírgula para leitura interna
         df.to_csv(output, index=False, sep=';', encoding='utf-8')
         return output.getvalue().encode('utf-8') 
     except Exception as e:
@@ -258,24 +254,17 @@ def analisar_aging(_df_atual, reference_date=None):
     if not date_col_name:
         return pd.DataFrame()
     
-    # --- PARSER HÍBRIDO ---
-    # 1. Tenta conversão padrão (detecta ISO YYYY-MM-DD automaticamente)
     df['temp_date'] = pd.to_datetime(df[date_col_name], errors='coerce')
-    
-    # 2. Para onde falhou (NaT), tenta formato brasileiro (DD/MM/YYYY)
     mask_nat = df['temp_date'].isna()
     if mask_nat.any():
         df.loc[mask_nat, 'temp_date'] = pd.to_datetime(df.loc[mask_nat, date_col_name], dayfirst=True, errors='coerce')
-    
     df[date_col_name] = df['temp_date']
     df.drop(columns=['temp_date'], inplace=True)
     
-    # Checagem de integridade
     linhas_sem_data = df[df[date_col_name].isna()]
     if not linhas_sem_data.empty:
-        st.warning(f"⚠️ **Atenção:** Foram encontrados **{len(linhas_sem_data)}** tickets com '{date_col_name}' inválida ou vazia.")
-        with st.expander("Visualizar Tickets sem Data"):
-            st.dataframe(linhas_sem_data)
+        # Aviso integrado na Tab 1
+        pass
 
     df = df.dropna(subset=[date_col_name])
     
@@ -374,7 +363,7 @@ def sync_ticket_data():
     st.session_state.scroll_to_details = True
 
 @st.cache_data
-def carregar_dados_evolucao(dias_para_analisar, df_historico_fechados): 
+def carregar_dados_evolucao(dias_para_analisar, df_historico_fechados, total_fechados_liquido_hoje): 
     try:
         snapshot_dir = f"{DATA_DIR}snapshots"
         try:
@@ -503,7 +492,6 @@ def carregar_evolucao_aging(dias_para_analisar=90):
                 date_col_name = next((col for col in ['Data de criação', 'Data de criaÃ§Ã£o', 'Data de Criacao'] if col in df_final.columns), None)
                 if not date_col_name: continue
 
-                # PARSER HÍBRIDO NO HISTÓRICO TAMBÉM
                 df_final['temp_date'] = pd.to_datetime(df_final[date_col_name], errors='coerce')
                 mask_nat = df_final['temp_date'].isna()
                 if mask_nat.any():
@@ -587,7 +575,7 @@ if is_admin:
                 
                 if content_atual_raw is not None and content_15dias is not None:
                     try:
-                        df_novo_atual_raw = pd.read_csv(BytesIO(content_atual_raw), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
+                        df_novo_atual_raw = pd.read_csv(BytesIO(content_atual_raw), sep=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
                         
                         df_hist_fechados = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV, get_file_mtime(STATE_FILE_MASTER_CLOSED_CSV))
                         
@@ -904,6 +892,11 @@ try:
                          f"- Grupos contendo {GRUPOS_EXCLUSAO_PERMANENTE_TEXTO} foram desconsiderados da análise.", 
                          "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
         
+        # --- INTEGRAÇÃO DO AVISO DE DATAS INVÁLIDAS ---
+        diff_count = len(df_atual_filtrado) - len(df_aging)
+        if diff_count > 0:
+            info_messages.append(f"- ⚠️ **Atenção:** {diff_count} chamados foram desconsiderados por data inválida/vazia.")
+        
         st.info("\n".join(info_messages))
         
         st.subheader("Análise de Antiguidade do Backlog Atual")
@@ -980,7 +973,7 @@ try:
                     df_encerrados_para_exibir['Dias em Aberto'] = dias_calculados.clip(lower=0)
                     colunas_para_exibir_fechados.append('Dias em Aberto')
                 except Exception as e:
-                    pass 
+                    st.warning(f"Não foi possível calcular 'Dias em Aberto' para o histórico: {e}")
             
             try:
                 datas_disponiveis = sorted(df_encerrados_para_exibir['Data de Fechamento_dt_comp'].dt.strftime('%d/%m/%Y').unique(), reverse=True)
@@ -1013,19 +1006,14 @@ try:
             
             id_col_encerrados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_encerrados_para_exibir.columns), None)
             
-            previous_closed_ids = set()
-            if os.path.exists(STATE_FILE_PREV_CLOSED):
-                 with open(STATE_FILE_PREV_CLOSED, 'r') as f:
-                      try:
-                          previous_closed_ids = set(json.load(f))
-                      except: pass
-
-            if id_col_encerrados:
+            # --- LÓGICA DE STATUS ATUALIZADA (Novo = Impacto Real) ---
+            if id_col_encerrados and 'open_ids_base' in locals():
                  df_encerrados_para_exibir['Status'] = df_encerrados_para_exibir[id_col_encerrados].apply(
-                     lambda x: "Novo" if str(x).replace('.0','').strip() not in previous_closed_ids else ""
+                     lambda x: "Novo" if normalize_ids(pd.Series([x])).iloc[0] in open_ids_base else ""
                  )
             else:
                 df_encerrados_para_exibir['Status'] = ""
+            # ---------------------------------------------------------
             
             df_encerrados_para_exibir = df_encerrados_para_exibir.loc[:, ~df_encerrados_para_exibir.columns.duplicated()]
             
@@ -1116,6 +1104,7 @@ try:
                 
             else:
                 st.info("Não há chamados nesta categoria.")
+            
             st.subheader("Buscar Chamados por Grupo")
             lista_grupos = sorted(df_aging['Atribuir a um grupo'].dropna().unique())
             grupo_selecionado = st.selectbox("Busca de chamados por grupo:", options=lista_grupos)
@@ -1242,7 +1231,8 @@ try:
         st.subheader("Evolução do Backlog")
         dias_evolucao = st.slider("Ver evolução dos últimos dias:", min_value=7, max_value=30, value=7, key="slider_evolucao")
 
-        df_evolucao_tab3 = carregar_dados_evolucao(dias_evolucao, df_historico_fechados.copy()) 
+        # --- PASSA TOTAL LÍQUIDO PARA O GRÁFICO ---
+        df_evolucao_tab3 = carregar_dados_evolucao(dias_evolucao, df_historico_fechados.copy(), total_fechados_hoje) 
 
         if not df_evolucao_tab3.empty:
 
@@ -1253,6 +1243,7 @@ try:
 
                 st.info("Esta visualização agora é a **Evolução Líquida** do Backlog: os chamados fechados até o dia do snapshot são deduzidos da contagem.")
                 
+                # SYNC com Tab 2
                 try:
                     latest_date_in_chart = df_evolucao_tab3['Data'].max()
                     
@@ -1260,13 +1251,9 @@ try:
                     agregado_agora['Data'] = latest_date_in_chart
                     
                     df_evolucao_tab3 = df_evolucao_tab3[df_evolucao_tab3['Data'] != latest_date_in_chart]
-                    
                     df_evolucao_tab3 = pd.concat([df_evolucao_tab3, agregado_agora], ignore_index=True)
-                    
                     df_evolucao_tab3 = df_evolucao_tab3.sort_values(by=['Data', 'Atribuir a um grupo'])
-
                     df_evolucao_tab3 = df_evolucao_tab3[~df_evolucao_tab3['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
-                    
                 except Exception as e:
                     pass
                 
@@ -1281,9 +1268,7 @@ try:
                 df_total_fechados = pd.DataFrame()
                 if not df_encerrados_filtrado.empty and 'Data de Fechamento' in df_encerrados_filtrado.columns:
                     df_fechados_hist = df_encerrados_filtrado[['Data de Fechamento']].copy()
-                    
                     df_fechados_hist['Data'] = pd.to_datetime(df_fechados_hist['Data de Fechamento'], dayfirst=True, errors='coerce')
-                    
                     df_fechados_hist = df_fechados_hist.dropna(subset=['Data'])
                     
                     df_fechados_hist = df_fechados_hist[
@@ -1292,10 +1277,12 @@ try:
                     ]
                     
                     if not df_fechados_hist.empty:
+                        # DEDUPLICATION DO HISTÓRICO
+                        df_fechados_hist = df_fechados_hist.drop_duplicates(subset=['ID do ticket'])
                         counts_por_data = df_fechados_hist.groupby(df_fechados_hist['Data'].dt.date).size()
                         df_total_fechados = counts_por_data.reset_index(name='Total Chamados')
                         df_total_fechados['Data'] = pd.to_datetime(df_total_fechados['Data'])
-                        df_total_fechados['Tipo'] = 'Fechados HOJE'
+                        df_total_fechados['Tipo'] = 'Fechados'
                 
                 if not df_total_fechados.empty:
                     df_total_diario_combinado = pd.concat([df_total_abertos, df_total_fechados], ignore_index=True)
@@ -1304,16 +1291,16 @@ try:
                     
                 df_total_diario_combinado = df_total_diario_combinado.sort_values('Data')
                 
-                
-                if not df_total_diario_combinado.empty and 'Fechados HOJE' in df_total_diario_combinado['Tipo'].unique():
+                # --- FORÇA VALOR LÍQUIDO NO PONTO FINAL ---
+                if not df_total_diario_combinado.empty and 'Fechados' in df_total_diario_combinado['Tipo'].unique():
                     latest_date = df_total_diario_combinado['Data'].max()
 
                     df_total_diario_combinado.loc[
                         (df_total_diario_combinado['Data'] == latest_date) & 
-                        (df_total_diario_combinado['Tipo'] == 'Fechados HOJE'), 
+                        (df_total_diario_combinado['Tipo'] == 'Fechados'), 
                         'Total Chamados'
                     ] = total_fechados_hoje
-                
+                # ------------------------------------------
 
                 df_total_diario_combinado['Data (Eixo)'] = df_total_diario_combinado['Data'].dt.strftime('%d/%m')
                 ordem_datas_total = df_total_diario_combinado['Data (Eixo)'].unique().tolist()
@@ -1329,7 +1316,7 @@ try:
                     category_orders={'Data (Eixo)': ordem_datas_total},
                     color_discrete_map={
                         'Abertos (Backlog)': '#375623', 
-                        'Fechados HOJE': '#f28801' 
+                        'Fechados': '#f28801' 
                     }
                 )
 
@@ -1367,6 +1354,7 @@ try:
             st.info("Ainda não há dados históricos suficientes.")
 
     with tab4:
+        # ... (Tab 4 permanece a mesma) ...
         st.subheader("Evolução do Aging do Backlog")
         
         st.info("Esta visualização ainda está coletando dados históricos. Utilize as outras abas como referência principal por enquanto.")
@@ -1577,6 +1565,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.33 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.35 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
