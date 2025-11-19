@@ -645,7 +645,7 @@ if is_admin:
                     st.stop() 
 
                 try:
-                    # --- LÓGICA DE IMPACTO (CORRIGIDA PARA CONSIDERAR APENAS HOJE) ---
+                    # --- LÓGICA DE MENSAGEM DE IMPACTO (MANTIDA PARA TOAST, AGORA TAMBÉM NA ABA 1) ---
                     df_backlog_check = read_local_csv(f"{DATA_DIR}dados_atuais.csv", get_file_mtime(f"{DATA_DIR}dados_atuais.csv"))
                     
                     df_fechados_novo_check = pd.read_csv(BytesIO(content_fechados), sep=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
@@ -672,7 +672,7 @@ if is_admin:
                             total_lidos_hoje = len(ids_fc_hoje)
                             total_abatidos = len(ids_bk.intersection(ids_fc_hoje))
                             
-                            st.toast(f"Processado! {total_lidos_hoje} chamados de HOJE lidos. {total_abatidos} impactaram o backlog.", icon="")
+                            st.toast(f"Processado! {total_lidos_hoje} chamados de HOJE lidos. {total_abatidos} impactaram o backlog.", icon="📉")
                     # ---------------------------------------
 
                     save_local_file(f"{DATA_DIR}dados_fechados.csv", content_fechados, is_binary=True)
@@ -870,6 +870,37 @@ try:
         
         total_fechados_hoje = len(open_ids_base.intersection(closed_today_ids))
 
+    # --- NOVA LÓGICA: SOBRESCREVER TOTAL_FECHADOS_HOJE SE HOUVER ARQUIVO DE FECHADOS RECENTE ---
+    # Isso alinha o Card com o Pop-up, mostrando o impacto real da última carga (apenas de HOJE)
+    try:
+        if os.path.exists(f"{DATA_DIR}dados_fechados.csv"):
+             df_last_closed = read_local_csv(f"{DATA_DIR}dados_fechados.csv", get_file_mtime(f"{DATA_DIR}dados_fechados.csv"))
+             if not df_last_closed.empty:
+                 id_col_last = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_last_closed.columns), None)
+                 id_col_backlog_base = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_abertos_base_para_reducao.columns), 'ID do ticket')
+                 
+                 # Identifica coluna de data no arquivo salvo localmente para filtrar por HOJE
+                 col_data_fechamento_last = next((c for c in ['Data de Fechamento', 'Data de Resolução'] if c in df_last_closed.columns), None)
+                 
+                 if id_col_last and id_col_backlog_base:
+                     if col_data_fechamento_last:
+                         df_last_closed['dt_temp_last'] = pd.to_datetime(df_last_closed[col_data_fechamento_last], dayfirst=True, errors='coerce')
+                         df_last_closed_hoje = df_last_closed[df_last_closed['dt_temp_last'].dt.date == hoje_sp]
+                     else:
+                         # Se não tiver data, assume hoje (fallback)
+                         df_last_closed_hoje = df_last_closed
+
+                     ids_last_closed_hoje = set(normalize_ids(df_last_closed_hoje[id_col_last]))
+                     ids_backlog_base = set(normalize_ids(df_abertos_base_para_reducao[id_col_backlog_base]))
+                     
+                     impacto_ultima_carga_hoje = len(ids_backlog_base.intersection(ids_last_closed_hoje))
+                     
+                     if impacto_ultima_carga_hoje > total_fechados_hoje:
+                         total_fechados_hoje = impacto_ultima_carga_hoje
+    except Exception:
+        pass
+    # ----------------------------------------------------------------------------------------
+
     data_mais_recente_fechado_str = "" 
 
     if not df_encerrados_filtrado.empty and 'Data de Fechamento' in df_encerrados_filtrado.columns:
@@ -910,11 +941,11 @@ try:
         # --- INTEGRAÇÃO DO AVISO DE DATAS INVÁLIDAS ---
         diff_count = len(df_atual_filtrado) - len(df_aging)
         if diff_count > 0:
-            info_messages.append(f"- **Atenção:** {diff_count} chamados foram desconsiderados por data inválida/vazia.")
+            info_messages.append(f"- ⚠️ **Atenção:** {diff_count} chamados foram desconsiderados por data inválida/vazia.")
 
         # --- NOVO AVISO DE IMPACTO (BASEADO NO TOTAL CALCULADO DO HISTÓRICO DE HOJE) ---
         if total_fechados_hoje > 0:
-            info_messages.append(f"- **Atualização de Hoje:** {total_fechados_hoje} chamados foram fechados hoje e abatidos desta visualização.")
+            info_messages.append(f"- 📉 **Atualização de Hoje:** {total_fechados_hoje} chamados foram fechados hoje e abatidos desta visualização.")
         
         st.info("\n".join(info_messages))
         
@@ -962,7 +993,7 @@ try:
         st.dataframe(df_comparativo.set_index('Grupo').style.map(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
         st.markdown("---")
         
-        st.markdown(f"<h3>Histórico de Chamados Encerrados</h3>", unsafe_allow_html=True)
+        st.markdown(f"<h3>Histórico de Chamados Encerrados (Impacto no Backlog)</h3>", unsafe_allow_html=True)
 
         if df_historico_fechados.empty:
             st.info("O histórico de chamados encerrados ainda não possui dados. Faça uma 'Atualização Rápida' para começar a popular.")
@@ -1033,23 +1064,29 @@ try:
                   )
             else:
                 df_encerrados_para_exibir['Status'] = ""
-            # ---------------------------------------------------------
+            
+            # --- FILTRO FORÇADO: MOSTRAR APENAS IMPACTO ---
+            df_encerrados_para_exibir = df_encerrados_para_exibir[df_encerrados_para_exibir['Status'] == "Novo"]
+            # ----------------------------------------------
             
             df_encerrados_para_exibir = df_encerrados_para_exibir.loc[:, ~df_encerrados_para_exibir.columns.duplicated()]
             
             colunas_finais = [col for col in colunas_para_exibir_fechados if col in df_encerrados_para_exibir.columns]
             
-            st.data_editor(
-                df_encerrados_para_exibir[colunas_finais], 
-                hide_index=True, 
-                disabled=True, 
-                use_container_width=True,
-                column_config={
-                    "Status": st.column_config.Column(
-                        width="small"
-                    )
-                }
-            )
+            if df_encerrados_para_exibir.empty:
+                st.info(f"Nenhum chamado fechado em {data_selecionada} causou redução no backlog atual.")
+            else:
+                st.data_editor(
+                    df_encerrados_para_exibir[colunas_finais], 
+                    hide_index=True, 
+                    disabled=True, 
+                    use_container_width=True,
+                    column_config={
+                        "Status": st.column_config.Column(
+                            width="small"
+                        )
+                    }
+                )
             
         else:
             st.info("O arquivo de chamados encerrados do dia ainda não foi carregado.")
@@ -1592,6 +1629,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.41 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.42 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
