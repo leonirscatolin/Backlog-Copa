@@ -672,7 +672,7 @@ if is_admin:
                             total_lidos_hoje = len(ids_fc_hoje)
                             total_abatidos = len(ids_bk.intersection(ids_fc_hoje))
                             
-                            st.toast(f"Processado! {total_lidos_hoje} chamados de HOJE lidos. {total_abatidos} impactaram o backlog.", icon="📉")
+                            st.toast(f"Processado! {total_lidos_hoje} chamados de HOJE lidos. {total_abatidos} impactaram o backlog.", icon="")
                     # ---------------------------------------
 
                     save_local_file(f"{DATA_DIR}dados_fechados.csv", content_fechados, is_binary=True)
@@ -910,11 +910,11 @@ try:
         # --- INTEGRAÇÃO DO AVISO DE DATAS INVÁLIDAS ---
         diff_count = len(df_atual_filtrado) - len(df_aging)
         if diff_count > 0:
-            info_messages.append(f"- ⚠️ **Atenção:** {diff_count} chamados foram desconsiderados por data inválida/vazia.")
+            info_messages.append(f"- **Atenção:** {diff_count} chamados foram desconsiderados por data inválida/vazia.")
 
         # --- NOVO AVISO DE IMPACTO (BASEADO NO TOTAL CALCULADO DO HISTÓRICO DE HOJE) ---
         if total_fechados_hoje > 0:
-            info_messages.append(f"- 📉 **Atualização de Hoje:** {total_fechados_hoje} chamados foram fechados hoje e abatidos desta visualização.")
+            info_messages.append(f"- **Atualização de Hoje:** {total_fechados_hoje} chamados foram fechados hoje e abatidos desta visualização.")
         
         st.info("\n".join(info_messages))
         
