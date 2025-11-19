@@ -15,7 +15,7 @@ import re
 import os
 
 # --- CONFIGURAÇÕES E CONSTANTES ---
-# ATUALIZADO: 'RDM' agora filtra qualquer grupo contendo essa sigla
+# 'RDM' filtra qualquer grupo que contenha essa sigla no nome
 GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM'
 GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou 'RDM'"
 
@@ -646,7 +646,7 @@ if is_admin:
                     st.stop() 
 
                 try:
-                    # --- LÓGICA DE IMPACTO (MANTIDA PARA TOAST, AGORA TAMBÉM NA ABA 1) ---
+                    # --- LÓGICA DE MENSAGEM DE IMPACTO (MANTIDA PARA TOAST, AGORA TAMBÉM NA ABA 1) ---
                     df_backlog_check = read_local_csv(f"{DATA_DIR}dados_atuais.csv", get_file_mtime(f"{DATA_DIR}dados_atuais.csv"))
                     
                     df_fechados_novo_check = pd.read_csv(BytesIO(content_fechados), sep=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
@@ -944,9 +944,7 @@ try:
         if diff_count > 0:
             info_messages.append(f"- **Atenção:** {diff_count} chamados foram desconsiderados por data inválida/vazia.")
 
-        # --- NOVO AVISO DE IMPACTO (BASEADO NO TOTAL CALCULADO DO HISTÓRICO DE HOJE) ---
-        if total_fechados_hoje > 0:
-            info_messages.append(f"- **Atualização de Hoje:** {total_fechados_hoje} chamados foram fechados hoje e abatidos desta visualização.")
+        # --- REMOVIDO O AVISO DE IMPACTO CONFORME SOLICITADO ---
         
         st.info("\n".join(info_messages))
         
@@ -1066,28 +1064,26 @@ try:
             else:
                 df_encerrados_para_exibir['Status'] = ""
             
-            # --- FILTRO FORÇADO: MOSTRAR APENAS IMPACTO ---
-            df_encerrados_para_exibir = df_encerrados_para_exibir[df_encerrados_para_exibir['Status'] == "Novo"]
-            # ----------------------------------------------
+            # --- REMOVIDO O FILTRO FORÇADO "NOVO" ---
+            # Agora mostra todos os fechados da data selecionada
+            # df_encerrados_para_exibir = df_encerrados_para_exibir[df_encerrados_para_exibir['Status'] == "Novo"]
+            # -----------------------------------------
             
             df_encerrados_para_exibir = df_encerrados_para_exibir.loc[:, ~df_encerrados_para_exibir.columns.duplicated()]
             
             colunas_finais = [col for col in colunas_para_exibir_fechados if col in df_encerrados_para_exibir.columns]
             
-            if df_encerrados_para_exibir.empty:
-                st.info(f"Nenhum chamado fechado em {data_selecionada} causou redução no backlog atual.")
-            else:
-                st.data_editor(
-                    df_encerrados_para_exibir[colunas_finais], 
-                    hide_index=True, 
-                    disabled=True, 
-                    use_container_width=True,
-                    column_config={
-                        "Status": st.column_config.Column(
-                            width="small"
-                        )
-                    }
-                )
+            st.data_editor(
+                df_encerrados_para_exibir[colunas_finais], 
+                hide_index=True, 
+                disabled=True, 
+                use_container_width=True,
+                column_config={
+                    "Status": st.column_config.Column(
+                        width="small"
+                    )
+                }
+            )
             
         else:
             st.info("O arquivo de chamados encerrados do dia ainda não foi carregado.")
@@ -1174,6 +1170,7 @@ try:
                 colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
                 st.data_editor(resultados_busca[[col for col in colunas_para_exibir_busca if col in resultados_busca.columns]], use_container_width=True, hide_index=True, disabled=True)
 
+    # ... (Tabs 2, 3 e 4 com lógica preservada) ...
     with tab2:
         st.subheader("Resumo do Backlog Atual")
         if not df_aging.empty:
@@ -1629,6 +1626,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.42 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.46 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
