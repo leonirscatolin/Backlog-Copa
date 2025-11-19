@@ -872,14 +872,15 @@ try:
         # Cálculo inicial do card (pode ser sobrescrito abaixo)
         total_fechados_hoje = len(open_ids_base.intersection(closed_today_ids))
 
-    # --- LÓGICA DE CARD COM FILTRO DE GRUPO ---
+    # --- LÓGICA DE CARD COM FILTRO DE GRUPO (CORREÇÃO) ---
     try:
         if os.path.exists(f"{DATA_DIR}dados_fechados.csv"):
              df_last_closed = read_local_csv(f"{DATA_DIR}dados_fechados.csv", get_file_mtime(f"{DATA_DIR}dados_fechados.csv"))
              if not df_last_closed.empty:
-                 # Filtra grupos ignorados no arquivo bruto
-                 if 'Atribuir a um grupo' in df_last_closed.columns:
-                    df_last_closed = df_last_closed[~df_last_closed['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
+                 # Filtra grupos ignorados no arquivo bruto (CORREÇÃO AQUI)
+                 group_col_last = next((col for col in ['Atribuir a um grupo', 'Grupo Atribuído', 'Grupo'] if col in df_last_closed.columns), None)
+                 if group_col_last:
+                    df_last_closed = df_last_closed[~df_last_closed[group_col_last].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
                  
                  id_col_last = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_last_closed.columns), None)
                  id_col_backlog_base = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_abertos_base_para_reducao.columns), 'ID do ticket')
