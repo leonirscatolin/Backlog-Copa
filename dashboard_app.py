@@ -18,7 +18,7 @@ import os
 GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM' 
 GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou contendo 'RDM'"
 
-# Regex ajustado para ser mais abrangente (pegar qualquer variação de Service Desk)
+# Regex para Service Desk e LIQ-SUTEL
 GRUPOS_DE_AVISO_REGEX = r'Service Desk|LIQ-SUTEL'
 GRUPOS_DE_AVISO_TEXTO = "'Service Desk (L1)' ou 'LIQ-SUTEL'"
 
@@ -871,23 +871,6 @@ try:
              closed_today_ids = set(normalize_ids(fechados_hoje_df[id_col_hist]).unique())
              
              total_fechados_kpi = len(open_ids_base.intersection(closed_today_ids))
-             
-        else:
-             # Se não houver nada hoje, pega a última data disponível no arquivo para não mostrar zero
-             max_date = df_encerrados_liquido['Data de Fechamento_dt_comp'].max().date()
-             fechados_last_df = df_encerrados_liquido[
-                df_encerrados_liquido['Data de Fechamento_dt_comp'].dt.date == max_date
-             ]
-             
-             id_col_backlog = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_abertos_base_para_reducao.columns), 'ID do ticket')
-             open_ids_base = set(normalize_ids(df_abertos_base_para_reducao[id_col_backlog]).unique())
-             
-             id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in fechados_last_df.columns), None)
-             closed_last_ids = set(normalize_ids(fechados_last_df[id_col_hist]).unique())
-             
-             total_fechados_kpi = len(open_ids_base.intersection(closed_last_ids))
-             
-             label_kpi_fechados = f"Fechados ({max_date.strftime('%d/%m')})"
 
     data_mais_recente_fechado_str = "" 
 
@@ -919,9 +902,20 @@ try:
             
             st.warning("\n".join(aviso_str_lista))
 
+        # --- CORREÇÃO: FILTRO LÍQUIDO APLICADO AO TOTAL E AOS CARDS ---
+        # Cria dataframe líquido para cálculos visuais (ignora Service Desk mesmo se existir)
+        df_aging_liquido = df_aging[~df_aging['Atribuir a um grupo'].str.contains(GRUPOS_DE_AVISO_REGEX, case=False, na=False, regex=True)]
+        
+        # Calcula a diferença para o aviso
+        count_ignored_groups = len(df_aging) - len(df_aging_liquido)
+
         info_messages = ["**Filtros e Regras Aplicadas:**", 
                          f"- Grupos contendo {GRUPOS_EXCLUSAO_PERMANENTE_TEXTO} foram desconsiderados da análise.", 
                          "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
+
+        # Adiciona o aviso de quantos chamados foram ignorados para o cálculo líquido
+        if count_ignored_groups > 0:
+            info_messages.append(f"- **{count_ignored_groups}** chamados de {GRUPOS_DE_AVISO_TEXTO} foram excluídos da visualização (Backlog Líquido).")
         
         # --- INTEGRAÇÃO DO AVISO DE DATAS INVÁLIDAS ---
         diff_count = len(df_atual_filtrado) - len(df_aging)
@@ -933,10 +927,6 @@ try:
         st.subheader("Análise de Antiguidade do Backlog Atual")
         texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
         st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
-        
-        # --- CORREÇÃO: FILTRO LÍQUIDO APLICADO AO TOTAL E AOS CARDS ---
-        # Cria dataframe líquido para cálculos visuais (ignora Service Desk mesmo se existir)
-        df_aging_liquido = df_aging[~df_aging['Atribuir a um grupo'].str.contains(GRUPOS_DE_AVISO_REGEX, case=False, na=False, regex=True)]
         
         total_chamados = len(df_aging_liquido)
 
@@ -1404,8 +1394,6 @@ try:
 
     with tab4:
         st.subheader("Evolução do Aging do Backlog")
-        
-        st.info("Esta visualização ainda está coletando dados históricos. Utilize as outras abas como referência principal por enquanto.")
 
         try:
             df_hist = carregar_evolucao_aging(dias_para_analisar=90) 
@@ -1613,6 +1601,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.38 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.40 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
