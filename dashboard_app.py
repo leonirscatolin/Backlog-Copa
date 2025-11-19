@@ -872,7 +872,6 @@ try:
         total_fechados_hoje = len(open_ids_base.intersection(closed_today_ids))
 
     # --- NOVA LÓGICA: SOBRESCREVER TOTAL_FECHADOS_HOJE SE HOUVER ARQUIVO DE FECHADOS RECENTE ---
-    # Isso alinha o Card com o Pop-up, mostrando o impacto real da última carga (apenas de HOJE)
     try:
         if os.path.exists(f"{DATA_DIR}dados_fechados.csv"):
              df_last_closed = read_local_csv(f"{DATA_DIR}dados_fechados.csv", get_file_mtime(f"{DATA_DIR}dados_fechados.csv"))
@@ -880,7 +879,6 @@ try:
                  id_col_last = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_last_closed.columns), None)
                  id_col_backlog_base = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_abertos_base_para_reducao.columns), 'ID do ticket')
                  
-                 # Identifica coluna de data no arquivo salvo localmente para filtrar por HOJE
                  col_data_fechamento_last = next((c for c in ['Data de Fechamento', 'Data de Resolução'] if c in df_last_closed.columns), None)
                  
                  if id_col_last and id_col_backlog_base:
@@ -888,7 +886,6 @@ try:
                          df_last_closed['dt_temp_last'] = pd.to_datetime(df_last_closed[col_data_fechamento_last], dayfirst=True, errors='coerce')
                          df_last_closed_hoje = df_last_closed[df_last_closed['dt_temp_last'].dt.date == hoje_sp]
                      else:
-                         # Se não tiver data, assume hoje (fallback)
                          df_last_closed_hoje = df_last_closed
 
                      ids_last_closed_hoje = set(normalize_ids(df_last_closed_hoje[id_col_last]))
@@ -939,20 +936,16 @@ try:
                          f"- Grupos contendo {GRUPOS_EXCLUSAO_PERMANENTE_TEXTO} foram desconsiderados da análise.", 
                          "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
         
-        # --- INTEGRAÇÃO DO AVISO DE DATAS INVÁLIDAS ---
         diff_count = len(df_atual_filtrado) - len(df_aging)
         if diff_count > 0:
             info_messages.append(f"- **Atenção:** {diff_count} chamados foram desconsiderados por data inválida/vazia.")
 
-        # --- REMOVIDO O AVISO DE IMPACTO CONFORME SOLICITADO ---
-        
         st.info("\n".join(info_messages))
         
         st.subheader("Análise de Antiguidade do Backlog Atual")
         texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
         st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
         
-        # CORREÇÃO DA MATEMÁTICA: TOTAL = SOMA DOS CARDS (df_aging)
         total_chamados = len(df_aging)
 
         col_spacer1, col_total, col_fechados, col_spacer2 = st.columns([1, 1.5, 1.5, 1])
@@ -1056,34 +1049,42 @@ try:
             
             id_col_encerrados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_encerrados_para_exibir.columns), None)
             
-            # --- LÓGICA DE STATUS ATUALIZADA (Novo = Impacto Real) ---
-            if id_col_encerrados and 'open_ids_base' in locals():
+            # --- CARREGA LISTA DE FECHADOS ANTERIOR PARA COMPARAR "NOVO" ---
+            previous_closed_ids_loaded = set(read_local_json_file(STATE_FILE_PREV_CLOSED, default_return_type='list'))
+            
+            # --- DEFINE O STATUS "NOVO" ---
+            if id_col_encerrados:
                  df_encerrados_para_exibir['Status'] = df_encerrados_para_exibir[id_col_encerrados].apply(
-                      lambda x: "Novo" if normalize_ids(pd.Series([x])).iloc[0] in open_ids_base else ""
+                      lambda x: "Novo" if normalize_ids(pd.Series([x])).iloc[0] not in previous_closed_ids_loaded else ""
                   )
             else:
                 df_encerrados_para_exibir['Status'] = ""
             
-            # --- REMOVIDO O FILTRO FORÇADO "NOVO" ---
-            # Agora mostra todos os fechados da data selecionada
-            # df_encerrados_para_exibir = df_encerrados_para_exibir[df_encerrados_para_exibir['Status'] == "Novo"]
-            # -----------------------------------------
+            # --- FILTRO DE IMPACTO: MOSTRAR APENAS OS QUE CONSTAM NO ARQUIVO DE ABERTOS ---
+            if id_col_encerrados and 'open_ids_base' in locals():
+                df_encerrados_para_exibir = df_encerrados_para_exibir[
+                    df_encerrados_para_exibir[id_col_encerrados].apply(lambda x: normalize_ids(pd.Series([x])).iloc[0] in open_ids_base)
+                ]
+            # ----------------------------------------------------------------------------
             
             df_encerrados_para_exibir = df_encerrados_para_exibir.loc[:, ~df_encerrados_para_exibir.columns.duplicated()]
             
             colunas_finais = [col for col in colunas_para_exibir_fechados if col in df_encerrados_para_exibir.columns]
             
-            st.data_editor(
-                df_encerrados_para_exibir[colunas_finais], 
-                hide_index=True, 
-                disabled=True, 
-                use_container_width=True,
-                column_config={
-                    "Status": st.column_config.Column(
-                        width="small"
-                    )
-                }
-            )
+            if df_encerrados_para_exibir.empty:
+                st.info(f"Nenhum chamado fechado em {data_selecionada} causou redução no backlog atual.")
+            else:
+                st.data_editor(
+                    df_encerrados_para_exibir[colunas_finais], 
+                    hide_index=True, 
+                    disabled=True, 
+                    use_container_width=True,
+                    column_config={
+                        "Status": st.column_config.Column(
+                            width="small"
+                        )
+                    }
+                )
             
         else:
             st.info("O arquivo de chamados encerrados do dia ainda não foi carregado.")
@@ -1170,7 +1171,6 @@ try:
                 colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
                 st.data_editor(resultados_busca[[col for col in colunas_para_exibir_busca if col in resultados_busca.columns]], use_container_width=True, hide_index=True, disabled=True)
 
-    # ... (Tabs 2, 3 e 4 com lógica preservada) ...
     with tab2:
         st.subheader("Resumo do Backlog Atual")
         if not df_aging.empty:
@@ -1626,6 +1626,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.46 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.47 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
