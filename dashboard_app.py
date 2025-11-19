@@ -268,7 +268,9 @@ def analisar_aging(_df_atual, reference_date=None):
         data_referencia = pd.to_datetime('today').normalize()
         
     data_criacao_normalizada = df[date_col_name].dt.normalize()
-    dias_calculados = (data_referencia - data_criacao_normalizada).dt.days
+    
+    # --- CORREÇÃO AQUI: Subtrair 1 dia para alinhar com a lógica do Excel (D-1) ---
+    dias_calculados = (data_referencia - data_criacao_normalizada).dt.days - 1
     
     df['Dias em Aberto'] = dias_calculados.clip(lower=0)
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
@@ -502,7 +504,9 @@ def carregar_evolucao_aging(dias_para_analisar=90):
 
                 snapshot_date_dt = pd.to_datetime(file_date)
                 data_criacao_normalizada = df_final[date_col_name].dt.normalize()
-                dias_calculados = (snapshot_date_dt - data_criacao_normalizada).dt.days
+                
+                # --- CORREÇÃO AQUI: Subtrair 1 dia para alinhar com a lógica do Excel (D-1) ---
+                dias_calculados = (snapshot_date_dt - data_criacao_normalizada).dt.days - 1
                 dias_em_aberto_corrigido = (dias_calculados).clip(lower=0)
 
                 faixas_antiguidade = categorizar_idade_vetorizado(dias_em_aberto_corrigido)
@@ -698,7 +702,7 @@ if is_admin:
                     if not df_historico_base.empty:
                         id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_historico_base.columns), "ID do ticket")
                         df_historico_base[id_col_hist] = normalize_ids(df_historico_base[id_col_hist])
-                     
+                      
                     previous_closed_ids = set()
                     if not df_historico_base.empty:
                         previous_closed_ids = set(df_historico_base[id_col_hist].dropna().unique())
@@ -711,7 +715,7 @@ if is_admin:
                     cols_para_merge = [id_col_upload, 'Data de Fechamento_str']
                     if analista_col_name_origem in df_fechados_novo_upload.columns:
                         cols_para_merge.append(analista_col_name_origem)
-                     
+                      
                     group_col_name_upload = next((col for col in ['Atribuir a um grupo', 'Grupo Atribuído', 'Grupo'] if col in df_fechados_novo_upload.columns), None)
                     if group_col_name_upload:
                          cols_para_merge.append(group_col_name_upload)
@@ -1010,8 +1014,8 @@ try:
             # --- LÓGICA DE STATUS ATUALIZADA (Novo = Impacto Real) ---
             if id_col_encerrados and 'open_ids_base' in locals():
                  df_encerrados_para_exibir['Status'] = df_encerrados_para_exibir[id_col_encerrados].apply(
-                     lambda x: "Novo" if normalize_ids(pd.Series([x])).iloc[0] in open_ids_base else ""
-                 )
+                      lambda x: "Novo" if normalize_ids(pd.Series([x])).iloc[0] in open_ids_base else ""
+                  )
             else:
                 df_encerrados_para_exibir['Status'] = ""
             # ---------------------------------------------------------
@@ -1442,7 +1446,7 @@ try:
 
             cols_linha1 = st.columns(3)
             cols_linha2 = st.columns(3)
-            cols_map = {0: cols_linha1[0], 1: cols_linha1[1], 2: cols_linha1[2],
+            cols_map = {0: cols_linha1[0], 1: cols_linha1[1], 2: cols_linha1[2], 
                         3: cols_linha2[0], 4: cols_linha2[1], 5: cols_linha2[2]}
 
             for i, faixa in enumerate(ordem_faixas_scaffold):
@@ -1452,7 +1456,7 @@ try:
                         valor_hoje_series = hoje_counts_df.loc[hoje_counts_df['Faixa de Antiguidade'] == faixa, 'total']
                         if not valor_hoje_series.empty:
                             valor_hoje = int(valor_hoje_series.iloc[0])
-
+                    
                     valor_comparacao = 0
                     delta_text = "N/A"
                     delta_class = "delta-neutral"
@@ -1461,7 +1465,7 @@ try:
                         valor_comp_series = df_comparacao_dados.loc[df_comparacao_dados['Faixa de Antiguidade'] == faixa, 'total']
                         if not valor_comp_series.empty:
                             valor_comparacao = int(valor_comp_series.iloc[0])
-
+                        
                         delta_abs = valor_hoje - valor_comparacao
                         delta_perc = (delta_abs / valor_comparacao) if valor_comparacao > 0 else 0
                         delta_text, delta_class = formatar_delta_card(delta_abs, delta_perc, valor_comparacao, data_comparacao_str)
@@ -1542,7 +1546,7 @@ try:
                         },
                         color_discrete_map=color_map
                     )
-
+                
                 fig_aging_all.update_layout(height=500)
                 st.plotly_chart(fig_aging_all, use_container_width=True)
 
@@ -1573,6 +1577,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.36 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.37 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
