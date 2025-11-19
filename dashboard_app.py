@@ -105,12 +105,6 @@ a.metric-box:hover {
 
 # --- FUNÇÕES UTILITÁRIAS ---
 
-def normalize_ids(series):
-    """Limpa e padroniza IDs para garantir cruzamento correto."""
-    if series.empty:
-        return series
-    return series.astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-
 def get_file_mtime(file_path):
     if os.path.exists(file_path):
         return os.path.getmtime(file_path)
@@ -234,13 +228,15 @@ def categorizar_idade_vetorizado(dias_series):
     return np.select(condicoes, opcoes, default="Erro de Categoria")
 
 @st.cache_data
-def analisar_aging(_df_atual):
+def analisar_aging(_df_atual, reference_date=None):
     df = _df_atual.copy()
     date_col_name = None
     if 'Data de criação' in df.columns: date_col_name = 'Data de criação'
     elif 'Data de Criacao' in df.columns: date_col_name = 'Data de Criacao'
     if not date_col_name:
         return pd.DataFrame()
+    
+    # Converte data com dayfirst=True
     df[date_col_name] = pd.to_datetime(df[date_col_name], dayfirst=True, errors='coerce')
     
     linhas_sem_data = df[df[date_col_name].isna()]
@@ -251,10 +247,18 @@ def analisar_aging(_df_atual):
 
     df = df.dropna(subset=[date_col_name])
     
-    hoje = pd.to_datetime('today').normalize()
+    # Define a data de referência (do arquivo ou de hoje)
+    if reference_date:
+        data_referencia = pd.to_datetime(reference_date).normalize()
+    else:
+        data_referencia = pd.to_datetime('today').normalize()
+        
     data_criacao_normalizada = df[date_col_name].dt.normalize()
-    dias_calculados = (hoje - data_criacao_normalizada).dt.days
-    df['Dias em Aberto'] = (dias_calculados - 1).clip(lower=0)
+    dias_calculados = (data_referencia - data_criacao_normalizada).dt.days
+    
+    # Cálculo exato de dias corridos (sem desconto)
+    df['Dias em Aberto'] = dias_calculados.clip(lower=0)
+    
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
     return df
 
@@ -372,7 +376,7 @@ def carregar_dados_evolucao(dias_para_analisar, df_historico_fechados):
         if id_col_hist and not df_hist.empty:
             df_hist['Data de Fechamento_dt'] = pd.to_datetime(df_hist['Data de Fechamento'], dayfirst=True, errors='coerce').dt.normalize()
             df_hist = df_hist.dropna(subset=['Data de Fechamento_dt', id_col_hist])
-            df_hist['Ticket ID'] = normalize_ids(df_hist[id_col_hist])
+            df_hist['Ticket ID'] = df_hist[id_col_hist].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
             df_hist = df_hist[['Ticket ID', 'Data de Fechamento_dt']]
         else:
             df_hist = pd.DataFrame()
@@ -391,7 +395,7 @@ def carregar_dados_evolucao(dias_para_analisar, df_historico_fechados):
                         snap_id_col = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_snapshot_filtrado.columns), None)
 
                         if snap_id_col and not df_hist.empty:
-                            df_snapshot_filtrado['Clean ID'] = normalize_ids(df_snapshot_filtrado[snap_id_col])
+                            df_snapshot_filtrado['Clean ID'] = df_snapshot_filtrado[snap_id_col].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
                             closed_up_to_date = df_hist[df_hist['Data de Fechamento_dt'].dt.date <= file_date]['Ticket ID'].unique()
                             df_snapshot_filtrado = df_snapshot_filtrado[
                                 ~df_snapshot_filtrado['Clean ID'].isin(closed_up_to_date)
@@ -470,7 +474,7 @@ def carregar_evolucao_aging(dias_para_analisar=90):
                 date_col_name = next((col for col in ['Data de criação', 'Data de Criacao'] if col in df_final.columns), None)
                 if not date_col_name: continue
 
-                df_final[date_col_name] = pd.to_datetime(df_final[date_col_name], dayfirst=True, errors='coerce')
+                df_final[date_col_name] = pd.to_datetime(df_final[date_col_name], errors='coerce')
                 df_final = df_final.dropna(subset=[date_col_name])
 
                 snapshot_date_dt = pd.to_datetime(file_date)
@@ -556,14 +560,14 @@ if is_admin:
                         id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_hist_fechados.columns), None)
                         
                         if id_col_hist and not df_hist_fechados.empty:
-                            all_closed_ids_historico = set(normalize_ids(df_hist_fechados[id_col_hist]).unique())
+                            all_closed_ids_historico = set(df_hist_fechados[id_col_hist].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
 
                         id_col_atual = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_novo_atual_raw.columns), None)
                         
                         df_novo_atual_filtrado = df_novo_atual_raw 
                         
                         if id_col_atual and all_closed_ids_historico: 
-                            df_novo_atual_raw[id_col_atual] = normalize_ids(df_novo_atual_raw[id_col_atual])
+                            df_novo_atual_raw[id_col_atual] = df_novo_atual_raw[id_col_atual].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
                             df_novo_atual_filtrado = df_novo_atual_raw[~df_novo_atual_raw[id_col_atual].isin(all_closed_ids_historico)]
                             st.sidebar.info(f"{len(df_novo_atual_raw) - len(df_novo_atual_filtrado)} chamados fechados (do histórico) foram removidos do novo arquivo 'Atual'.")
                         
@@ -634,7 +638,7 @@ if is_admin:
                     col_fechamento_upload = "Data de Fechamento" 
                     analista_col_name_origem = "Analista atribuído"
                     
-                    df_fechados_novo_upload[id_col_upload] = normalize_ids(df_fechados_novo_upload[id_col_upload])
+                    df_fechados_novo_upload[id_col_upload] = df_fechados_novo_upload[id_col_upload].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
                     
                     if col_fechamento_upload in df_fechados_novo_upload.columns:
                         st.sidebar.info("Usando 'Data de Fechamento' do arquivo de upload.")
@@ -650,7 +654,7 @@ if is_admin:
                     id_col_hist = "ID do ticket"
                     if not df_historico_base.empty:
                         id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_historico_base.columns), "ID do ticket")
-                        df_historico_base[id_col_hist] = normalize_ids(df_historico_base[id_col_hist])
+                        df_historico_base[id_col_hist] = df_historico_base[id_col_hist].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
                      
                     previous_closed_ids = set()
                     if not df_historico_base.empty:
@@ -745,12 +749,12 @@ try:
         st.stop()
 
     if 'ID do ticket' in df_atual.columns:
-        df_atual['ID do ticket'] = normalize_ids(df_atual['ID do ticket'])
+        df_atual['ID do ticket'] = df_atual['ID do ticket'].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
 
     all_closed_ids_historico = set()
     id_col_historico = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_historico_fechados.columns), None)
     if id_col_historico and not df_historico_fechados.empty:
-        all_closed_ids_historico = set(normalize_ids(df_historico_fechados[id_col_historico]).unique())
+        all_closed_ids_historico = set(df_historico_fechados[id_col_historico].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().dropna().unique())
     
     df_abertos = df_atual
     
@@ -762,7 +766,18 @@ try:
          df_atual_filtrado = df_atual_filtrado[~df_atual_filtrado['ID do ticket'].isin(all_closed_ids_historico)]
     
     df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
-    df_aging = analisar_aging(df_atual_filtrado)
+    
+    # --- PASSANDO DATA DE REFERÊNCIA PARA AGING ---
+    try:
+        if data_atual_str != 'N/A':
+            ref_date_obj = datetime.strptime(data_atual_str, '%d/%m/%Y')
+        else:
+            ref_date_obj = None
+    except:
+        ref_date_obj = None
+
+    df_aging = analisar_aging(df_atual_filtrado, reference_date=ref_date_obj)
+    # ------------------------------------------------
     
     df_encerrados_filtrado = pd.DataFrame()
      
@@ -790,10 +805,10 @@ try:
         ].copy()
         
         id_col_backlog = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_abertos_base_para_reducao.columns), 'ID do ticket')
-        open_ids_base = set(normalize_ids(df_abertos_base_para_reducao[id_col_backlog]).unique())
+        open_ids_base = set(df_abertos_base_para_reducao[id_col_backlog].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().unique())
         
         id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in fechados_hoje_df.columns), None)
-        closed_today_ids = set(normalize_ids(fechados_hoje_df[id_col_hist]).unique())
+        closed_today_ids = set(fechados_hoje_df[id_col_hist].astype(str).str.replace(r'\.0$', '', regex=True).str.strip().unique())
         
         total_fechados_hoje = len(open_ids_base.intersection(closed_today_ids))
 
@@ -903,11 +918,11 @@ try:
 
             if date_col_name and 'Data de Fechamento_dt_comp' in df_encerrados_para_exibir.columns:
                 try:
-                    data_criacao = pd.to_datetime(df_encerrados_para_exibir[date_col_name], errors='coerce').dt.normalize()
-                    data_fechamento = df_encerrados_para_exibir['Data de Fechamento_dt_comp'].dt.normalize()
+                    data_criacao = pd.to_datetime(df_encerrados_para_exibir[date_col_name], dayfirst=True, errors='coerce').dt.normalize()
+                    data_fechamento = pd.to_datetime(df_encerrados_para_exibir['Data de Fechamento_dt_comp'], errors='coerce').dt.normalize()
                     
                     dias_calculados = (data_fechamento - data_criacao).dt.days
-                    df_encerrados_para_exibir['Dias em Aberto'] = (dias_calculados - 1).clip(lower=0)
+                    df_encerrados_para_exibir['Dias em Aberto'] = dias_calculados.clip(lower=0)
                     colunas_para_exibir_fechados.append('Dias em Aberto')
                 except Exception as e:
                     pass 
@@ -1061,7 +1076,7 @@ try:
         st.subheader("Resumo do Backlog Atual")
         if not df_aging.empty:
             
-            total_chamados_tab2 = len(df_atual_filtrado)
+            total_chamados_tab2 = len(df_aging)
             _, col_total_tab2, _ = st.columns([2, 1.5, 2])
             with col_total_tab2: st.markdown( f"""<div class="metric-box"><span class="label">Total de Chamados</span><span class="value">{total_chamados_tab2}</span></div>""", unsafe_allow_html=True )
             st.markdown("---")
@@ -1184,12 +1199,19 @@ try:
                 st.info("Esta visualização agora é a **Evolução Líquida** do Backlog: os chamados fechados até o dia do snapshot são deduzidos da contagem.")
                 
                 try:
-                    latest_date_in_chart = df_evolucao_tab3['Data'].max()
-                    
+                    if data_atual_str and data_atual_str != 'N/A':
+                         data_ref_dt = pd.to_datetime(datetime.strptime(data_atual_str, "%d/%m/%Y"))
+                    else:
+                         data_ref_dt = pd.to_datetime(date.today())
+                except:
+                    data_ref_dt = pd.to_datetime(date.today())
+
+                
+                try:
                     agregado_agora = df_aging.groupby('Atribuir a um grupo').size().reset_index(name='Total Chamados')
-                    agregado_agora['Data'] = latest_date_in_chart
+                    agregado_agora['Data'] = data_ref_dt
                     
-                    df_evolucao_tab3 = df_evolucao_tab3[df_evolucao_tab3['Data'] != latest_date_in_chart]
+                    df_evolucao_tab3 = df_evolucao_tab3[df_evolucao_tab3['Data'] != data_ref_dt]
                     
                     df_evolucao_tab3 = pd.concat([df_evolucao_tab3, agregado_agora], ignore_index=True)
                     
@@ -1507,6 +1529,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.27 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.29 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
