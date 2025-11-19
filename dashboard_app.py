@@ -134,26 +134,28 @@ def read_local_csv(file_path, file_mtime):
     if not os.path.exists(file_path):
         return pd.DataFrame() 
     
-    try:
-        try:
-            df = pd.read_csv(file_path, delimiter=';', encoding='utf-8',
-                             dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str}, low_memory=False,
-                             on_bad_lines='warn')
-        except UnicodeDecodeError:
-            df = pd.read_csv(file_path, delimiter=';', encoding='latin1',
-                             dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str}, low_memory=False,
-                             on_bad_lines='warn')
-            if file_path in [f"{DATA_DIR}dados_fechados.csv", STATE_FILE_MASTER_CLOSED_CSV]:
-                 st.sidebar.warning(f"Arquivo '{file_path}' lido com encoding 'latin-1' localmente.")
-        
-        df.columns = df.columns.str.strip()
-        df = df.loc[:, ~df.columns.duplicated()]
-        df.dropna(how='all', inplace=True)
-        return df
-        
-    except Exception as e:
-        st.error(f"Erro inesperado ao ler o arquivo '{file_path}': {e}")
-        return pd.DataFrame()
+    # Tenta ler com diferentes separadores e encodings
+    separators = [';', ',']
+    encodings = ['utf-8', 'latin1']
+    
+    for sep in separators:
+        for enc in encodings:
+            try:
+                df = pd.read_csv(file_path, sep=sep, encoding=enc,
+                                 dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str}, 
+                                 low_memory=False, on_bad_lines='warn')
+                
+                # Validação básica: se leu apenas 1 coluna, provavelmente o separador está errado
+                if df.shape[1] > 1:
+                    df.columns = df.columns.str.strip()
+                    df = df.loc[:, ~df.columns.duplicated()]
+                    df.dropna(how='all', inplace=True)
+                    return df
+            except:
+                continue
+                
+    st.error(f"Não foi possível ler o arquivo '{file_path}'. Verifique se é um CSV válido.")
+    return pd.DataFrame()
 
 @st.cache_data
 def read_local_text_file(file_path):
@@ -191,18 +193,34 @@ def process_uploaded_file(uploaded_file):
         return None
     try:
         dtype_spec = {'ID do ticket': str, 'ID do Ticket': str, 'ID': str}
+        
         if uploaded_file.name.endswith('.xlsx'):
             df = pd.read_excel(uploaded_file, dtype=dtype_spec)
         else:
+            # Lógica de detecção automática para upload também
+            content = uploaded_file.getvalue()
+            
+            # Tenta decodificar
             try:
-                content = uploaded_file.getvalue().decode('utf-8')
+                decoded = content.decode('utf-8')
+                encoding_used = 'utf-8'
             except UnicodeDecodeError:
-                content = uploaded_file.getvalue().decode('latin1')
-            df = pd.read_csv(StringIO(content), delimiter=';', dtype=dtype_spec)
+                decoded = content.decode('latin1')
+                encoding_used = 'latin1'
+            
+            # Tenta detectar separador
+            if ';' in decoded.split('\n')[0]:
+                sep_used = ';'
+            else:
+                sep_used = ','
+                
+            df = pd.read_csv(StringIO(decoded), sep=sep_used, dtype=dtype_spec)
+
         df.columns = df.columns.str.strip()
         df.dropna(how='all', inplace=True)
 
         output = StringIO()
+        # Padroniza para salvar sempre como ponto e vírgula
         df.to_csv(output, index=False, sep=';', encoding='utf-8')
         return output.getvalue().encode('utf-8') 
     except Exception as e:
@@ -231,17 +249,22 @@ def categorizar_idade_vetorizado(dias_series):
 def analisar_aging(_df_atual, reference_date=None):
     df = _df_atual.copy()
     date_col_name = None
-    if 'Data de criação' in df.columns: date_col_name = 'Data de criação'
-    elif 'Data de Criacao' in df.columns: date_col_name = 'Data de Criacao'
+    # Tenta encontrar variações comuns de nome de coluna de data
+    possible_date_cols = ['Data de criação', 'Data de Criacao', 'Created', 'Aberto em']
+    for col in possible_date_cols:
+        if col in df.columns:
+            date_col_name = col
+            break
+            
     if not date_col_name:
         return pd.DataFrame()
     
-    # Converte data com dayfirst=True
+    # Converte data (tenta inferir formato, lida com YYYY-MM-DD e DD/MM/YYYY)
     df[date_col_name] = pd.to_datetime(df[date_col_name], dayfirst=True, errors='coerce')
     
     linhas_sem_data = df[df[date_col_name].isna()]
     if not linhas_sem_data.empty:
-        st.warning(f"⚠️ **Atenção:** Foram encontrados **{len(linhas_sem_data)}** tickets com 'Data de Criação' inválida ou vazia. Eles não serão contabilizados no Aging.")
+        st.warning(f"⚠️ **Atenção:** Foram encontrados **{len(linhas_sem_data)}** tickets com '{date_col_name}' inválida ou vazia. Verifique se o delimitador do arquivo está correto (usando vírgula ou ponto e vírgula).")
         with st.expander("Visualizar Tickets sem Data"):
             st.dataframe(linhas_sem_data)
 
@@ -256,9 +279,7 @@ def analisar_aging(_df_atual, reference_date=None):
     data_criacao_normalizada = df[date_col_name].dt.normalize()
     dias_calculados = (data_referencia - data_criacao_normalizada).dt.days
     
-    # Cálculo exato de dias corridos (sem desconto)
     df['Dias em Aberto'] = dias_calculados.clip(lower=0)
-    
     df['Faixa de Antiguidade'] = categorizar_idade_vetorizado(df['Dias em Aberto'])
     return df
 
@@ -552,7 +573,7 @@ if is_admin:
                 
                 if content_atual_raw is not None and content_15dias is not None:
                     try:
-                        df_novo_atual_raw = pd.read_csv(BytesIO(content_atual_raw), delimiter=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
+                        df_novo_atual_raw = pd.read_csv(BytesIO(content_atual_raw), sep=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
                         
                         df_hist_fechados = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV, get_file_mtime(STATE_FILE_MASTER_CLOSED_CSV))
                         
@@ -767,7 +788,7 @@ try:
     
     df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
     
-    # --- PASSANDO DATA DE REFERÊNCIA PARA AGING ---
+    # Passar data de referência para o aging
     try:
         if data_atual_str != 'N/A':
             ref_date_obj = datetime.strptime(data_atual_str, '%d/%m/%Y')
@@ -777,7 +798,6 @@ try:
         ref_date_obj = None
 
     df_aging = analisar_aging(df_atual_filtrado, reference_date=ref_date_obj)
-    # ------------------------------------------------
     
     df_encerrados_filtrado = pd.DataFrame()
      
@@ -918,14 +938,14 @@ try:
 
             if date_col_name and 'Data de Fechamento_dt_comp' in df_encerrados_para_exibir.columns:
                 try:
-                    data_criacao = pd.to_datetime(df_encerrados_para_exibir[date_col_name], dayfirst=True, errors='coerce').dt.normalize()
-                    data_fechamento = pd.to_datetime(df_encerrados_para_exibir['Data de Fechamento_dt_comp'], errors='coerce').dt.normalize()
+                    data_criacao = pd.to_datetime(df_encerrados_para_exibir[date_col_name], errors='coerce').dt.normalize()
+                    data_fechamento = df_encerrados_para_exibir['Data de Fechamento_dt_comp'].dt.normalize()
                     
                     dias_calculados = (data_fechamento - data_criacao).dt.days
                     df_encerrados_para_exibir['Dias em Aberto'] = dias_calculados.clip(lower=0)
                     colunas_para_exibir_fechados.append('Dias em Aberto')
                 except Exception as e:
-                    pass 
+                    st.warning(f"Não foi possível calcular 'Dias em Aberto' para o histórico: {e}")
             
             try:
                 datas_disponiveis = sorted(df_encerrados_para_exibir['Data de Fechamento_dt_comp'].dt.strftime('%d/%m/%Y').unique(), reverse=True)
@@ -1529,6 +1549,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.29 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.30 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
