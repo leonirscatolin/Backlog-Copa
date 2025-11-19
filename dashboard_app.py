@@ -269,7 +269,7 @@ def analisar_aging(_df_atual, reference_date=None):
         
     data_criacao_normalizada = df[date_col_name].dt.normalize()
     
-    # --- CORREÇÃO AQUI: Subtrair 1 dia para alinhar com a lógica do Excel (D-1) ---
+    # Subtrair 1 dia para alinhar com a lógica do Excel (D-1)
     dias_calculados = (data_referencia - data_criacao_normalizada).dt.days - 1
     
     df['Dias em Aberto'] = dias_calculados.clip(lower=0)
@@ -505,7 +505,7 @@ def carregar_evolucao_aging(dias_para_analisar=90):
                 snapshot_date_dt = pd.to_datetime(file_date)
                 data_criacao_normalizada = df_final[date_col_name].dt.normalize()
                 
-                # --- CORREÇÃO AQUI: Subtrair 1 dia para alinhar com a lógica do Excel (D-1) ---
+                # Subtrair 1 dia para alinhar com a lógica do Excel (D-1)
                 dias_calculados = (snapshot_date_dt - data_criacao_normalizada).dt.days - 1
                 dias_em_aberto_corrigido = (dias_calculados).clip(lower=0)
 
@@ -1246,7 +1246,8 @@ try:
 
             if not df_evolucao_tab3.empty:
 
-                st.info("Esta visualização agora é a **Evolução Líquida** do Backlog: os chamados fechados até o dia do snapshot são deduzidos da contagem.")
+                # --- ALTERADO CONFORME SOLICITADO ---
+                st.info("Esta visualização ainda está coletando dados históricos. Utilize as outras abas como referência principal por enquanto.")
                 
                 try:
                     latest_date_in_chart = df_evolucao_tab3['Data'].max()
@@ -1577,6 +1578,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.37 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.38 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
