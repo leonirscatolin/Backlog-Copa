@@ -645,7 +645,7 @@ if is_admin:
                     st.stop() 
 
                 try:
-                    # --- LÓGICA DE MENSAGEM DE IMPACTO ---
+                    # --- LÓGICA DE IMPACTO (CORRIGIDA PARA CONSIDERAR APENAS HOJE) ---
                     df_backlog_check = read_local_csv(f"{DATA_DIR}dados_atuais.csv", get_file_mtime(f"{DATA_DIR}dados_atuais.csv"))
                     
                     df_fechados_novo_check = pd.read_csv(BytesIO(content_fechados), sep=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
@@ -654,14 +654,25 @@ if is_admin:
                         id_col_bk = next((c for c in ['ID do ticket', 'ID do Ticket', 'ID'] if c in df_backlog_check.columns), None)
                         id_col_fc = next((c for c in ['ID do ticket', 'ID do Ticket', 'ID'] if c in df_fechados_novo_check.columns), None)
                         
+                        # Tenta identificar coluna de data para filtrar
+                        col_data_fechamento_check = next((c for c in ['Data de Fechamento', 'Data de Resolução'] if c in df_fechados_novo_check.columns), None)
+                        
                         if id_col_bk and id_col_fc:
+                            # Prepara dataframe de fechados filtrado por HOJE
+                            if col_data_fechamento_check:
+                                df_fechados_novo_check['dt_temp_check'] = pd.to_datetime(df_fechados_novo_check[col_data_fechamento_check], dayfirst=True, errors='coerce')
+                                df_fechados_hoje_check = df_fechados_novo_check[df_fechados_novo_check['dt_temp_check'].dt.date == now_sao_paulo.date()]
+                            else:
+                                # Se não achar coluna de data, assume que tudo é de hoje (comportamento padrão, mas arriscado)
+                                df_fechados_hoje_check = df_fechados_novo_check
+
                             ids_bk = set(normalize_ids(df_backlog_check[id_col_bk]))
-                            ids_fc = set(normalize_ids(df_fechados_novo_check[id_col_fc]))
+                            ids_fc_hoje = set(normalize_ids(df_fechados_hoje_check[id_col_fc]))
                             
-                            total_lidos = len(ids_fc)
-                            total_abatidos = len(ids_bk.intersection(ids_fc))
+                            total_lidos_hoje = len(ids_fc_hoje)
+                            total_abatidos = len(ids_bk.intersection(ids_fc_hoje))
                             
-                            st.toast(f"Processado! {total_lidos} chamados lidos. {total_abatidos} impactaram o backlog.", icon="📉")
+                            st.toast(f"Processado! {total_lidos_hoje} chamados de HOJE lidos. {total_abatidos} impactaram o backlog.", icon="📉")
                     # ---------------------------------------
 
                     save_local_file(f"{DATA_DIR}dados_fechados.csv", content_fechados, is_binary=True)
@@ -900,6 +911,10 @@ try:
         diff_count = len(df_atual_filtrado) - len(df_aging)
         if diff_count > 0:
             info_messages.append(f"- ⚠️ **Atenção:** {diff_count} chamados foram desconsiderados por data inválida/vazia.")
+
+        # --- NOVO AVISO DE IMPACTO (BASEADO NO TOTAL CALCULADO DO HISTÓRICO DE HOJE) ---
+        if total_fechados_hoje > 0:
+            info_messages.append(f"- 📉 **Atualização de Hoje:** {total_fechados_hoje} chamados foram fechados hoje e abatidos desta visualização.")
         
         st.info("\n".join(info_messages))
         
@@ -1178,58 +1193,58 @@ try:
                 
                 st.plotly_chart(fig_stacked_bar, use_container_width=True)
 
-                if is_admin:
-                    df_pareto = group_totals.to_frame(name='Total')
-                    df_pareto['CumulativePct'] = df_pareto['Total'].cumsum() / df_pareto['Total'].sum()
-                    
-                    total_backlog_geral = df_pareto['Total'].sum()
-                    total_grupos_geral = len(df_pareto)
-                    
-                    pareto_limit = 0.80
-                    num_groups_for_80_pct = 1
-                    if df_pareto['CumulativePct'].iloc[0] <= pareto_limit:
-                        try:
-                            groups_under_80 = df_pareto[df_pareto['CumulativePct'] <= pareto_limit]
-                            num_groups_for_80_pct = len(groups_under_80) + 1
-                        except Exception:
-                            num_groups_for_80_pct = 1 
-                    
-                    if num_groups_for_80_pct > total_grupos_geral:
-                        num_groups_for_80_pct = total_grupos_geral
-
-                    final_pareto_groups = df_pareto.head(num_groups_for_80_pct)
-                    actual_pct = final_pareto_groups.iloc[-1]['CumulativePct']
-                    actual_call_count = final_pareto_groups['Total'].sum()
-                    
-                    top_3_groups = group_totals.head(3)
-                    
-                    summary_text = [f"**Análise Rápida (Princípio de Pareto):**\n"]
-                    summary_text.append(f"* Nossa análise mostra que **{num_groups_for_80_pct}** grupos (de um total de **{total_grupos_geral}**) são responsáveis por **{actual_call_count}** chamados, o que representa **{actual_pct:.0%}** de todo o backlog (de {total_backlog_geral} chamados).\n")
-                    summary_text.append(f"* Os 3 grupos de maior impacto são:\n")
-                    
-                    list_items = []
-                    for i, (group, count) in enumerate(top_3_groups.items(), 1):
-                        list_items.append(f"    {i}.  **{group}** ({count} chamados)")
-                    summary_text.append("\n".join(list_items))
-                    
-                    summary_text.append(f"\n**Análise por Categoria:**\n")
-                    
+                # --- PARETO LIBERADO PARA TODOS (SEM IF IS_ADMIN) ---
+                df_pareto = group_totals.to_frame(name='Total')
+                df_pareto['CumulativePct'] = df_pareto['Total'].cumsum() / df_pareto['Total'].sum()
+                
+                total_backlog_geral = df_pareto['Total'].sum()
+                total_grupos_geral = len(df_pareto)
+                
+                pareto_limit = 0.80
+                num_groups_for_80_pct = 1
+                if df_pareto['CumulativePct'].iloc[0] <= pareto_limit:
                     try:
-                        total_sap = group_totals[group_totals.index.str.contains('SAP', case=False, na=False)].sum()
-                        total_3n = group_totals[group_totals.index.str.contains('3N', case=False, na=False)].sum()
-                        total_outros = group_totals[~group_totals.index.str.contains('SAP|3N', case=False, na=False)].sum()
-                        
-                        summary_text.append(f"* Grupos contendo 'SAP' representam **{total_sap}** chamados ({total_sap/total_backlog_geral:.0%}).")
-                        summary_text.append(f"* Grupos contendo '3N' representam **{total_3n}** chamados ({total_3n/total_backlog_geral:.0%}).")
-                        summary_text.append(f"* Os demais grupos (sem 'SAP' ou '3N') somam **{total_outros}** chamados ({total_outros/total_backlog_geral:.0%}).")
-                        
-                        if (total_sap + total_3n + total_outros) != total_backlog_geral:
-                             summary_text.append(f"\n*(Nota: Pode haver sobreposição nos totais acima se um grupo contiver 'SAP' e '3N'.)*")
-                    
-                    except Exception as e:
-                        summary_text.append(f"*Ocorreu um erro ao gerar a análise por categoria: {e}*")
+                        groups_under_80 = df_pareto[df_pareto['CumulativePct'] <= pareto_limit]
+                        num_groups_for_80_pct = len(groups_under_80) + 1
+                    except Exception:
+                        num_groups_for_80_pct = 1 
+                
+                if num_groups_for_80_pct > total_grupos_geral:
+                    num_groups_for_80_pct = total_grupos_geral
 
-                    st.info("\n".join(summary_text))
+                final_pareto_groups = df_pareto.head(num_groups_for_80_pct)
+                actual_pct = final_pareto_groups.iloc[-1]['CumulativePct']
+                actual_call_count = final_pareto_groups['Total'].sum()
+                
+                top_3_groups = group_totals.head(3)
+                
+                summary_text = [f"**Análise Rápida (Princípio de Pareto):**\n"]
+                summary_text.append(f"* Nossa análise mostra que **{num_groups_for_80_pct}** grupos (de um total de **{total_grupos_geral}**) são responsáveis por **{actual_call_count}** chamados, o que representa **{actual_pct:.0%}** de todo o backlog (de {total_backlog_geral} chamados).\n")
+                summary_text.append(f"* Os 3 grupos de maior impacto são:\n")
+                
+                list_items = []
+                for i, (group, count) in enumerate(top_3_groups.items(), 1):
+                    list_items.append(f"    {i}.  **{group}** ({count} chamados)")
+                summary_text.append("\n".join(list_items))
+                
+                summary_text.append(f"\n**Análise por Categoria:**\n")
+                
+                try:
+                    total_sap = group_totals[group_totals.index.str.contains('SAP', case=False, na=False)].sum()
+                    total_3n = group_totals[group_totals.index.str.contains('3N', case=False, na=False)].sum()
+                    total_outros = group_totals[~group_totals.index.str.contains('SAP|3N', case=False, na=False)].sum()
+                    
+                    summary_text.append(f"* Grupos contendo 'SAP' representam **{total_sap}** chamados ({total_sap/total_backlog_geral:.0%}).")
+                    summary_text.append(f"* Grupos contendo '3N' representam **{total_3n}** chamados ({total_3n/total_backlog_geral:.0%}).")
+                    summary_text.append(f"* Os demais grupos (sem 'SAP' ou '3N') somam **{total_outros}** chamados ({total_outros/total_backlog_geral:.0%}).")
+                    
+                    if (total_sap + total_3n + total_outros) != total_backlog_geral:
+                            summary_text.append(f"\n*(Nota: Pode haver sobreposição nos totais acima se um grupo contiver 'SAP' e '3N'.)*")
+                
+                except Exception as e:
+                    summary_text.append(f"*Ocorreu um erro ao gerar a análise por categoria: {e}*")
+
+                st.info("\n".join(summary_text))
         else:
             st.warning("Nenhum dado para gerar o report visual.")
 
@@ -1246,7 +1261,6 @@ try:
 
             if not df_evolucao_tab3.empty:
 
-                # --- ALTERADO CONFORME SOLICITADO ---
                 st.info("Esta visualização ainda está coletando dados históricos. Utilize as outras abas como referência principal por enquanto.")
                 
                 try:
@@ -1578,6 +1592,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.38 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.41 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
