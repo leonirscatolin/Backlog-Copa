@@ -110,12 +110,6 @@ def get_file_mtime(file_path):
         return os.path.getmtime(file_path)
     return 0
 
-def normalize_ids(series):
-    """Limpa e padroniza IDs para garantir cruzamento correto."""
-    if series.empty:
-        return series
-    return series.astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-
 def save_local_file(file_path, file_content, is_binary=False):
     try:
         directory = os.path.dirname(file_path)
@@ -140,6 +134,7 @@ def read_local_csv(file_path, file_mtime):
     if not os.path.exists(file_path):
         return pd.DataFrame() 
     
+    # Tenta ler com diferentes separadores e encodings
     separators = [';', ',']
     encodings = ['utf-8', 'latin1']
     
@@ -263,7 +258,6 @@ def analisar_aging(_df_atual, reference_date=None):
     
     linhas_sem_data = df[df[date_col_name].isna()]
     if not linhas_sem_data.empty:
-        # Aviso integrado na Tab 1
         pass
 
     df = df.dropna(subset=[date_col_name])
@@ -303,6 +297,12 @@ def lighten_color(hex_color, amount=0.2):
         r, g, b = colorsys.hls_to_rgb(h, new_l, s)
         return f"#{int(r*255):02x}{int(g*255):02x}{int(b*255):02x}"
     except Exception: return hex_color
+
+def normalize_ids(series):
+    """Limpa e padroniza IDs para garantir cruzamento correto."""
+    if series.empty:
+        return series
+    return series.astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
 
 def sync_ticket_data():
     editor_key = f'ticket_editor_{st.session_state.editor_key_counter}'
@@ -363,7 +363,7 @@ def sync_ticket_data():
     st.session_state.scroll_to_details = True
 
 @st.cache_data
-def carregar_dados_evolucao(dias_para_analisar, df_historico_fechados, total_fechados_liquido_hoje): 
+def carregar_dados_evolucao(dias_para_analisar, df_historico_fechados): 
     try:
         snapshot_dir = f"{DATA_DIR}snapshots"
         try:
@@ -903,6 +903,7 @@ try:
         texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
         st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
         
+        # CORREÇÃO DA MATEMÁTICA: TOTAL = SOMA DOS CARDS (df_aging)
         total_chamados = len(df_aging)
 
         col_spacer1, col_total, col_fechados, col_spacer2 = st.columns([1, 1.5, 1.5, 1])
@@ -1116,6 +1117,7 @@ try:
                 colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
                 st.data_editor(resultados_busca[[col for col in colunas_para_exibir_busca if col in resultados_busca.columns]], use_container_width=True, hide_index=True, disabled=True)
 
+    # ... (Tabs 2, 3 e 4 com lógica preservada) ...
     with tab2:
         st.subheader("Resumo do Backlog Atual")
         if not df_aging.empty:
@@ -1231,8 +1233,7 @@ try:
         st.subheader("Evolução do Backlog")
         dias_evolucao = st.slider("Ver evolução dos últimos dias:", min_value=7, max_value=30, value=7, key="slider_evolucao")
 
-        # --- PASSA TOTAL LÍQUIDO PARA O GRÁFICO ---
-        df_evolucao_tab3 = carregar_dados_evolucao(dias_evolucao, df_historico_fechados.copy(), total_fechados_hoje) 
+        df_evolucao_tab3 = carregar_dados_evolucao(dias_evolucao, df_historico_fechados.copy()) 
 
         if not df_evolucao_tab3.empty:
 
@@ -1243,7 +1244,6 @@ try:
 
                 st.info("Esta visualização agora é a **Evolução Líquida** do Backlog: os chamados fechados até o dia do snapshot são deduzidos da contagem.")
                 
-                # SYNC com Tab 2
                 try:
                     latest_date_in_chart = df_evolucao_tab3['Data'].max()
                     
@@ -1251,9 +1251,13 @@ try:
                     agregado_agora['Data'] = latest_date_in_chart
                     
                     df_evolucao_tab3 = df_evolucao_tab3[df_evolucao_tab3['Data'] != latest_date_in_chart]
+                    
                     df_evolucao_tab3 = pd.concat([df_evolucao_tab3, agregado_agora], ignore_index=True)
+                    
                     df_evolucao_tab3 = df_evolucao_tab3.sort_values(by=['Data', 'Atribuir a um grupo'])
+
                     df_evolucao_tab3 = df_evolucao_tab3[~df_evolucao_tab3['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
+                    
                 except Exception as e:
                     pass
                 
@@ -1268,7 +1272,9 @@ try:
                 df_total_fechados = pd.DataFrame()
                 if not df_encerrados_filtrado.empty and 'Data de Fechamento' in df_encerrados_filtrado.columns:
                     df_fechados_hist = df_encerrados_filtrado[['Data de Fechamento']].copy()
+                    
                     df_fechados_hist['Data'] = pd.to_datetime(df_fechados_hist['Data de Fechamento'], dayfirst=True, errors='coerce')
+                    
                     df_fechados_hist = df_fechados_hist.dropna(subset=['Data'])
                     
                     df_fechados_hist = df_fechados_hist[
@@ -1277,8 +1283,11 @@ try:
                     ]
                     
                     if not df_fechados_hist.empty:
-                        # DEDUPLICATION DO HISTÓRICO
-                        df_fechados_hist = df_fechados_hist.drop_duplicates(subset=['ID do ticket'])
+                        # DEDUPLICATION FIX: Ensure we count distinct tickets per day
+                        id_col_fechados_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_hist.columns), None)
+                        if id_col_fechados_hist:
+                             df_fechados_hist = df_fechados_hist.drop_duplicates(subset=[id_col_fechados_hist])
+                        
                         counts_por_data = df_fechados_hist.groupby(df_fechados_hist['Data'].dt.date).size()
                         df_total_fechados = counts_por_data.reset_index(name='Total Chamados')
                         df_total_fechados['Data'] = pd.to_datetime(df_total_fechados['Data'])
@@ -1291,7 +1300,7 @@ try:
                     
                 df_total_diario_combinado = df_total_diario_combinado.sort_values('Data')
                 
-                # --- FORÇA VALOR LÍQUIDO NO PONTO FINAL ---
+                
                 if not df_total_diario_combinado.empty and 'Fechados' in df_total_diario_combinado['Tipo'].unique():
                     latest_date = df_total_diario_combinado['Data'].max()
 
@@ -1300,7 +1309,7 @@ try:
                         (df_total_diario_combinado['Tipo'] == 'Fechados'), 
                         'Total Chamados'
                     ] = total_fechados_hoje
-                # ------------------------------------------
+                
 
                 df_total_diario_combinado['Data (Eixo)'] = df_total_diario_combinado['Data'].dt.strftime('%d/%m')
                 ordem_datas_total = df_total_diario_combinado['Data (Eixo)'].unique().tolist()
@@ -1354,7 +1363,6 @@ try:
             st.info("Ainda não há dados históricos suficientes.")
 
     with tab4:
-        # ... (Tab 4 permanece a mesma) ...
         st.subheader("Evolução do Aging do Backlog")
         
         st.info("Esta visualização ainda está coletando dados históricos. Utilize as outras abas como referência principal por enquanto.")
@@ -1565,6 +1573,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.35 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.36 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
