@@ -872,16 +872,18 @@ try:
         # Cálculo inicial do card (pode ser sobrescrito abaixo)
         total_fechados_hoje = len(open_ids_base.intersection(closed_today_ids))
 
-    # --- LÓGICA DE CARD: OLHAR DIRETAMENTE O ARQUIVO FECHADOS (IGUAL AO POP-UP) ---
-    # Isso garante que o número do Card bata com o do Pop-up, ignorando inconsistências do histórico
+    # --- LÓGICA DE CARD COM FILTRO DE GRUPO ---
     try:
         if os.path.exists(f"{DATA_DIR}dados_fechados.csv"):
              df_last_closed = read_local_csv(f"{DATA_DIR}dados_fechados.csv", get_file_mtime(f"{DATA_DIR}dados_fechados.csv"))
              if not df_last_closed.empty:
+                 # Filtra grupos ignorados no arquivo bruto
+                 if 'Atribuir a um grupo' in df_last_closed.columns:
+                    df_last_closed = df_last_closed[~df_last_closed['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
+                 
                  id_col_last = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_last_closed.columns), None)
                  id_col_backlog_base = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_abertos_base_para_reducao.columns), 'ID do ticket')
                  
-                 # Filtra por HOJE no arquivo bruto
                  col_data_fechamento_last = next((c for c in ['Data de Fechamento', 'Data de Resolução'] if c in df_last_closed.columns), None)
                  
                  if id_col_last and id_col_backlog_base:
@@ -889,13 +891,12 @@ try:
                          df_last_closed['dt_temp_last'] = pd.to_datetime(df_last_closed[col_data_fechamento_last], dayfirst=True, errors='coerce')
                          df_last_closed_hoje = df_last_closed[df_last_closed['dt_temp_last'].dt.date == hoje_sp]
                      else:
-                         # Fallback
                          df_last_closed_hoje = df_last_closed
 
                      ids_last_closed_hoje = set(normalize_ids(df_last_closed_hoje[id_col_last]))
                      ids_backlog_base = set(normalize_ids(df_abertos_base_para_reducao[id_col_backlog_base]))
                      
-                     # Sobrescreve com o valor exato do último upload
+                     # Sobrescreve com o valor filtrado correto
                      total_fechados_hoje = len(ids_backlog_base.intersection(ids_last_closed_hoje))
     except Exception:
         pass
@@ -938,7 +939,6 @@ try:
                          f"- Grupos contendo {GRUPOS_EXCLUSAO_PERMANENTE_TEXTO} foram desconsiderados da análise.", 
                          "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
         
-        # --- INTEGRAÇÃO DO AVISO DE DATAS INVÁLIDAS ---
         diff_count = len(df_atual_filtrado) - len(df_aging)
         if diff_count > 0:
             info_messages.append(f"- **Atenção:** {diff_count} chamados foram desconsiderados por data inválida/vazia.")
@@ -949,7 +949,6 @@ try:
         texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
         st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
         
-        # CORREÇÃO DA MATEMÁTICA: TOTAL = SOMA DOS CARDS (df_aging)
         total_chamados = len(df_aging)
 
         col_spacer1, col_total, col_fechados, col_spacer2 = st.columns([1, 1.5, 1.5, 1])
@@ -1065,8 +1064,6 @@ try:
                 df_encerrados_para_exibir['Status'] = ""
             
             # --- FILTRO DE IMPACTO: MOSTRAR APENAS OS QUE CONSTAM NO ARQUIVO DE ABERTOS ---
-            # Isso garante que só aparecem os chamados que reduziram o backlog,
-            # removendo "fast-tracks" que não impactaram o estoque.
             if id_col_encerrados and 'open_ids_base' in locals():
                 df_encerrados_para_exibir = df_encerrados_para_exibir[
                     df_encerrados_para_exibir[id_col_encerrados].apply(lambda x: normalize_ids(pd.Series([x])).iloc[0] in open_ids_base)
@@ -1632,6 +1629,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.48 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.49 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
