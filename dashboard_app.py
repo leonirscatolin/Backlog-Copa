@@ -145,7 +145,6 @@ def read_local_csv(file_path, file_mtime):
                                  dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str}, 
                                  low_memory=False, on_bad_lines='warn')
                 
-                # Validação básica: se leu apenas 1 coluna, provavelmente o separador está errado
                 if df.shape[1] > 1:
                     df.columns = df.columns.str.strip()
                     df = df.loc[:, ~df.columns.duplicated()]
@@ -193,34 +192,26 @@ def process_uploaded_file(uploaded_file):
         return None
     try:
         dtype_spec = {'ID do ticket': str, 'ID do Ticket': str, 'ID': str}
-        
         if uploaded_file.name.endswith('.xlsx'):
             df = pd.read_excel(uploaded_file, dtype=dtype_spec)
         else:
-            # Lógica de detecção automática para upload também
-            content = uploaded_file.getvalue()
-            
-            # Tenta decodificar
             try:
-                decoded = content.decode('utf-8')
-                encoding_used = 'utf-8'
+                content = uploaded_file.getvalue().decode('utf-8')
             except UnicodeDecodeError:
-                decoded = content.decode('latin1')
-                encoding_used = 'latin1'
+                content = uploaded_file.getvalue().decode('latin1')
             
             # Tenta detectar separador
-            if ';' in decoded.split('\n')[0]:
+            if ';' in content.split('\n')[0]:
                 sep_used = ';'
             else:
                 sep_used = ','
                 
-            df = pd.read_csv(StringIO(decoded), sep=sep_used, dtype=dtype_spec)
+            df = pd.read_csv(StringIO(content), sep=sep_used, dtype=dtype_spec)
 
         df.columns = df.columns.str.strip()
         df.dropna(how='all', inplace=True)
 
         output = StringIO()
-        # Padroniza para salvar sempre como ponto e vírgula
         df.to_csv(output, index=False, sep=';', encoding='utf-8')
         return output.getvalue().encode('utf-8') 
     except Exception as e:
@@ -249,8 +240,7 @@ def categorizar_idade_vetorizado(dias_series):
 def analisar_aging(_df_atual, reference_date=None):
     df = _df_atual.copy()
     date_col_name = None
-    # Tenta encontrar variações comuns de nome de coluna de data
-    possible_date_cols = ['Data de criação', 'Data de Criacao', 'Created', 'Aberto em']
+    possible_date_cols = ['Data de criação', 'Data de criaÃ§Ã£o', 'Data de Criacao', 'Created', 'Aberto em']
     for col in possible_date_cols:
         if col in df.columns:
             date_col_name = col
@@ -259,18 +249,22 @@ def analisar_aging(_df_atual, reference_date=None):
     if not date_col_name:
         return pd.DataFrame()
     
-    # Converte data (tenta inferir formato, lida com YYYY-MM-DD e DD/MM/YYYY)
-    df[date_col_name] = pd.to_datetime(df[date_col_name], dayfirst=True, errors='coerce')
+    # --- PARSER HÍBRIDO ---
+    # Tenta ler como ISO (YYYY-MM-DD) primeiro, que é o padrão do seu arquivo.
+    # Se falhar (NaT), tenta ler como Brasileiro (DD/MM/YYYY)
+    dt_iso = pd.to_datetime(df[date_col_name], format='%Y-%m-%d', errors='coerce')
+    dt_br = pd.to_datetime(df[date_col_name], dayfirst=True, errors='coerce')
+    df[date_col_name] = dt_iso.fillna(dt_br)
     
+    # Checagem de integridade
     linhas_sem_data = df[df[date_col_name].isna()]
     if not linhas_sem_data.empty:
-        st.warning(f"⚠️ **Atenção:** Foram encontrados **{len(linhas_sem_data)}** tickets com '{date_col_name}' inválida ou vazia. Verifique se o delimitador do arquivo está correto (usando vírgula ou ponto e vírgula).")
+        st.warning(f"⚠️ **Atenção:** Foram encontrados **{len(linhas_sem_data)}** tickets com '{date_col_name}' inválida ou vazia.")
         with st.expander("Visualizar Tickets sem Data"):
             st.dataframe(linhas_sem_data)
 
     df = df.dropna(subset=[date_col_name])
     
-    # Define a data de referência (do arquivo ou de hoje)
     if reference_date:
         data_referencia = pd.to_datetime(reference_date).normalize()
     else:
@@ -492,16 +486,20 @@ def carregar_evolucao_aging(dias_para_analisar=90):
                 df_filtrado = df_snapshot[~df_snapshot['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
                 df_final = df_filtrado.copy() 
 
-                date_col_name = next((col for col in ['Data de criação', 'Data de Criacao'] if col in df_final.columns), None)
+                date_col_name = next((col for col in ['Data de criação', 'Data de criaÃ§Ã£o', 'Data de Criacao'] if col in df_final.columns), None)
                 if not date_col_name: continue
 
-                df_final[date_col_name] = pd.to_datetime(df_final[date_col_name], errors='coerce')
+                # PARSER HÍBRIDO NO HISTÓRICO TAMBÉM
+                dt_iso = pd.to_datetime(df_final[date_col_name], format='%Y-%m-%d', errors='coerce')
+                dt_br = pd.to_datetime(df_final[date_col_name], dayfirst=True, errors='coerce')
+                df_final[date_col_name] = dt_iso.fillna(dt_br)
+                
                 df_final = df_final.dropna(subset=[date_col_name])
 
                 snapshot_date_dt = pd.to_datetime(file_date)
                 data_criacao_normalizada = df_final[date_col_name].dt.normalize()
                 dias_calculados = (snapshot_date_dt - data_criacao_normalizada).dt.days
-                dias_em_aberto_corrigido = (dias_calculados - 1).clip(lower=0)
+                dias_em_aberto_corrigido = (dias_calculados).clip(lower=0)
 
                 faixas_antiguidade = categorizar_idade_vetorizado(dias_em_aberto_corrigido)
                 contagem_faixas = pd.Series(faixas_antiguidade).value_counts().reset_index()
@@ -1549,6 +1547,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.30 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.31 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
