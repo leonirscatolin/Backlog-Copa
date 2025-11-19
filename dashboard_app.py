@@ -15,8 +15,9 @@ import re
 import os
 
 # --- CONFIGURAÇÕES E CONSTANTES ---
-GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM-GTR'
-GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou 'RDM-GTR'"
+# ALTERAÇÃO 1: Regex atualizado para pegar QUALQUER grupo com "RDM"
+GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM' 
+GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou contendo 'RDM'"
 
 GRUPOS_DE_AVISO_REGEX = r'Service Desk \(L1\)|LIQ-SUTEL'
 GRUPOS_DE_AVISO_TEXTO = "'Service Desk (L1)' ou 'LIQ-SUTEL'"
@@ -698,7 +699,7 @@ if is_admin:
                     if not df_historico_base.empty:
                         id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_historico_base.columns), "ID do ticket")
                         df_historico_base[id_col_hist] = normalize_ids(df_historico_base[id_col_hist])
-                     
+                      
                     previous_closed_ids = set()
                     if not df_historico_base.empty:
                         previous_closed_ids = set(df_historico_base[id_col_hist].dropna().unique())
@@ -711,10 +712,10 @@ if is_admin:
                     cols_para_merge = [id_col_upload, 'Data de Fechamento_str']
                     if analista_col_name_origem in df_fechados_novo_upload.columns:
                         cols_para_merge.append(analista_col_name_origem)
-                     
+                      
                     group_col_name_upload = next((col for col in ['Atribuir a um grupo', 'Grupo Atribuído', 'Grupo'] if col in df_fechados_novo_upload.columns), None)
                     if group_col_name_upload:
-                         cols_para_merge.append(group_col_name_upload)
+                          cols_para_merge.append(group_col_name_upload)
 
                     df_lookup = df_fechados_novo_upload[cols_para_merge].drop_duplicates(subset=[id_col_upload])
                     
@@ -843,9 +844,16 @@ try:
             dayfirst=True, 
             errors='coerce'
         )
+        
+        # --- FILTRO LÍQUIDO PARA TOTAL FECHADOS HOJE (KPI) ---
         fechados_hoje_df = df_encerrados_filtrado[
             df_encerrados_filtrado['Data de Fechamento_dt_comp'].dt.date == hoje_sp
         ].copy()
+        
+        # Aplica o filtro de Service Desk/L1 também neste KPI para consistência
+        if not fechados_hoje_df.empty:
+             fechados_hoje_df = fechados_hoje_df[~fechados_hoje_df['Atribuir a um grupo'].str.contains(GRUPOS_DE_AVISO_REGEX, case=False, na=False, regex=True)]
+        # -----------------------------------------------------
         
         id_col_backlog = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_abertos_base_para_reducao.columns), 'ID do ticket')
         open_ids_base = set(normalize_ids(df_abertos_base_para_reducao[id_col_backlog]).unique())
@@ -903,19 +911,22 @@ try:
         texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
         st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
         
-        # CORREÇÃO DA MATEMÁTICA: TOTAL = SOMA DOS CARDS (df_aging)
-        total_chamados = len(df_aging)
+        # --- CORREÇÃO: FILTRO LÍQUIDO APLICADO AO TOTAL E AOS CARDS ---
+        # Cria dataframe líquido para cálculos visuais (ignora Service Desk mesmo se existir)
+        df_aging_liquido = df_aging[~df_aging['Atribuir a um grupo'].str.contains(GRUPOS_DE_AVISO_REGEX, case=False, na=False, regex=True)]
+        
+        total_chamados = len(df_aging_liquido)
 
         col_spacer1, col_total, col_fechados, col_spacer2 = st.columns([1, 1.5, 1.5, 1])
         with col_total:
-            st.markdown(f"""<div class="metric-box"><span class="label">Total de Chamados Abertos</span><span class="value">{total_chamados}</span></div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="metric-box"><span class="label">Total de Chamados (Líquido)</span><span class="value">{total_chamados}</span></div>""", unsafe_allow_html=True)
         with col_fechados:
             st.markdown(f"""<div class="metric-box"><span class="label">Chamados Fechados HOJE</span><span class="value">{total_fechados_hoje}</span></div>""", unsafe_allow_html=True)
 
         st.markdown("---")
 
-        if not df_aging.empty:
-            aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
+        if not df_aging_liquido.empty:
+            aging_counts = df_aging_liquido['Faixa de Antiguidade'].value_counts().reset_index()
             aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
             ordem_faixas = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
             todas_as_faixas = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas})
@@ -931,7 +942,7 @@ try:
                     card_html = f"""<a href="?faixa={faixa_encoded}&scroll=true" target="_self" class="metric-box"><span class="label">{row['Faixa de Antiguidade']}</span><span class="value">{row['Quantidade']}</span></a>"""
                     st.markdown(card_html, unsafe_allow_html=True)
         else:
-            st.warning("Nenhum dado válido para a análise de antiguidade (verifique as datas de criação no arquivo).")
+            st.warning("Nenhum dado válido para a análise de antiguidade.")
 
         st.markdown(f"<h3>Comparativo de Backlog: Atual vs. 15 Dias Atrás <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_15dias_str})</span></h3>", unsafe_allow_html=True)
         df_comparativo = processar_dados_comparativos(df_atual_filtrado.copy(), df_15dias_filtrado.copy())
@@ -1007,14 +1018,12 @@ try:
             
             id_col_encerrados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_encerrados_para_exibir.columns), None)
             
-            # --- LÓGICA DE STATUS ATUALIZADA (Novo = Impacto Real) ---
             if id_col_encerrados and 'open_ids_base' in locals():
                  df_encerrados_para_exibir['Status'] = df_encerrados_para_exibir[id_col_encerrados].apply(
-                     lambda x: "Novo" if normalize_ids(pd.Series([x])).iloc[0] in open_ids_base else ""
+                      lambda x: "Novo" if normalize_ids(pd.Series([x])).iloc[0] in open_ids_base else ""
                  )
             else:
                 df_encerrados_para_exibir['Status'] = ""
-            # ---------------------------------------------------------
             
             df_encerrados_para_exibir = df_encerrados_para_exibir.loc[:, ~df_encerrados_para_exibir.columns.duplicated()]
             
@@ -1053,6 +1062,8 @@ try:
                          on_change=sync_ticket_data)
             
             faixa_atual = st.session_state.faixa_selecionada
+            # Usamos o df_aging (bruto) aqui para permitir buscar/editar tickets mesmo se estiverem no "aviso"
+            # Mas se quiser restringir a visualização, use df_aging_liquido
             filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].copy()
             if not filtered_df.empty:
                 if 'Data de criação' in filtered_df.columns:
@@ -1117,7 +1128,6 @@ try:
                 colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
                 st.data_editor(resultados_busca[[col for col in colunas_para_exibir_busca if col in resultados_busca.columns]], use_container_width=True, hide_index=True, disabled=True)
 
-    # ... (Tabs 2, 3 e 4 com lógica preservada) ...
     with tab2:
         st.subheader("Resumo do Backlog Atual")
         if not df_aging.empty:
@@ -1271,8 +1281,20 @@ try:
                 
                 df_total_fechados = pd.DataFrame()
                 if not df_encerrados_filtrado.empty and 'Data de Fechamento' in df_encerrados_filtrado.columns:
-                    df_fechados_hist = df_encerrados_filtrado[['Data de Fechamento']].copy()
                     
+                    # --- CORREÇÃO: FILTRAR FECHADOS PARA EXIBIR APENAS O LÍQUIDO ---
+                    cols_to_copy = ['Data de Fechamento']
+                    col_grupo_fechados = next((col for col in ['Atribuir a um grupo', 'Grupo Atribuído', 'Grupo'] if col in df_encerrados_filtrado.columns), None)
+                    
+                    if col_grupo_fechados:
+                        cols_to_copy.append(col_grupo_fechados)
+                        
+                    df_fechados_hist = df_encerrados_filtrado[cols_to_copy].copy()
+                    
+                    if col_grupo_fechados:
+                         df_fechados_hist = df_fechados_hist[~df_fechados_hist[col_grupo_fechados].str.contains(GRUPOS_DE_AVISO_REGEX, case=False, na=False, regex=True)]
+                    # ---------------------------------------------------------------
+
                     df_fechados_hist['Data'] = pd.to_datetime(df_fechados_hist['Data de Fechamento'], dayfirst=True, errors='coerce')
                     
                     df_fechados_hist = df_fechados_hist.dropna(subset=['Data'])
@@ -1283,7 +1305,7 @@ try:
                     ]
                     
                     if not df_fechados_hist.empty:
-                        # DEDUPLICATION FIX: Ensure we count distinct tickets per day
+                        # DEDUPLICATION FIX
                         id_col_fechados_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_hist.columns), None)
                         if id_col_fechados_hist:
                              df_fechados_hist = df_fechados_hist.drop_duplicates(subset=[id_col_fechados_hist])
@@ -1299,7 +1321,6 @@ try:
                     df_total_diario_combinado = df_total_abertos
                     
                 df_total_diario_combinado = df_total_diario_combinado.sort_values('Data')
-                
                 
                 if not df_total_diario_combinado.empty and 'Fechados' in df_total_diario_combinado['Tipo'].unique():
                     latest_date = df_total_diario_combinado['Data'].max()
@@ -1573,6 +1594,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.36 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.37 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
