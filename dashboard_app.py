@@ -891,31 +891,24 @@ try:
                 GRUPOS_DE_AVISO_REGEX, case=False, na=False, regex=True
             )
         ]
-        
-        if not df_para_aviso.empty:
-            total_para_aviso = len(df_para_aviso)
-            contagem_por_grupo = df_para_aviso['Atribuir a um grupo'].value_counts()
-            
-            aviso_str_lista = [f"⚠️ **Atenção:** Foram encontrados **{total_para_aviso}** chamados em grupos que deveriam estar zerados ({GRUPOS_DE_AVISO_TEXTO}):"]
-            for grupo, contagem in contagem_por_grupo.items():
-                aviso_str_lista.append(f"- **{grupo}:** {contagem} chamado(s)")
-            
-            st.warning("\n".join(aviso_str_lista))
 
         # --- CORREÇÃO: FILTRO LÍQUIDO APLICADO AO TOTAL E AOS CARDS ---
         # Cria dataframe líquido para cálculos visuais (ignora Service Desk mesmo se existir)
         df_aging_liquido = df_aging[~df_aging['Atribuir a um grupo'].str.contains(GRUPOS_DE_AVISO_REGEX, case=False, na=False, regex=True)]
         
-        # Calcula a diferença para o aviso
         count_ignored_groups = len(df_aging) - len(df_aging_liquido)
 
         info_messages = ["**Filtros e Regras Aplicadas:**", 
                          f"- Grupos contendo {GRUPOS_EXCLUSAO_PERMANENTE_TEXTO} foram desconsiderados da análise.", 
                          "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
 
-        # Adiciona o aviso de quantos chamados foram ignorados para o cálculo líquido
-        if count_ignored_groups > 0:
-            info_messages.append(f"- **{count_ignored_groups}** chamados de {GRUPOS_DE_AVISO_TEXTO} foram excluídos da visualização (Backlog Líquido).")
+        # Adiciona o aviso de quantos chamados foram ignorados para o cálculo líquido DENTRO da caixa azul
+        if not df_para_aviso.empty:
+            info_messages.append("---") # Separator
+            info_messages.append(f"⚠️ **Atenção:** Foram identificados e desconsiderados **{len(df_para_aviso)}** chamados de suporte (não afetam backlog líquido):")
+            counts = df_para_aviso['Atribuir a um grupo'].value_counts()
+            for g, c in counts.items():
+                 info_messages.append(f"- {g}: {c} chamado(s)")
         
         # --- INTEGRAÇÃO DO AVISO DE DATAS INVÁLIDAS ---
         diff_count = len(df_atual_filtrado) - len(df_aging)
@@ -1601,6 +1594,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.40 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.41 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
