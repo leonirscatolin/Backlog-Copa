@@ -28,7 +28,7 @@ TEXTO_EXCLUSAO_PERMANENTE = "'RH', 'Aprovadores GGM' ou contendo 'RDM'"
 REGEX_FILTRO_LIQUIDO = r'Service Desk|LIQ-SUTEL'
 TEXTO_GRUPOS_AVISO = "'Service Desk (L1)' ou 'LIQ-SUTEL'"
 
-# Caminhos de Arquivos
+# Caminhos de Arquivos (CONSTANTES LIMPAS)
 DATA_DIR = "data/"
 FILE_ATUAL = f"{DATA_DIR}dados_atuais.csv"
 FILE_15DIAS = f"{DATA_DIR}dados_15_dias.csv"
@@ -36,6 +36,7 @@ FILE_HISTORICO = f"{DATA_DIR}historico_fechados_master.csv"
 FILE_CONTACTS = "contacted_tickets.json"
 FILE_OBSERVATIONS = "ticket_observations.json"
 FILE_REF_DATES = "datas_referencia.txt"
+# REMOVIDO: FILE_PREV_CLOSED (Não é mais necessário nesta lógica unificada)
 
 # =============================================================================
 # 2. SETUP DA PÁGINA E CSS
@@ -348,6 +349,8 @@ try:
     # 1. Função Helper para aplicar exclusão permanente (RH, RDM)
     def aplicar_exclusao_permanente(df):
         if df.empty or 'Atribuir a um grupo' not in df.columns: return df
+        # Garante que é string
+        df['Atribuir a um grupo'] = df['Atribuir a um grupo'].astype(str)
         return df[~df['Atribuir a um grupo'].str.contains(REGEX_EXCLUSAO_PERMANENTE, case=False, na=False, regex=True)].copy()
 
     # 2. Função Helper para separar Backlog Líquido vs. Sujo (Service Desk)
@@ -800,4 +803,4 @@ with tab4:
 
 # Rodapé
 st.markdown("---")
-st.markdown("<div style='text-align: center; color: gray;'>V2.0 (Refactored) | Copa Energia</div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align: center; color: gray;'>V2.1 (Cleaned & Refactored) | Copa Energia</div>", unsafe_allow_html=True)
