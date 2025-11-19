@@ -968,6 +968,18 @@ try:
             
             df_encerrados_para_exibir = df_encerrados_liquido.copy()
             
+            # --- REFORÇO DO FILTRO LÍQUIDO NA TABELA VISUAL ---
+            if 'Atribuir a um grupo' in df_encerrados_para_exibir.columns:
+                # Garante que a coluna é string para evitar erros
+                df_encerrados_para_exibir['Atribuir a um grupo'] = df_encerrados_para_exibir['Atribuir a um grupo'].astype(str)
+                
+                df_encerrados_para_exibir = df_encerrados_para_exibir[
+                    ~df_encerrados_para_exibir['Atribuir a um grupo'].str.contains(
+                        GRUPOS_DE_AVISO_REGEX, case=False, na=False, regex=True
+                    )
+                ]
+            # --------------------------------------------------
+            
             date_col_name = next((col for col in ['Data de criação', 'Data de Criacao'] if col in df_encerrados_para_exibir.columns), None)
             colunas_para_exibir_fechados = ['Status', 'ID do ticket', 'Descrição']
             novo_nome_analista = "Analista de Resolução" 
@@ -1594,6 +1606,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.41 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.42 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
