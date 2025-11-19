@@ -15,11 +15,11 @@ import re
 import os
 
 # --- CONFIGURAÇÕES E CONSTANTES ---
-# ALTERAÇÃO 1: Regex atualizado para pegar QUALQUER grupo com "RDM"
 GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM' 
 GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou contendo 'RDM'"
 
-GRUPOS_DE_AVISO_REGEX = r'Service Desk \(L1\)|LIQ-SUTEL'
+# Regex ajustado para ser mais abrangente (pegar qualquer variação de Service Desk)
+GRUPOS_DE_AVISO_REGEX = r'Service Desk|LIQ-SUTEL'
 GRUPOS_DE_AVISO_TEXTO = "'Service Desk (L1)' ou 'LIQ-SUTEL'"
 
 GRUPOS_EXCLUSAO_TOTAL_REGEX = f"{GRUPOS_EXCLUSAO_PERMANENTE_REGEX}|{GRUPOS_DE_AVISO_REGEX}"
@@ -823,7 +823,9 @@ try:
 
     df_aging = analisar_aging(df_atual_filtrado, reference_date=ref_date_obj)
     
+    # --- PREPARAÇÃO GLOBAL DOS FECHADOS (LÍQUIDO) ---
     df_encerrados_filtrado = pd.DataFrame()
+    df_encerrados_liquido = pd.DataFrame()
      
     if not df_historico_fechados.empty:
         if 'Atribuir a um grupo' not in df_historico_fechados.columns:
@@ -833,45 +835,66 @@ try:
             else:
                 df_historico_fechados['Atribuir a um grupo'] = 'Desconhecido'
 
-        df_encerrados_filtrado = df_historico_fechados[~df_historico_fechados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
+        # 1. Remove RDM e RH (Exclusão Total)
+        df_encerrados_filtrado = df_historico_fechados[~df_historico_fechados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)].copy()
 
-    total_fechados_hoje = 0
+        # 2. Cria dataframe LÍQUIDO (Remove também Service Desk) - Fonte da verdade para KPI e Gráficos
+        df_encerrados_liquido = df_encerrados_filtrado[
+            ~df_encerrados_filtrado['Atribuir a um grupo'].str.contains(GRUPOS_DE_AVISO_REGEX, case=False, na=False, regex=True)
+        ].copy()
+
+
+    # --- CÁLCULO DO KPI DE FECHADOS (USANDO LÍQUIDO) ---
+    total_fechados_kpi = 0
     hoje_sp = datetime.now(ZoneInfo('America/Sao_Paulo')).date()
+    label_kpi_fechados = "Chamados Fechados HOJE"
     
-    if not df_encerrados_filtrado.empty and 'Data de Fechamento' in df_encerrados_filtrado.columns:
-        df_encerrados_filtrado['Data de Fechamento_dt_comp'] = pd.to_datetime(
-            df_encerrados_filtrado['Data de Fechamento'], 
+    if not df_encerrados_liquido.empty and 'Data de Fechamento' in df_encerrados_liquido.columns:
+        df_encerrados_liquido['Data de Fechamento_dt_comp'] = pd.to_datetime(
+            df_encerrados_liquido['Data de Fechamento'], 
             dayfirst=True, 
             errors='coerce'
         )
         
-        # --- FILTRO LÍQUIDO PARA TOTAL FECHADOS HOJE (KPI) ---
-        fechados_hoje_df = df_encerrados_filtrado[
-            df_encerrados_filtrado['Data de Fechamento_dt_comp'].dt.date == hoje_sp
-        ].copy()
+        # Tenta pegar fechados de HOJE
+        fechados_hoje_df = df_encerrados_liquido[
+            df_encerrados_liquido['Data de Fechamento_dt_comp'].dt.date == hoje_sp
+        ]
         
-        # Aplica o filtro de Service Desk/L1 também neste KPI para consistência
+        # Se houver fechados hoje, usa isso.
         if not fechados_hoje_df.empty:
-             fechados_hoje_df = fechados_hoje_df[~fechados_hoje_df['Atribuir a um grupo'].str.contains(GRUPOS_DE_AVISO_REGEX, case=False, na=False, regex=True)]
-        # -----------------------------------------------------
-        
-        id_col_backlog = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_abertos_base_para_reducao.columns), 'ID do ticket')
-        open_ids_base = set(normalize_ids(df_abertos_base_para_reducao[id_col_backlog]).unique())
-        
-        id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in fechados_hoje_df.columns), None)
-        closed_today_ids = set(normalize_ids(fechados_hoje_df[id_col_hist]).unique())
-        
-        total_fechados_hoje = len(open_ids_base.intersection(closed_today_ids))
+             
+             id_col_backlog = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_abertos_base_para_reducao.columns), 'ID do ticket')
+             open_ids_base = set(normalize_ids(df_abertos_base_para_reducao[id_col_backlog]).unique())
+             
+             id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in fechados_hoje_df.columns), None)
+             closed_today_ids = set(normalize_ids(fechados_hoje_df[id_col_hist]).unique())
+             
+             total_fechados_kpi = len(open_ids_base.intersection(closed_today_ids))
+             
+        else:
+             # Se não houver nada hoje, pega a última data disponível no arquivo para não mostrar zero
+             max_date = df_encerrados_liquido['Data de Fechamento_dt_comp'].max().date()
+             fechados_last_df = df_encerrados_liquido[
+                df_encerrados_liquido['Data de Fechamento_dt_comp'].dt.date == max_date
+             ]
+             
+             id_col_backlog = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_abertos_base_para_reducao.columns), 'ID do ticket')
+             open_ids_base = set(normalize_ids(df_abertos_base_para_reducao[id_col_backlog]).unique())
+             
+             id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in fechados_last_df.columns), None)
+             closed_last_ids = set(normalize_ids(fechados_last_df[id_col_hist]).unique())
+             
+             total_fechados_kpi = len(open_ids_base.intersection(closed_last_ids))
+             
+             label_kpi_fechados = f"Fechados ({max_date.strftime('%d/%m')})"
 
     data_mais_recente_fechado_str = "" 
 
-    if not df_encerrados_filtrado.empty and 'Data de Fechamento' in df_encerrados_filtrado.columns:
+    if not df_encerrados_liquido.empty and 'Data de Fechamento' in df_encerrados_liquido.columns:
         try:
-            if 'Data de Fechamento_dt_comp' not in df_encerrados_filtrado.columns:
-                 df_encerrados_filtrado['Data de Fechamento_dt_comp'] = pd.to_datetime(df_encerrados_filtrado['Data de Fechamento'], dayfirst=True, errors='coerce')
-            
-            if not df_encerrados_filtrado['Data de Fechamento_dt_comp'].isnull().all():
-                data_mais_recente_fechado_dt = df_encerrados_filtrado['Data de Fechamento_dt_comp'].max().date()
+            if not df_encerrados_liquido['Data de Fechamento_dt_comp'].isnull().all():
+                data_mais_recente_fechado_dt = df_encerrados_liquido['Data de Fechamento_dt_comp'].max().date()
                 data_mais_recente_fechado_str = data_mais_recente_fechado_dt.strftime('%d/%m/%Y') 
         except Exception as e:
             st.warning(f"Não foi possível processar datas de fechamento: {e}")
@@ -921,7 +944,7 @@ try:
         with col_total:
             st.markdown(f"""<div class="metric-box"><span class="label">Total de Chamados (Líquido)</span><span class="value">{total_chamados}</span></div>""", unsafe_allow_html=True)
         with col_fechados:
-            st.markdown(f"""<div class="metric-box"><span class="label">Chamados Fechados HOJE</span><span class="value">{total_fechados_hoje}</span></div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="metric-box"><span class="label">{label_kpi_fechados}</span><span class="value">{total_fechados_kpi}</span></div>""", unsafe_allow_html=True)
 
         st.markdown("---")
 
@@ -958,9 +981,9 @@ try:
 
         if df_historico_fechados.empty:
             st.info("O histórico de chamados encerrados ainda não possui dados. Faça uma 'Atualização Rápida' para começar a popular.")
-        elif not df_encerrados_filtrado.empty:
+        elif not df_encerrados_liquido.empty: # USANDO LÍQUIDO AQUI TAMBÉM
             
-            df_encerrados_para_exibir = df_encerrados_filtrado.copy()
+            df_encerrados_para_exibir = df_encerrados_liquido.copy()
             
             date_col_name = next((col for col in ['Data de criação', 'Data de Criacao'] if col in df_encerrados_para_exibir.columns), None)
             colunas_para_exibir_fechados = ['Status', 'ID do ticket', 'Descrição']
@@ -1280,20 +1303,16 @@ try:
                 start_date_tab3 = end_date_tab3 - timedelta(days=dias_evolucao)
                 
                 df_total_fechados = pd.DataFrame()
-                if not df_encerrados_filtrado.empty and 'Data de Fechamento' in df_encerrados_filtrado.columns:
+                
+                # --- CORREÇÃO: GRÁFICO USA A BASE LÍQUIDA JÁ FILTRADA ---
+                if not df_encerrados_liquido.empty and 'Data de Fechamento' in df_encerrados_liquido.columns:
                     
-                    # --- CORREÇÃO: FILTRAR FECHADOS PARA EXIBIR APENAS O LÍQUIDO ---
                     cols_to_copy = ['Data de Fechamento']
-                    col_grupo_fechados = next((col for col in ['Atribuir a um grupo', 'Grupo Atribuído', 'Grupo'] if col in df_encerrados_filtrado.columns), None)
-                    
-                    if col_grupo_fechados:
-                        cols_to_copy.append(col_grupo_fechados)
+                    # Verifica se temos a coluna de ID para deduplicar
+                    id_col_check = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_encerrados_liquido.columns), None)
+                    if id_col_check: cols_to_copy.append(id_col_check)
                         
-                    df_fechados_hist = df_encerrados_filtrado[cols_to_copy].copy()
-                    
-                    if col_grupo_fechados:
-                         df_fechados_hist = df_fechados_hist[~df_fechados_hist[col_grupo_fechados].str.contains(GRUPOS_DE_AVISO_REGEX, case=False, na=False, regex=True)]
-                    # ---------------------------------------------------------------
+                    df_fechados_hist = df_encerrados_liquido[cols_to_copy].copy()
 
                     df_fechados_hist['Data'] = pd.to_datetime(df_fechados_hist['Data de Fechamento'], dayfirst=True, errors='coerce')
                     
@@ -1305,10 +1324,8 @@ try:
                     ]
                     
                     if not df_fechados_hist.empty:
-                        # DEDUPLICATION FIX
-                        id_col_fechados_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_hist.columns), None)
-                        if id_col_fechados_hist:
-                             df_fechados_hist = df_fechados_hist.drop_duplicates(subset=[id_col_fechados_hist])
+                        if id_col_check:
+                             df_fechados_hist = df_fechados_hist.drop_duplicates(subset=[id_col_check])
                         
                         counts_por_data = df_fechados_hist.groupby(df_fechados_hist['Data'].dt.date).size()
                         df_total_fechados = counts_por_data.reset_index(name='Total Chamados')
@@ -1324,12 +1341,14 @@ try:
                 
                 if not df_total_diario_combinado.empty and 'Fechados' in df_total_diario_combinado['Tipo'].unique():
                     latest_date = df_total_diario_combinado['Data'].max()
-
-                    df_total_diario_combinado.loc[
-                        (df_total_diario_combinado['Data'] == latest_date) & 
-                        (df_total_diario_combinado['Tipo'] == 'Fechados'), 
-                        'Total Chamados'
-                    ] = total_fechados_hoje
+                    
+                    # Se for HOJE, usa o KPI calculado acima. Se for data anterior, o gráfico já pegou do histórico.
+                    if latest_date.date() == hoje_sp:
+                         df_total_diario_combinado.loc[
+                            (df_total_diario_combinado['Data'] == latest_date) & 
+                            (df_total_diario_combinado['Tipo'] == 'Fechados'), 
+                            'Total Chamados'
+                        ] = total_fechados_kpi
                 
 
                 df_total_diario_combinado['Data (Eixo)'] = df_total_diario_combinado['Data'].dt.strftime('%d/%m')
@@ -1594,6 +1613,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.37 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.38 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
