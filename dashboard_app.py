@@ -15,8 +15,9 @@ import re
 import os
 
 # --- CONFIGURAÇÕES E CONSTANTES ---
-GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM-GTR'
-GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou 'RDM-GTR'"
+# ATUALIZADO: 'RDM' agora filtra qualquer grupo contendo essa sigla
+GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM'
+GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou 'RDM'"
 
 GRUPOS_DE_AVISO_REGEX = r'Service Desk \(L1\)|LIQ-SUTEL'
 GRUPOS_DE_AVISO_TEXTO = "'Service Desk (L1)' ou 'LIQ-SUTEL'"
@@ -354,7 +355,7 @@ def sync_ticket_data():
                 json_content = json.dumps(st.session_state.observations, indent=4, ensure_ascii=False)
                 save_local_file(STATE_FILE_OBSERVATIONS, json_content)
             
-            st.toast("Alterações salvas com sucesso!", icon="✅")
+            st.toast("Alterações salvas com sucesso!")
             
         except Exception as e:
             st.error(f"Erro ao salvar alterações: {e}")
@@ -645,7 +646,7 @@ if is_admin:
                     st.stop() 
 
                 try:
-                    # --- LÓGICA DE MENSAGEM DE IMPACTO (MANTIDA PARA TOAST, AGORA TAMBÉM NA ABA 1) ---
+                    # --- LÓGICA DE IMPACTO (MANTIDA PARA TOAST, AGORA TAMBÉM NA ABA 1) ---
                     df_backlog_check = read_local_csv(f"{DATA_DIR}dados_atuais.csv", get_file_mtime(f"{DATA_DIR}dados_atuais.csv"))
                     
                     df_fechados_novo_check = pd.read_csv(BytesIO(content_fechados), sep=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
@@ -672,7 +673,7 @@ if is_admin:
                             total_lidos_hoje = len(ids_fc_hoje)
                             total_abatidos = len(ids_bk.intersection(ids_fc_hoje))
                             
-                            st.toast(f"Processado! {total_lidos_hoje} chamados de HOJE lidos. {total_abatidos} impactaram o backlog.", icon="📉")
+                            st.toast(f"Processado! {total_lidos_hoje} chamados de HOJE lidos. {total_abatidos} impactaram o backlog.")
                     # ---------------------------------------
 
                     save_local_file(f"{DATA_DIR}dados_fechados.csv", content_fechados, is_binary=True)
@@ -928,7 +929,7 @@ try:
             total_para_aviso = len(df_para_aviso)
             contagem_por_grupo = df_para_aviso['Atribuir a um grupo'].value_counts()
             
-            aviso_str_lista = [f"⚠️ **Atenção:** Foram encontrados **{total_para_aviso}** chamados em grupos que deveriam estar zerados ({GRUPOS_DE_AVISO_TEXTO}):"]
+            aviso_str_lista = [f"**Atenção:** Foram encontrados **{total_para_aviso}** chamados em grupos que deveriam estar zerados ({GRUPOS_DE_AVISO_TEXTO}):"]
             for grupo, contagem in contagem_por_grupo.items():
                 aviso_str_lista.append(f"- **{grupo}:** {contagem} chamado(s)")
             
@@ -941,11 +942,11 @@ try:
         # --- INTEGRAÇÃO DO AVISO DE DATAS INVÁLIDAS ---
         diff_count = len(df_atual_filtrado) - len(df_aging)
         if diff_count > 0:
-            info_messages.append(f"- ⚠️ **Atenção:** {diff_count} chamados foram desconsiderados por data inválida/vazia.")
+            info_messages.append(f"- **Atenção:** {diff_count} chamados foram desconsiderados por data inválida/vazia.")
 
         # --- NOVO AVISO DE IMPACTO (BASEADO NO TOTAL CALCULADO DO HISTÓRICO DE HOJE) ---
         if total_fechados_hoje > 0:
-            info_messages.append(f"- 📉 **Atualização de Hoje:** {total_fechados_hoje} chamados foram fechados hoje e abatidos desta visualização.")
+            info_messages.append(f"- **Atualização de Hoje:** {total_fechados_hoje} chamados foram fechados hoje e abatidos desta visualização.")
         
         st.info("\n".join(info_messages))
         
@@ -1173,7 +1174,6 @@ try:
                 colunas_para_exibir_busca = ['ID do ticket', 'Descrição', 'Dias em Aberto', 'Data de criação']
                 st.data_editor(resultados_busca[[col for col in colunas_para_exibir_busca if col in resultados_busca.columns]], use_container_width=True, hide_index=True, disabled=True)
 
-    # ... (Tabs 2, 3 e 4 com lógica preservada) ...
     with tab2:
         st.subheader("Resumo do Backlog Atual")
         if not df_aging.empty:
