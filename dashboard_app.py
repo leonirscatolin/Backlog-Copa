@@ -724,7 +724,13 @@ if is_admin:
                          cols_para_merge.append(group_col_name_upload)
 
                     # --- REFORÇO NA DETECÇÃO DA DATA DE CRIAÇÃO ---
-                    col_criacao_upload = next((col for col in ['Data de criação', 'Data de criaÃ§Ã£o', 'Data de Criacao', 'Created', 'Aberto em', 'Data de Abertura'] if col in df_fechados_novo_upload.columns), None)
+                    # Busca flexível por colunas de criação e descrição para garantir que sejam salvas no histórico
+                    col_criacao_upload = None
+                    for col in df_fechados_novo_upload.columns:
+                        if 'data de cria' in col.lower() or 'created' in col.lower() or 'aberto em' in col.lower():
+                            col_criacao_upload = col
+                            break
+
                     col_descricao_upload = next((col for col in ['Descrição', 'Descricao', 'Description', 'Assunto', 'Summary'] if col in df_fechados_novo_upload.columns), None)
 
                     if col_criacao_upload: cols_para_merge.append(col_criacao_upload)
@@ -996,57 +1002,63 @@ try:
             
             df_encerrados_para_exibir = df_encerrados_filtrado.copy()
             
-            # --- BUSCA A COLUNA DE CRIAÇÃO DE FORMA FLEXÍVEL ---
-            date_col_name = next((col for col in ['Data de criação', 'Data de criaÃ§Ã£o', 'Data de Criacao', 'Created', 'Aberto em', 'Data de Abertura'] if col in df_encerrados_para_exibir.columns), None)
-            
+            # --- 1. PADRONIZAÇÃO VISUAL ---
             colunas_para_exibir_fechados = ['Status', 'ID do ticket', 'Descrição']
-            novo_nome_analista = "Analista de Resolução" 
-            analista_col_name_origem = "Analista atribuído" 
-            novo_nome_grupo = "Grupo Atribuído"
-            grupo_col_name_origem = "Atribuir a um grupo"
+            
+            # Renomeia colunas de analista e grupo para ficar bonito, se existirem
+            analista_col = next((c for c in ['Analista atribuído', 'Analista'] if c in df_encerrados_para_exibir.columns), None)
+            if analista_col: 
+                df_encerrados_para_exibir.rename(columns={analista_col: "Analista de Resolução"}, inplace=True)
+                colunas_para_exibir_fechados.append("Analista de Resolução")
+            
+            grupo_col = next((c for c in ['Atribuir a um grupo', 'Grupo Atribuído'] if c in df_encerrados_para_exibir.columns), None)
+            if grupo_col: 
+                df_encerrados_para_exibir.rename(columns={grupo_col: "Grupo Atribuído"}, inplace=True)
+                colunas_para_exibir_fechados.append("Grupo Atribuído")
 
-            if analista_col_name_origem in df_encerrados_para_exibir.columns:
-                df_encerrados_para_exibir.rename(columns={analista_col_name_origem: novo_nome_analista}, inplace=True)
-                colunas_para_exibir_fechados.append(novo_nome_analista)
-            if grupo_col_name_origem in df_encerrados_para_exibir.columns:
-                df_encerrados_para_exibir.rename(columns={grupo_col_name_origem: novo_nome_grupo}, inplace=True)
-                colunas_para_exibir_fechados.append(novo_nome_grupo)
-
-            # --- CÁLCULO DIRETO: (FECHAMENTO - CRIAÇÃO) - 1 ---
-            # 1. Localiza a coluna de Data de Criação (novamente, para garantir o contexto local)
-            date_col_name = next((col for col in ['Data de criação', 'Data de criaÃ§Ã£o', 'Data de Criacao', 'Created', 'Aberto em', 'Data de Abertura'] if col in df_encerrados_para_exibir.columns), None)
-
-            if date_col_name and 'Data de Fechamento' in df_encerrados_para_exibir.columns:
+            # --- 2. LOCALIZAÇÃO ROBUSTA DA COLUNA DE DATA DE CRIAÇÃO ---
+            # Procura por parte do nome, ignorando maiúsculas/minúsculas (Resolve o "Data de Criação")
+            col_criacao_real = None
+            for col in df_encerrados_para_exibir.columns:
+                if 'data de cria' in col.lower() or 'created' in col.lower() or 'aberto em' in col.lower():
+                    col_criacao_real = col
+                    break
+            
+            # --- 3. CÁLCULO DA DIFERENÇA ---
+            if col_criacao_real and 'Data de Fechamento' in df_encerrados_para_exibir.columns:
                 try:
-                    # 2. Converte para DateTime forçando 'dayfirst=True' e remove as horas (.normalize)
-                    dt_criacao = pd.to_datetime(df_encerrados_para_exibir[date_col_name], dayfirst=True, errors='coerce').dt.normalize()
+                    # dayfirst=True ajuda a entender dia/mes/ano
+                    # .dt.normalize() remove as horas (vira 00:00:00) para o cálculo ser exato em dias inteiros
+                    dt_inicio = pd.to_datetime(df_encerrados_para_exibir[col_criacao_real], dayfirst=True, errors='coerce').dt.normalize()
+                    dt_fim = pd.to_datetime(df_encerrados_para_exibir['Data de Fechamento'], dayfirst=True, errors='coerce').dt.normalize()
                     
-                    # Usa a coluna original de fechamento para garantir
-                    dt_fechamento = pd.to_datetime(df_encerrados_para_exibir['Data de Fechamento'], dayfirst=True, errors='coerce').dt.normalize()
+                    # CÁLCULO: (Fechamento - Criação) - 1 dia
+                    df_encerrados_para_exibir['Dias em Aberto'] = (dt_fim - dt_inicio).dt.days
                     
-                    # 3. Calcula a diferença em dias e subtrai 1
-                    df_encerrados_para_exibir['Dias em Aberto'] = (dt_fechamento - dt_criacao).dt.days - 1
-                    
-                    # 4. Tratamento: (NaN vira 0, negativos viram 0)
-                    df_encerrados_para_exibir['Dias em Aberto'] = df_encerrados_para_exibir['Dias em Aberto'].fillna(0).clip(lower=0).astype(int)
+                    # Ajuste final: Tira 1 dia, transforma nulos em 0, e impede números negativos
+                    df_encerrados_para_exibir['Dias em Aberto'] = (df_encerrados_para_exibir['Dias em Aberto'] - 1).fillna(0).clip(lower=0).astype(int)
                     
                 except Exception as e:
                     st.warning(f"Erro ao calcular datas: {e}")
                     df_encerrados_para_exibir['Dias em Aberto'] = 0
             else:
-                df_encerrados_para_exibir['Dias em Aberto'] = 0
+                 # Se ainda assim não achar a coluna, preenche com 0
+                 df_encerrados_para_exibir['Dias em Aberto'] = 0
 
             colunas_para_exibir_fechados.append('Dias em Aberto')
-            # ---------------------------------------------
-            
+
+            # --- 4. FILTROS DE DATA (MANTIDO) ---
             try:
+                # Garante que temos a coluna de data de fechamento formatada para o filtro
+                if 'Data de Fechamento_dt_comp' not in df_encerrados_para_exibir.columns:
+                     df_encerrados_para_exibir['Data de Fechamento_dt_comp'] = pd.to_datetime(df_encerrados_para_exibir['Data de Fechamento'], dayfirst=True, errors='coerce')
+
                 datas_disponiveis = sorted(df_encerrados_para_exibir['Data de Fechamento_dt_comp'].dt.strftime('%d/%m/%Y').unique(), reverse=True)
                 
                 if not datas_disponiveis:
                     st.warning("Não há datas de fechamento válidas no histórico.")
                 else:
                     opcoes_filtro = datas_disponiveis
-                    
                     try:
                         default_index = opcoes_filtro.index(data_mais_recente_fechado_str)
                     except ValueError:
@@ -1068,22 +1080,16 @@ try:
             except Exception as e:
                 st.error(f"Erro ao processar datas de fechamento: {e}")
             
+            # --- 5. LÓGICA DE VISUALIZAÇÃO ---
             id_col_encerrados = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_encerrados_para_exibir.columns), None)
-            
-            # --- CARREGA LISTA DE FECHADOS ANTERIOR PARA COMPARAR "NOVO" ---
             previous_closed_ids_loaded = set(read_local_json_file(STATE_FILE_PREV_CLOSED, default_return_type='list'))
             
-            # --- DEFINE O STATUS "NOVO" ---
             if id_col_encerrados:
                  df_encerrados_para_exibir['Status'] = df_encerrados_para_exibir[id_col_encerrados].apply(
                        lambda x: "Novo" if normalize_ids(pd.Series([x])).iloc[0] not in previous_closed_ids_loaded else ""
                     )
             else:
                 df_encerrados_para_exibir['Status'] = ""
-            
-            # --- LÓGICA DE IMPACTO CORRIGIDA: SÓ FILTRA SE FOR HOJE ---
-            # Se a data selecionada for HOJE, aplica o filtro de "impacto no backlog atual".
-            # Se for dia PASSADO, mostra todos (pois obviamente não impactam o backlog de hoje).
             
             is_viewing_today = (data_dt_filtro == hoje_sp)
 
@@ -1094,10 +1100,8 @@ try:
                 st.caption("Mostrando apenas chamados fechados HOJE que causaram redução no backlog ATUAL.")
             elif not is_viewing_today:
                 st.caption(f"Mostrando histórico completo de chamados fechados em {data_selecionada}.")
-            # ----------------------------------------------------------------------------
             
             df_encerrados_para_exibir = df_encerrados_para_exibir.loc[:, ~df_encerrados_para_exibir.columns.duplicated()]
-            
             colunas_finais = [col for col in colunas_para_exibir_fechados if col in df_encerrados_para_exibir.columns]
             
             if df_encerrados_para_exibir.empty:
@@ -1106,7 +1110,6 @@ try:
                 else:
                     st.info(f"Não há registros de chamados fechados para {data_selecionada}.")
             else:
-                # Configuração da tabela para mostrar números
                 st.data_editor(
                     df_encerrados_para_exibir[colunas_finais], 
                     hide_index=True, 
@@ -1116,12 +1119,11 @@ try:
                         "Status": st.column_config.Column(width="small"),
                         "Dias em Aberto": st.column_config.NumberColumn(
                             "Dias em Aberto",
-                            help="Calculado como (Data Fechamento - Data Criação) - 1 dia.",
+                            help="Calculado: (Data Fechamento - Data Criação) - 1 dia.",
                             format="%d" 
                         )
                     }
                 )
-            
         else:
             st.info("O arquivo de chamados encerrados do dia ainda não foi carregado.")
 
@@ -1662,6 +1664,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.55 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.56 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
