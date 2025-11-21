@@ -705,7 +705,7 @@ if is_admin:
                     if not df_historico_base.empty:
                         id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_historico_base.columns), "ID do ticket")
                         df_historico_base[id_col_hist] = normalize_ids(df_historico_base[id_col_hist])
-                       
+                        
                     previous_closed_ids = set()
                     if not df_historico_base.empty:
                         previous_closed_ids = set(df_historico_base[id_col_hist].dropna().unique())
@@ -718,7 +718,7 @@ if is_admin:
                     cols_para_merge = [id_col_upload, 'Data de Fechamento_str']
                     if analista_col_name_origem in df_fechados_novo_upload.columns:
                         cols_para_merge.append(analista_col_name_origem)
-                       
+                        
                     group_col_name_upload = next((col for col in ['Atribuir a um grupo', 'Grupo Atribuído', 'Grupo'] if col in df_fechados_novo_upload.columns), None)
                     if group_col_name_upload:
                          cols_para_merge.append(group_col_name_upload)
@@ -744,7 +744,7 @@ if is_admin:
                     
                     if col_criacao_upload: rename_dict[col_criacao_upload] = 'Data de criação'
                     if col_descricao_upload: rename_dict[col_descricao_upload] = 'Descrição'
-                         
+                          
                     df_lookup = df_lookup.rename(columns=rename_dict)
                     
                     df_lookup = df_lookup.loc[:, ~df_lookup.columns.duplicated()]
@@ -840,7 +840,7 @@ try:
     df_aging = analisar_aging(df_atual_filtrado, reference_date=ref_date_obj)
     
     df_encerrados_filtrado = pd.DataFrame()
-     
+      
     if not df_historico_fechados.empty:
         if 'Atribuir a um grupo' not in df_historico_fechados.columns:
             found_col = next((col for col in ['Grupo Atribuído', 'Grupo'] if col in df_historico_fechados.columns), None)
@@ -1012,27 +1012,29 @@ try:
                 df_encerrados_para_exibir.rename(columns={grupo_col_name_origem: novo_nome_grupo}, inplace=True)
                 colunas_para_exibir_fechados.append(novo_nome_grupo)
 
-            # --- CÁLCULO FORÇADO NA TABELA DE FECHADOS ---
-            if date_col_name and 'Data de Fechamento_dt_comp' in df_encerrados_para_exibir.columns:
+            # --- CÁLCULO DIRETO: (FECHAMENTO - CRIAÇÃO) - 1 ---
+            # 1. Localiza a coluna de Data de Criação (novamente, para garantir o contexto local)
+            date_col_name = next((col for col in ['Data de criação', 'Data de criaÃ§Ã£o', 'Data de Criacao', 'Created', 'Aberto em', 'Data de Abertura'] if col in df_encerrados_para_exibir.columns), None)
+
+            if date_col_name and 'Data de Fechamento' in df_encerrados_para_exibir.columns:
                 try:
-                    # Converte as datas para garantir o cálculo
-                    df_encerrados_para_exibir['temp_created'] = pd.to_datetime(df_encerrados_para_exibir[date_col_name], dayfirst=True, errors='coerce').dt.normalize()
-                    df_encerrados_para_exibir['temp_closed'] = df_encerrados_para_exibir['Data de Fechamento_dt_comp'].dt.normalize()
+                    # 2. Converte para DateTime forçando 'dayfirst=True' e remove as horas (.normalize)
+                    dt_criacao = pd.to_datetime(df_encerrados_para_exibir[date_col_name], dayfirst=True, errors='coerce').dt.normalize()
                     
-                    # Aplica a regra: (Fechamento - Abertura) - 1 dia (prazo D-1)
-                    df_encerrados_para_exibir['Dias em Aberto'] = (df_encerrados_para_exibir['temp_closed'] - df_encerrados_para_exibir['temp_created']).dt.days - 1
+                    # Usa a coluna original de fechamento para garantir
+                    dt_fechamento = pd.to_datetime(df_encerrados_para_exibir['Data de Fechamento'], dayfirst=True, errors='coerce').dt.normalize()
                     
-                    # Garante que não fique negativo
-                    df_encerrados_para_exibir['Dias em Aberto'] = df_encerrados_para_exibir['Dias em Aberto'].clip(lower=0)
+                    # 3. Calcula a diferença em dias e subtrai 1
+                    df_encerrados_para_exibir['Dias em Aberto'] = (dt_fechamento - dt_criacao).dt.days - 1
                     
-                    # Remove as colunas temporárias
-                    df_encerrados_para_exibir.drop(columns=['temp_created', 'temp_closed'], inplace=True)
+                    # 4. Tratamento: (NaN vira 0, negativos viram 0)
+                    df_encerrados_para_exibir['Dias em Aberto'] = df_encerrados_para_exibir['Dias em Aberto'].fillna(0).clip(lower=0).astype(int)
                     
                 except Exception as e:
-                    st.warning(f"Não foi possível calcular 'Dias em Aberto' para o histórico: {e}")
-                    df_encerrados_para_exibir['Dias em Aberto'] = 0 
+                    st.warning(f"Erro ao calcular datas: {e}")
+                    df_encerrados_para_exibir['Dias em Aberto'] = 0
             else:
-                 df_encerrados_para_exibir['Dias em Aberto'] = 0
+                df_encerrados_para_exibir['Dias em Aberto'] = 0
 
             colunas_para_exibir_fechados.append('Dias em Aberto')
             # ---------------------------------------------
@@ -1075,7 +1077,7 @@ try:
             if id_col_encerrados:
                  df_encerrados_para_exibir['Status'] = df_encerrados_para_exibir[id_col_encerrados].apply(
                        lambda x: "Novo" if normalize_ids(pd.Series([x])).iloc[0] not in previous_closed_ids_loaded else ""
-                   )
+                    )
             else:
                 df_encerrados_para_exibir['Status'] = ""
             
@@ -1144,7 +1146,7 @@ try:
             filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].copy()
             if not filtered_df.empty:
                 if 'Data de criação' in filtered_df.columns:
-                      filtered_df['Data de criação'] = filtered_df['Data de criação'].dt.strftime('%d/%m/%Y')
+                       filtered_df['Data de criação'] = filtered_df['Data de criação'].dt.strftime('%d/%m/%Y')
 
                 def highlight_row(row):
                     return ['background-color: #fff8c4'] * len(row) if row['Contato'] else [''] * len(row)
@@ -1660,6 +1662,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.54 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.55 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
