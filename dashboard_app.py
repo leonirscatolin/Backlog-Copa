@@ -566,9 +566,12 @@ if is_admin:
     if st.sidebar.button("Salvar Novos Dados no Site"):
         if uploaded_file_atual and uploaded_file_15dias:
             with st.spinner("Processando e salvando atualização completa..."):
-                if os.path.exists(STATE_FILE_MASTER_CLOSED_CSV):
-                    try: os.remove(STATE_FILE_MASTER_CLOSED_CSV)
-                    except Exception: pass
+                # --- CORREÇÃO: REMOVIDA A DELEÇÃO DO ARQUIVO MESTRE ---
+                # if os.path.exists(STATE_FILE_MASTER_CLOSED_CSV):
+                #     try: os.remove(STATE_FILE_MASTER_CLOSED_CSV)
+                #     except Exception: pass
+
+                # Resetar apenas os 'novos' fechados
                 if os.path.exists(STATE_FILE_PREV_CLOSED):
                     try: os.remove(STATE_FILE_PREV_CLOSED)
                     except Exception: pass
@@ -582,6 +585,7 @@ if is_admin:
                     try:
                         df_novo_atual_raw = pd.read_csv(BytesIO(content_atual_raw), sep=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
                         
+                        # Tenta carregar o histórico atual para filtrar do novo backlog
                         df_hist_fechados = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV, get_file_mtime(STATE_FILE_MASTER_CLOSED_CSV))
                         
                         all_closed_ids_historico = set()
@@ -623,7 +627,7 @@ if is_admin:
                                                     f"hora_atualizacao:{hora_atualizacao}")
                         save_local_file(STATE_FILE_REF_DATES, datas_referencia_content)
                         
-                        st.sidebar.success("Arquivos salvos e histórico zerado! Recarregando...")
+                        st.sidebar.success("Arquivos salvos e histórico mantido! Recarregando...")
                         st.cache_data.clear()
                         st.rerun() 
                     except Exception as e:
@@ -646,7 +650,7 @@ if is_admin:
                     st.stop() 
 
                 try:
-                    # --- LÓGICA DE MENSAGEM DE IMPACTO (MANTIDA PARA TOAST, AGORA TAMBÉM NA ABA 1) ---
+                    # --- LÓGICA DE MENSAGEM DE IMPACTO ---
                     df_backlog_check = read_local_csv(f"{DATA_DIR}dados_atuais.csv", get_file_mtime(f"{DATA_DIR}dados_atuais.csv"))
                     
                     df_fechados_novo_check = pd.read_csv(BytesIO(content_fechados), sep=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
@@ -714,7 +718,7 @@ if is_admin:
                     if not df_historico_base.empty:
                         id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_historico_base.columns), "ID do ticket")
                         df_historico_base[id_col_hist] = normalize_ids(df_historico_base[id_col_hist])
-                      
+                       
                     previous_closed_ids = set()
                     if not df_historico_base.empty:
                         previous_closed_ids = set(df_historico_base[id_col_hist].dropna().unique())
@@ -727,7 +731,7 @@ if is_admin:
                     cols_para_merge = [id_col_upload, 'Data de Fechamento_str']
                     if analista_col_name_origem in df_fechados_novo_upload.columns:
                         cols_para_merge.append(analista_col_name_origem)
-                      
+                       
                     group_col_name_upload = next((col for col in ['Atribuir a um grupo', 'Grupo Atribuído', 'Grupo'] if col in df_fechados_novo_upload.columns), None)
                     if group_col_name_upload:
                          cols_para_merge.append(group_col_name_upload)
@@ -872,12 +876,11 @@ try:
         # Cálculo inicial do card (pode ser sobrescrito abaixo)
         total_fechados_hoje = len(open_ids_base.intersection(closed_today_ids))
 
-    # --- LÓGICA DE CARD COM FILTRO DE GRUPO (CORREÇÃO) ---
+    # --- LÓGICA DE CARD COM FILTRO DE GRUPO ---
     try:
         if os.path.exists(f"{DATA_DIR}dados_fechados.csv"):
              df_last_closed = read_local_csv(f"{DATA_DIR}dados_fechados.csv", get_file_mtime(f"{DATA_DIR}dados_fechados.csv"))
              if not df_last_closed.empty:
-                 # Filtra grupos ignorados no arquivo bruto (CORREÇÃO AQUI)
                  group_col_last = next((col for col in ['Atribuir a um grupo', 'Grupo Atribuído', 'Grupo'] if col in df_last_closed.columns), None)
                  if group_col_last:
                     df_last_closed = df_last_closed[~df_last_closed[group_col_last].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
@@ -897,7 +900,6 @@ try:
                      ids_last_closed_hoje = set(normalize_ids(df_last_closed_hoje[id_col_last]))
                      ids_backlog_base = set(normalize_ids(df_abertos_base_para_reducao[id_col_backlog_base]))
                      
-                     # Sobrescreve com o valor filtrado correto
                      total_fechados_hoje = len(ids_backlog_base.intersection(ids_last_closed_hoje))
     except Exception:
         pass
@@ -1059,8 +1061,8 @@ try:
             # --- DEFINE O STATUS "NOVO" ---
             if id_col_encerrados:
                  df_encerrados_para_exibir['Status'] = df_encerrados_para_exibir[id_col_encerrados].apply(
-                      lambda x: "Novo" if normalize_ids(pd.Series([x])).iloc[0] not in previous_closed_ids_loaded else ""
-                  )
+                       lambda x: "Novo" if normalize_ids(pd.Series([x])).iloc[0] not in previous_closed_ids_loaded else ""
+                   )
             else:
                 df_encerrados_para_exibir['Status'] = ""
             
@@ -1114,7 +1116,7 @@ try:
             filtered_df = df_aging[df_aging['Faixa de Antiguidade'] == faixa_atual].copy()
             if not filtered_df.empty:
                 if 'Data de criação' in filtered_df.columns:
-                     filtered_df['Data de criação'] = filtered_df['Data de criação'].dt.strftime('%d/%m/%Y')
+                      filtered_df['Data de criação'] = filtered_df['Data de criação'].dt.strftime('%d/%m/%Y')
 
                 def highlight_row(row):
                     return ['background-color: #fff8c4'] * len(row) if row['Contato'] else [''] * len(row)
@@ -1231,7 +1233,7 @@ try:
                 
                 st.plotly_chart(fig_stacked_bar, use_container_width=True)
 
-                # --- PARETO LIBERADO PARA TODOS (SEM IF IS_ADMIN) ---
+                # --- PARETO ---
                 df_pareto = group_totals.to_frame(name='Total')
                 df_pareto['CumulativePct'] = df_pareto['Total'].cumsum() / df_pareto['Total'].sum()
                 
@@ -1299,7 +1301,7 @@ try:
 
             if not df_evolucao_tab3.empty:
 
-                st.info("Esta visualização ainda está coletando dados históricos. Utilize as outras abas como referência principal por enquanto.")
+                st.info("Esta visualização combina os snapshots diários com o histórico de fechamentos.")
                 
                 try:
                     latest_date_in_chart = df_evolucao_tab3['Data'].max()
@@ -1330,7 +1332,8 @@ try:
                 if not df_encerrados_filtrado.empty and 'Data de Fechamento' in df_encerrados_filtrado.columns:
                     df_fechados_hist = df_encerrados_filtrado[['Data de Fechamento']].copy()
                     
-                    df_fechados_hist['Data'] = pd.to_datetime(df_fechados_hist['Data de Fechamento'], dayfirst=True, errors='coerce')
+                    # --- CORREÇÃO: REMOVIDO O dayfirst=True ---
+                    df_fechados_hist['Data'] = pd.to_datetime(df_fechados_hist['Data de Fechamento'], errors='coerce')
                     
                     df_fechados_hist = df_fechados_hist.dropna(subset=['Data'])
                     
@@ -1340,7 +1343,6 @@ try:
                     ]
                     
                     if not df_fechados_hist.empty:
-                        # DEDUPLICATION FIX: Ensure we count distinct tickets per day
                         id_col_fechados_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_hist.columns), None)
                         if id_col_fechados_hist:
                              df_fechados_hist = df_fechados_hist.drop_duplicates(subset=[id_col_fechados_hist])
@@ -1391,7 +1393,7 @@ try:
 
                 st.markdown("---")
 
-                st.info("Esta visualização já filtra os chamados fechados e permite filtrar grupos clicando 2x na legenda.")
+                st.info("Clique 2x na legenda de um grupo para isolá-lo.")
 
                 df_evolucao_tab3_sorted = df_evolucao_tab3.sort_values('Data')
                 df_evolucao_tab3_sorted['Data (Eixo)'] = df_evolucao_tab3_sorted['Data'].dt.strftime('%d/%m')
@@ -1630,6 +1632,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.49 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.50 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
