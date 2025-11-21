@@ -566,11 +566,6 @@ if is_admin:
     if st.sidebar.button("Salvar Novos Dados no Site"):
         if uploaded_file_atual and uploaded_file_15dias:
             with st.spinner("Processando e salvando atualização completa..."):
-                # --- HISTÓRICO PRESERVADO ---
-                # if os.path.exists(STATE_FILE_MASTER_CLOSED_CSV):
-                #     try: os.remove(STATE_FILE_MASTER_CLOSED_CSV)
-                #     except Exception: pass
-
                 if os.path.exists(STATE_FILE_PREV_CLOSED):
                     try: os.remove(STATE_FILE_PREV_CLOSED)
                     except Exception: pass
@@ -728,13 +723,12 @@ if is_admin:
                     if group_col_name_upload:
                          cols_para_merge.append(group_col_name_upload)
 
-                    # --- CORREÇÃO: GARANTIR QUE DATA DE CRIAÇÃO E DESCRIÇÃO SEJAM SALVAS ---
-                    col_criacao_upload = next((col for col in ['Data de criação', 'Data de criaÃ§Ã£o', 'Data de Criacao', 'Created'] if col in df_fechados_novo_upload.columns), None)
+                    # --- REFORÇO NA DETECÇÃO DA DATA DE CRIAÇÃO ---
+                    col_criacao_upload = next((col for col in ['Data de criação', 'Data de criaÃ§Ã£o', 'Data de Criacao', 'Created', 'Aberto em', 'Data de Abertura'] if col in df_fechados_novo_upload.columns), None)
                     col_descricao_upload = next((col for col in ['Descrição', 'Descricao', 'Description', 'Assunto', 'Summary'] if col in df_fechados_novo_upload.columns), None)
 
                     if col_criacao_upload: cols_para_merge.append(col_criacao_upload)
                     if col_descricao_upload: cols_para_merge.append(col_descricao_upload)
-                    # -----------------------------------------------------------------------
 
                     df_lookup = df_fechados_novo_upload[cols_para_merge].drop_duplicates(subset=[id_col_upload])
                     
@@ -748,10 +742,8 @@ if is_admin:
                     if group_col_name_upload:
                          rename_dict[group_col_name_upload] = 'Atribuir a um grupo'
                     
-                    # --- PADRONIZAR NOMES DAS COLUNAS NOVAS ---
                     if col_criacao_upload: rename_dict[col_criacao_upload] = 'Data de criação'
                     if col_descricao_upload: rename_dict[col_descricao_upload] = 'Descrição'
-                    # ------------------------------------------
                          
                     df_lookup = df_lookup.rename(columns=rename_dict)
                     
@@ -1004,7 +996,7 @@ try:
             
             df_encerrados_para_exibir = df_encerrados_filtrado.copy()
             
-            date_col_name = next((col for col in ['Data de criação', 'Data de Criacao'] if col in df_encerrados_para_exibir.columns), None)
+            date_col_name = next((col for col in ['Data de criação', 'Data de criaÃ§Ã£o', 'Data de Criacao', 'Created', 'Aberto em', 'Data de Abertura'] if col in df_encerrados_para_exibir.columns), None)
             colunas_para_exibir_fechados = ['Status', 'ID do ticket', 'Descrição']
             novo_nome_analista = "Analista de Resolução" 
             analista_col_name_origem = "Analista atribuído" 
@@ -1018,6 +1010,7 @@ try:
                 df_encerrados_para_exibir.rename(columns={grupo_col_name_origem: novo_nome_grupo}, inplace=True)
                 colunas_para_exibir_fechados.append(novo_nome_grupo)
 
+            # --- CORREÇÃO VISUAL: Força a coluna aparecer mesmo se o cálculo falhar ---
             if date_col_name and 'Data de Fechamento_dt_comp' in df_encerrados_para_exibir.columns:
                 try:
                     data_criacao = pd.to_datetime(df_encerrados_para_exibir[date_col_name], errors='coerce').dt.normalize()
@@ -1025,9 +1018,14 @@ try:
                     
                     dias_calculados = (data_fechamento - data_criacao).dt.days
                     df_encerrados_para_exibir['Dias em Aberto'] = dias_calculados.clip(lower=0)
-                    colunas_para_exibir_fechados.append('Dias em Aberto')
                 except Exception as e:
                     st.warning(f"Não foi possível calcular 'Dias em Aberto' para o histórico: {e}")
+                    df_encerrados_para_exibir['Dias em Aberto'] = "-" # Valor placeholder
+            else:
+                 df_encerrados_para_exibir['Dias em Aberto'] = "-" # Valor placeholder se a coluna não existir
+
+            colunas_para_exibir_fechados.append('Dias em Aberto')
+            # --------------------------------------------------------------------------
             
             try:
                 datas_disponiveis = sorted(df_encerrados_para_exibir['Data de Fechamento_dt_comp'].dt.strftime('%d/%m/%Y').unique(), reverse=True)
@@ -1637,6 +1635,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.51 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.52 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
