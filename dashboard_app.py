@@ -566,12 +566,11 @@ if is_admin:
     if st.sidebar.button("Salvar Novos Dados no Site"):
         if uploaded_file_atual and uploaded_file_15dias:
             with st.spinner("Processando e salvando atualização completa..."):
-                # --- CORREÇÃO: REMOVIDA A DELEÇÃO DO ARQUIVO MESTRE ---
+                # --- HISTÓRICO PRESERVADO ---
                 # if os.path.exists(STATE_FILE_MASTER_CLOSED_CSV):
                 #     try: os.remove(STATE_FILE_MASTER_CLOSED_CSV)
                 #     except Exception: pass
 
-                # Resetar apenas os 'novos' fechados
                 if os.path.exists(STATE_FILE_PREV_CLOSED):
                     try: os.remove(STATE_FILE_PREV_CLOSED)
                     except Exception: pass
@@ -585,7 +584,6 @@ if is_admin:
                     try:
                         df_novo_atual_raw = pd.read_csv(BytesIO(content_atual_raw), sep=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
                         
-                        # Tenta carregar o histórico atual para filtrar do novo backlog
                         df_hist_fechados = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV, get_file_mtime(STATE_FILE_MASTER_CLOSED_CSV))
                         
                         all_closed_ids_historico = set()
@@ -650,7 +648,6 @@ if is_admin:
                     st.stop() 
 
                 try:
-                    # --- LÓGICA DE MENSAGEM DE IMPACTO ---
                     df_backlog_check = read_local_csv(f"{DATA_DIR}dados_atuais.csv", get_file_mtime(f"{DATA_DIR}dados_atuais.csv"))
                     
                     df_fechados_novo_check = pd.read_csv(BytesIO(content_fechados), sep=';', dtype={'ID do ticket': str, 'ID do Ticket': str, 'ID': str})
@@ -658,17 +655,13 @@ if is_admin:
                     if not df_backlog_check.empty:
                         id_col_bk = next((c for c in ['ID do ticket', 'ID do Ticket', 'ID'] if c in df_backlog_check.columns), None)
                         id_col_fc = next((c for c in ['ID do ticket', 'ID do Ticket', 'ID'] if c in df_fechados_novo_check.columns), None)
-                        
-                        # Tenta identificar coluna de data para filtrar
                         col_data_fechamento_check = next((c for c in ['Data de Fechamento', 'Data de Resolução'] if c in df_fechados_novo_check.columns), None)
                         
                         if id_col_bk and id_col_fc:
-                            # Prepara dataframe de fechados filtrado por HOJE
                             if col_data_fechamento_check:
                                 df_fechados_novo_check['dt_temp_check'] = pd.to_datetime(df_fechados_novo_check[col_data_fechamento_check], dayfirst=True, errors='coerce')
                                 df_fechados_hoje_check = df_fechados_novo_check[df_fechados_novo_check['dt_temp_check'].dt.date == now_sao_paulo.date()]
                             else:
-                                # Se não achar coluna de data, assume que tudo é de hoje (comportamento padrão, mas arriscado)
                                 df_fechados_hoje_check = df_fechados_novo_check
 
                             ids_bk = set(normalize_ids(df_backlog_check[id_col_bk]))
@@ -678,7 +671,6 @@ if is_admin:
                             total_abatidos = len(ids_bk.intersection(ids_fc_hoje))
                             
                             st.toast(f"Processado! {total_lidos_hoje} chamados de HOJE lidos. {total_abatidos} impactaram o backlog.")
-                    # ---------------------------------------
 
                     save_local_file(f"{DATA_DIR}dados_fechados.csv", content_fechados, is_binary=True)
 
@@ -736,6 +728,14 @@ if is_admin:
                     if group_col_name_upload:
                          cols_para_merge.append(group_col_name_upload)
 
+                    # --- CORREÇÃO: GARANTIR QUE DATA DE CRIAÇÃO E DESCRIÇÃO SEJAM SALVAS ---
+                    col_criacao_upload = next((col for col in ['Data de criação', 'Data de criaÃ§Ã£o', 'Data de Criacao', 'Created'] if col in df_fechados_novo_upload.columns), None)
+                    col_descricao_upload = next((col for col in ['Descrição', 'Descricao', 'Description', 'Assunto', 'Summary'] if col in df_fechados_novo_upload.columns), None)
+
+                    if col_criacao_upload: cols_para_merge.append(col_criacao_upload)
+                    if col_descricao_upload: cols_para_merge.append(col_descricao_upload)
+                    # -----------------------------------------------------------------------
+
                     df_lookup = df_fechados_novo_upload[cols_para_merge].drop_duplicates(subset=[id_col_upload])
                     
                     if analista_col_name_origem in df_lookup.columns:
@@ -747,6 +747,11 @@ if is_admin:
                     }
                     if group_col_name_upload:
                          rename_dict[group_col_name_upload] = 'Atribuir a um grupo'
+                    
+                    # --- PADRONIZAR NOMES DAS COLUNAS NOVAS ---
+                    if col_criacao_upload: rename_dict[col_criacao_upload] = 'Data de criação'
+                    if col_descricao_upload: rename_dict[col_descricao_upload] = 'Descrição'
+                    # ------------------------------------------
                          
                     df_lookup = df_lookup.rename(columns=rename_dict)
                     
@@ -1632,6 +1637,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.50 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.51 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
