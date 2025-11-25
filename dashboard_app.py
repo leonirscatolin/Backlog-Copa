@@ -723,6 +723,8 @@ if is_admin:
                     if group_col_name_upload:
                          cols_para_merge.append(group_col_name_upload)
 
+                    # --- REFORÇO NA DETECÇÃO DA DATA DE CRIAÇÃO ---
+                    # Busca flexível por colunas de criação e descrição para garantir que sejam salvas no histórico
                     col_criacao_upload = None
                     for col in df_fechados_novo_upload.columns:
                         if 'data de cria' in col.lower() or 'created' in col.lower() or 'aberto em' in col.lower():
@@ -854,6 +856,7 @@ try:
 
         df_encerrados_filtrado = df_historico_fechados[~df_historico_fechados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
 
+    # --- CÁLCULO INTELIGENTE DO CARD DE FECHADOS ---
     total_fechados_display = 0
     data_fechamento_display_str = "Hoje" 
     
