@@ -270,6 +270,7 @@ def analisar_aging(_df_atual, reference_date=None):
         
     data_criacao_normalizada = df[date_col_name].dt.normalize()
     
+    # Subtrair 1 dia para alinhar com a lógica do Excel (D-1)
     dias_calculados = (data_referencia - data_criacao_normalizada).dt.days - 1
     
     df['Dias em Aberto'] = dias_calculados.clip(lower=0)
@@ -722,6 +723,8 @@ if is_admin:
                     if group_col_name_upload:
                          cols_para_merge.append(group_col_name_upload)
 
+                    # --- REFORÇO NA DETECÇÃO DA DATA DE CRIAÇÃO ---
+                    # Busca flexível por colunas de criação e descrição para garantir que sejam salvas no histórico
                     col_criacao_upload = None
                     for col in df_fechados_novo_upload.columns:
                         if 'data de cria' in col.lower() or 'created' in col.lower() or 'aberto em' in col.lower():
@@ -831,7 +834,6 @@ try:
     
     df_15dias_filtrado = df_15dias[~df_15dias['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_TOTAL_REGEX, case=False, na=False, regex=True)]
     
-    # Passar data de referência para o aging
     try:
         if data_atual_str != 'N/A':
             ref_date_obj = datetime.strptime(data_atual_str, '%d/%m/%Y')
@@ -854,7 +856,7 @@ try:
 
         df_encerrados_filtrado = df_historico_fechados[~df_historico_fechados['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
 
-    # --- CÁLCULO INTELIGENTE DO CARD DE FECHADOS (COM INTERSEÇÃO REAL) ---
+    # --- CÁLCULO INTELIGENTE DO CARD DE FECHADOS ---
     total_fechados_display = 0
     data_fechamento_display_str = "Hoje" 
     
@@ -889,13 +891,15 @@ try:
             
             if id_col_hist:
                 closed_ids = set(normalize_ids(fechados_display_df[id_col_hist]).unique())
-                # AQUI ESTÁ A CORREÇÃO:
-                # Calculamos estritamente a interseção. Se der 0, mostra 0.
-                # Isso significa: "Quantos chamados fechados nesta data ainda estavam no backlog atual?"
+                
+                # --- CÁLCULO RIGOROSO (INTERSEÇÃO) ---
+                # Conta APENAS os chamados que estão no arquivo de fechados E no backlog atual
+                # Se atualizou o backlog e eles sumiram, mostra 0.
                 total_fechados_display = len(open_ids_base.intersection(closed_ids))
+                
             else:
-                # Se não tiver ID para cruzar, infelizmente só podemos mostrar o total
-                total_fechados_display = len(fechados_display_df)
+                # Se não tiver coluna de ID, infelizmente mostra 0 (ou o total se preferir, mas vou deixar 0 para ser consistente)
+                total_fechados_display = 0
 
     data_mais_recente_fechado_str = "" 
 
@@ -1117,16 +1121,23 @@ try:
             
             is_viewing_today = (data_dt_filtro == hoje_sp)
 
-            if is_viewing_today:
-                st.caption(f"Mostrando todos os chamados fechados em {data_selecionada}.")
-            else:
+            # --- APLICAÇÃO DO FILTRO RIGOROSO NA TABELA TAMBÉM (SE FOR HOJE) ---
+            if is_viewing_today and id_col_encerrados and 'open_ids_base' in locals():
+                df_encerrados_para_exibir = df_encerrados_para_exibir[
+                    df_encerrados_para_exibir[id_col_encerrados].apply(lambda x: normalize_ids(pd.Series([x])).iloc[0] in open_ids_base)
+                ]
+                st.caption("Mostrando apenas chamados fechados HOJE que causaram redução no backlog ATUAL.")
+            elif not is_viewing_today:
                 st.caption(f"Mostrando histórico completo de chamados fechados em {data_selecionada}.")
             
             df_encerrados_para_exibir = df_encerrados_para_exibir.loc[:, ~df_encerrados_para_exibir.columns.duplicated()]
             colunas_finais = [col for col in colunas_para_exibir_fechados if col in df_encerrados_para_exibir.columns]
             
             if df_encerrados_para_exibir.empty:
-                st.info(f"Não há registros de chamados fechados para {data_selecionada}.")
+                if is_viewing_today:
+                    st.info(f"Nenhum chamado fechado em {data_selecionada} constava no backlog atual (ou o backlog já foi atualizado).")
+                else:
+                    st.info(f"Não há registros de chamados fechados para {data_selecionada}.")
             else:
                 st.data_editor(
                     df_encerrados_para_exibir[colunas_finais], 
@@ -1685,6 +1696,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.61 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.62 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
