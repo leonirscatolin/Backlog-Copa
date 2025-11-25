@@ -880,8 +880,6 @@ try:
                 closed_ids = set(normalize_ids(fechados_display_df[id_col_hist]).unique())
                 if ultima_data_date == hoje_sp:
                      total_fechados_display = len(open_ids_base.intersection(closed_ids))
-                     if total_fechados_display == 0 and len(closed_ids) > 0:
-                         total_fechados_display = len(closed_ids)
                 else:
                      total_fechados_display = len(closed_ids)
             else:
@@ -1638,6 +1636,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.58 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.59 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
-""", unsafe_allow_html=True)
+""", unsafe_allow_html=True)s
