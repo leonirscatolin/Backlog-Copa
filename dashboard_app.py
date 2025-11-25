@@ -14,6 +14,8 @@ import colorsys
 import re
 import os
 
+# --- CONFIGURAÇÕES E CONSTANTES ---
+# 'RDM' filtra qualquer grupo que contenha essa sigla no nome
 GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM'
 GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou 'RDM'"
 
@@ -29,6 +31,7 @@ STATE_FILE_REF_DATES = "datas_referencia.txt"
 STATE_FILE_MASTER_CLOSED_CSV = f"{DATA_DIR}historico_fechados_master.csv"
 STATE_FILE_PREV_CLOSED = "previous_closed_ids.json"
 
+# --- SETUP DA PÁGINA ---
 st.set_page_config(
     layout="wide",
     page_title="Backlog Copa Energia + Belago",
@@ -36,6 +39,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# --- CSS PERSONALIZADO ---
 st.html("""
 <style>
 #GithubIcon { visibility: hidden; }
@@ -100,6 +104,8 @@ a.metric-box:hover {
 </style>
 """)
 
+# --- FUNÇÕES UTILITÁRIAS ---
+
 def get_file_mtime(file_path):
     if os.path.exists(file_path):
         return os.path.getmtime(file_path)
@@ -129,6 +135,7 @@ def read_local_csv(file_path, file_mtime):
     if not os.path.exists(file_path):
         return pd.DataFrame() 
     
+    # Tenta ler com diferentes separadores e encodings
     separators = [';', ',']
     encodings = ['utf-8', 'latin1']
     
@@ -263,6 +270,7 @@ def analisar_aging(_df_atual, reference_date=None):
         
     data_criacao_normalizada = df[date_col_name].dt.normalize()
     
+    # Subtrair 1 dia para alinhar com a lógica do Excel (D-1)
     dias_calculados = (data_referencia - data_criacao_normalizada).dt.days - 1
     
     df['Dias em Aberto'] = dias_calculados.clip(lower=0)
@@ -294,6 +302,7 @@ def lighten_color(hex_color, amount=0.2):
     except Exception: return hex_color
 
 def normalize_ids(series):
+    """Limpa e padroniza IDs para garantir cruzamento correto."""
     if series.empty:
         return series
     return series.astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
@@ -497,6 +506,7 @@ def carregar_evolucao_aging(dias_para_analisar=90):
                 snapshot_date_dt = pd.to_datetime(file_date)
                 data_criacao_normalizada = df_final[date_col_name].dt.normalize()
                 
+                # Subtrair 1 dia para alinhar com a lógica do Excel (D-1)
                 dias_calculados = (snapshot_date_dt - data_criacao_normalizada).dt.days - 1
                 dias_em_aberto_corrigido = (dias_calculados).clip(lower=0)
 
@@ -871,19 +881,9 @@ try:
             else:
                 data_fechamento_display_str = ultima_data_date.strftime('%d/%m')
 
-            id_col_backlog = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_abertos_base_para_reducao.columns), 'ID do ticket')
-            open_ids_base = set(normalize_ids(df_abertos_base_para_reducao[id_col_backlog]).unique())
-            
-            id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in fechados_display_df.columns), None)
-            
-            if id_col_hist:
-                closed_ids = set(normalize_ids(fechados_display_df[id_col_hist]).unique())
-                if ultima_data_date == hoje_sp:
-                     total_fechados_display = len(open_ids_base.intersection(closed_ids))
-                else:
-                     total_fechados_display = len(closed_ids)
-            else:
-                total_fechados_display = len(fechados_display_df)
+            # --- CORREÇÃO DO CARD ---
+            # Agora o card mostra exatamente o que está na tabela: o total de fechados daquela data.
+            total_fechados_display = len(fechados_display_df)
 
     data_mais_recente_fechado_str = "" 
 
@@ -1636,6 +1636,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.59 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.60 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
-""", unsafe_allow_html=True)s
+""", unsafe_allow_html=True)
