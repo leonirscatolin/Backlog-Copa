@@ -719,14 +719,12 @@ if is_admin:
                             col_criacao_upload = col
                             break
                     
-                    # --- CORREÇÃO DA DATA DE CRIAÇÃO ---
                     if col_criacao_upload:
                          # Força conversão com dayfirst=True (padrão BR) e depois padroniza para ISO YYYY-MM-DD
                          df_fechados_novo_upload[col_criacao_upload] = pd.to_datetime(
                              df_fechados_novo_upload[col_criacao_upload], dayfirst=True, errors='coerce'
                          )
                          df_fechados_novo_upload[col_criacao_upload] = df_fechados_novo_upload[col_criacao_upload].dt.strftime('%Y-%m-%d')
-                    # -----------------------------------
 
                     col_descricao_upload = next((col for col in ['Descrição', 'Descricao', 'Description', 'Assunto', 'Summary'] if col in df_fechados_novo_upload.columns), None)
 
@@ -979,6 +977,8 @@ try:
         
         st.markdown(f"<h3>Histórico de Chamados Encerrados (Impacto no Backlog)</h3>", unsafe_allow_html=True)
 
+        data_dt_filtro = None 
+
         if df_historico_fechados.empty:
             st.info("O histórico de chamados encerrados ainda não possui dados. Faça uma 'Atualização Rápida' para começar a popular.")
         elif not df_encerrados_filtrado.empty:
@@ -1050,7 +1050,9 @@ try:
                 if 'Data de Fechamento_dt_comp' not in df_encerrados_para_exibir.columns:
                       df_encerrados_para_exibir['Data de Fechamento_dt_comp'] = pd.to_datetime(df_encerrados_para_exibir['Data de Fechamento'], dayfirst=True, errors='coerce')
 
-                datas_disponiveis = sorted(df_encerrados_para_exibir['Data de Fechamento_dt_comp'].dt.strftime('%d/%m/%Y').unique(), reverse=True)
+                # Correção do erro de ordenação (removendo NaT antes de formatar e ordenar)
+                datas_series_limpa = df_encerrados_para_exibir['Data de Fechamento_dt_comp'].dropna()
+                datas_disponiveis = sorted(datas_series_limpa.dt.strftime('%d/%m/%Y').unique(), reverse=True)
                 
                 if not datas_disponiveis:
                     st.warning("Não há datas de fechamento válidas no histórico.")
@@ -1087,14 +1089,16 @@ try:
             else:
                 df_encerrados_para_exibir['Status'] = ""
             
-            is_viewing_today = (data_dt_filtro == hoje_sp)
+            is_viewing_today = False
+            if data_dt_filtro:
+                is_viewing_today = (data_dt_filtro == hoje_sp)
 
             if is_viewing_today and id_col_encerrados and 'open_ids_base' in locals():
                 df_encerrados_para_exibir = df_encerrados_para_exibir[
                     df_encerrados_para_exibir[id_col_encerrados].apply(lambda x: normalize_ids(pd.Series([x])).iloc[0] in open_ids_base)
                 ]
                 st.caption("Mostrando apenas chamados fechados HOJE que causaram redução no backlog ATUAL.")
-            elif not is_viewing_today:
+            elif not is_viewing_today and data_dt_filtro:
                 st.caption(f"Mostrando histórico completo de chamados fechados em {data_selecionada}.")
             
             df_encerrados_para_exibir = df_encerrados_para_exibir.loc[:, ~df_encerrados_para_exibir.columns.duplicated()]
@@ -1103,7 +1107,7 @@ try:
             if df_encerrados_para_exibir.empty:
                 if is_viewing_today:
                     st.info(f"Nenhum chamado fechado em {data_selecionada} constava no backlog atual (ou o backlog já foi atualizado).")
-                else:
+                elif data_dt_filtro:
                     st.info(f"Não há registros de chamados fechados para {data_selecionada}.")
             else:
                 st.data_editor(
