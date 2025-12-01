@@ -14,7 +14,6 @@ import colorsys
 import re
 import os
 
-# --- CONFIGURAÇÕES E CONSTANTES ---
 GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM'
 GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou 'RDM'"
 
@@ -30,7 +29,6 @@ STATE_FILE_REF_DATES = "datas_referencia.txt"
 STATE_FILE_MASTER_CLOSED_CSV = f"{DATA_DIR}historico_fechados_master.csv"
 STATE_FILE_PREV_CLOSED = "previous_closed_ids.json"
 
-# --- SETUP DA PÁGINA ---
 st.set_page_config(
     layout="wide",
     page_title="Backlog Copa Energia + Belago",
@@ -38,7 +36,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- CSS PERSONALIZADO ---
 st.html("""
 <style>
 #GithubIcon { visibility: hidden; }
@@ -102,8 +99,6 @@ a.metric-box:hover {
 }
 </style>
 """)
-
-# --- FUNÇÕES UTILITÁRIAS ---
 
 def get_file_mtime(file_path):
     if os.path.exists(file_path):
@@ -549,12 +544,9 @@ if logo_copa_b64 and logo_belago_b64:
 else:
     st.error("Arquivos de logo não encontrados.")
 
-# --- LÓGICA DE LOGIN ---
 st.sidebar.header("Login / Acesso")
 password = st.sidebar.text_input("Senha de Acesso:", type="password")
 
-# --- SENHAS ---
-# Coloque aqui as senhas que definiu no secrets.toml
 SENHA_ADMIN = st.secrets.get("ADMIN_PASSWORD", "admin123")
 SENHA_BYATRIZ = st.secrets.get("BYATRIZ_PASSWORD", "bia2025")
 
@@ -567,10 +559,9 @@ if is_admin:
     st.sidebar.success("Modo Administrador (Total)")
 elif is_byatriz:
     st.sidebar.success("Bem-vinda, Byatriz!")
-elif password:
+elif password: 
     st.sidebar.error("Senha incorreta.")
 
-# --- ÁREA EXCLUSIVA DO ADMIN ---
 if is_admin:
     st.sidebar.markdown("---")
     st.sidebar.subheader("Atualização Completa")
@@ -705,7 +696,6 @@ if is_admin:
                     
                     if col_fechamento_upload in df_fechados_novo_upload.columns:
                         st.sidebar.info("Usando 'Data de Fechamento' do arquivo de upload.")
-                        # --- FORÇA A LEITURA COMO DIA/MÊS/ANO PARA EVITAR INVERSÃO ---
                         df_fechados_novo_upload['Data de Fechamento_dt'] = pd.to_datetime(
                             df_fechados_novo_upload[col_fechamento_upload], 
                             dayfirst=True, 
@@ -715,7 +705,6 @@ if is_admin:
                         st.sidebar.warning(f"Coluna '{col_fechamento_upload}' não encontrada. Usando data de referência: {data_atual_existente}")
                         df_fechados_novo_upload['Data de Fechamento_dt'] = pd.to_datetime(data_atual_existente, format='%d/%m/%Y', errors='coerce')
                     
-                    # --- SALVA NO FORMATO UNIVERSAL ISO (AAAA-MM-DD) PARA NÃO HAVER DÚVIDA ---
                     df_fechados_novo_upload['Data de Fechamento_str'] = df_fechados_novo_upload['Data de Fechamento_dt'].dt.strftime('%Y-%m-%d')
                     
                     df_historico_base = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV, get_file_mtime(STATE_FILE_MASTER_CLOSED_CSV))
@@ -749,7 +738,6 @@ if is_admin:
                             break
                     
                     if col_criacao_upload:
-                         # --- FORÇA A LEITURA DA CRIAÇÃO TAMBÉM ---
                          df_fechados_novo_upload[col_criacao_upload] = pd.to_datetime(
                              df_fechados_novo_upload[col_criacao_upload], dayfirst=True, errors='coerce'
                          )
@@ -800,7 +788,6 @@ if is_admin:
         else:
             st.sidebar.warning("Por favor, carregue o arquivo de chamados fechados para salvar.")
     
-    # --- BOTÃO PARA LIMPAR O HISTÓRICO DE FECHADOS ---
     st.sidebar.markdown("---")
     st.sidebar.subheader("Manutenção")
     if st.sidebar.button("⚠️ LIMPAR Histórico de Fechados (Reset)"):
@@ -814,7 +801,6 @@ if is_admin:
             st.rerun()
         except Exception as e:
             st.sidebar.error(f"Erro ao limpar histórico: {e}")
-    # ---------------------------------------------------
 
 elif password:
     st.sidebar.error("Senha incorreta.")
@@ -1096,10 +1082,8 @@ try:
                 if 'Data de Fechamento_dt_comp' not in df_encerrados_para_exibir.columns:
                       df_encerrados_para_exibir['Data de Fechamento_dt_comp'] = pd.to_datetime(df_encerrados_para_exibir['Data de Fechamento'], dayfirst=True, errors='coerce')
 
-                # --- CORREÇÃO DA ORDENAÇÃO DE DATAS ---
                 unique_dates = sorted(df_encerrados_para_exibir['Data de Fechamento_dt_comp'].dropna().dt.date.unique(), reverse=True)
                 datas_disponiveis = [d.strftime('%d/%m/%Y') for d in unique_dates]
-                # ---------------------------------------
                 
                 if not datas_disponiveis:
                     st.warning("Não há datas de fechamento válidas no histórico.")
@@ -1136,7 +1120,6 @@ try:
             else:
                 df_encerrados_para_exibir['Status'] = ""
             
-            # --- RESTAURANDO O FILTRO DE IMPACTO NO BACKLOG QUE VOCÊ PEDIU ---
             is_viewing_today = False
             if data_dt_filtro:
                 is_viewing_today = (data_dt_filtro == hoje_sp)
@@ -1148,7 +1131,6 @@ try:
                 st.caption("Mostrando apenas chamados fechados HOJE que causaram redução no backlog ATUAL.")
             elif not is_viewing_today and data_dt_filtro:
                 st.caption(f"Mostrando histórico completo de chamados fechados em {data_selecionada}.")
-            # -----------------------------------------------------------------
             
             df_encerrados_para_exibir = df_encerrados_para_exibir.loc[:, ~df_encerrados_para_exibir.columns.duplicated()]
             colunas_finais = [col for col in colunas_para_exibir_fechados if col in df_encerrados_para_exibir.columns]
@@ -1159,7 +1141,6 @@ try:
                 elif data_dt_filtro:
                     st.info(f"Não há registros de chamados fechados para {data_selecionada}.")
             else:
-                # --- Lógica de Permissão de Edição ---
                 colunas_desabilitadas_fixas = [
                     'ID do ticket', 'Descrição', 'Grupo Atribuído', 
                     'Dias em Aberto', 'Data de criação'
@@ -1167,12 +1148,9 @@ try:
                 colunas_editaveis_admin = [
                     'Contato', 'Observações'
                 ]
-                
                 if can_edit_table:
-                    # Se for Admin ou Byatriz, as colunas editáveis ficam ativas
                     colunas_desabilitadas_final = colunas_desabilitadas_fixas
                 else:
-                    # Se for visitante, desabilita tudo
                     colunas_desabilitadas_final = colunas_desabilitadas_fixas + colunas_editaveis_admin
                 
                 st.data_editor(
@@ -1240,8 +1218,6 @@ try:
                 colunas_editaveis_admin = [
                     'Contato', 'Observações'
                 ]
-                
-                # --- PERMISSÃO DE EDIÇÃO AQUI TAMBÉM ---
                 if can_edit_table:
                     colunas_desabilitadas_final = colunas_desabilitadas_fixas
                 else:
@@ -1259,7 +1235,7 @@ try:
                     "Salvar Contatos e Observações",
                     on_click=sync_ticket_data,
                     type="primary",
-                    disabled=not can_edit_table # Habilita para Admin e Byatriz
+                    disabled=not can_edit_table 
                 )
                 
             else:
