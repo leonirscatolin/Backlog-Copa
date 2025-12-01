@@ -682,11 +682,17 @@ if is_admin:
                     
                     if col_fechamento_upload in df_fechados_novo_upload.columns:
                         st.sidebar.info("Usando 'Data de Fechamento' do arquivo de upload.")
-                        df_fechados_novo_upload['Data de Fechamento_dt'] = pd.to_datetime(df_fechados_novo_upload[col_fechamento_upload], dayfirst=True, errors='coerce')
+                        # --- FORÇA A LEITURA COMO DIA/MÊS/ANO PARA EVITAR INVERSÃO ---
+                        df_fechados_novo_upload['Data de Fechamento_dt'] = pd.to_datetime(
+                            df_fechados_novo_upload[col_fechamento_upload], 
+                            dayfirst=True, 
+                            errors='coerce'
+                        )
                     else:
                         st.sidebar.warning(f"Coluna '{col_fechamento_upload}' não encontrada. Usando data de referência: {data_atual_existente}")
                         df_fechados_novo_upload['Data de Fechamento_dt'] = pd.to_datetime(data_atual_existente, format='%d/%m/%Y', errors='coerce')
                     
+                    # --- SALVA NO FORMATO UNIVERSAL ISO (AAAA-MM-DD) PARA NÃO HAVER DÚVIDA ---
                     df_fechados_novo_upload['Data de Fechamento_str'] = df_fechados_novo_upload['Data de Fechamento_dt'].dt.strftime('%Y-%m-%d')
                     
                     df_historico_base = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV, get_file_mtime(STATE_FILE_MASTER_CLOSED_CSV))
@@ -720,7 +726,7 @@ if is_admin:
                             break
                     
                     if col_criacao_upload:
-                         # Força conversão com dayfirst=True (padrão BR) e depois padroniza para ISO YYYY-MM-DD
+                         # --- FORÇA A LEITURA DA CRIAÇÃO TAMBÉM ---
                          df_fechados_novo_upload[col_criacao_upload] = pd.to_datetime(
                              df_fechados_novo_upload[col_criacao_upload], dayfirst=True, errors='coerce'
                          )
