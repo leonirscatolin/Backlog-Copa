@@ -776,6 +776,23 @@ if is_admin:
                     st.sidebar.error(f"Erro durante a atualização rápida: {e}")
         else:
             st.sidebar.warning("Por favor, carregue o arquivo de chamados fechados para salvar.")
+            
+    # --- BOTÃO PARA LIMPAR O HISTÓRICO DE FECHADOS ---
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("Manutenção")
+    if st.sidebar.button("⚠️ LIMPAR Histórico de Fechados (Reset)"):
+        try:
+            if os.path.exists(STATE_FILE_MASTER_CLOSED_CSV):
+                os.remove(STATE_FILE_MASTER_CLOSED_CSV)
+            if os.path.exists(STATE_FILE_PREV_CLOSED):
+                os.remove(STATE_FILE_PREV_CLOSED)
+            st.sidebar.success("Histórico limpo com sucesso! Recarregando...")
+            st.cache_data.clear()
+            st.rerun()
+        except Exception as e:
+            st.sidebar.error(f"Erro ao limpar histórico: {e}")
+    # ---------------------------------------------------
+    
 elif password:
     st.sidebar.error("Senha incorreta.")
 
