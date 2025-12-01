@@ -39,7 +39,7 @@ st.set_page_config(
 )
 
 # --- CSS PERSONALIZADO ---
-st.markdown("""
+st.html("""
 <style>
 #GithubIcon { visibility: hidden; }
 .metric-box {
@@ -101,7 +101,7 @@ a.metric-box:hover {
     border-color: #d97900;
 }
 </style>
-""", unsafe_allow_html=True)
+""")
 
 # --- FUNÇÕES UTILITÁRIAS ---
 
@@ -549,12 +549,30 @@ if logo_copa_b64 and logo_belago_b64:
 else:
     st.error("Arquivos de logo não encontrados.")
 
-st.sidebar.header("Área do Administrador")
-password = st.sidebar.text_input("Senha para atualizar dados:", type="password")
-is_admin = password == st.secrets.get("ADMIN_PASSWORD", "") 
+# --- LÓGICA DE LOGIN ---
+st.sidebar.header("Login / Acesso")
+password = st.sidebar.text_input("Senha de Acesso:", type="password")
+
+# --- SENHAS ---
+# Coloque aqui as senhas que definiu no secrets.toml
+SENHA_ADMIN = st.secrets.get("ADMIN_PASSWORD", "admin123")
+SENHA_BYATRIZ = st.secrets.get("BYATRIZ_PASSWORD", "bia2025")
+
+is_admin = password == SENHA_ADMIN
+is_byatriz = password == SENHA_BYATRIZ
+
+can_edit_table = is_admin or is_byatriz 
 
 if is_admin:
-    st.sidebar.success("Acesso de administrador liberado.")
+    st.sidebar.success("Modo Administrador (Total)")
+elif is_byatriz:
+    st.sidebar.success("Bem-vinda, Byatriz!")
+elif password:
+    st.sidebar.error("Senha incorreta.")
+
+# --- ÁREA EXCLUSIVA DO ADMIN ---
+if is_admin:
+    st.sidebar.markdown("---")
     st.sidebar.subheader("Atualização Completa")
     uploaded_file_atual = st.sidebar.file_uploader("1. Backlog ATUAL", type=["csv", "xlsx"], key="uploader_atual")
     uploaded_file_15dias = st.sidebar.file_uploader("2. Backlog de 15 DIAS ATRÁS", type=["csv", "xlsx"], key="uploader_15dias")
@@ -1141,6 +1159,22 @@ try:
                 elif data_dt_filtro:
                     st.info(f"Não há registros de chamados fechados para {data_selecionada}.")
             else:
+                # --- Lógica de Permissão de Edição ---
+                colunas_desabilitadas_fixas = [
+                    'ID do ticket', 'Descrição', 'Grupo Atribuído', 
+                    'Dias em Aberto', 'Data de criação'
+                ]
+                colunas_editaveis_admin = [
+                    'Contato', 'Observações'
+                ]
+                
+                if can_edit_table:
+                    # Se for Admin ou Byatriz, as colunas editáveis ficam ativas
+                    colunas_desabilitadas_final = colunas_desabilitadas_fixas
+                else:
+                    # Se for visitante, desabilita tudo
+                    colunas_desabilitadas_final = colunas_desabilitadas_fixas + colunas_editaveis_admin
+                
                 st.data_editor(
                     df_encerrados_para_exibir[colunas_finais], 
                     hide_index=True, 
@@ -1206,7 +1240,9 @@ try:
                 colunas_editaveis_admin = [
                     'Contato', 'Observações'
                 ]
-                if is_admin:
+                
+                # --- PERMISSÃO DE EDIÇÃO AQUI TAMBÉM ---
+                if can_edit_table:
                     colunas_desabilitadas_final = colunas_desabilitadas_fixas
                 else:
                     colunas_desabilitadas_final = colunas_desabilitadas_fixas + colunas_editaveis_admin
@@ -1223,7 +1259,7 @@ try:
                     "Salvar Contatos e Observações",
                     on_click=sync_ticket_data,
                     type="primary",
-                    disabled=not is_admin 
+                    disabled=not can_edit_table # Habilita para Admin e Byatriz
                 )
                 
             else:
