@@ -1050,9 +1050,12 @@ try:
                 if 'Data de Fechamento_dt_comp' not in df_encerrados_para_exibir.columns:
                       df_encerrados_para_exibir['Data de Fechamento_dt_comp'] = pd.to_datetime(df_encerrados_para_exibir['Data de Fechamento'], dayfirst=True, errors='coerce')
 
-                # Correção do erro de ordenação (removendo NaT antes de formatar e ordenar)
-                datas_series_limpa = df_encerrados_para_exibir['Data de Fechamento_dt_comp'].dropna()
-                datas_disponiveis = sorted(datas_series_limpa.dt.strftime('%d/%m/%Y').unique(), reverse=True)
+                # --- CORREÇÃO DA ORDENAÇÃO DE DATAS ---
+                # Pega as datas únicas como objetos datetime (para ordenar corretamente: dia 1 > dia 30 do mes anterior)
+                unique_dates = sorted(df_encerrados_para_exibir['Data de Fechamento_dt_comp'].dropna().dt.date.unique(), reverse=True)
+                # Converte para string APÓS ordenar
+                datas_disponiveis = [d.strftime('%d/%m/%Y') for d in unique_dates]
+                # ---------------------------------------
                 
                 if not datas_disponiveis:
                     st.warning("Não há datas de fechamento válidas no histórico.")
@@ -1089,7 +1092,6 @@ try:
             else:
                 df_encerrados_para_exibir['Status'] = ""
             
-            # --- RESTAURANDO O FILTRO DE IMPACTO NO BACKLOG QUE VOCÊ PEDIU ---
             is_viewing_today = False
             if data_dt_filtro:
                 is_viewing_today = (data_dt_filtro == hoje_sp)
@@ -1101,7 +1103,6 @@ try:
                 st.caption("Mostrando apenas chamados fechados HOJE que causaram redução no backlog ATUAL.")
             elif not is_viewing_today and data_dt_filtro:
                 st.caption(f"Mostrando histórico completo de chamados fechados em {data_selecionada}.")
-            # -----------------------------------------------------------------
             
             df_encerrados_para_exibir = df_encerrados_para_exibir.loc[:, ~df_encerrados_para_exibir.columns.duplicated()]
             colunas_finais = [col for col in colunas_para_exibir_fechados if col in df_encerrados_para_exibir.columns]
