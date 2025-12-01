@@ -1089,6 +1089,7 @@ try:
             else:
                 df_encerrados_para_exibir['Status'] = ""
             
+            # --- RESTAURANDO O FILTRO DE IMPACTO NO BACKLOG QUE VOCÊ PEDIU ---
             is_viewing_today = False
             if data_dt_filtro:
                 is_viewing_today = (data_dt_filtro == hoje_sp)
@@ -1100,6 +1101,7 @@ try:
                 st.caption("Mostrando apenas chamados fechados HOJE que causaram redução no backlog ATUAL.")
             elif not is_viewing_today and data_dt_filtro:
                 st.caption(f"Mostrando histórico completo de chamados fechados em {data_selecionada}.")
+            # -----------------------------------------------------------------
             
             df_encerrados_para_exibir = df_encerrados_para_exibir.loc[:, ~df_encerrados_para_exibir.columns.duplicated()]
             colunas_finais = [col for col in colunas_para_exibir_fechados if col in df_encerrados_para_exibir.columns]
