@@ -248,17 +248,18 @@ def analisar_aging(_df_atual, reference_date=None):
     if not date_col_name:
         return pd.DataFrame()
     
-    df['temp_date'] = pd.to_datetime(df[date_col_name], errors='coerce')
+    # Tenta converter, forçando dayfirst=True para evitar o erro de data invertida
+    df['temp_date'] = pd.to_datetime(df[date_col_name], dayfirst=True, errors='coerce')
+    
+    # Fallback para formatos mistos
     mask_nat = df['temp_date'].isna()
     if mask_nat.any():
-        df.loc[mask_nat, 'temp_date'] = pd.to_datetime(df.loc[mask_nat, date_col_name], dayfirst=True, errors='coerce')
+        # Tenta sem dayfirst forçado
+        df.loc[mask_nat, 'temp_date'] = pd.to_datetime(df.loc[mask_nat, date_col_name], errors='coerce')
+
     df[date_col_name] = df['temp_date']
     df.drop(columns=['temp_date'], inplace=True)
     
-    linhas_sem_data = df[df[date_col_name].isna()]
-    if not linhas_sem_data.empty:
-        pass
-
     df = df.dropna(subset=[date_col_name])
     
     if reference_date:
@@ -268,6 +269,7 @@ def analisar_aging(_df_atual, reference_date=None):
         
     data_criacao_normalizada = df[date_col_name].dt.normalize()
     
+    # Subtrair 1 dia para alinhar com a lógica do Excel (D-1)
     dias_calculados = (data_referencia - data_criacao_normalizada).dt.days - 1
     
     df['Dias em Aberto'] = dias_calculados.clip(lower=0)
@@ -743,6 +745,7 @@ if is_admin:
                             break
                     
                     if col_criacao_upload:
+                         # --- FORÇA A LEITURA DA CRIAÇÃO TAMBÉM PARA A TABELA E FILTRO ---
                          df_fechados_novo_upload[col_criacao_upload] = pd.to_datetime(
                              df_fechados_novo_upload[col_criacao_upload], dayfirst=True, errors='coerce'
                          )
@@ -793,6 +796,7 @@ if is_admin:
         else:
             st.sidebar.warning("Por favor, carregue o arquivo de chamados fechados para salvar.")
     
+    # --- BOTÃO PARA LIMPAR O HISTÓRICO DE FECHADOS ---
     st.sidebar.markdown("---")
     st.sidebar.subheader("Manutenção")
     if st.sidebar.button("⚠️ LIMPAR Histórico de Fechados (Reset)"):
@@ -806,6 +810,7 @@ if is_admin:
             st.rerun()
         except Exception as e:
             st.sidebar.error(f"Erro ao limpar histórico: {e}")
+    # ---------------------------------------------------
 
 elif password:
     st.sidebar.error("Senha incorreta.")
