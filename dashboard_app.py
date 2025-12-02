@@ -14,6 +14,7 @@ import colorsys
 import re
 import os
 
+# --- CONFIGURAÇÕES E CONSTANTES ---
 GRUPOS_EXCLUSAO_PERMANENTE_REGEX = r'RH|Aprovadores GGM|RDM'
 GRUPOS_EXCLUSAO_PERMANENTE_TEXTO = "'RH', 'Aprovadores GGM' ou 'RDM'"
 
@@ -29,6 +30,7 @@ STATE_FILE_REF_DATES = "datas_referencia.txt"
 STATE_FILE_MASTER_CLOSED_CSV = f"{DATA_DIR}historico_fechados_master.csv"
 STATE_FILE_PREV_CLOSED = "previous_closed_ids.json"
 
+# --- SETUP DA PÁGINA ---
 st.set_page_config(
     layout="wide",
     page_title="Backlog Copa Energia + Belago",
@@ -36,6 +38,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# --- CSS PERSONALIZADO ---
 st.html("""
 <style>
 #GithubIcon { visibility: hidden; }
@@ -99,6 +102,8 @@ a.metric-box:hover {
 }
 </style>
 """)
+
+# --- FUNÇÕES UTILITÁRIAS ---
 
 def get_file_mtime(file_path):
     if os.path.exists(file_path):
@@ -787,6 +792,21 @@ if is_admin:
                     st.sidebar.error(f"Erro durante a atualização rápida: {e}")
         else:
             st.sidebar.warning("Por favor, carregue o arquivo de chamados fechados para salvar.")
+    
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("Manutenção")
+    if st.sidebar.button("⚠️ LIMPAR Histórico de Fechados (Reset)"):
+        try:
+            if os.path.exists(STATE_FILE_MASTER_CLOSED_CSV):
+                os.remove(STATE_FILE_MASTER_CLOSED_CSV)
+            if os.path.exists(STATE_FILE_PREV_CLOSED):
+                os.remove(STATE_FILE_PREV_CLOSED)
+            st.sidebar.success("Histórico limpo com sucesso! Recarregando...")
+            st.cache_data.clear()
+            st.rerun()
+        except Exception as e:
+            st.sidebar.error(f"Erro ao limpar histórico: {e}")
+
 elif password:
     st.sidebar.error("Senha incorreta.")
 
@@ -1133,6 +1153,7 @@ try:
                 colunas_editaveis_admin = [
                     'Contato', 'Observações'
                 ]
+                
                 if can_edit_table:
                     colunas_desabilitadas_final = colunas_desabilitadas_fixas
                 else:
@@ -1406,6 +1427,7 @@ try:
                     if col_criacao_real:
                         df_fechados_hist['dt_cri_temp'] = pd.to_datetime(df_fechados_hist[col_criacao_real], dayfirst=True, errors='coerce').dt.date
                         df_fechados_hist['dt_fec_temp'] = pd.to_datetime(df_fechados_hist['Data de Fechamento'], dayfirst=True, errors='coerce').dt.date
+                        df_fechados_hist = df_fechados_hist[df_fechados_hist['dt_cri_temp'] != df_fechados_hist['dt_fec_temp']]
 
                     df_fechados_hist = df_fechados_hist[['Data de Fechamento']].copy()
                     
