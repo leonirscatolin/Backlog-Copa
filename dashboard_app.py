@@ -1441,8 +1441,6 @@ try:
                     
                 df_total_diario_combinado = df_total_diario_combinado.sort_values('Data')
                 
-                df_total_diario_combinado = df_total_diario_combinado.drop_duplicates(subset=['Data', 'Tipo'], keep='first')
-                
                 df_total_diario_combinado['Data (Eixo)'] = df_total_diario_combinado['Data'].dt.strftime('%d/%m')
                 ordem_datas_total = df_total_diario_combinado['Data (Eixo)'].unique().tolist()
                 
