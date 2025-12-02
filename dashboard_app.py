@@ -941,9 +941,6 @@ try:
 
         with tab1:
             
-            st.markdown("---")
-            st.subheader("Detalhar e Buscar Chamados")
-
             if df_aging.empty:
                 st.warning("Não há chamados em aberto para exibir nesta tabela. Se isso estiver errado, tente recarregar o Backlog Atual.")
             
@@ -974,7 +971,7 @@ try:
                 
                 st.info("\n".join(info_messages))
                 
-                st.subheader("Análise de Antiguidade do Backlog Atual")
+                st.subheader("Visão Geral do Backlog Atual")
                 texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
                 st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
                 
