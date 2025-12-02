@@ -239,7 +239,7 @@ def categorizar_idade_vetorizado(dias_series):
 def analisar_aging(_df_atual, reference_date=None):
     df = _df_atual.copy()
     date_col_name = None
-    possible_date_cols = ['Data de criação', 'Data de criaÃ§Ã£o', 'Data de Criacao', 'Created', 'Aberto em']
+    possible_date_cols = ['Data de criação', 'Data de criaÃ§Ã£o', 'Data de Criacao', 'Created', 'Aberto em', 'Criado em', 'Criação']
     for col in possible_date_cols:
         if col in df.columns:
             date_col_name = col
@@ -1455,17 +1455,6 @@ try:
                     df_total_diario_combinado = df_total_abertos
                     
                 df_total_diario_combinado = df_total_diario_combinado.sort_values('Data')
-                
-                if not df_total_diario_combinado.empty and 'Fechados' in df_total_diario_combinado['Tipo'].unique():
-                    
-                    mask_sync = (
-                        (df_total_diario_combinado['Data'].dt.date == ultima_data_date) & 
-                        (df_total_diario_combinado['Tipo'] == 'Fechados')
-                    )
-                    
-                    if mask_sync.any():
-                        df_total_diario_combinado.loc[mask_sync, 'Total Chamados'] = total_fechados_display
-
                 
                 df_total_diario_combinado['Data (Eixo)'] = df_total_diario_combinado['Data'].dt.strftime('%d/%m')
                 ordem_datas_total = df_total_diario_combinado['Data (Eixo)'].unique().tolist()
