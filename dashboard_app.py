@@ -278,17 +278,25 @@ def analisar_aging(_df_atual, reference_date=None):
     if not date_col_name:
         return pd.DataFrame()
     
+    # Tenta converter, forçando dayfirst=True para evitar o erro de data invertida
     df['temp_date'] = pd.to_datetime(df[date_col_name], dayfirst=True, errors='coerce')
+    
+    # Fallback para formatos mistos
     mask_nat = df['temp_date'].isna()
     if mask_nat.any():
+        # Tenta sem dayfirst forçado
         df.loc[mask_nat, 'temp_date'] = pd.to_datetime(df.loc[mask_nat, date_col_name], errors='coerce')
     
+    # Fallback Final (Modo Seguro): Se ainda for NaT, assume DATA DE HOJE para não sumir da lista
     mask_still_nat = df['temp_date'].isna()
     if mask_still_nat.any():
         df.loc[mask_still_nat, 'temp_date'] = pd.to_datetime('today').normalize()
 
     df[date_col_name] = df['temp_date']
     df.drop(columns=['temp_date'], inplace=True)
+    
+    # REMOVIDO O DROPNA QUE DELETAVA TUDO
+    # df = df.dropna(subset=[date_col_name]) 
     
     if reference_date:
         data_referencia = pd.to_datetime(reference_date).normalize()
@@ -586,10 +594,10 @@ if is_admin:
                         
                         df_novo_atual_filtrado = df_novo_atual_raw 
                         
-                        if id_col_atual and all_closed_ids_historico: 
-                            df_novo_atual_raw[id_col_atual] = normalize_ids(df_novo_atual_raw[id_col_atual])
-                            df_novo_atual_filtrado = df_novo_atual_raw[~df_novo_atual_raw[id_col_atual].isin(all_closed_ids_historico)]
-                            st.sidebar.info(f"{len(df_novo_atual_raw) - len(df_novo_atual_filtrado)} chamados fechados (do histórico) foram removidos do novo arquivo 'Atual'.")
+                        # REMOVIDO O FILTRO QUE APAGAVA CHAMADOS DO BACKLOG
+                        # if id_col_atual and all_closed_ids_historico: ... (REMOVIDO)
+
+                        st.sidebar.info(f"Arquivo de Backlog processado. {len(df_novo_atual_filtrado)} registros encontrados.")
                         
                         output_atual_filtrado = StringIO()
                         df_novo_atual_filtrado.to_csv(output_atual_filtrado, index=False, sep=';', encoding='utf-8')
@@ -933,8 +941,11 @@ try:
 
         with tab1:
             
+            st.markdown("---")
+            st.subheader("Detalhar e Buscar Chamados")
+
             if df_aging.empty:
-                st.warning("Nenhum chamado em aberto encontrado. Por favor, carregue o arquivo de Backlog Atual.")
+                st.warning("Não há chamados em aberto para exibir nesta tabela. Se isso estiver errado, tente recarregar o Backlog Atual.")
             
             else:
                 df_para_aviso = df_atual_filtrado[
@@ -1124,25 +1135,23 @@ try:
                     df_encerrados_para_exibir['Status'] = ""
                 
                 # LÓGICA DE FILTRO LÍQUIDO PARA A TABELA (TAB 1)
-                # Comparação com o Backlog (Intersection)
-                if 'df_abertos_base_para_reducao' in locals() and not df_abertos_base_para_reducao.empty:
-                    col_id_bk = next((c for c in ['ID do ticket', 'ID do Ticket', 'ID'] if c in df_abertos_base_para_reducao.columns), None)
-                    col_id_fc = next((c for c in ['ID do ticket', 'ID do Ticket', 'ID'] if c in df_encerrados_para_exibir.columns), None)
-
-                    if col_id_bk and col_id_fc:
-                        ids_no_backlog = set(normalize_ids(df_abertos_base_para_reducao[col_id_bk]))
-                        df_encerrados_para_exibir = df_encerrados_para_exibir[
-                            df_encerrados_para_exibir[col_id_fc].apply(lambda x: normalize_ids(pd.Series([x])).iloc[0] in ids_no_backlog)
-                        ]
+                if 'data_criacao_recuperada' in df_encerrados_para_exibir.columns and 'Data de Fechamento' in df_encerrados_para_exibir.columns:
+                    c_date = df_encerrados_para_exibir['data_criacao_recuperada'].dt.date
+                    e_date = pd.to_datetime(df_encerrados_para_exibir['Data de Fechamento'], dayfirst=True).dt.date
+                    df_encerrados_para_exibir = df_encerrados_para_exibir[c_date != e_date]
+                # ---------------------------------------------------------
 
                 is_viewing_today = False
                 if data_dt_filtro:
                     is_viewing_today = (data_dt_filtro == hoje_sp)
 
-                if is_viewing_today:
+                if is_viewing_today and id_col_encerrados and 'open_ids_base' in locals():
+                    df_encerrados_para_exibir = df_encerrados_para_exibir[
+                        df_encerrados_para_exibir[id_col_encerrados].apply(lambda x: normalize_ids(pd.Series([x])).iloc[0] in open_ids_base)
+                    ]
                     st.caption("Mostrando apenas chamados fechados HOJE que causaram redução no backlog ATUAL.")
                 elif not is_viewing_today and data_dt_filtro:
-                    st.caption(f"Mostrando histórico completo de chamados fechados em {data_selecionada} (Líquido).")
+                    st.caption(f"Mostrando histórico completo de chamados fechados em {data_selecionada} (Líquido: sem Fast Kills).")
                 
                 df_encerrados_para_exibir = df_encerrados_para_exibir.loc[:, ~df_encerrados_para_exibir.columns.duplicated()]
                 colunas_finais = [col for col in colunas_para_exibir_fechados if col in df_encerrados_para_exibir.columns]
@@ -1186,9 +1195,9 @@ try:
             st.subheader("Detalhar e Buscar Chamados")
 
             st.selectbox("Selecione uma faixa de idade para ver os detalhes (ou clique em um card acima):", 
-                         options=ordem_faixas, 
-                         key='faixa_selecionada',
-                         on_change=sync_ticket_data)
+                            options=ordem_faixas, 
+                            key='faixa_selecionada',
+                            on_change=sync_ticket_data)
             
             faixa_atual = st.session_state.faixa_selecionada
             if not df_aging.empty:
@@ -1371,6 +1380,7 @@ try:
         st.subheader("Evolução do Backlog")
         dias_evolucao = st.slider("Ver evolução dos últimos dias:", min_value=7, max_value=30, value=7, key="slider_evolucao")
 
+        # PASSA O BACKLOG BASE PARA A FUNÇÃO DE CARREGAR DADOS (PARA RECUPERAÇÃO DE DATAS)
         df_evolucao_tab3 = carregar_dados_evolucao(dias_evolucao, df_historico_fechados.copy()) 
 
         if not df_evolucao_tab3.empty:
