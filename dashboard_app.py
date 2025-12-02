@@ -187,12 +187,10 @@ def read_local_json_file(file_path, default_return_type='dict'):
     except Exception:
         return default_return
 
-# --- FUNÇÃO CORRIGIDA COM BLINDAGEM DE TIPO ---
 def update_daily_metrics(date_str, closed_count):
     """Salva o número de fechados do dia em um JSON persistente."""
     metrics = read_local_json_file(STATE_FILE_METRICS_DB, 'dict')
     
-    # CORREÇÃO: Se o arquivo existir mas for uma lista (corrompido), reseta para dicionário
     if not isinstance(metrics, dict):
         metrics = {}
     
@@ -211,14 +209,12 @@ def get_daily_metric(date_str):
     """Recupera o número salvo para evitar recálculo."""
     metrics = read_local_json_file(STATE_FILE_METRICS_DB, 'dict')
     
-    # CORREÇÃO: Se for lista, retorna None para forçar recálculo ou ignora
     if not isinstance(metrics, dict):
         return None
         
     if date_str in metrics:
         return metrics[date_str].get("fechados_liquido", 0)
     return None
-# --------------------------------------------------
 
 def process_uploaded_file(uploaded_file):
     if uploaded_file is None:
@@ -273,7 +269,8 @@ def categorizar_idade_vetorizado(dias_series):
 def analisar_aging(_df_atual, reference_date=None):
     df = _df_atual.copy()
     date_col_name = None
-    possible_date_cols = ['Data de criação', 'Data de criaÃ§Ã£o', 'Data de Criacao', 'Created', 'Aberto em', 'Criado em', 'Criação']
+    # LISTA EXPANDIDA DE COLUNAS POSSÍVEIS
+    possible_date_cols = ['Data de criação', 'Data de criaÃ§Ã£o', 'Data de Criacao', 'Created', 'Aberto em', 'Criado em', 'Criação', 'Data de Abertura']
     for col in possible_date_cols:
         if col in df.columns:
             date_col_name = col
@@ -282,15 +279,24 @@ def analisar_aging(_df_atual, reference_date=None):
     if not date_col_name:
         return pd.DataFrame()
     
+    # BLINDAGEM DE DATA: Tenta converter. Se falhar, NÃO APAGA (preenche com hoje).
     df['temp_date'] = pd.to_datetime(df[date_col_name], dayfirst=True, errors='coerce')
+    
+    # Fallback: Se tiver datas vazias/inválidas, tenta outro formato
     mask_nat = df['temp_date'].isna()
     if mask_nat.any():
         df.loc[mask_nat, 'temp_date'] = pd.to_datetime(df.loc[mask_nat, date_col_name], errors='coerce')
+    
+    # Fallback Final (Modo Seguro): Se ainda for NaT, assume DATA DE HOJE para não sumir da lista
+    mask_still_nat = df['temp_date'].isna()
+    if mask_still_nat.any():
+        df.loc[mask_still_nat, 'temp_date'] = pd.to_datetime('today').normalize()
 
     df[date_col_name] = df['temp_date']
     df.drop(columns=['temp_date'], inplace=True)
     
-    df = df.dropna(subset=[date_col_name])
+    # REMOVIDO O DROPNA QUE DELETAVA TUDO
+    # df = df.dropna(subset=[date_col_name]) 
     
     if reference_date:
         data_referencia = pd.to_datetime(reference_date).normalize()
@@ -707,9 +713,8 @@ if is_admin:
                             
                             st.toast(f"Processado! {total_lidos_hoje} chamados de HOJE lidos. {total_abatidos} impactaram o backlog.")
                             
-                            # --- SALVA O LÍQUIDO NA MEMÓRIA PERSISTENTE ---
+                            # SALVAR O LÍQUIDO NA MEMÓRIA PERSISTENTE
                             update_daily_metrics(now_sao_paulo.strftime('%Y-%m-%d'), total_abatidos)
-                            # ----------------------------------------------
 
                     save_local_file(f"{DATA_DIR}dados_fechados.csv", content_fechados, is_binary=True)
 
@@ -1310,11 +1315,36 @@ try:
                                     col_criacao_real = col
                                     break
                             
+                            # --- LÓGICA DE RECUPERAÇÃO DE DATA INTELIGENTE PARA O GRÁFICO (Igual Tab 1) ---
+                            df_fechados_hist['dt_cri_temp'] = pd.NaT
                             if col_criacao_real:
                                 df_fechados_hist['dt_cri_temp'] = pd.to_datetime(df_fechados_hist[col_criacao_real], dayfirst=True, errors='coerce')
-                                df_fechados_hist['dt_fec_temp'] = pd.to_datetime(df_fechados_hist['Data de Fechamento'], dayfirst=True, errors='coerce')
-                                # FILTRO LÍQUIDO DINÂMICO
-                                df_fechados_hist = df_fechados_hist[df_fechados_hist['dt_cri_temp'].dt.date != df_fechados_hist['dt_fec_temp'].dt.date]
+
+                            # Se não achou data no histórico, busca no Backlog (df_abertos_base_para_reducao)
+                            if 'df_abertos_base_para_reducao' in locals() and not df_abertos_base_para_reducao.empty:
+                                id_col_fechado_hist = next((c for c in ['ID do ticket', 'ID do Ticket', 'ID'] if c in df_fechados_hist.columns), None)
+                                id_col_bk = next((c for c in ['ID do ticket', 'ID do Ticket', 'ID'] if c in df_abertos_base_para_reducao.columns), None)
+                                date_col_bk = next((c for c in ['Data de criação', 'Data de criaÃ§Ã£o', 'Created'] if c in df_abertos_base_para_reducao.columns), None)
+                                
+                                if id_col_fechado_hist and id_col_bk and date_col_bk:
+                                    # Cria mapa
+                                    temp_bk_g = df_abertos_base_para_reducao[[id_col_bk, date_col_bk]].copy()
+                                    temp_bk_g[id_col_bk] = normalize_ids(temp_bk_g[id_col_bk])
+                                    temp_bk_g['dt_valida'] = pd.to_datetime(temp_bk_g[date_col_bk], dayfirst=True, errors='coerce')
+                                    temp_bk_g = temp_bk_g.dropna(subset=['dt_valida'])
+                                    mapa_datas_g = dict(zip(temp_bk_g[id_col_bk], temp_bk_g['dt_valida']))
+                                    
+                                    # Preenche onde está NaT
+                                    mask_nat_hist = df_fechados_hist['dt_cri_temp'].isna()
+                                    df_fechados_hist.loc[mask_nat_hist, 'dt_cri_temp'] = df_fechados_hist.loc[mask_nat_hist, id_col_fechado_hist].apply(
+                                        lambda x: mapa_datas_g.get(str(x).replace('.0', '').strip(), pd.NaT)
+                                    )
+                            # --------------------------------------------------------------------------------
+
+                            df_fechados_hist['dt_fec_temp'] = pd.to_datetime(df_fechados_hist['Data de Fechamento'], dayfirst=True, errors='coerce')
+                            
+                            # FILTRO LÍQUIDO PARA O GRÁFICO: Remove Fast Kill
+                            df_fechados_hist = df_fechados_hist[df_fechados_hist['dt_cri_temp'].dt.date != df_fechados_hist['dt_fec_temp'].dt.date]
 
                             counts_por_data = df_fechados_hist.groupby(df_fechados_hist['Data de Fechamento_dt_comp'].dt.date).size()
                             df_total_fechados = counts_por_data.reset_index(name='Total Chamados')
