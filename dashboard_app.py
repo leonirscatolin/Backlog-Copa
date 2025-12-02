@@ -29,7 +29,7 @@ STATE_FILE_OBSERVATIONS = "ticket_observations.json"
 STATE_FILE_REF_DATES = "datas_referencia.txt"
 STATE_FILE_MASTER_CLOSED_CSV = f"{DATA_DIR}historico_fechados_master.csv"
 STATE_FILE_PREV_CLOSED = "previous_closed_ids.json"
-STATE_FILE_METRICS_DB = "metricas_diarias.json" # NOVO ARQUIVO DE MEMÓRIA
+STATE_FILE_METRICS_DB = "metricas_diarias.json"
 
 # --- SETUP DA PÁGINA ---
 st.set_page_config(
@@ -187,18 +187,20 @@ def read_local_json_file(file_path, default_return_type='dict'):
     except Exception:
         return default_return
 
-# --- FUNÇÃO NOVA: ATUALIZAR MEMÓRIA DE MÉTRICAS ---
+# --- FUNÇÃO CORRIGIDA COM BLINDAGEM DE TIPO ---
 def update_daily_metrics(date_str, closed_count):
     """Salva o número de fechados do dia em um JSON persistente."""
     metrics = read_local_json_file(STATE_FILE_METRICS_DB, 'dict')
     
-    # Atualiza ou cria a entrada para a data
+    # CORREÇÃO: Se o arquivo existir mas for uma lista (corrompido), reseta para dicionário
+    if not isinstance(metrics, dict):
+        metrics = {}
+    
     metrics[date_str] = {
         "fechados_liquido": int(closed_count),
         "updated_at": datetime.now().isoformat()
     }
     
-    # Salva no arquivo
     try:
         with open(STATE_FILE_METRICS_DB, 'w', encoding='utf-8') as f:
             json.dump(metrics, f, indent=4)
@@ -208,6 +210,11 @@ def update_daily_metrics(date_str, closed_count):
 def get_daily_metric(date_str):
     """Recupera o número salvo para evitar recálculo."""
     metrics = read_local_json_file(STATE_FILE_METRICS_DB, 'dict')
+    
+    # CORREÇÃO: Se for lista, retorna None para forçar recálculo ou ignora
+    if not isinstance(metrics, dict):
+        return None
+        
     if date_str in metrics:
         return metrics[date_str].get("fechados_liquido", 0)
     return None
@@ -700,8 +707,9 @@ if is_admin:
                             
                             st.toast(f"Processado! {total_lidos_hoje} chamados de HOJE lidos. {total_abatidos} impactaram o backlog.")
                             
-                            # SALVAR O LÍQUIDO NA MEMÓRIA PERSISTENTE
+                            # --- SALVA O LÍQUIDO NA MEMÓRIA PERSISTENTE ---
                             update_daily_metrics(now_sao_paulo.strftime('%Y-%m-%d'), total_abatidos)
+                            # ----------------------------------------------
 
                     save_local_file(f"{DATA_DIR}dados_fechados.csv", content_fechados, is_binary=True)
 
@@ -1224,6 +1232,7 @@ try:
             st.subheader("Evolução do Backlog")
             dias_evolucao = st.slider("Ver evolução dos últimos dias:", min_value=7, max_value=30, value=7, key="slider_evolucao")
 
+            # PASSA O BACKLOG BASE PARA A FUNÇÃO DE CARREGAR DADOS (PARA RECUPERAÇÃO DE DATAS)
             df_evolucao_tab3 = carregar_dados_evolucao(dias_evolucao, df_historico_fechados.copy()) 
 
             if not df_evolucao_tab3.empty:
