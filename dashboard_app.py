@@ -1466,7 +1466,8 @@ try:
                 
                 st.plotly_chart(fig_total_evolucao, use_container_width=True)
                 
-                st.markdown(f"<p style='text-align: center; color: #666; font-size: 0.85em; margin-top: 5px;'><b>Total Geral de Chamados: 35</b></p>", unsafe_allow_html=True)
+                total_fechados_unico = df_total_fechados['Total Chamados'].sum() if not df_total_fechados.empty else 0
+                st.markdown(f"<p style='text-align: center; color: #666; font-size: 0.85em; margin-top: 5px;'><b>Total de Chamados Fechados: {total_fechados_display}</b></p>", unsafe_allow_html=True)
 
                 st.markdown("---")
 
