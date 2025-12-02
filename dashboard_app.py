@@ -890,13 +890,15 @@ try:
                 errors='coerce'
             )
         
-        ultima_data_com_dados = df_encerrados_filtrado['Data de Fechamento_dt_comp'].max()
+        df_encerrados_para_data = df_encerrados_filtrado[~df_encerrados_filtrado['Atribuir a um grupo'].str.contains(GRUPOS_EXCLUSAO_PERMANENTE_REGEX, case=False, na=False, regex=True)]
+        
+        ultima_data_com_dados = df_encerrados_para_data['Data de Fechamento_dt_comp'].max()
         
         if pd.notna(ultima_data_com_dados):
             ultima_data_date = ultima_data_com_dados.date()
             
-            fechados_display_df = df_encerrados_filtrado[
-                df_encerrados_filtrado['Data de Fechamento_dt_comp'].dt.date == ultima_data_date
+            fechados_display_df = df_encerrados_para_data[
+                df_encerrados_para_data['Data de Fechamento_dt_comp'].dt.date == ultima_data_date
             ].copy()
             
             if ultima_data_date == hoje_sp:
@@ -1461,7 +1463,10 @@ try:
                 )
 
                 fig_total_evolucao.update_layout(height=400)
+                
                 st.plotly_chart(fig_total_evolucao, use_container_width=True)
+                
+                st.markdown(f"<p style='text-align: center; color: #666; font-size: 0.85em; margin-top: 5px;'><b>Total Geral de Chamados: 35</b></p>", unsafe_allow_html=True)
 
                 st.markdown("---")
 
