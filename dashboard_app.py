@@ -269,6 +269,7 @@ def analisar_aging(_df_atual, reference_date=None):
         
     data_criacao_normalizada = df[date_col_name].dt.normalize()
     
+    # Subtrair 1 dia para alinhar com a lógica do Excel (D-1)
     dias_calculados = (data_referencia - data_criacao_normalizada).dt.days - 1
     
     df['Dias em Aberto'] = dias_calculados.clip(lower=0)
@@ -797,6 +798,7 @@ if is_admin:
         else:
             st.sidebar.warning("Por favor, carregue o arquivo de chamados fechados para salvar.")
     
+    # --- BOTÃO PARA LIMPAR O HISTÓRICO DE FECHADOS ---
     st.sidebar.markdown("---")
     st.sidebar.subheader("Manutenção")
     if st.sidebar.button("⚠️ LIMPAR Histórico de Fechados (Reset)"):
@@ -947,74 +949,78 @@ try:
 
     with tab1:
         
-        df_para_aviso = df_atual_filtrado[
-            df_atual_filtrado['Atribuir a um grupo'].str.contains(
-                GRUPOS_DE_AVISO_REGEX, case=False, na=False, regex=True
-            )
-        ]
+        if df_aging.empty:
+            st.warning("Nenhum chamado em aberto encontrado. Por favor, carregue o arquivo de Backlog Atual.")
         
-        if not df_para_aviso.empty:
-            total_para_aviso = len(df_para_aviso)
-            contagem_por_grupo = df_para_aviso['Atribuir a um grupo'].value_counts()
-            
-            aviso_str_lista = [f"**Atenção:** Foram encontrados **{total_para_aviso}** chamados em grupos que deveriam estar zerados ({GRUPOS_DE_AVISO_TEXTO}):"]
-            for grupo, contagem in contagem_por_grupo.items():
-                aviso_str_lista.append(f"- **{grupo}:** {contagem} chamado(s)")
-            
-            st.warning("\n".join(aviso_str_lista))
-
-        info_messages = ["**Filtros e Regras Aplicadas:**", 
-                         f"- Grupos contendo {GRUPOS_EXCLUSAO_PERMANENTE_TEXTO} foram desconsiderados da análise.", 
-                         "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
-        
-        diff_count = len(df_atual_filtrado) - len(df_aging)
-        if diff_count > 0:
-            info_messages.append(f"- **Atenção:** {diff_count} chamados foram desconsiderados por data inválida/vazia.")
-        
-        st.info("\n".join(info_messages))
-        
-        st.subheader("Análise de Antiguidade do Backlog Atual")
-        texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
-        st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
-        
-        total_chamados = len(df_aging)
-
-        col_spacer1, col_total, col_fechados, col_spacer2 = st.columns([1, 1.5, 1.5, 1])
-        with col_total:
-            st.markdown(f"""<div class="metric-box"><span class="label">Total de Chamados Abertos</span><span class="value">{total_chamados}</span></div>""", unsafe_allow_html=True)
-        with col_fechados:
-            st.markdown(f"""<div class="metric-box"><span class="label">Fechados ({data_fechamento_display_str})</span><span class="value">{total_fechados_display}</span></div>""", unsafe_allow_html=True)
-
-        st.markdown("---")
-
-        if not df_aging.empty:
-            aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
-            aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
-            ordem_faixas = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
-            todas_as_faixas = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas})
-            aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
-            aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
-            aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
-            if 'faixa_selecionada' not in st.session_state:
-                st.session_state.faixa_selecionada = "0-2 dias"
-            cols = st.columns(len(ordem_faixas))
-            for i, row in aging_counts.iterrows():
-                with cols[i]:
-                    faixa_encoded = quote(row['Faixa de Antiguidade'])
-                    card_html = f"""<a href="?faixa={faixa_encoded}&scroll=true" target="_self" class="metric-box"><span class="label">{row['Faixa de Antiguidade']}</span><span class="value">{row['Quantidade']}</span></a>"""
-                    st.markdown(card_html, unsafe_allow_html=True)
         else:
-            st.warning("Nenhum dado válido para a análise de antiguidade (verifique as datas de criação no arquivo).")
+            df_para_aviso = df_atual_filtrado[
+                df_atual_filtrado['Atribuir a um grupo'].str.contains(
+                    GRUPOS_DE_AVISO_REGEX, case=False, na=False, regex=True
+                )
+            ]
+            
+            if not df_para_aviso.empty:
+                total_para_aviso = len(df_para_aviso)
+                contagem_por_grupo = df_para_aviso['Atribuir a um grupo'].value_counts()
+                
+                aviso_str_lista = [f"**Atenção:** Foram encontrados **{total_para_aviso}** chamados em grupos que deveriam estar zerados ({GRUPOS_DE_AVISO_TEXTO}):"]
+                for grupo, contagem in contagem_por_grupo.items():
+                    aviso_str_lista.append(f"- **{grupo}:** {contagem} chamado(s)")
+                
+                st.warning("\n".join(aviso_str_lista))
 
-        st.markdown(f"<h3>Comparativo de Backlog: Atual vs. 15 Dias Atrás <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_15dias_str})</span></h3>", unsafe_allow_html=True)
-        df_comparativo = processar_dados_comparativos(df_atual_filtrado.copy(), df_15dias_filtrado.copy())
-        df_comparativo['Status'] = df_comparativo.apply(get_status, axis=1)
-        
-        df_comparativo = df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'})
-        
-        df_comparativo = df_comparativo[['Grupo', '15 Dias Atrás', 'Atual', 'Diferença', 'Status']]
-        st.dataframe(df_comparativo.set_index('Grupo').style.map(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
-        st.markdown("---")
+            info_messages = ["**Filtros e Regras Aplicadas:**", 
+                            f"- Grupos contendo {GRUPOS_EXCLUSAO_PERMANENTE_TEXTO} foram desconsiderados da análise.", 
+                            "- A contagem de dias do chamado desconsidera o dia da sua abertura (prazo -1 dia)."]
+            
+            diff_count = len(df_atual_filtrado) - len(df_aging)
+            if diff_count > 0:
+                info_messages.append(f"- **Atenção:** {diff_count} chamados foram desconsiderados por data inválida/vazia.")
+            
+            st.info("\n".join(info_messages))
+            
+            st.subheader("Análise de Antiguidade do Backlog Atual")
+            texto_hora = f" (atualizado às {hora_atualizacao_str})" if hora_atualizacao_str else ""
+            st.markdown(f"<p style='font-size: 0.9em; color: #666;'><i>Data de referência: {data_atual_str}{texto_hora}</i></p>", unsafe_allow_html=True)
+            
+            total_chamados = len(df_aging)
+
+            col_spacer1, col_total, col_fechados, col_spacer2 = st.columns([1, 1.5, 1.5, 1])
+            with col_total:
+                st.markdown(f"""<div class="metric-box"><span class="label">Total de Chamados Abertos</span><span class="value">{total_chamados}</span></div>""", unsafe_allow_html=True)
+            with col_fechados:
+                st.markdown(f"""<div class="metric-box"><span class="label">Fechados ({data_fechamento_display_str})</span><span class="value">{total_fechados_display}</span></div>""", unsafe_allow_html=True)
+
+            st.markdown("---")
+
+            if not df_aging.empty:
+                aging_counts = df_aging['Faixa de Antiguidade'].value_counts().reset_index()
+                aging_counts.columns = ['Faixa de Antiguidade', 'Quantidade']
+                ordem_faixas = ["0-2 dias", "3-5 dias", "6-10 dias", "11-20 dias", "21-29 dias", "30+ dias"]
+                todas_as_faixas = pd.DataFrame({'Faixa de Antiguidade': ordem_faixas})
+                aging_counts = pd.merge(todas_as_faixas, aging_counts, on='Faixa de Antiguidade', how='left').fillna(0).astype({'Quantidade': int})
+                aging_counts['Faixa de Antiguidade'] = pd.Categorical(aging_counts['Faixa de Antiguidade'], categories=ordem_faixas, ordered=True)
+                aging_counts = aging_counts.sort_values('Faixa de Antiguidade')
+                if 'faixa_selecionada' not in st.session_state:
+                    st.session_state.faixa_selecionada = "0-2 dias"
+                cols = st.columns(len(ordem_faixas))
+                for i, row in aging_counts.iterrows():
+                    with cols[i]:
+                        faixa_encoded = quote(row['Faixa de Antiguidade'])
+                        card_html = f"""<a href="?faixa={faixa_encoded}&scroll=true" target="_self" class="metric-box"><span class="label">{row['Faixa de Antiguidade']}</span><span class="value">{row['Quantidade']}</span></a>"""
+                        st.markdown(card_html, unsafe_allow_html=True)
+            else:
+                st.warning("Nenhum dado válido para a análise de antiguidade (verifique as datas de criação no arquivo).")
+
+            st.markdown(f"<h3>Comparativo de Backlog: Atual vs. 15 Dias Atrás <span style='font-size: 0.6em; color: #666; font-weight: normal;'>({data_15dias_str})</span></h3>", unsafe_allow_html=True)
+            df_comparativo = processar_dados_comparativos(df_atual_filtrado.copy(), df_15dias_filtrado.copy())
+            df_comparativo['Status'] = df_comparativo.apply(get_status, axis=1)
+            
+            df_comparativo = df_comparativo.rename(columns={'Atribuir a um grupo': 'Grupo'})
+            
+            df_comparativo = df_comparativo[['Grupo', '15 Dias Atrás', 'Atual', 'Diferença', 'Status']]
+            st.dataframe(df_comparativo.set_index('Grupo').style.map(lambda val: 'background-color: #ffcccc' if val > 0 else ('background-color: #ccffcc' if val < 0 else 'background-color: white'), subset=['Diferença']), use_container_width=True)
+            st.markdown("---")
         
         st.markdown(f"<h3>Histórico de Chamados Encerrados (Impacto no Backlog)</h3>", unsafe_allow_html=True)
 
@@ -1091,10 +1097,8 @@ try:
                 if 'Data de Fechamento_dt_comp' not in df_encerrados_para_exibir.columns:
                       df_encerrados_para_exibir['Data de Fechamento_dt_comp'] = pd.to_datetime(df_encerrados_para_exibir['Data de Fechamento'], dayfirst=True, errors='coerce')
 
-                # --- CORREÇÃO DA ORDENAÇÃO DE DATAS ---
                 unique_dates = sorted(df_encerrados_para_exibir['Data de Fechamento_dt_comp'].dropna().dt.date.unique(), reverse=True)
                 datas_disponiveis = [d.strftime('%d/%m/%Y') for d in unique_dates]
-                # ---------------------------------------
                 
                 if not datas_disponiveis:
                     st.warning("Não há datas de fechamento válidas no histórico.")
@@ -1131,7 +1135,6 @@ try:
             else:
                 df_encerrados_para_exibir['Status'] = ""
             
-            # --- RESTAURANDO O FILTRO DE IMPACTO NO BACKLOG QUE VOCÊ PEDIU ---
             is_viewing_today = False
             if data_dt_filtro:
                 is_viewing_today = (data_dt_filtro == hoje_sp)
@@ -1143,7 +1146,6 @@ try:
                 st.caption("Mostrando apenas chamados fechados HOJE que causaram redução no backlog ATUAL.")
             elif not is_viewing_today and data_dt_filtro:
                 st.caption(f"Mostrando histórico completo de chamados fechados em {data_selecionada}.")
-            # -----------------------------------------------------------------
             
             df_encerrados_para_exibir = df_encerrados_para_exibir.loc[:, ~df_encerrados_para_exibir.columns.duplicated()]
             colunas_finais = [col for col in colunas_para_exibir_fechados if col in df_encerrados_para_exibir.columns]
@@ -1231,6 +1233,7 @@ try:
                 colunas_editaveis_admin = [
                     'Contato', 'Observações'
                 ]
+                
                 if can_edit_table:
                     colunas_desabilitadas_final = colunas_desabilitadas_fixas
                 else:
