@@ -1427,7 +1427,8 @@ try:
                     if not df_fechados_hist.empty:
                         id_col_fh = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_fechados_hist.columns), None)
                         if id_col_fh:
-                             df_fechados_hist = df_fechados_hist.drop_duplicates(subset=[id_col_fh])
+                            df_fechados_hist['Ticket ID Norm'] = normalize_ids(df_fechados_hist[id_col_fh])
+                            df_fechados_hist = df_fechados_hist.drop_duplicates(subset=['Ticket ID Norm', 'Data'])
                         
                         counts_por_data = df_fechados_hist.groupby(df_fechados_hist['Data'].dt.date).size()
                         df_total_fechados = counts_por_data.reset_index(name='Total Chamados')
