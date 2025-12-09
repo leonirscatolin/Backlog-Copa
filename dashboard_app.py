@@ -265,6 +265,13 @@ def categorizar_idade_vetorizado(dias_series):
     opcoes = ["30+ dias", "21-29 dias", "11-20 dias", "6-10 dias", "3-5 dias", "0-2 dias"]
     return np.select(condicoes, opcoes, default="Erro de Categoria")
 
+def strict_br_date_parse(series):
+    """
+    Força estritamente o formato Brasileiro (Dia/Mês/Ano).
+    Remove a lógica de detecção automática para evitar ambiguidades.
+    """
+    return pd.to_datetime(series, dayfirst=True, errors='coerce')
+
 @st.cache_data
 def analisar_aging(_df_atual, reference_date=None):
     df = _df_atual.copy()
@@ -278,25 +285,16 @@ def analisar_aging(_df_atual, reference_date=None):
     if not date_col_name:
         return pd.DataFrame()
     
-    # Tenta converter, forçando dayfirst=True para evitar o erro de data invertida
-    df['temp_date'] = pd.to_datetime(df[date_col_name], dayfirst=True, errors='coerce')
+    # Usa o parser ESTRITO BRASILEIRO
+    df['temp_date'] = strict_br_date_parse(df[date_col_name])
     
-    # Fallback para formatos mistos
-    mask_nat = df['temp_date'].isna()
-    if mask_nat.any():
-        # Tenta sem dayfirst forçado
-        df.loc[mask_nat, 'temp_date'] = pd.to_datetime(df.loc[mask_nat, date_col_name], errors='coerce')
-    
-    # Fallback Final (Modo Seguro): Se ainda for NaT, assume DATA DE HOJE para não sumir da lista
+    # Fallback Final (Modo Seguro): Se ainda for NaT, assume DATA DE HOJE
     mask_still_nat = df['temp_date'].isna()
     if mask_still_nat.any():
         df.loc[mask_still_nat, 'temp_date'] = pd.to_datetime('today').normalize()
 
     df[date_col_name] = df['temp_date']
     df.drop(columns=['temp_date'], inplace=True)
-    
-    # REMOVIDO O DROPNA QUE DELETAVA TUDO
-    # df = df.dropna(subset=[date_col_name]) 
     
     if reference_date:
         data_referencia = pd.to_datetime(reference_date).normalize()
@@ -412,7 +410,8 @@ def carregar_dados_evolucao(dias_para_analisar, df_historico_fechados):
         df_hist = df_historico_fechados.copy()
         id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_hist.columns), None)
         if id_col_hist and not df_hist.empty:
-            df_hist['Data de Fechamento_dt'] = pd.to_datetime(df_hist['Data de Fechamento'], dayfirst=True, errors='coerce').dt.normalize()
+            # Força parser estrito BR
+            df_hist['Data de Fechamento_dt'] = strict_br_date_parse(df_hist['Data de Fechamento']).dt.normalize()
             df_hist = df_hist.dropna(subset=['Data de Fechamento_dt', id_col_hist])
             df_hist['Ticket ID'] = normalize_ids(df_hist[id_col_hist])
             df_hist = df_hist[['Ticket ID', 'Data de Fechamento_dt']]
@@ -494,10 +493,15 @@ def carregar_evolucao_aging(dias_para_analisar=90):
                 df_final = df_filtrado.copy() 
                 date_col_name = next((col for col in ['Data de criação', 'Data de criaÃ§Ã£o', 'Data de Criacao'] if col in df_final.columns), None)
                 if not date_col_name: continue
-                df_final['temp_date'] = pd.to_datetime(df_final[date_col_name], errors='coerce')
+                
+                # Usa Parser Estrito
+                df_final['temp_date'] = strict_br_date_parse(df_final[date_col_name])
+                
                 mask_nat = df_final['temp_date'].isna()
                 if mask_nat.any():
+                    # Fallback com o mesmo parser estrito (reduntante mas seguro)
                     df_final.loc[mask_nat, 'temp_date'] = pd.to_datetime(df_final.loc[mask_nat, date_col_name], dayfirst=True, errors='coerce')
+                
                 df_final[date_col_name] = df_final['temp_date']
                 df_final = df_final.dropna(subset=[date_col_name])
                 snapshot_date_dt = pd.to_datetime(file_date)
@@ -594,9 +598,6 @@ if is_admin:
                         
                         df_novo_atual_filtrado = df_novo_atual_raw 
                         
-                        # REMOVIDO O FILTRO QUE APAGAVA CHAMADOS DO BACKLOG
-                        # if id_col_atual and all_closed_ids_historico: ... (REMOVIDO)
-
                         st.sidebar.info(f"Arquivo de Backlog processado. {len(df_novo_atual_filtrado)} registros encontrados.")
                         
                         output_atual_filtrado = StringIO()
@@ -657,7 +658,8 @@ if is_admin:
                         
                         if id_col_bk and id_col_fc:
                             if col_data_fechamento_check:
-                                df_fechados_novo_check['dt_temp_check'] = pd.to_datetime(df_fechados_novo_check[col_data_fechamento_check], dayfirst=True, errors='coerce')
+                                # USA O PARSER ESTRITO AQUI TAMBÉM
+                                df_fechados_novo_check['dt_temp_check'] = strict_br_date_parse(df_fechados_novo_check[col_data_fechamento_check])
                                 df_fechados_hoje_check = df_fechados_novo_check[df_fechados_novo_check['dt_temp_check'].dt.date == now_sao_paulo.date()]
                             else:
                                 df_fechados_hoje_check = df_fechados_novo_check
@@ -697,11 +699,9 @@ if is_admin:
                     
                     if col_fechamento_upload in df_fechados_novo_upload.columns:
                         st.sidebar.info("Usando 'Data de Fechamento' do arquivo de upload.")
-                        df_fechados_novo_upload['Data de Fechamento_dt'] = pd.to_datetime(
-                            df_fechados_novo_upload[col_fechamento_upload], 
-                            dayfirst=True, 
-                            errors='coerce'
-                        )
+                        # --- CORREÇÃO DE DATA FLIPADA ---
+                        # Força parser estrito BR
+                        df_fechados_novo_upload['Data de Fechamento_dt'] = strict_br_date_parse(df_fechados_novo_upload[col_fechamento_upload])
                     else:
                         st.sidebar.warning(f"Coluna '{col_fechamento_upload}' não encontrada. Usando data de referência: {data_atual_existente}")
                         df_fechados_novo_upload['Data de Fechamento_dt'] = pd.to_datetime(data_atual_existente, format='%d/%m/%Y', errors='coerce')
@@ -739,9 +739,8 @@ if is_admin:
                             break
                     
                     if col_criacao_upload:
-                         df_fechados_novo_upload[col_criacao_upload] = pd.to_datetime(
-                             df_fechados_novo_upload[col_criacao_upload], dayfirst=True, errors='coerce'
-                         )
+                         # USA PARSER ESTRITO NA CRIACAO
+                         df_fechados_novo_upload[col_criacao_upload] = strict_br_date_parse(df_fechados_novo_upload[col_criacao_upload])
                          df_fechados_novo_upload[col_criacao_upload] = df_fechados_novo_upload[col_criacao_upload].dt.strftime('%Y-%m-%d')
 
                     col_descricao_upload = next((col for col in ['Descrição', 'Descricao', 'Description', 'Assunto', 'Summary'] if col in df_fechados_novo_upload.columns), None)
@@ -763,7 +762,7 @@ if is_admin:
                     
                     if col_criacao_upload: rename_dict[col_criacao_upload] = 'Data de criação'
                     if col_descricao_upload: rename_dict[col_descricao_upload] = 'Descrição'
-                         
+                          
                     df_lookup = df_lookup.rename(columns=rename_dict)
                     
                     df_lookup = df_lookup.loc[:, ~df_lookup.columns.duplicated()]
@@ -893,11 +892,8 @@ try:
 
         if not df_encerrados_filtrado.empty and 'Data de Fechamento' in df_encerrados_filtrado.columns:
             if 'Data de Fechamento_dt_comp' not in df_encerrados_filtrado.columns:
-                df_encerrados_filtrado['Data de Fechamento_dt_comp'] = pd.to_datetime(
-                    df_encerrados_filtrado['Data de Fechamento'], 
-                    dayfirst=True, 
-                    errors='coerce'
-                )
+                # --- CORREÇÃO DE DATA FLIPADA NA VISUALIZAÇÃO ---
+                df_encerrados_filtrado['Data de Fechamento_dt_comp'] = strict_br_date_parse(df_encerrados_filtrado['Data de Fechamento'])
             
             ultima_data_com_dados = df_encerrados_filtrado['Data de Fechamento_dt_comp'].max()
             
@@ -929,7 +925,7 @@ try:
         if not df_encerrados_filtrado.empty and 'Data de Fechamento' in df_encerrados_filtrado.columns:
             try:
                 if 'Data de Fechamento_dt_comp' not in df_encerrados_filtrado.columns:
-                    df_encerrados_filtrado['Data de Fechamento_dt_comp'] = pd.to_datetime(df_encerrados_filtrado['Data de Fechamento'], dayfirst=True, errors='coerce')
+                    df_encerrados_filtrado['Data de Fechamento_dt_comp'] = strict_br_date_parse(df_encerrados_filtrado['Data de Fechamento'])
                 
                 if not df_encerrados_filtrado['Data de Fechamento_dt_comp'].isnull().all():
                     data_mais_recente_fechado_dt = df_encerrados_filtrado['Data de Fechamento_dt_comp'].max().date()
@@ -1044,9 +1040,9 @@ try:
                 
                 df_encerrados_para_exibir['data_criacao_recuperada'] = pd.NaT
 
-                # --- LÓGICA INTELIGENTE DE RECUPERAÇÃO DE DATA (Igual Tab 1) ---
+                # --- LÓGICA INTELIGENTE DE RECUPERAÇÃO DE DATA ---
                 if col_criacao_real:
-                    df_encerrados_para_exibir['data_criacao_recuperada'] = pd.to_datetime(df_encerrados_para_exibir[col_criacao_real], dayfirst=True, errors='coerce')
+                    df_encerrados_para_exibir['data_criacao_recuperada'] = strict_br_date_parse(df_encerrados_para_exibir[col_criacao_real])
 
                 id_col_fechado = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_encerrados_para_exibir.columns), None)
                 
@@ -1058,8 +1054,8 @@ try:
                     if id_col_bk and date_col_bk:
                         temp_bk = df_abertos_base_para_reducao[[id_col_bk, date_col_bk]].copy()
                         temp_bk[id_col_bk] = normalize_ids(temp_bk[id_col_bk])
-                        # Força leitura correta do backlog
-                        temp_bk['dt_valida'] = pd.to_datetime(temp_bk[date_col_bk], dayfirst=True, errors='coerce')
+                        # Força leitura correta do backlog com parser estrito
+                        temp_bk['dt_valida'] = strict_br_date_parse(temp_bk[date_col_bk])
                         temp_bk = temp_bk.dropna(subset=['dt_valida'])
                         
                         mapa_datas = dict(zip(temp_bk[id_col_bk], temp_bk['dt_valida']))
@@ -1075,7 +1071,7 @@ try:
                 if 'Data de Fechamento' in df_encerrados_para_exibir.columns:
                     try:
                         dt_inicio = df_encerrados_para_exibir['data_criacao_recuperada'].dt.normalize()
-                        dt_fim = pd.to_datetime(df_encerrados_para_exibir['Data de Fechamento'], dayfirst=True, errors='coerce').dt.normalize()
+                        dt_fim = strict_br_date_parse(df_encerrados_para_exibir['Data de Fechamento']).dt.normalize()
                         
                         df_encerrados_para_exibir['Dias em Aberto'] = (dt_fim - dt_inicio).dt.days
                         
@@ -1091,7 +1087,7 @@ try:
 
                 try:
                     if 'Data de Fechamento_dt_comp' not in df_encerrados_para_exibir.columns:
-                        df_encerrados_para_exibir['Data de Fechamento_dt_comp'] = pd.to_datetime(df_encerrados_para_exibir['Data de Fechamento'], dayfirst=True, errors='coerce')
+                        df_encerrados_para_exibir['Data de Fechamento_dt_comp'] = strict_br_date_parse(df_encerrados_para_exibir['Data de Fechamento'])
 
                     unique_dates = sorted(df_encerrados_para_exibir['Data de Fechamento_dt_comp'].dropna().dt.date.unique(), reverse=True)
                     datas_disponiveis = [d.strftime('%d/%m/%Y') for d in unique_dates]
@@ -1134,7 +1130,8 @@ try:
                 # LÓGICA DE FILTRO LÍQUIDO PARA A TABELA (TAB 1)
                 if 'data_criacao_recuperada' in df_encerrados_para_exibir.columns and 'Data de Fechamento' in df_encerrados_para_exibir.columns:
                     c_date = df_encerrados_para_exibir['data_criacao_recuperada'].dt.date
-                    e_date = pd.to_datetime(df_encerrados_para_exibir['Data de Fechamento'], dayfirst=True).dt.date
+                    # Parser Estrito
+                    e_date = strict_br_date_parse(df_encerrados_para_exibir['Data de Fechamento']).dt.date
                     df_encerrados_para_exibir = df_encerrados_para_exibir[c_date != e_date]
                 # ---------------------------------------------------------
 
@@ -1464,7 +1461,7 @@ try:
                         # --- LÓGICA DE RECUPERAÇÃO DE DATA INTELIGENTE PARA O GRÁFICO (Igual Tab 1) ---
                         df_fechados_hist['dt_cri_temp'] = pd.NaT
                         if col_criacao_real:
-                            df_fechados_hist['dt_cri_temp'] = pd.to_datetime(df_fechados_hist[col_criacao_real], dayfirst=True, errors='coerce')
+                            df_fechados_hist['dt_cri_temp'] = strict_br_date_parse(df_fechados_hist[col_criacao_real])
 
                         # Se não achou data no histórico, busca no Backlog (df_abertos_base_para_reducao)
                         if 'df_abertos_base_para_reducao' in locals() and not df_abertos_base_para_reducao.empty:
@@ -1476,7 +1473,7 @@ try:
                                 # Cria mapa
                                 temp_bk_g = df_abertos_base_para_reducao[[id_col_bk, date_col_bk]].copy()
                                 temp_bk_g[id_col_bk] = normalize_ids(temp_bk_g[id_col_bk])
-                                temp_bk_g['dt_valida'] = pd.to_datetime(temp_bk_g[date_col_bk], dayfirst=True, errors='coerce')
+                                temp_bk_g['dt_valida'] = strict_br_date_parse(temp_bk_g[date_col_bk])
                                 temp_bk_g = temp_bk_g.dropna(subset=['dt_valida'])
                                 mapa_datas_g = dict(zip(temp_bk_g[id_col_bk], temp_bk_g['dt_valida']))
                                 
@@ -1487,7 +1484,7 @@ try:
                                 )
                         # --------------------------------------------------------------------------------
 
-                        df_fechados_hist['dt_fec_temp'] = pd.to_datetime(df_fechados_hist['Data de Fechamento'], dayfirst=True, errors='coerce')
+                        df_fechados_hist['dt_fec_temp'] = strict_br_date_parse(df_fechados_hist['Data de Fechamento'])
                         
                         # FILTRO LÍQUIDO PARA O GRÁFICO: Remove Fast Kill
                         df_fechados_hist = df_fechados_hist[df_fechados_hist['dt_cri_temp'].dt.date != df_fechados_hist['dt_fec_temp'].dt.date]
@@ -1764,6 +1761,6 @@ else:
 
 st.markdown("---")
 st.markdown("""
-<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.62 | Este dashboard está em desenvolvimento.</p>
+<p style='text-align: center; color: #666; font-size: 0.9em; margin-bottom: 0;'>V1.0.63 | Este dashboard está em desenvolvimento.</p>
 <p style='text-align: center; color: #666; font-size: 0.9em; margin-top: 0;'>Desenvolvido por Leonir Scatolin Junior</p>
 """, unsafe_allow_html=True)
