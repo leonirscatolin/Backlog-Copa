@@ -546,7 +546,7 @@ else:
 st.sidebar.header("Login / Acesso")
 password = st.sidebar.text_input("Senha de Acesso:", type="password")
 
-SENHA_ADMIN = st.secrets.get("ADMIN_PASSWORD", "admin123")
+SENHA_ADMIN = st.secrets.get("ADMIN_PASSWORD", "Belago@2025")
 SENHA_BYATRIZ = st.secrets.get("BYATRIZ_PASSWORD", "bia2025")
 
 is_admin = password == SENHA_ADMIN
