@@ -141,7 +141,7 @@ def read_local_csv(file_path, file_mtime):
     for sep in separators:
         for enc in encodings:
             try:
-                # Lê todas as colunas como string inicialmente para evitar conversões automáticas erradas do Pandas
+                # Lê como string para não deixar o pandas "pensar" demais
                 df = pd.read_csv(file_path, sep=sep, encoding=enc,
                                  dtype=str, 
                                  low_memory=False, on_bad_lines='warn')
@@ -189,13 +189,17 @@ def read_local_json_file(file_path, default_return_type='dict'):
         return default_return
 
 def update_daily_metrics(date_str, closed_count):
+    """Salva o número de fechados do dia em um JSON persistente."""
     metrics = read_local_json_file(STATE_FILE_METRICS_DB, 'dict')
+    
     if not isinstance(metrics, dict):
         metrics = {}
+    
     metrics[date_str] = {
         "fechados_liquido": int(closed_count),
         "updated_at": datetime.now().isoformat()
     }
+    
     try:
         with open(STATE_FILE_METRICS_DB, 'w', encoding='utf-8') as f:
             json.dump(metrics, f, indent=4)
@@ -203,54 +207,29 @@ def update_daily_metrics(date_str, closed_count):
         print(f"Erro ao salvar métricas: {e}")
 
 def get_daily_metric(date_str):
+    """Recupera o número salvo para evitar recálculo."""
     metrics = read_local_json_file(STATE_FILE_METRICS_DB, 'dict')
+    
     if not isinstance(metrics, dict):
         return None
+        
     if date_str in metrics:
         return metrics[date_str].get("fechados_liquido", 0)
     return None
 
-def force_br_date_format(df):
+def force_br_date_parse(series):
     """
-    Identifica colunas de data e força a conversão assumindo formato Brasileiro (DD/MM).
-    Se falhar o formato BR explícito, tenta dayfirst=True genérico.
-    Converte para YYYY-MM-DD para padronização interna.
+    Força a interpretação como Dia/Mês/Ano.
+    Se falhar, retorna NaT.
     """
-    possible_date_cols = [
-        'Data de criação', 'Data de criaÃ§Ã£o', 'Data de Criacao', 'Created', 
-        'Aberto em', 'Criado em', 'Criação', 'Data de Abertura',
-        'Data de Fechamento', 'Data de Resolução', 'Resolved', 'Closed'
-    ]
-    
-    for col in df.columns:
-        # Verifica se o nome da coluna parece data
-        if any(p.lower() in col.lower() for p in possible_date_cols):
-            try:
-                # Tenta converter explicitamente DD/MM/YYYY primeiro
-                df[col] = pd.to_datetime(df[col], format='%d/%m/%Y %H:%M:%S', errors='coerce')
-                # Se falhar (NaT), tenta DD/MM/YYYY sem hora
-                mask = df[col].isna()
-                if mask.any():
-                    df.loc[mask, col] = pd.to_datetime(df.loc[mask, col], format='%d/%m/%Y', errors='coerce')
-                
-                # Se ainda tiver NaT, tenta dayfirst=True genérico (para garantir)
-                mask = df[col].isna()
-                if mask.any():
-                    df.loc[mask, col] = pd.to_datetime(df.loc[mask, col], dayfirst=True, errors='coerce')
-                
-                # Formata para string padrão ISO para salvar no CSV sem confusão futura
-                # Mas mantém como datetime no dataframe atual se precisar usar agora
-                # (A conversão para string acontece no to_csv depois)
-            except Exception:
-                pass
-    return df
+    return pd.to_datetime(series, dayfirst=True, errors='coerce')
 
 def process_uploaded_file(uploaded_file):
     if uploaded_file is None:
         return None
     try:
-        # Lê tudo como string para evitar inferência errada na leitura
-        dtype_spec = str 
+        # Lê tudo como string
+        dtype_spec = str
         
         if uploaded_file.name.endswith('.xlsx'):
             df = pd.read_excel(uploaded_file, dtype=dtype_spec)
@@ -271,12 +250,20 @@ def process_uploaded_file(uploaded_file):
         df.columns = df.columns.str.strip()
         df.dropna(how='all', inplace=True)
 
-        # --- AQUI ESTA A CORREÇÃO FORÇADA ---
-        # Padroniza as datas AGORA, antes de salvar
-        df = force_br_date_format(df)
+        # Padroniza todas as colunas de data possíveis para ISO (YYYY-MM-DD) usando input BR
+        possible_date_cols = [
+            'Data de criação', 'Data de criaÃ§Ã£o', 'Data de Criacao', 'Created', 
+            'Aberto em', 'Criado em', 'Criação', 'Data de Abertura',
+            'Data de Fechamento', 'Data de Resolução', 'Resolved', 'Closed'
+        ]
+        
+        for col in df.columns:
+            if any(p.lower() in col.lower() for p in possible_date_cols):
+                # Força BR na entrada
+                df[col] = pd.to_datetime(df[col], dayfirst=True, errors='coerce')
 
         output = StringIO()
-        # Salva usando separador ; e formato de data padrão (que o to_csv usa ISO por padrão para datetimes)
+        # Salva formatado como ISO para evitar confusão futura ao reler
         df.to_csv(output, index=False, sep=';', encoding='utf-8', date_format='%Y-%m-%d %H:%M:%S')
         return output.getvalue().encode('utf-8') 
     except Exception as e:
@@ -314,10 +301,9 @@ def analisar_aging(_df_atual, reference_date=None):
     if not date_col_name:
         return pd.DataFrame()
     
-    # Como já forçamos na entrada (process_uploaded_file), aqui lemos formato ISO ou BR fallback
+    # Parser: Tenta ISO primeiro (pois salvamos assim), se falhar tenta BR
     df['temp_date'] = pd.to_datetime(df[date_col_name], errors='coerce')
     
-    # Se ainda tiver erros (talvez arquivo antigo salvo sem padronização), tenta BR
     mask_nat = df['temp_date'].isna()
     if mask_nat.any():
         df.loc[mask_nat, 'temp_date'] = pd.to_datetime(df.loc[mask_nat, date_col_name], dayfirst=True, errors='coerce')
@@ -445,7 +431,7 @@ def carregar_dados_evolucao(dias_para_analisar, df_historico_fechados):
         id_col_hist = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_hist.columns), None)
         if id_col_hist and not df_hist.empty:
             # Garante que lê a data corretamente do histórico
-            df_hist['Data de Fechamento_dt'] = pd.to_datetime(df_hist['Data de Fechamento'], dayfirst=True, errors='coerce').dt.normalize()
+            df_hist['Data de Fechamento_dt'] = pd.to_datetime(df_hist['Data de Fechamento'], errors='coerce').dt.normalize()
             df_hist = df_hist.dropna(subset=['Data de Fechamento_dt', id_col_hist])
             df_hist['Ticket ID'] = normalize_ids(df_hist[id_col_hist])
             df_hist = df_hist[['Ticket ID', 'Data de Fechamento_dt']]
@@ -528,6 +514,7 @@ def carregar_evolucao_aging(dias_para_analisar=90):
                 date_col_name = next((col for col in ['Data de criação', 'Data de criaÃ§Ã£o', 'Data de Criacao'] if col in df_final.columns), None)
                 if not date_col_name: continue
                 
+                # Tenta ISO primeiro, depois BR
                 df_final['temp_date'] = pd.to_datetime(df_final[date_col_name], errors='coerce')
                 mask_nat = df_final['temp_date'].isna()
                 if mask_nat.any():
@@ -615,7 +602,7 @@ if is_admin:
                 
                 if content_atual_raw is not None and content_15dias is not None:
                     try:
-                        # Lê já usando a padronização salva no CSV
+                        # Lê já usando a padronização salva no CSV (String IO com ; e datas ISO)
                         df_novo_atual_raw = pd.read_csv(BytesIO(content_atual_raw), sep=';', dtype=str)
                         
                         df_hist_fechados = read_local_csv(STATE_FILE_MASTER_CLOSED_CSV, get_file_mtime(STATE_FILE_MASTER_CLOSED_CSV))
@@ -690,6 +677,7 @@ if is_admin:
                         
                         if id_col_bk and id_col_fc:
                             if col_data_fechamento_check:
+                                # Le já formato ISO ou BR fallback
                                 df_fechados_novo_check['dt_temp_check'] = pd.to_datetime(df_fechados_novo_check[col_data_fechamento_check], errors='coerce')
                                 df_fechados_hoje_check = df_fechados_novo_check[df_fechados_novo_check['dt_temp_check'].dt.date == now_sao_paulo.date()]
                             else:
@@ -769,7 +757,8 @@ if is_admin:
                     
                     if col_criacao_upload:
                          df_fechados_novo_upload[col_criacao_upload] = pd.to_datetime(df_fechados_novo_upload[col_criacao_upload], errors='coerce')
-                         df_fechados_novo_upload[col_criacao_upload] = df_fechados_novo_upload[col_criacao_upload].dt.strftime('%Y-%m-%d')
+                         # Padroniza saída ISO
+                         df_fechados_novo_upload[col_criacao_upload] = df_fechados_novo_upload[col_criacao_upload].dt.strftime('%Y-%m-%d %H:%M:%S')
 
                     col_descricao_upload = next((col for col in ['Descrição', 'Descricao', 'Description', 'Assunto', 'Summary'] if col in df_fechados_novo_upload.columns), None)
 
@@ -1068,11 +1057,12 @@ try:
                 df_encerrados_para_exibir['data_criacao_recuperada'] = pd.NaT
 
                 if col_criacao_real:
+                    # Parser ISO/BR
                     df_encerrados_para_exibir['data_criacao_recuperada'] = pd.to_datetime(df_encerrados_para_exibir[col_criacao_real], errors='coerce')
 
                 id_col_fechado = next((col for col in ['ID do ticket', 'ID do Ticket', 'ID'] if col in df_encerrados_para_exibir.columns), None)
                 
-                # Se a data de criação veio vazia do histórico, tenta buscar no backlog atual (Recuperação)
+                # Recuperação via backlog
                 if id_col_fechado and 'df_abertos_base_para_reducao' in locals() and not df_abertos_base_para_reducao.empty:
                     id_col_bk = next((c for c in ['ID do ticket', 'ID do Ticket', 'ID'] if c in df_abertos_base_para_reducao.columns), None)
                     date_col_bk = next((c for c in ['Data de criação', 'Data de criaÃ§Ã£o', 'Created'] if c in df_abertos_base_para_reducao.columns), None)
